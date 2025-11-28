@@ -1,5 +1,7 @@
+
 @import "tailwindcss";
 @import "tw-animate-css";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -11,25 +13,25 @@
   --color-ylang-sage: #c8d5b9;
   --color-ylang-rose: #b76e79;
   --color-ylang-charcoal: #1a1a1a;
-  
+
   /* Typography */
-  --font-family-display: 'Playfair Display', serif;
-  --font-family-body: 'Inter', sans-serif;
-  
+  --font-family-display: "Bricolage Grotesque", serif;
+  --font-family-body: "Inter", sans-serif;
+
   /* Spacing Premium */
   --spacing-section: 6rem;
   --spacing-section-mobile: 3rem;
-  
+
   /* Border Radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
-  
+
   /* Shadows Premium */
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.12);
-  
+
   /* Transitions */
   --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -116,4 +118,32 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-ylang-rose);
+}
+/* Premium Button Utilities */
+.bg-size-200 {
+  background-size: 200% auto;
+}
+
+.bg-pos-0 {
+  background-position: 0% 0%;
+}
+
+.bg-pos-100 {
+  background-position: 100% 0%;
+}
+
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient-x 3s ease infinite;
 }
