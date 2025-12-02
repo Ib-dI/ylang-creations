@@ -7,6 +7,7 @@ import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart-store"
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 
@@ -24,6 +25,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const cartCount = useCartStore((state) => state.getTotalItems())
+  const router = useRouter();
 
   // Détection du scroll pour effet premium
   React.useEffect(() => {
@@ -141,7 +143,9 @@ export function Header() {
               </button>
 
               {/* CTA Premium */}
-              <Button variant="luxury" size="sm" className="ml-2">
+              <Button
+                onClick={() => router.push("/configurateur")}
+                variant="luxury" size="sm" className="ml-2">
                 Configurer
               </Button>
             </div>

@@ -39,27 +39,23 @@ export function ProductCard({ product, className }: ProductCardProps) {
       whileHover={{ y: -4 }}
       className={cn("group", className)}
     >
-      <Card className="relative overflow-hidden border-0 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)]">
+      <Card className="relative overflow-hidden border-0 bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.15)]">
         {/* Image Container */}
         <Link href={`/produits/${product.id}`}>
           <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden">
             {/* Image principale avec effet zoom subtil */}
-            <motion.div
-              className="relative h-full w-full"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-            >
+            <div className="relative h-full w-full">
               <Image
                 src={images[currentImageIndex]}
                 alt={product.name}
                 fill
-                className="object-cover transition-all duration-300"
-                sizes="(max-width: 560px) 100vw, (max-width: 800px) 50vw, 33vw"
+                className="ease-slow-j origin-center object-cover transition-transform duration-500 group-hover:scale-[1.15]"
+                sizes="(max-width: 560px) 100vw, (max-width: 800px) 50vw, 25vw"
               />
-            </motion.div>
+            </div>
 
             {/* Overlay élégant au hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
             {/* CTA qui slide du bas au hover */}
             <motion.div

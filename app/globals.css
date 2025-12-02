@@ -59,6 +59,9 @@
     padding-bottom: var(--spacing-section-mobile);
   }
 }
+.ease-slow-j {
+  transition-timing-function: ease;
+}
 
 /* Animations Premium */
 @keyframes fade-in {

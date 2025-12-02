@@ -6,6 +6,9 @@ import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight, Package } from "lucide
 import { useCartStore } from "@/lib/store/cart-store"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { loadStripe } from '@stripe/stripe-js'
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, getTotalItems, getTotalPrice, getShipping, getFinalPrice } = useCartStore()

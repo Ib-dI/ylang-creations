@@ -1,5 +1,8 @@
 "use client";
 
+import { CraftsmanshipSection } from "@/components/home/craftsmanship-section";
+import { HowItWorksSection } from "@/components/home/how-it-works-section";
+import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { ProductCard } from "@/components/product/product-card";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -35,6 +38,14 @@ export default function Home() {
       image: "/images/products/ensemble-bebe.jpg",
       customizable: true,
     },
+    {
+      id: "4",
+      name: "Carnet de dessins personnalisé",
+      category: "Acessoires",
+      price: 4.95,
+      image: "/images/products/carnet.jpg",
+      customizable: true,
+    },
   ];
 
   return (
@@ -63,7 +74,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="font-display mb-8 max-w-4xl px-4 text-4xl font-bold leading-tight text-white drop-shadow-lg md:text-6xl"
+              className="font-display mb-8 max-w-4xl px-4 text-4xl leading-tight font-bold text-white drop-shadow-lg md:text-6xl"
             >
               Chaque création naît de vos désirs
             </motion.h1>
@@ -109,13 +120,21 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
       </section>
+      {/* Savoir-faire */}
+      <CraftsmanshipSection />
+
+      {/* Comment ça marche */}
+      <HowItWorksSection />
+
+      {/* Témoignages */}
+      <TestimonialsSection />
     </>
   );
 }
