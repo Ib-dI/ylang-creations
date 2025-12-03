@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Playfair_Display, Bricolage_Grotesque } from "next/font/google";
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { CartDrawer } from "@/components/cart/cart-drawer"
 import "./globals.css";
 
 
@@ -51,6 +52,7 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        <CartDrawer />
       </body>
     </html>
   );
