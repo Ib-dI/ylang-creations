@@ -64,14 +64,12 @@ export function CraftsmanshipSection() {
             {/* Image principale */}
             <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-br from-ylang-beige to-ylang-cream flex items-center justify-center">
-                <div className="text-center p-8">
-                  <span className="text-6xl mb-4 block">✂️</span>
-                  <p className="font-body text-ylang-charcoal/60">
-                    Photo de l'atelier
-                    <br />
-                    <span className="text-sm">(à remplacer)</span>
-                  </p>
-                </div>
+                <Image
+                  src="/images/atelier.png"
+                  alt="Atelier Ylang Créations"
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
 

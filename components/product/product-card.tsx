@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Heart, Sparkles } from "lucide-react";
@@ -25,8 +26,11 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = React.useState(false);
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+
+  // Wishlist store
+  const { isInWishlist, toggleItem } = useWishlistStore();
+  const isWishlisted = isInWishlist(product.id);
 
   const images = product.images || [product.image];
 
@@ -113,7 +117,18 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
         {/* Bouton Wishlist */}
         <button
-          onClick={() => setIsWishlisted(!isWishlisted)}
+          onClick={(e) => {
+            e.preventDefault();
+            toggleItem({
+              id: `wishlist-${product.id}`,
+              productId: product.id,
+              name: product.name,
+              category: product.category,
+              price: product.price,
+              image: product.image,
+              customizable: product.customizable,
+            });
+          }}
           className="group/heart absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur-sm transition-transform duration-300 hover:scale-110"
         >
           <Heart

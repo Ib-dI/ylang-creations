@@ -1,10 +1,16 @@
+import { CartDrawer } from "@/components/cart/cart-drawer";
+import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
+import { WishlistDrawer } from "@/components/wishlist/wishlist-drawer";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Playfair_Display, Bricolage_Grotesque } from "next/font/google";
-import { Header } from "@/components/layout/header"
-import { Footer } from "@/components/layout/footer"
-import { CartDrawer } from "@/components/cart/cart-drawer"
+import {
+  Bricolage_Grotesque,
+  Geist,
+  Geist_Mono,
+  Inter,
+  Playfair_Display,
+} from "next/font/google";
 import "./globals.css";
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +39,8 @@ const bricolageGrotesque = Bricolage_Grotesque({
 
 export const metadata: Metadata = {
   title: "Ylang Creations",
-  description: "Ylang Creations est une entreprise spécialisée dans la création d'accessoires et de bijoux personnalisés.",
+  description:
+    "Ylang Creations est une entreprise spécialisée dans la création d'accessoires et de bijoux personnalisés.",
 };
 
 export default function RootLayout({
@@ -53,6 +60,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <CartDrawer />
+        <WishlistDrawer />
       </body>
     </html>
   );

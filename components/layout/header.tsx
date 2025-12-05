@@ -1,14 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/lib/store/cart-store";
+import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
-import { useCartStore } from "@/lib/store/cart-store"
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 
 // Navigation items
@@ -24,7 +24,8 @@ export function Header() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const cartCount = useCartStore((state) => state.getTotalItems())
+  const cartCount = useCartStore((state) => state.getTotalItems());
+  const wishlistCount = useWishlistStore((state) => state.getTotalItems());
   const router = useRouter();
 
   // Détection du scroll pour effet premium
@@ -35,7 +36,6 @@ export function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
 
   return (
     <>
@@ -113,11 +113,23 @@ export function Header() {
               </button>
 
               {/* Wishlist */}
-              <button className="text-ylang-charcoal hover:text-ylang-rose relative transform p-2 transition-colors duration-300 hover:scale-106">
+              <button
+                onClick={() => useWishlistStore.getState().openWishlist()}
+                className="text-ylang-charcoal hover:text-ylang-rose relative transform p-2 transition-colors duration-300 hover:scale-106"
+              >
                 <Heart className="h-4 w-4" strokeWidth={1.5} />
-                <span className="bg-ylang-rose absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-xs font-medium text-white">
-                  2
-                </span>
+                <AnimatePresence>
+                  {wishlistCount > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="bg-ylang-rose absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-xs font-medium text-white"
+                    >
+                      {wishlistCount}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </button>
 
               {/* Account */}
@@ -126,7 +138,10 @@ export function Header() {
               </button>
 
               {/* Cart avec animation */}
-              <button className="text-ylang-charcoal hover:text-ylang-rose group relative transform p-2 transition-colors duration-300 hover:scale-106">
+              <button
+                onClick={() => useCartStore.getState().openCart()}
+                className="text-ylang-charcoal hover:text-ylang-rose group relative transform p-2 transition-colors duration-300 hover:scale-106"
+              >
                 <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
                 <AnimatePresence>
                   {cartCount > 0 && (
@@ -145,7 +160,10 @@ export function Header() {
               {/* CTA Premium */}
               <Button
                 onClick={() => router.push("/configurateur")}
-                variant="luxury" size="sm" className="ml-2">
+                variant="luxury"
+                size="sm"
+                className="ml-2"
+              >
                 Configurer
               </Button>
             </div>
@@ -214,7 +232,7 @@ export function Header() {
                   Configurer mon produit
                 </Button>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-4 gap-3">
                   <button className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors">
                     <Search
                       className="text-ylang-charcoal mb-1 h-5 w-5"
@@ -225,15 +243,42 @@ export function Header() {
                     </span>
                   </button>
 
-                  <button className="bg-ylang-beige/50 hover:bg-ylang-beige relative flex flex-col items-center justify-center rounded-lg p-4 transition-colors">
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      useWishlistStore.getState().openWishlist();
+                    }}
+                    className="bg-ylang-beige/50 hover:bg-ylang-beige relative flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
+                  >
                     <Heart
                       className="text-ylang-charcoal mb-1 h-5 w-5"
                       strokeWidth={1.5}
                     />
                     <span className="text-ylang-charcoal text-xs">Favoris</span>
-                    <span className="bg-ylang-rose absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-white">
-                      2
-                    </span>
+                    {wishlistCount > 0 && (
+                      <span className="bg-ylang-rose absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-white">
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      useCartStore.getState().openCart();
+                    }}
+                    className="bg-ylang-beige/50 hover:bg-ylang-beige relative flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
+                  >
+                    <ShoppingBag
+                      className="text-ylang-charcoal mb-1 h-5 w-5"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-ylang-charcoal text-xs">Panier</span>
+                    {cartCount > 0 && (
+                      <span className="bg-ylang-rose absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-white">
+                        {cartCount}
+                      </span>
+                    )}
                   </button>
 
                   <button className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors">

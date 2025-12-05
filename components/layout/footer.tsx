@@ -68,13 +68,13 @@ const socialLinks = [
   {
     name: "Instagram",
     icon: Instagram,
-    href: "https://instagram.com/ylang.creations",
+    href: "https://www.instagram.com/ylang_creations/",
     color: "hover:text-pink-600",
   },
   {
     name: "Facebook",
     icon: Facebook,
-    href: "https://facebook.com/ylangcreations",
+    href: "https://www.facebook.com/ylangcreations",
     color: "hover:text-blue-600",
   },
 ];
