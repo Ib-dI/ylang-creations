@@ -137,12 +137,16 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </motion.div>
 
             {/* Thumbnails */}
-            <div className="grid grid-cols-4 gap-4">
+            <div className="flex gap-4">
               {productImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
-                  className={`aspect-square overflow-hidden rounded-lg border-2 transition-all ${
+                  style={{
+                    width: `calc((100% - ${(productImages.length - 1) * 16}px) / ${productImages.length})`,
+                    maxWidth: productImages.length === 1 ? "150px" : undefined,
+                  }}
+                  className={`aspect-square flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
                     selectedImage === idx
                       ? "border-ylang-rose ring-ylang-rose/20 ring-2"
                       : "hover:border-ylang-beige border-transparent"

@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchModal } from "@/components/search/search-modal";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
@@ -24,6 +25,7 @@ export function Header() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
   const cartCount = useCartStore((state) => state.getTotalItems());
   const wishlistCount = useWishlistStore((state) => state.getTotalItems());
   const router = useRouter();
@@ -108,7 +110,10 @@ export function Header() {
             {/* Actions Desktop */}
             <div className="hidden items-center space-x-4 lg:flex">
               {/* Search */}
-              <button className="text-ylang-charcoal hover:text-ylang-rose transform p-2 transition-colors duration-300 hover:scale-106">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="text-ylang-charcoal hover:text-ylang-rose transform p-2 transition-colors duration-300 hover:scale-106"
+              >
                 <Search className="h-4 w-4" strokeWidth={1.5} />
               </button>
 
@@ -233,7 +238,13 @@ export function Header() {
                 </Button>
 
                 <div className="grid grid-cols-4 gap-3">
-                  <button className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors">
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsSearchOpen(true);
+                    }}
+                    className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
+                  >
                     <Search
                       className="text-ylang-charcoal mb-1 h-5 w-5"
                       strokeWidth={1.5}
@@ -294,6 +305,12 @@ export function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Search Modal */}
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
     </>
   );
 }

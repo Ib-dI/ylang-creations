@@ -74,7 +74,7 @@ const socialLinks = [
   {
     name: "Facebook",
     icon: Facebook,
-    href: "https://www.facebook.com/ylangcreations",
+    href: "https://www.facebook.com/ylangcreations/?ref=_xav_ig_profile_page_web#",
     color: "hover:text-blue-600",
   },
 ];
@@ -168,7 +168,7 @@ export function Footer() {
                 <div className="bg-ylang-beige group-hover:bg-ylang-rose/10 flex h-10 w-10 items-center justify-center rounded-full transition-colors">
                   <Phone className="h-4 w-4" />
                 </div>
-                <span className="font-body text-sm">+33 6 12 34 56 78</span>
+                <span className="font-body text-sm">+262 693 53 08 58</span>
               </a>
 
               <a
@@ -179,7 +179,7 @@ export function Footer() {
                   <Mail className="h-4 w-4" />
                 </div>
                 <span className="font-body text-sm">
-                  contact@ylang-creations.fr
+                  ylang.creations@gmail.com
                 </span>
               </a>
 

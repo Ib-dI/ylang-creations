@@ -132,9 +132,9 @@ export const catalogProducts: CatalogProduct[] = [
     name: "Ubidoll mahoraise personnalisé",
     category: "Jouets",
     price: 35,
-    image: "/images/products/ubidoll-mahoraise.jpg",
+    image: "/images/products/ubidoll.jpg",
     images: [
-      "/images/products/ubidoll-mahoraise.jpg",
+      "/images/products/ubidoll.jpg",
       "/images/products/ubidoll-mahoraise-1.jpg",
       "/images/products/ubidoll-mahoraise-2.jpg",
       "/images/products/ubidoll-mahoraise-3.jpg",
@@ -208,9 +208,9 @@ export const catalogProducts: CatalogProduct[] = [
     name: "Ensemble bébé personnalisé",
     category: "Vêtements bébé",
     price: 95,
-    image: "/images/products/ensemble-bébé.jpg",
+    image: "/images/products/ensemble.jpg",
     images: [
-      "/images/products/ensemble-bébé.jpg",
+      "/images/products/ensemble.jpg",
       "/images/products/haut-bébé-1.jpg",
       "/images/products/pentalon-bébé.jpg",
       "/images/products/pentalon-1.jpg",
@@ -278,6 +278,43 @@ export const categories = [
   "Accessoires",
   "Jouets",
 ];
+
+// Fonction pour rechercher des produits
+export function searchProducts(
+  query: string,
+  limit: number = 10,
+): CatalogProduct[] {
+  if (!query || query.trim().length < 2) return [];
+
+  const searchQuery = query.toLowerCase().trim();
+
+  return catalogProducts
+    .filter((product) => {
+      const nameMatch = product.name.toLowerCase().includes(searchQuery);
+      const categoryMatch = product.category
+        .toLowerCase()
+        .includes(searchQuery);
+      const descriptionMatch = product.description
+        ?.toLowerCase()
+        .includes(searchQuery);
+
+      return nameMatch || categoryMatch || descriptionMatch;
+    })
+    .slice(0, limit);
+}
+
+// Fonction pour obtenir les recherches suggérées (catégories + mots clés populaires)
+export function getSearchSuggestions(): string[] {
+  const categorySuggestions = categories.filter((c) => c !== "Tout");
+  const keywords = [
+    "personnalisé",
+    "bébé",
+    "décoration",
+    "cadeau",
+    "artisanal",
+  ];
+  return [...categorySuggestions, ...keywords];
+}
 
 // Produits pour le configurateur (format différent)
 export const mockProducts: ConfiguratorProduct[] = [

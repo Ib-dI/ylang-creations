@@ -5,9 +5,12 @@ import { catalogProducts, categories } from "@/data/products";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
-export default function CollectionsPage() {
+function CollectionsContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tout");
   const [priceRange, setPriceRange] = useState([0, 200]);
@@ -16,12 +19,40 @@ export default function CollectionsPage() {
 
   const isDesktop = useMediaQuery("(min-width: 640px)");
 
-  // Filtrage et tri des produits
+  // Synchroniser avec les paramètres URL
+  useEffect(() => {
+    const searchQuery = searchParams.get("search");
+    const categoryQuery = searchParams.get("category");
+
+    if (searchQuery) {
+      setSearchTerm(searchQuery);
+    }
+    if (categoryQuery && categories.includes(categoryQuery)) {
+      setSelectedCategory(categoryQuery);
+    }
+  }, [searchParams]);
+
+  // Mettre à jour l'URL quand la recherche change
+  const updateSearchUrl = (term: string) => {
+    setSearchTerm(term);
+    const params = new URLSearchParams(searchParams.toString());
+    if (term) {
+      params.set("search", term);
+    } else {
+      params.delete("search");
+    }
+    router.replace(`/collections?${params.toString()}`, { scroll: false });
+  };
+
+  // Filtrage et tri des produits avec recherche améliorée
   const filteredProducts = useMemo(() => {
     let filtered = catalogProducts.filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch =
+        searchTerm === "" ||
+        product.name.toLowerCase().includes(searchLower) ||
+        product.category.toLowerCase().includes(searchLower) ||
+        product.description?.toLowerCase().includes(searchLower);
       const matchesCategory =
         selectedCategory === "Tout" || product.category === selectedCategory;
       const matchesPrice =
@@ -80,12 +111,12 @@ export default function CollectionsPage() {
                 type="text"
                 placeholder="Rechercher un produit..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => updateSearchUrl(e.target.value)}
                 className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 font-body text-ylang-charcoal placeholder:text-ylang-charcoal/40 w-full rounded-xl border bg-white py-3 pr-4 pl-12 transition-all outline-none focus:ring-2"
               />
               {searchTerm && (
                 <button
-                  onClick={() => setSearchTerm("")}
+                  onClick={() => updateSearchUrl("")}
                   className="absolute top-1/2 right-4 -translate-y-1/2"
                 >
                   <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
@@ -223,7 +254,7 @@ export default function CollectionsPage() {
             </p>
             <button
               onClick={() => {
-                setSearchTerm("");
+                updateSearchUrl("");
                 setSelectedCategory("Tout");
                 setPriceRange([0, 200]);
               }}
@@ -235,5 +266,21 @@ export default function CollectionsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CollectionsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-ylang-cream flex min-h-screen items-center justify-center">
+          <div className="text-ylang-charcoal/60 font-body animate-pulse">
+            Chargement...
+          </div>
+        </div>
+      }
+    >
+      <CollectionsContent />
+    </Suspense>
   );
 }

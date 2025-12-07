@@ -89,7 +89,7 @@ function ConfirmationContent() {
                 </h3>
                 <p className="text-sm text-[#1a1a1a]/60">
                   Votre produit sera confectionné à la main dans notre atelier
-                  parisien sous 7 à 10 jours ouvrés.
+                  sous 7 à 10 jours ouvrés.
                 </p>
               </div>
             </div>

@@ -35,7 +35,7 @@ export default function Home() {
       name: "Ensemble bébé personnalisé",
       category: "Vêtements bébé",
       price: 79,
-      image: "/images/products/ensemble-bebe.jpg",
+      image: "/images/products/ensemble2-bébé.jpg",
       customizable: true,
     },
     {
