@@ -1,5 +1,6 @@
 "use client";
 
+import { useCartStore } from "@/lib/store/cart-store";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Check,
@@ -16,7 +17,6 @@ import {
 } from "lucide-react";
 import { Suspense, useRef, useState } from "react";
 import * as THREE from "three";
-import { useCartStore } from "@/lib/store/cart-store";
 
 // Types
 interface Product {
@@ -469,7 +469,7 @@ export default function ConfiguratorPremium() {
         style={{ marginTop: "90px" }}
       >
         {/* Gauche: Preview 3D */}
-        <div className="relative flex h-1/2 flex-col bg-gradient-to-br from-[#faf9f6] to-[#f5f1e8] lg:h-full lg:w-1/2">
+        <div className="relative flex h-[50vh] flex-col bg-gradient-to-br from-[#faf9f6] to-[#f5f1e8] lg:h-[calc(100vh-90px)] lg:w-1/2 lg:sticky lg:top-[90px]">
           <Canvas
             shadows
             dpr={[1, 2]}
@@ -645,7 +645,7 @@ export default function ConfiguratorPremium() {
                           }`}
                         >
                           <div
-                            className="aspect-square"
+                            className="aspect-[4/3]"
                             style={{ backgroundColor: fabric.baseColor }}
                           />
                           <div className="bg-white p-2">
