@@ -72,14 +72,14 @@ export function HowItWorksSection() {
             >
               {/* Connecting Line (desktop only) */}
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-20 left-full w-full h-0.5 bg-gradient-to-r from-ylang-rose/50 to-transparent -translate-x-1/2 z-0" />
+                <div className="hidden lg:block absolute top-20 left-full w-full h-0.5 bg-linear-to-r from-ylang-rose/50 to-transparent -translate-x-1/2 z-0" />
               )}
 
               {/* Card */}
               <div className="relative bg-ylang-cream rounded-2xl p-8 hover:shadow-xl transition-all duration-500 group-hover:-translate-y-2 h-full">
                 
                 {/* Number Badge */}
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-ylang-rose to-ylang-terracotta rounded-full flex items-center justify-center shadow-lg">
+                <div className="absolute -top-4 -right-4 w-16 h-16 bg-linear-to-br from-ylang-rose to-ylang-terracotta rounded-full flex items-center justify-center shadow-lg">
                   <span className="font-display text-2xl font-bold text-white">
                     {step.number}
                   </span>
@@ -102,7 +102,7 @@ export function HowItWorksSection() {
                 <ul className="space-y-2">
                   {step.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <Check className="w-5 h-5 text-ylang-rose flex-shrink-0 mt-0.5" />
+                      <Check className="w-5 h-5 text-ylang-rose shrink-0 mt-0.5" />
                       <span className="text-sm font-body text-ylang-charcoal/60">
                         {feature}
                       </span>

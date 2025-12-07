@@ -1,7 +1,5 @@
-
 @import "tailwindcss";
 @import "tw-animate-css";
-
 
 @custom-variant dark (&:is(.dark *));
 
@@ -117,6 +115,13 @@
 .hover-lift:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-elevated);
+}
+.bg-pattern {
+  background-image: url("/images/pattern-blanc.jpeg");
+  background-repeat: repeat;
+  background-size: 200;
+  background-position: center;
+  
 }
 
 /* Custom Scrollbar Premium */

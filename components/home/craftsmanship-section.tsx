@@ -27,7 +27,7 @@ const values = [
 
 export function CraftsmanshipSection() {
   return (
-    <section className="section-padding bg-gradient-to-b from-white to-ylang-beige/30 overflow-hidden">
+    <section className="section-padding bg-linear-to-b from-white to-ylang-beige/30 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -62,8 +62,8 @@ export function CraftsmanshipSection() {
             className="relative"
           >
             {/* Image principale */}
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-ylang-beige to-ylang-cream flex items-center justify-center">
+            <div className="relative aspect-4/5 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="absolute inset-0 bg-linear-to-br from-ylang-beige to-ylang-cream flex items-center justify-center">
                 <Image
                   src="/images/atelier.png"
                   alt="Atelier Ylang Créations"
@@ -139,7 +139,7 @@ export function CraftsmanshipSection() {
                   transition={{ delay: index * 0.2 }}
                   className="flex gap-4 p-4 bg-white rounded-xl hover:shadow-lg transition-shadow duration-300"
                 >
-                  <div className="flex-shrink-0 w-12 h-12 bg-ylang-rose/10 rounded-lg flex items-center justify-center">
+                  <div className="shrink-0 w-12 h-12 bg-ylang-rose/10 rounded-lg flex items-center justify-center">
                     <value.icon className="w-6 h-6 text-ylang-rose" />
                   </div>
                   <div>

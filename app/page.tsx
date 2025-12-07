@@ -55,17 +55,17 @@ export default function Home() {
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.4 }}
-        className="relative hidden lg:block"
+        className="relative hidden lg:block mt-24"
       >
-        <div className="relative mt-26 aspect-[5/2] overflow-hidden">
+        <div className="relative mt-[151px] aspect-5/2 overflow-hidden bg-linear-to-br from-ylang-beige to-ylang-cream">
           {/* Hero Section */}
-          <Image
-            src="/images/hero-section.jpg"
+          {/* <Image
+            src="/images/pattern-ylang-créations.png"
             alt="Produit Ylang Créations"
             fill
             className="object-cover"
             priority
-          />
+          /> */}
 
           {/* Overlay Content */}
           <div className="absolute inset-0 bg-black/20" />

@@ -93,7 +93,7 @@ export function TestimonialsSection() {
   }
 
   return (
-    <section className="section-padding bg-gradient-to-b from-ylang-beige/30 to-white relative overflow-hidden">
+    <section className="section-padding bg-linear-to-b from-ylang-beige/30 to-white relative overflow-hidden">
       
       {/* Decoration */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-ylang-rose/5 rounded-full blur-3xl" />
@@ -166,7 +166,7 @@ export function TestimonialsSection() {
                 <div className="flex items-center justify-between border-t border-ylang-beige pt-6">
                   <div className="flex items-center gap-4">
                     {/* Avatar */}
-                    <div className="w-14 h-14 bg-gradient-to-br from-ylang-rose to-ylang-terracotta rounded-full flex items-center justify-center text-white font-display text-xl font-bold">
+                    <div className="w-14 h-14 bg-linear-to-br from-ylang-rose to-ylang-terracotta rounded-full flex items-center justify-center text-white font-display text-xl font-bold">
                       {currentTestimonial.name.charAt(0)}
                     </div>
                     <div>
@@ -236,13 +236,11 @@ export function TestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
+          className="grid grid-cols-2  gap-6 max-w-md mx-auto"
         >
           {[
             { icon: "✓", text: "Paiement sécurisé" },
-            { icon: "↻", text: "Satisfait ou remboursé" },
             { icon: "📦", text: "Livraison soignée" },
-            { icon: "💬", text: "Support 7j/7" }
           ].map((badge, index) => (
             <div
               key={index}

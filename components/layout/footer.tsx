@@ -2,15 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import {
-  Facebook,
-  Heart,
-  Instagram,
-  Mail,
-  MapPin,
-  Phone
-} from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
@@ -91,10 +83,58 @@ export function Footer() {
   };
 
   return (
-    <footer className="from-ylang-cream to-ylang-beige border-ylang-beige/50 border-t bg-gradient-to-b">
+    <footer className="from-ylang-cream to-ylang-beige border-ylang-beige/50 border-t bg-linear-to-b">
+      {/* Certifications / Trust badges */}
+      <div className="border-ylang-beige/50 mt-4 border-t pt-8">
+        <div className="grid grid-cols-2 items-center justify-items-center gap-6 md:grid-cols-4">
+          <div className="text-center">
+            <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+              <span className="text-2xl">🇫🇷</span>
+            </div>
+            <p className="font-body text-ylang-charcoal/60 text-xs">
+              Fabrication
+              <br />
+              française
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+              <span className="text-2xl">🌿</span>
+            </div>
+            <p className="font-body text-ylang-charcoal/60 text-xs">
+              Tissus
+              <br />
+              biologiques
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+              <span className="text-2xl">✂️</span>
+            </div>
+            <p className="font-body text-ylang-charcoal/60 text-xs">
+              Confection
+              <br />
+              artisanale
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+              <span className="text-2xl">💫</span>
+            </div>
+            <p className="font-body text-ylang-charcoal/60 text-xs">
+              Personnalisation
+              <br />
+              illimitée
+            </p>
+          </div>
+        </div>
+      </div>
       {/* Newsletter Section */}
       <div className="border-ylang-beige/50 border-b">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8 lg:py-16">
           <div className="grid items-center gap-8 lg:grid-cols-2">
             {/* Texte */}
             <div className="text-center lg:text-left">
@@ -136,7 +176,7 @@ export function Footer() {
       </div>
 
       {/* Main Footer Content */}
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5 lg:gap-12">
           {/* Colonne 1 : Branding */}
           <div className="lg:col-span-2">
@@ -158,63 +198,7 @@ export function Footer() {
               d'intérieur. Savoir-faire artisanal français, tissus premium et
               personnalisation illimitée.
             </p>
-
-            {/* Contact Info */}
-            <div className="mb-6 space-y-3">
-              <a
-                href="tel:+33612345678"
-                className="text-ylang-charcoal/70 hover:text-ylang-rose group flex items-center gap-3 transition-colors"
-              >
-                <div className="bg-ylang-beige group-hover:bg-ylang-rose/10 flex h-10 w-10 items-center justify-center rounded-full transition-colors">
-                  <Phone className="h-4 w-4" />
-                </div>
-                <span className="font-body text-sm">+262 693 53 08 58</span>
-              </a>
-
-              <a
-                href="mailto:contact@ylang-creations.fr"
-                className="text-ylang-charcoal/70 hover:text-ylang-rose group flex items-center gap-3 transition-colors"
-              >
-                <div className="bg-ylang-beige group-hover:bg-ylang-rose/10 flex h-10 w-10 items-center justify-center rounded-full transition-colors">
-                  <Mail className="h-4 w-4" />
-                </div>
-                <span className="font-body text-sm">
-                  ylang.creations@gmail.com
-                </span>
-              </a>
-
-              <div className="text-ylang-charcoal/70 flex items-start gap-3">
-                <div className="bg-ylang-beige flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full">
-                  <MapPin className="h-4 w-4" />
-                </div>
-                <span className="font-body text-sm leading-relaxed">
-                  Atelier Ylang
-                  <br />
-                  12 rue de l'Artisanat
-                  <br />
-                  75011 Paris, France
-                </span>
-              </div>
-            </div>
-
             {/* Social Links */}
-            <div className="flex gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    "bg-ylang-beige text-ylang-charcoal flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg",
-                    social.color,
-                  )}
-                  aria-label={social.name}
-                >
-                  <social.icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Colonne 2 : Boutique */}
@@ -272,55 +256,6 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-
-        {/* Certifications / Trust badges */}
-        <div className="border-ylang-beige/50 mt-12 border-t pt-8">
-          <div className="grid grid-cols-2 items-center justify-items-center gap-6 md:grid-cols-4">
-            <div className="text-center">
-              <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
-                <span className="text-2xl">🇫🇷</span>
-              </div>
-              <p className="font-body text-ylang-charcoal/60 text-xs">
-                Fabrication
-                <br />
-                française
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
-                <span className="text-2xl">🌿</span>
-              </div>
-              <p className="font-body text-ylang-charcoal/60 text-xs">
-                Tissus
-                <br />
-                biologiques
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
-                <span className="text-2xl">✂️</span>
-              </div>
-              <p className="font-body text-ylang-charcoal/60 text-xs">
-                Confection
-                <br />
-                artisanale
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
-                <span className="text-2xl">💫</span>
-              </div>
-              <p className="font-body text-ylang-charcoal/60 text-xs">
-                Personnalisation
-                <br />
-                illimitée
-              </p>
-            </div>
           </div>
         </div>
       </div>
