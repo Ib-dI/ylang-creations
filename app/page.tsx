@@ -57,7 +57,7 @@ export default function Home() {
         transition={{ duration: 0.8, delay: 0.4 }}
         className="relative hidden lg:block mt-24"
       >
-        <div className="relative mt-[151px] aspect-5/2 overflow-hidden bg-linear-to-br from-ylang-beige to-ylang-cream">
+        <div className="relative mt-[132px] aspect-5/2 overflow-hidden bg-linear-to-br from-ylang-beige to-ylang-cream">
           {/* Hero Section */}
           {/* <Image
             src="/images/pattern-ylang-créations.png"

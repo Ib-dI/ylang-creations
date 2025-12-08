@@ -9,7 +9,8 @@
   --color-ylang-beige: #f5f1e8;
   --color-ylang-terracotta: #d4a89a;
   --color-ylang-sage: #c8d5b9;
-  --color-ylang-rose: #b76e79;
+  --color-ylang-rose: #A77769;
+  /* --color-ylang-rose: #b76e79; */
   --color-ylang-charcoal: #1a1a1a;
 
   /* Typography */
@@ -117,11 +118,10 @@
   box-shadow: var(--shadow-elevated);
 }
 .bg-pattern {
-  background-image: url("/images/pattern-blanc.jpeg");
-  background-repeat: repeat;
-  background-size: 200;
+  background-image: url("/images/polyligne-patern.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
   background-position: center;
-  
 }
 
 /* Custom Scrollbar Premium */

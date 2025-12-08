@@ -43,7 +43,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       whileHover={{ y: -4 }}
       className={cn("group", className)}
     >
-      <Card className="relative overflow-hidden border-0 bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.15)]">
+      <Card className="relative overflow-hidden border-0 bg-white transition-all duration-500">
         {/* Image Container */}
         <Link href={`/produits/${product.id}`}>
           <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden">
@@ -59,7 +59,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </div>
 
             {/* Overlay élégant au hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-white/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div className="absolute inset-0 bg-linear-to-t from-white/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
             {/* CTA qui slide du bas au hover */}
             <motion.div
