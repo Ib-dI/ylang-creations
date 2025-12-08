@@ -1,14 +1,10 @@
 "use client";
 
 import { CraftsmanshipSection } from "@/components/home/craftsmanship-section";
+import { HeroSection } from "@/components/home/hero-section";
 import { HowItWorksSection } from "@/components/home/how-it-works-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { ProductCard } from "@/components/product/product-card";
-import { motion } from "framer-motion";
-import Image from "next/image";
-
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export default function Home() {
   const featuredProducts = [
@@ -51,58 +47,7 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        className="relative hidden lg:block mt-24"
-      >
-        <div className="relative mt-[132px] aspect-5/2 overflow-hidden bg-linear-to-br from-ylang-beige to-ylang-cream">
-          {/* Hero Section */}
-          {/* <Image
-            src="/images/pattern-ylang-créations.png"
-            alt="Produit Ylang Créations"
-            fill
-            className="object-cover"
-            priority
-          /> */}
-
-          {/* Overlay Content */}
-          <div className="absolute inset-0 bg-black/20" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="font-display mb-8 max-w-4xl px-4 text-4xl leading-tight font-bold text-white drop-shadow-lg md:text-6xl"
-            >
-              Chaque création naît de vos désirs
-            </motion.h1>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-              className="flex gap-6"
-            >
-              <Link href="/configurateur">
-                <Button variant="luxury" size="lg" className="px-8 text-lg">
-                  Créer
-                </Button>
-              </Link>
-              <Link href="/collections">
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="hover:text-ylang-charcoal border-white bg-white/10 px-8 text-lg text-white backdrop-blur-sm hover:border-white hover:bg-white"
-                >
-                  Découvrir
-                </Button>
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </motion.div>
+      <HeroSection />
 
       {/* Featured Products */}
       <section className="section-padding bg-white">

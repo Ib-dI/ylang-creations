@@ -245,7 +245,7 @@ export function Header() {
 
         {/* Barre principale avec Menu - Logo - Actions */}
         {/* Barre Social Media - Top */}
-        <div className="bg-[#A77769] px-4 py-1.5 sm:px-6 lg:px-8">
+        <div className="bg-ylang-rose px-4 py-1.5 sm:px-6 lg:px-8">
           <div className="mx-auto flex max-w-7xl items-center justify-between">
             <div className="flex items-center space-x-4">
               <a
@@ -464,7 +464,7 @@ export function Header() {
                           onClick={closeMegaMenu}
                           className="group block"
                         >
-                          <h3 className="text-ylang-charcoal group-hover:text-ylang-rose font-heading text-sm font-bold tracking-wider transition-colors">
+                          <h3 className="text-ylang-rose font-heading text-sm font-bold tracking-wider transition-colors">
                             {category.title}
                           </h3>
                           {category.subtitle && (

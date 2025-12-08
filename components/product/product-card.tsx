@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Heart, Sparkles } from "lucide-react";
+import { Heart, Sparkles} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
@@ -154,22 +154,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </Link>
           </div>
 
-          <div className="flex items-baseline justify-between">
-            <div>
-              <p className="text-ylang-charcoal/50 font-body text-[14px]">
-                À partir de
-              </p>
-              <p className="font-display text-ylang-rose text-lg font-semibold">
-                {product.price}€
-              </p>
-            </div>
-
-            {/* Quick add button (visible sur desktop) */}
-            <motion.div className="hidden lg:block">
-              <Button variant="ghost" size="sm">
-                Voir détails
-              </Button>
-            </motion.div>
+          <div className="flex items-baseline justify-between w-full">
+            <Button variant="secondary" size="sm" className="group" asChild>
+              <Link href={`/produits/${product.id}`}>
+                Découvrir
+              </Link>
+            </Button>
           </div>
         </div>
       </Card>
