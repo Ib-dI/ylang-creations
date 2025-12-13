@@ -13,7 +13,7 @@ if (!process.env.STRIPE_WEBHOOK_SECRET) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-12-18.acacia",
+  apiVersion: "2025-11-17.clover",
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -81,8 +81,8 @@ export async function POST(req: Request) {
           status: "paid",
           totalAmount: String(session.amount_total ?? 0),
           currency: session.currency ?? "eur",
-          shippingAddress: session.shipping_details
-            ? JSON.stringify(session.shipping_details)
+          shippingAddress: session.collected_information?.shipping_details
+            ? JSON.stringify(session.collected_information.shipping_details)
             : null,
           items: JSON.stringify(items),
           createdAt: now,
