@@ -5,44 +5,34 @@ import { HeroSection } from "@/components/home/hero-section";
 import { HowItWorksSection } from "@/components/home/how-it-works-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { ProductCard } from "@/components/product/product-card";
+import type { CatalogProduct } from "@/data/products";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function Home() {
-  const featuredProducts = [
-    {
-      id: "1",
-      name: "Gigoteuse fleurie personnalisée",
-      category: "Linge de lit bébé",
-      price: 89,
-      image: "/images/products/gigoteuse-1.jpg",
-      new: true,
-      customizable: true,
-    },
-    {
-      id: "2",
-      name: "Tour de lit nuage",
-      category: "Décoration chambre",
-      price: 65,
-      image: "/images/products/tour-lit-1.jpg",
-      featured: true,
-      customizable: true,
-    },
-    {
-      id: "3",
-      name: "Ensemble bébé personnalisé",
-      category: "Vêtements bébé",
-      price: 79,
-      image: "/images/products/ensemble2-bébé.jpg",
-      customizable: true,
-    },
-    {
-      id: "4",
-      name: "Carnet de dessins personnalisé",
-      category: "Acessoires",
-      price: 4.95,
-      image: "/images/products/carnet.jpg",
-      customizable: true,
-    },
-  ];
+  const [featuredProducts, setFeaturedProducts] = useState<CatalogProduct[]>(
+    [],
+  );
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        // Fetch featured products, limit to 4
+        const response = await fetch("/api/products?featured=true&limit=4");
+        const data = await response.json();
+        if (data.products) {
+          setFeaturedProducts(data.products);
+        }
+      } catch (error) {
+        console.error("Error fetching featured products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeatured();
+  }, []);
 
   return (
     <>
@@ -65,11 +55,23 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex h-64 items-center justify-center">
+              <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+            </div>
+          ) : (
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredProducts.length > 0 ? (
+                featuredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              ) : (
+                <div className="text-ylang-charcoal/60 col-span-full py-12 text-center">
+                  Nos nouvelles créations arrivent bientôt...
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
       {/* Savoir-faire */}

@@ -57,7 +57,7 @@ export function HeroSection() {
   };
 
   return (
-    <div className="group bg-ylang-beige/10 relative mt-22 h-[600px] w-full overflow-hidden lg:mt-26 lg:h-[700px]">
+    <div className="group bg-ylang-beige/10 relative h-[600px] w-full overflow-hidden lg:h-[700px]">
       <AnimatePresence initial={false}>
         <motion.div
           key={currentSlide}

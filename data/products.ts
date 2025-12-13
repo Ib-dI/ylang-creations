@@ -272,11 +272,12 @@ export function getRecommendedProducts(
 // Catégories disponibles
 export const categories = [
   "Tout",
-  "Linge de lit bébé",
-  "Décoration chambre",
-  "Vêtements bébé",
+  "La chambre",
+  "La Toilette",
+  "Linge de naissance",
   "Accessoires",
-  "Jouets",
+  "Bagageries/promenade",
+  "Les jeux",
 ];
 
 // Fonction pour rechercher des produits

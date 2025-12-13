@@ -4,3 +4,17 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+
+// Client admin pour le backend (à utiliser UNIQUEMENT dans les API routes)
+// Ne jamais importer ce client dans un composant client !
+export const supabaseAdmin = createClient(
+  supabaseUrl,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+);

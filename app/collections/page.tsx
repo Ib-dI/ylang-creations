@@ -1,16 +1,19 @@
 "use client";
 
 import { ProductCard } from "@/components/product/product-card";
-import { catalogProducts, categories } from "@/data/products";
+import { categories, type CatalogProduct } from "@/data/products";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, Search, SlidersHorizontal, X , Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
 function CollectionsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tout");
   const [priceRange, setPriceRange] = useState([0, 200]);
@@ -18,6 +21,25 @@ function CollectionsContent() {
   const [sortBy, setSortBy] = useState("featured");
 
   const isDesktop = useMediaQuery("(min-width: 640px)");
+
+  // Charger les produits depuis l'API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/products");
+        const data = await response.json();
+        if (data.products) {
+          setProducts(data.products);
+        }
+      } catch (error) {
+        console.error("Erreur chargement produits:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Synchroniser avec les paramètres URL
   useEffect(() => {
@@ -46,13 +68,14 @@ function CollectionsContent() {
 
   // Filtrage et tri des produits avec recherche améliorée
   const filteredProducts = useMemo(() => {
-    let filtered = catalogProducts.filter((product) => {
+    let filtered = products.filter((product) => {
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch =
         searchTerm === "" ||
         product.name.toLowerCase().includes(searchLower) ||
         product.category.toLowerCase().includes(searchLower) ||
-        product.description?.toLowerCase().includes(searchLower);
+        (product.description &&
+          product.description.toLowerCase().includes(searchLower));
       const matchesCategory =
         selectedCategory === "Tout" || product.category === selectedCategory;
       const matchesPrice =
@@ -78,7 +101,7 @@ function CollectionsContent() {
     }
 
     return filtered;
-  }, [searchTerm, selectedCategory, priceRange, sortBy]);
+  }, [products, searchTerm, selectedCategory, priceRange, sortBy]);
 
   return (
     <div className="bg-ylang-cream section-padding min-h-screen">
@@ -196,7 +219,7 @@ function CollectionsContent() {
                       }
                       className="flex-1"
                     />
-                    <span className="min-w-[80px] text-sm text-gray-600">
+                    <span className="min-w-20 text-sm text-gray-600">
                       0 € - {priceRange[1]} €
                     </span>
                   </div>
@@ -218,25 +241,31 @@ function CollectionsContent() {
         </div>
 
         {/* Grille de produits */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        >
-          <AnimatePresence mode="popLayout">
-            {filteredProducts.map((product) => (
-              <motion.div
-                key={product.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {isLoading ? (
+          <div className="flex h-64 items-center justify-center">
+            <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+          </div>
+        ) : (
+          <motion.div
+            layout
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.map((product) => (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
 
         {/* Message si aucun résultat */}
         {filteredProducts.length === 0 && (

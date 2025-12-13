@@ -99,7 +99,7 @@ export default function AdminDashboard() {
           pendingOrders,
           inProduction,
           averageOrderValue,
-          revenueGrowth: 12.5,
+          revenueGrowth: 0, // TODO: Monter ce calcul avec les commandes du mois dernier
         });
       } catch (error) {
         console.error("Error fetching orders:", error);

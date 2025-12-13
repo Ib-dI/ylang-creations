@@ -33,6 +33,7 @@ const footerLinks = {
     { name: "Mentions légales", href: "/mentions-legales" },
     { name: "CGV", href: "/cgv" },
     { name: "Politique de confidentialité", href: "/confidentialite" },
+    { name: "RGPD", href: "/rgpd" },
     { name: "Cookies", href: "/cookies" },
   ],
 };

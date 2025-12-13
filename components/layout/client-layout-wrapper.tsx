@@ -21,7 +21,7 @@ export function ClientLayoutWrapper({
   return (
     <>
       <Header />
-      {children}
+      <div className="mt-22 lg:mt-26">{children}</div>
       <Footer />
       <CartDrawer />
       <WishlistDrawer />

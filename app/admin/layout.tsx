@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -59,14 +60,14 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-ylang-cream to-ylang-beige">
+    <div className="from-ylang-cream to-ylang-beige min-h-screen bg-linear-to-br">
       {/* Mobile menu button */}
       <div className="fixed top-4 left-4 z-50 lg:hidden">
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="rounded-xl border border-ylang-beige bg-white p-2 shadow-lg"
+          className="border-ylang-beige rounded-xl border bg-white p-2 shadow-lg"
         >
-          <Menu className="h-6 w-6 text-ylang-charcoal" />
+          <Menu className="text-ylang-charcoal h-6 w-6" />
         </button>
       </div>
 
@@ -80,15 +81,27 @@ export default function AdminLayout({
             : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="flex h-full flex-col border-r border-ylang-beige bg-white">
+        <div className="border-ylang-beige flex h-full flex-col border-r bg-white">
           {/* Logo */}
-          <div className="border-b border-ylang-beige p-6">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-ylang-rose to-ylang-terracotta">
-                <span className="text-lg font-bold text-white">Y</span>
-              </div>
+          <div
+            className={`border-ylang-beige flex items-center border-b ${
+              sidebarOpen ? "p-6" : "justify-center p-4"
+            }`}
+          >
+            <Link
+              href="/"
+              className={`flex items-center gap-3 ${
+                sidebarOpen ? "" : "justify-center"
+              }`}
+            >
+              <Image
+                src="/logo/logo-2.png"
+                alt="Ylang Logo"
+                width={40}
+                height={40}
+              />
               {sidebarOpen && (
-                <span className="font-display font-bold text-ylang-charcoal">
+                <span className="font-display text-ylang-charcoal font-bold">
                   Ylang Admin
                 </span>
               )}
@@ -107,7 +120,9 @@ export default function AdminLayout({
                   key={item.name}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-center md:justify-start gap-3 rounded-xl px-4 py-3 transition-all ${
+                  className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
+                    sidebarOpen ? "justify-start" : "justify-center"
+                  } ${
                     isActive
                       ? "bg-ylang-rose text-white shadow-lg"
                       : "text-ylang-charcoal/70 hover:bg-ylang-beige hover:text-ylang-charcoal"
@@ -123,10 +138,12 @@ export default function AdminLayout({
           </nav>
 
           {/* Toggle & Logout */}
-          <div className="space-y-2 border-t border-ylang-beige p-4">
+          <div className="border-ylang-beige space-y-2 border-t p-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="hidden w-full items-center gap-3 rounded-xl px-4 py-3 text-ylang-charcoal/70 transition-colors hover:bg-ylang-beige lg:flex"
+              className={`text-ylang-charcoal/70 hover:bg-ylang-beige hidden w-full items-center gap-3 rounded-xl px-4 py-3 transition-colors lg:flex ${
+                sidebarOpen ? "justify-start" : "justify-center"
+              }`}
             >
               <ChevronLeft
                 className={`h-5 w-5 transition-transform ${
@@ -138,7 +155,9 @@ export default function AdminLayout({
 
             <button
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-600 transition-colors hover:bg-red-50"
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-600 transition-colors hover:bg-red-50 ${
+                sidebarOpen ? "justify-start" : "justify-center"
+              }`}
             >
               <LogOut className="h-5 w-5 shrink-0" />
               {sidebarOpen && <span className="font-medium">Déconnexion</span>}
