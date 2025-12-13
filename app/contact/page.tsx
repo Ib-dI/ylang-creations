@@ -372,7 +372,7 @@ export default function ContactPage() {
                         href={info.href}
                         className="group flex items-start gap-4 rounded-2xl bg-white p-6 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
                       >
-                        <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl transition-colors">
+                        <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors">
                           <info.icon className="text-ylang-rose h-6 w-6 transition-colors group-hover:text-white" />
                         </div>
                         <div>
@@ -389,7 +389,7 @@ export default function ContactPage() {
                       </a>
                     ) : (
                       <div className="flex items-start gap-4 rounded-2xl bg-white p-6 shadow-lg">
-                        <div className="bg-ylang-sage/20 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl">
+                        <div className="bg-ylang-sage/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
                           <info.icon className="text-ylang-charcoal h-6 w-6" />
                         </div>
                         <div>
@@ -434,7 +434,7 @@ export default function ContactPage() {
               </div>
 
               {/* Response Time */}
-              <div className="from-ylang-rose/10 to-ylang-terracotta/10 rounded-2xl bg-gradient-to-br p-6">
+              <div className="from-ylang-rose/10 to-ylang-terracotta/10 rounded-2xl bg-linear-to-br p-6">
                 <div className="mb-3 flex items-center gap-3">
                   <Clock className="text-ylang-rose h-5 w-5" />
                   <h3 className="font-display text-ylang-charcoal font-medium">
@@ -493,7 +493,7 @@ export default function ContactPage() {
                     {item.question}
                   </span>
                   <span
-                    className={`bg-ylang-rose/10 text-ylang-rose flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-transform ${
+                    className={`bg-ylang-rose/10 text-ylang-rose flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-transform ${
                       openFaq === index ? "rotate-45" : ""
                     }`}
                   >
@@ -524,7 +524,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="from-ylang-rose to-ylang-terracotta rounded-3xl bg-gradient-to-br p-12 text-center text-white lg:p-16"
+            className="from-ylang-rose to-ylang-terracotta rounded-3xl bg-linear-to-br p-12 text-center text-white lg:p-16"
           >
             <Sparkles className="mx-auto mb-6 h-10 w-10 opacity-80" />
             <h2 className="font-display mb-4 text-2xl font-bold lg:text-3xl">

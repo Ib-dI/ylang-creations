@@ -1,7 +1,4 @@
-import { CartDrawer } from "@/components/cart/cart-drawer";
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
-import { WishlistDrawer } from "@/components/wishlist/wishlist-drawer";
+import { ClientLayoutWrapper } from "@/components/layout/client-layout-wrapper";
 import type { Metadata } from "next";
 import {
   Bricolage_Grotesque,
@@ -56,11 +53,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${playfairDisplay.variable} ${bricolageGrotesque.variable} font-body bg-ylang-cream antialiased`}
       >
-        <Header />
-        {children}
-        <Footer />
-        <CartDrawer />
-        <WishlistDrawer />
+        <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
       </body>
     </html>
   );

@@ -1,3 +1,15 @@
+@font-face {
+  font-family: "Abramo";
+  src: url("/fonts/Abramo Regular.woff2") format("woff2");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Abramo Script";
+  src: url("/fonts/Abramo Script.woff2") format("woff2");
+  font-weight: bold;
+}
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -16,6 +28,8 @@
   /* Typography */
   --font-family-display: "Bricolage Grotesque", serif;
   --font-family-body: "Inter", sans-serif;
+  --font-family-script: "Abramo Script", serif;
+  --font-family-regular: "Abramo", serif;
 
   /* Spacing Premium */
   --spacing-section: 6rem;

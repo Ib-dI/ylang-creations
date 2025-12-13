@@ -2,6 +2,15 @@
 
 import { SearchModal } from "@/components/search/search-modal";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth-client";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { cn } from "@/lib/utils";
@@ -12,6 +21,7 @@ import {
   Facebook,
   Heart,
   Instagram,
+  LogOut,
   Menu,
   Search,
   ShoppingBag,
@@ -179,6 +189,7 @@ const megaMenuCategories = [
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = authClient.useSession();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false); // Inutilisé, l'état isMegaMenuOpen gère tout
   const [isMegaMenuOpen, setIsMegaMenuOpen] = React.useState(false);
@@ -323,9 +334,51 @@ export function Header() {
               </button>
 
               {/* Account */}
-              <button className="text-ylang-charcoal hover:text-ylang-rose hidden transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 lg:block">
-                <User className="h-5 w-5" strokeWidth={1.5} />
-              </button>
+              {session ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="text-ylang-charcoal hover:text-ylang-rose hidden transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 lg:block">
+                      {session.user.image ? (
+                        <img
+                          src={session.user.image}
+                          alt={session.user.name ?? "User"}
+                          className="h-5 w-5 rounded-full"
+                        />
+                      ) : (
+                        <User className="h-5 w-5" strokeWidth={1.5} />
+                      )}
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <div className="bg-gray-50 px-2 py-1.5 text-sm font-medium text-gray-900">
+                      {session.user.name}
+                    </div>
+                    <div className="truncate px-2 py-1.5 text-xs text-gray-500">
+                      {session.user.email}
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={async () => {
+                        await authClient.signOut();
+                        router.refresh();
+                      }}
+                      className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Se déconnecter</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <button
+                  onClick={() => router.push("/sign-in")}
+                  className="text-ylang-charcoal hover:text-ylang-rose hidden transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 lg:block"
+                >
+                  <User className="h-5 w-5" strokeWidth={1.5} />
+                </button>
+              )}
 
               {/* Wishlist */}
               <button

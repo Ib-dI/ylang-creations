@@ -1,79 +1,142 @@
-import {
-  sendAdminNotificationEmail,
-  sendOrderConfirmationEmail,
-} from "@/lib/email/send-order-confirmation";
+import { order } from "@/db/schema";
+import { db } from "@/lib/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-11-17.clover",
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error("STRIPE_SECRET_KEY is not defined");
+}
+
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  throw new Error("STRIPE_WEBHOOK_SECRET is not defined");
+}
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2024-12-18.acacia",
 });
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(req: Request) {
   const body = await req.text();
-  const signature = (await headers()).get("stripe-signature")!;
+  const headersList = await headers();
+  const signature = headersList.get("stripe-signature");
+
+  if (!signature) {
+    console.error("❌ Missing stripe-signature header");
+    return NextResponse.json(
+      { error: "Missing stripe-signature header" },
+      { status: 400 },
+    );
+  }
 
   let event: Stripe.Event;
 
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-  } catch (err: any) {
-    console.error("❌ Webhook signature verification failed:", err.message);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("❌ Webhook signature verification failed:", message);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  // Gérer les événements
+  // Handle events
   switch (event.type) {
-    case "payment_intent.succeeded":
+    case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
+
+      console.log("✅ Checkout session completed:", session.id);
+
+      // Get metadata
+      const metadata = session.metadata;
+
+      if (!metadata?.customerId || !metadata?.items) {
+        console.error("❌ Missing metadata in session");
+        break;
+      }
+
+      // Parse items
+      let items;
+      try {
+        items = JSON.parse(metadata.items);
+      } catch {
+        console.error("❌ Failed to parse items from metadata");
+        break;
+      }
+
+      // Create order in database
+      const orderId = crypto.randomUUID();
+      const now = new Date();
+
+      try {
+        await db.insert(order).values({
+          id: orderId,
+          customerId: metadata.customerId,
+          stripeSessionId: session.id,
+          stripePaymentIntentId:
+            typeof session.payment_intent === "string"
+              ? session.payment_intent
+              : (session.payment_intent?.id ?? null),
+          status: "paid",
+          totalAmount: String(session.amount_total ?? 0),
+          currency: session.currency ?? "eur",
+          shippingAddress: session.shipping_details
+            ? JSON.stringify(session.shipping_details)
+            : null,
+          items: JSON.stringify(items),
+          createdAt: now,
+          updatedAt: now,
+        });
+
+        console.log("✅ Order created:", orderId);
+
+        // Optional: Send confirmation emails
+        // You can uncomment this when email templates are set up
+        /*
+        const customerRecord = await db
+          .select()
+          .from(customer)
+          .where(eq(customer.id, metadata.customerId))
+          .limit(1);
+
+        if (customerRecord.length > 0) {
+          await sendOrderConfirmationEmail({
+            to: customerRecord[0].email,
+            orderNumber: orderId.slice(0, 8).toUpperCase(),
+            customerName: customerRecord[0].name || "Client",
+            items: items,
+            total: (session.amount_total ?? 0) / 100,
+            shipping: 0,
+            shippingAddress: session.shipping_details?.address || {},
+          });
+        }
+        */
+      } catch (err) {
+        console.error("❌ Failed to create order:", err);
+      }
+
+      break;
+    }
+
+    case "payment_intent.succeeded": {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      console.log("✅ Payment intent succeeded:", paymentIntent.id);
+      break;
+    }
 
-      console.log("✅ Paiement réussi:", paymentIntent.id);
-
-      // Récupérer les données de la commande depuis les métadonnées
-      const metadata = paymentIntent.metadata;
-      const orderDetails = JSON.parse(metadata.orderDetails || "{}");
-
-      // Générer le numéro de commande
-      const orderNumber = `YC${Date.now().toString().slice(-8)}`;
-
-      // Envoyer l'email de confirmation au client
-      await sendOrderConfirmationEmail({
-        to: metadata.customerEmail,
-        orderNumber,
-        customerName:
-          orderDetails.customer.firstName +
-          " " +
-          orderDetails.customer.lastName,
-        items: orderDetails.items,
-        total: paymentIntent.amount / 100,
-        shipping: 0, // À calculer selon votre logique
-        shippingAddress: {
-          address: orderDetails.customer.address,
-          addressComplement: orderDetails.customer.addressComplement,
-          postalCode: orderDetails.customer.postalCode,
-          city: orderDetails.customer.city,
-          country: orderDetails.customer.country,
-        },
-      });
-
-      // Envoyer notification à l'admin
-      await sendAdminNotificationEmail(
-        orderNumber,
-        orderDetails.customer.firstName + " " + orderDetails.customer.lastName,
-        paymentIntent.amount / 100,
+    case "payment_intent.payment_failed": {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      console.log(
+        "❌ Payment failed:",
+        paymentIntent.id,
+        paymentIntent.last_payment_error?.message,
       );
-
       break;
-
-    case "payment_intent.payment_failed":
-      console.log("❌ Paiement échoué");
-      break;
+    }
 
     default:
-      console.log(`ℹ️ Événement non géré: ${event.type}`);
+      console.log(`ℹ️ Unhandled event type: ${event.type}`);
   }
 
   return NextResponse.json({ received: true });

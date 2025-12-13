@@ -95,7 +95,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           <div className="space-y-4">
             {/* Image principale */}
             <motion.div
-              className="bg-ylang-beige/30 relative aspect-square overflow-hidden rounded-2xl shadow-[var(--shadow-card)]"
+              className="bg-ylang-beige/30 relative aspect-square overflow-hidden rounded-2xl shadow-(--shadow-card)"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
             >
@@ -146,7 +146,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                     width: `calc((100% - ${(productImages.length - 1) * 16}px) / ${productImages.length})`,
                     maxWidth: productImages.length === 1 ? "150px" : undefined,
                   }}
-                  className={`aspect-square flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
+                  className={`aspect-square shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
                     selectedImage === idx
                       ? "border-ylang-rose ring-ylang-rose/20 ring-2"
                       : "hover:border-ylang-beige border-transparent"
@@ -205,7 +205,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
             {/* CTA Personnaliser */}
             {product.customizable && (
-              <div className="from-ylang-rose/10 to-ylang-terracotta/10 border-ylang-rose/20 rounded-2xl border bg-gradient-to-r p-6">
+              <div className="from-ylang-rose/10 to-ylang-terracotta/10 border-ylang-rose/20 rounded-2xl border bg-linear-to-r p-6">
                 <div className="mb-4 flex items-start gap-4">
                   <div className="bg-ylang-rose/20 rounded-xl p-3">
                     <Palette className="text-ylang-rose h-6 w-6" />
@@ -349,7 +349,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-16 rounded-2xl bg-white p-8 shadow-[var(--shadow-card)]"
+          className="mb-16 rounded-2xl bg-white p-8 shadow-(--shadow-card)"
         >
           <h2 className="font-display text-ylang-charcoal mb-6 text-2xl">
             Description détaillée
