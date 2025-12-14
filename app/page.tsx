@@ -1,53 +1,95 @@
-"use client";
-
 import { CraftsmanshipSection } from "@/components/home/craftsmanship-section";
 import { HeroSection } from "@/components/home/hero-section";
 import { HowItWorksSection } from "@/components/home/how-it-works-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { ProductCard } from "@/components/product/product-card";
 import type { CatalogProduct } from "@/data/products";
+import { createClient } from "@/utils/supabase/server";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Suspense } from "react";
+
+async function FeaturedProductsData() {
+  const supabase = await createClient();
+  
+  // Fetch featured products from Supabase
+  const { data: products, error } = await supabase
+    .from("product")
+    .select("*")
+    .eq("is_active", true)
+    .eq("is_featured", true)
+    .order("created_at", { ascending: false })
+    .limit(4);
+
+  if (error) {
+    console.error("Error fetching featured products:", error);
+    return (
+      <div className="text-ylang-charcoal/60 col-span-full py-12 text-center">
+        Erreur lors du chargement des produits
+      </div>
+    );
+  }
+
+  // Calculate threshold date outside of map function
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  // Format products to match CatalogProduct type
+  const formattedProducts: CatalogProduct[] = (products || []).map((p) => {
+    let parsedImages: string[] = [];
+    try {
+      parsedImages = p.images ? JSON.parse(p.images) : [];
+    } catch {
+      parsedImages = [];
+    }
+
+    interface ParsedOptions {
+      sizes?: string[];
+    }
+
+    let parsedOptions: ParsedOptions = {};
+    try {
+      parsedOptions = p.options ? JSON.parse(p.options) : {};
+    } catch {
+      parsedOptions = {};
+    }
+
+    return {
+      id: p.id,
+      name: p.name,
+      category: p.category,
+      price: parseFloat(p.price),
+      image: parsedImages[0] || "/images/placeholder.jpg",
+      images: parsedImages,
+      description: p.description || "",
+      longDescription: p.description || "",
+      features: [],
+      new: new Date(p.created_at) > thirtyDaysAgo,
+      featured: p.is_featured,
+      customizable: true,
+      sizes: parsedOptions.sizes || [],
+      defaultSize: parsedOptions.sizes?.[0] || undefined,
+      slug: p.slug,
+    };
+  });
+
+  if (formattedProducts.length === 0) {
+    return (
+      <div className="text-ylang-charcoal/60 col-span-full py-12 text-center">
+        Nos nouvelles créations arrivent bientôt...
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {formattedProducts.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
 
 export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState<CatalogProduct[]>(
-    [],
-  );
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchFeatured = async () => {
-      try {
-        // Fetch featured products, limit to 4
-        const response = await fetch("/api/products?featured=true&limit=4");
-        
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          console.error("❌ Error fetching featured products:", {
-            status: response.status,
-            statusText: response.statusText,
-            error: errorData.error || "Unknown error",
-            details: errorData.details || undefined,
-          });
-          return;
-        }
-        
-        const data = await response.json();
-        if (data.products) {
-          setFeaturedProducts(data.products);
-        } else {
-          console.warn("No products in response:", data);
-        }
-      } catch (error) {
-        console.error("Error fetching featured products:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFeatured();
-  }, []);
-
   return (
     <>
       {/* Hero Section */}
@@ -69,23 +111,15 @@ export default function Home() {
             </p>
           </div>
 
-          {isLoading ? (
-            <div className="flex h-64 items-center justify-center">
-              <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
-            </div>
-          ) : (
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {featuredProducts.length > 0 ? (
-                featuredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))
-              ) : (
-                <div className="text-ylang-charcoal/60 col-span-full py-12 text-center">
-                  Nos nouvelles créations arrivent bientôt...
-                </div>
-              )}
-            </div>
-          )}
+          <Suspense
+            fallback={
+              <div className="flex h-64 items-center justify-center">
+                <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+              </div>
+            }
+          >
+            <FeaturedProductsData />
+          </Suspense>
         </div>
       </section>
       {/* Savoir-faire */}

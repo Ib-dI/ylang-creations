@@ -26,7 +26,7 @@ function StatCard({
   value: string | number;
   icon: React.ElementType<{ className?: string }>;
   trend?: string;
-  color?: string;
+  color?: "blue" | "green" | "orange" | "purple";
 }) {
   const colorClasses = {
     blue: "bg-blue-500",

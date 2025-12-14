@@ -84,9 +84,11 @@ export async function POST(req: Request) {
           status: "paid",
           totalAmount: String(session.amount_total ?? 0),
           currency: session.currency ?? "eur",
-          shippingAddress: session.collected_information?.shipping_details
-            ? JSON.stringify(session.collected_information.shipping_details)
-            : null,
+          shippingAddress: (session as any).shipping_details
+            ? JSON.stringify((session as any).shipping_details)
+            : session.customer_details
+              ? JSON.stringify(session.customer_details)
+              : null,
           items: JSON.stringify(items),
           createdAt: now,
           updatedAt: now,

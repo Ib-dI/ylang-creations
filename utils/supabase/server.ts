@@ -1,37 +1,50 @@
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseKey = 
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || 
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 /**
- * Client Supabase pour le serveur (Server Components, API Routes)
- * Utilise la Service Role Key pour les opérations admin
- * Ne jamais utiliser ce client dans les composants client !
+ * Crée un client Supabase pour le serveur
+ * Utilise les cookies pour gérer les sessions
  */
-export async function createServerClient() {
+export async function createClient() {
   const cookieStore = await cookies();
-
-  return createClient(supabaseUrl, supabaseServiceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-      detectSessionInUrl: false,
-    },
-    global: {
-      headers: {
-        // Forward cookies if needed
-        cookie: cookieStore.toString(),
+  
+  return createServerClient(
+    supabaseUrl,
+    supabaseKey,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => 
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
+        },
       },
     },
-  });
+  );
 }
 
 /**
  * Client admin Supabase pour les opérations backend
  * À utiliser UNIQUEMENT dans les API routes
  */
-export const supabaseAdmin = createClient(
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+export const supabaseAdmin = createSupabaseClient(
   supabaseUrl,
   supabaseServiceRoleKey,
   {
@@ -41,4 +54,3 @@ export const supabaseAdmin = createClient(
     },
   }
 );
-
