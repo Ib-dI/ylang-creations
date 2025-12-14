@@ -27,9 +27,22 @@ function CollectionsContent() {
     const fetchProducts = async () => {
       try {
         const response = await fetch("/api/products");
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Erreur chargement produits:", {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData.error || "Unknown error",
+          });
+          return;
+        }
+        
         const data = await response.json();
         if (data.products) {
           setProducts(data.products);
+        } else {
+          console.warn("No products in response:", data);
         }
       } catch (error) {
         console.error("Erreur chargement produits:", error);

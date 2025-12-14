@@ -6,8 +6,8 @@ import { HowItWorksSection } from "@/components/home/how-it-works-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { ProductCard } from "@/components/product/product-card";
 import type { CatalogProduct } from "@/data/products";
-import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<CatalogProduct[]>(
@@ -20,9 +20,22 @@ export default function Home() {
       try {
         // Fetch featured products, limit to 4
         const response = await fetch("/api/products?featured=true&limit=4");
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Error fetching featured products:", {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData.error || "Unknown error",
+          });
+          return;
+        }
+        
         const data = await response.json();
         if (data.products) {
           setFeaturedProducts(data.products);
+        } else {
+          console.warn("No products in response:", data);
         }
       } catch (error) {
         console.error("Error fetching featured products:", error);

@@ -5,6 +5,9 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
+// Force Node.js runtime for database connections
+export const runtime = "nodejs";
+
 // GET single product
 export async function GET(
   request: Request,

@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { and, asc, desc, eq, like, or, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+// Force Node.js runtime for database connections
+export const runtime = "nodejs";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
