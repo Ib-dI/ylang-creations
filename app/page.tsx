@@ -23,10 +23,11 @@ export default function Home() {
         
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          console.error("Error fetching featured products:", {
+          console.error("❌ Error fetching featured products:", {
             status: response.status,
             statusText: response.statusText,
             error: errorData.error || "Unknown error",
+            details: errorData.details || undefined,
           });
           return;
         }

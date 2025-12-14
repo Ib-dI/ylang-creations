@@ -11,11 +11,17 @@ export const runtime = "nodejs";
 // GET all products
 export async function GET(request: Request) {
   try {
+    const requestHeaders = await headers();
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: requestHeaders,
     });
 
     if (!session?.user) {
+      console.error("❌ Utilisateur non authentifié pour GET /api/admin/products");
+      console.error("Headers:", {
+        cookie: requestHeaders.get("cookie") ? "present" : "missing",
+        authorization: requestHeaders.get("authorization") ? "present" : "missing",
+      });
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
@@ -85,11 +91,17 @@ export async function GET(request: Request) {
 // POST create new product
 export async function POST(request: Request) {
   try {
+    const requestHeaders = await headers();
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: requestHeaders,
     });
 
     if (!session?.user) {
+      console.error("❌ Utilisateur non authentifié pour POST /api/admin/products");
+      console.error("Headers:", {
+        cookie: requestHeaders.get("cookie") ? "present" : "missing",
+        authorization: requestHeaders.get("authorization") ? "present" : "missing",
+      });
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 

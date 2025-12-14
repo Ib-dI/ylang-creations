@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     const limit = searchParams.get("limit");
 
     // Base query: Only active products for public view
-    let conditions = [eq(product.isActive, true)];
+    const conditions = [eq(product.isActive, true)];
 
     if (featured === "true") {
       conditions.push(eq(product.isFeatured, true));
@@ -55,7 +55,7 @@ export async function GET(request: Request) {
       .orderBy(orderBy);
 
     if (limit) {
-      // @ts-ignore
+      // @ts-expect-error - Drizzle limit method typing issue
       query = query.limit(parseInt(limit));
     }
 
@@ -63,18 +63,22 @@ export async function GET(request: Request) {
 
     // Format for frontend
     const formattedProducts = products.map((p) => {
-      let parsedImages = [];
+      let parsedImages: string[] = [];
       try {
         parsedImages = p.images ? JSON.parse(p.images) : [];
-      } catch (e) {
+      } catch {
         // Fallback if not valid JSON
         parsedImages = []; // or [p.images] if it was a plain string? assuming array format
       }
 
-      let parsedOptions = {};
+      interface ParsedOptions {
+        sizes?: string[];
+      }
+
+      let parsedOptions: ParsedOptions = {};
       try {
         parsedOptions = p.options ? JSON.parse(p.options) : {};
-      } catch (e) {
+      } catch {
         parsedOptions = {};
       }
 
@@ -93,8 +97,8 @@ export async function GET(request: Request) {
           new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // New if < 30 days
         featured: p.isFeatured,
         customizable: true, // Assuming all Ylang creations are customizable
-        sizes: (parsedOptions as any).sizes || [],
-        defaultSize: (parsedOptions as any).sizes?.[0] || null,
+        sizes: parsedOptions.sizes || [],
+        defaultSize: parsedOptions.sizes?.[0] || null,
         slug: p.slug,
       };
     });

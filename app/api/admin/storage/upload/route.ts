@@ -4,15 +4,23 @@ import { createClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
+// Force Node.js runtime for database connections
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   try {
     // 1. Vérifier l'authentification
+    const requestHeaders = await headers();
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: requestHeaders,
     });
 
     if (!session?.user) {
       console.error("❌ Utilisateur non authentifié");
+      console.error("Headers received:", {
+        cookie: requestHeaders.get("cookie") ? "present" : "missing",
+        authorization: requestHeaders.get("authorization") ? "present" : "missing",
+      });
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
