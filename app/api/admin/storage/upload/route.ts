@@ -1,6 +1,6 @@
 // app/api/admin/storage/upload/route.ts
 import { auth } from "@/lib/auth";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -26,24 +26,7 @@ export async function POST(request: Request) {
 
     console.log("✅ Utilisateur authentifié:", session.user.email);
 
-    // 2. Vérifier les variables d'environnement
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceRoleKey) {
-      console.error("❌ Variables d'environnement manquantes:", {
-        hasUrl: !!supabaseUrl,
-        hasServiceKey: !!supabaseServiceRoleKey,
-      });
-      return NextResponse.json(
-        { error: "Configuration Supabase manquante (URL ou Service Role Key)" },
-        { status: 500 },
-      );
-    }
-
-    console.log("✅ Configuration Supabase OK");
-
-    // 3. Récupérer le fichier et le chemin
+    // 2. Récupérer le fichier et le chemin
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const path = formData.get("path") as string;
@@ -66,20 +49,12 @@ export async function POST(request: Request) {
       path: path,
     });
 
-    // 4. Créer le client Supabase avec Service Role Key
-    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    });
-
-    // 5. Convertir le fichier en buffer
+    // 3. Convertir le fichier en buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // 6. Upload vers Supabase Storage
-    const { data, error } = await supabase.storage
+    // 4. Upload vers Supabase Storage
+    const { data, error } = await supabaseAdmin.storage
       .from("products")
       .upload(path, buffer, {
         contentType: file.type,
@@ -97,8 +72,8 @@ export async function POST(request: Request) {
 
     console.log("✅ Upload successful:", data);
 
-    // 7. Obtenir l'URL publique
-    const { data: publicUrlData } = supabase.storage
+    // 5. Obtenir l'URL publique
+    const { data: publicUrlData } = supabaseAdmin.storage
       .from("products")
       .getPublicUrl(data.path);
 
@@ -139,11 +114,6 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
-
     // Extraire le chemin relatif
     const relativePath = path.includes("/products/")
       ? path.split("/products/")[1]
@@ -151,7 +121,7 @@ export async function DELETE(request: Request) {
 
     console.log("🗑️ Deleting file:", relativePath);
 
-    const { error } = await supabase.storage
+    const { error } = await supabaseAdmin.storage
       .from("products")
       .remove([relativePath]);
 

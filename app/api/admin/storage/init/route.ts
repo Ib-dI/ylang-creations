@@ -1,23 +1,12 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function POST() {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceRoleKey) {
-      return NextResponse.json(
-        { error: "Configuration Supabase manquante (URL ou Service Role Key)" },
-        { status: 500 },
-      );
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
     // 1. Check if bucket exists
     const { data: buckets, error: listError } =
-      await supabase.storage.listBuckets();
+      await supabaseAdmin.storage.listBuckets();
 
     if (listError) {
       throw listError;
@@ -28,7 +17,7 @@ export async function POST() {
 
     if (!bucketExists) {
       // 2. Create bucket if it doesn't exist
-      const { data, error: createError } = await supabase.storage.createBucket(
+      const { data, error: createError } = await supabaseAdmin.storage.createBucket(
         bucketName,
         {
           public: true,
@@ -47,7 +36,7 @@ export async function POST() {
       }
     } else {
       // Ensure it is public
-      const { error: updateError } = await supabase.storage.updateBucket(
+      const { error: updateError } = await supabaseAdmin.storage.updateBucket(
         bucketName,
         {
           public: true,

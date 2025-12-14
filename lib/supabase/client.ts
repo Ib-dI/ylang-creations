@@ -1,20 +1,16 @@
-import { createClient } from "@supabase/supabase-js";
+/**
+ * @deprecated Ce fichier est déprécié. Utilisez les nouveaux fichiers dans utils/supabase/
+ * 
+ * Migration :
+ * - import { supabase } from "@/lib/supabase/client" 
+ *   → import { supabase } from "@/utils/supabase/client"
+ * 
+ * - import { supabaseAdmin } from "@/lib/supabase/client"
+ *   → import { supabaseAdmin } from "@/utils/supabase/server"
+ * 
+ * Ce fichier est conservé pour la rétrocompatibilité mais sera supprimé dans une future version.
+ */
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-
-// Client admin pour le backend (à utiliser UNIQUEMENT dans les API routes)
-// Ne jamais importer ce client dans un composant client !
-export const supabaseAdmin = createClient(
-  supabaseUrl,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
+// Réexport depuis les nouveaux fichiers pour la rétrocompatibilité
+export { supabase } from "@/utils/supabase/client";
+export { supabaseAdmin } from "@/utils/supabase/server";
