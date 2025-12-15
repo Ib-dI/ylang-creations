@@ -10,10 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { authClient } from "@/lib/auth-client";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
+import { type Session } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
@@ -189,7 +190,22 @@ const megaMenuCategories = [
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = authClient.useSession();
+  const supabase = createClient();
+  const [session, setSession] = React.useState<Session | null>(null);
+
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false); // Inutilisé, l'état isMegaMenuOpen gère tout
   const [isMegaMenuOpen, setIsMegaMenuOpen] = React.useState(false);
@@ -338,10 +354,10 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="text-ylang-charcoal hover:text-ylang-rose hidden transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 lg:block">
-                      {session.user.image ? (
+                      {session.user.user_metadata?.avatar_url ? (
                         <img
-                          src={session.user.image}
-                          alt={session.user.name ?? "User"}
+                          src={session.user.user_metadata.avatar_url}
+                          alt={session.user.user_metadata?.full_name ?? "User"}
                           className="h-5 w-5 rounded-full"
                         />
                       ) : (
@@ -353,7 +369,7 @@ export function Header() {
                     <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <div className="bg-gray-50 px-2 py-1.5 text-sm font-medium text-gray-900">
-                      {session.user.name}
+                      {session.user.user_metadata?.full_name || session.user.email}
                     </div>
                     <div className="truncate px-2 py-1.5 text-xs text-gray-500">
                       {session.user.email}
@@ -361,7 +377,7 @@ export function Header() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={async () => {
-                        await authClient.signOut();
+                        await supabase.auth.signOut();
                         router.refresh();
                       }}
                       className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"

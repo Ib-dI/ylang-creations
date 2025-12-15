@@ -1,8 +1,7 @@
 import { product } from "@/db/schema";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { createClient } from "@/utils/supabase/server";
 import { desc } from "drizzle-orm";
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 // Force Node.js runtime for database connections
@@ -11,17 +10,15 @@ export const runtime = "nodejs";
 // GET all products
 export async function GET(request: Request) {
   try {
-    const requestHeaders = await headers();
-    const session = await auth.api.getSession({
-      headers: requestHeaders,
-    });
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session?.user) {
-      console.error("❌ Utilisateur non authentifié pour GET /api/admin/products");
-      console.error("Headers:", {
-        cookie: requestHeaders.get("cookie") ? "present" : "missing",
-        authorization: requestHeaders.get("authorization") ? "present" : "missing",
-      });
+    if (!user) {
+      console.error(
+        "❌ Utilisateur non authentifié pour GET /api/admin/products",
+      );
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
@@ -91,17 +88,15 @@ export async function GET(request: Request) {
 // POST create new product
 export async function POST(request: Request) {
   try {
-    const requestHeaders = await headers();
-    const session = await auth.api.getSession({
-      headers: requestHeaders,
-    });
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session?.user) {
-      console.error("❌ Utilisateur non authentifié pour POST /api/admin/products");
-      console.error("Headers:", {
-        cookie: requestHeaders.get("cookie") ? "present" : "missing",
-        authorization: requestHeaders.get("authorization") ? "present" : "missing",
-      });
+    if (!user) {
+      console.error(
+        "❌ Utilisateur non authentifié pour POST /api/admin/products",
+      );
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 

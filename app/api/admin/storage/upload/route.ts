@@ -1,7 +1,5 @@
 // app/api/admin/storage/upload/route.ts
-import { auth } from "@/lib/auth";
-import { supabaseAdmin } from "@/utils/supabase/server";
-import { headers } from "next/headers";
+import { createClient, supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 // Force Node.js runtime for database connections
@@ -10,21 +8,18 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
     // 1. Vérifier l'authentification
-    const requestHeaders = await headers();
-    const session = await auth.api.getSession({
-      headers: requestHeaders,
-    });
+    // 1. Vérifier l'authentification
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session?.user) {
+    if (!user) {
       console.error("❌ Utilisateur non authentifié");
-      console.error("Headers received:", {
-        cookie: requestHeaders.get("cookie") ? "present" : "missing",
-        authorization: requestHeaders.get("authorization") ? "present" : "missing",
-      });
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
-    console.log("✅ Utilisateur authentifié:", session.user.email);
+    console.log("✅ Utilisateur authentifié:", user.email);
 
     // 2. Récupérer le fichier et le chemin
     const formData = await request.formData();
@@ -96,11 +91,12 @@ export async function POST(request: Request) {
 // Bonus: Route DELETE pour supprimer les images
 export async function DELETE(request: Request) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 

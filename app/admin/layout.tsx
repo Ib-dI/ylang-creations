@@ -1,6 +1,7 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
+import { createClient } from "@/utils/supabase/client";
+import { Session } from "@supabase/supabase-js";
 import {
   ChevronLeft,
   LayoutDashboard,
@@ -50,23 +51,35 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+  const { push } = useRouter();
+  const supabase = createClient();
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (!isPending && !session) {
-      router.push("/sign-in");
-    }
-  }, [session, isPending, router]);
+    const checkAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setSession(session);
+      setLoading(false);
+
+      if (!session) {
+        push("/sign-in");
+      }
+    };
+
+    checkAuth();
+  }, [push, supabase]);
 
   const handleLogout = async () => {
-    await authClient.signOut();
-    router.push("/");
+    await supabase.auth.signOut();
+    push("/");
   };
 
-  if (isPending) {
+  if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-50">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500" />

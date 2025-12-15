@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
+import { createClient } from "@/utils/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,27 +16,30 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const supabase = createClient();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await authClient.signUp.email(
-      {
-        email,
-        password,
-        name,
-      },
-      {
-        onSuccess: () => {
-          router.refresh();
-          router.push("/");
-        },
-        onError: (ctx) => {
-          alert(ctx.error.message);
-          setLoading(false);
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
         },
       },
-    );
+    });
+
+    if (error) {
+      alert(error.message);
+      setLoading(false);
+      return;
+    }
+
+    router.refresh();
+    router.push("/");
   };
 
   return (
@@ -64,7 +67,7 @@ export default function SignUpPage() {
               <Input
                 type="text"
                 required
-                className="block w-full rounded-lg border-gray-300 bg-gray-50 py-3 text-gray-900 focus:border-ylang-rose focus:ring-ylang-rose"
+                className="focus:border-ylang-rose focus:ring-ylang-rose block w-full rounded-lg border-gray-300 bg-gray-50 py-3 text-gray-900"
                 placeholder="Nom complet"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -74,7 +77,7 @@ export default function SignUpPage() {
               <Input
                 type="email"
                 required
-                className="block w-full rounded-lg border-gray-300 bg-gray-50 py-3 text-gray-900 focus:border-ylang-rose focus:ring-ylang-rose"
+                className="focus:border-ylang-rose focus:ring-ylang-rose block w-full rounded-lg border-gray-300 bg-gray-50 py-3 text-gray-900"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -84,7 +87,7 @@ export default function SignUpPage() {
               <Input
                 type={showPassword ? "text" : "password"}
                 required
-                className="block w-full rounded-lg border-gray-300 bg-gray-50 py-3 pr-10 text-gray-900 focus:border-ylang-rose focus:ring-ylang-rose"
+                className="focus:border-ylang-rose focus:ring-ylang-rose block w-full rounded-lg border-gray-300 bg-gray-50 py-3 pr-10 text-gray-900"
                 placeholder="Mot de passe"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -92,8 +95,12 @@ export default function SignUpPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-ylang-rose transition-colors"
-                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                className="hover:text-ylang-rose absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-colors"
+                aria-label={
+                  showPassword
+                    ? "Masquer le mot de passe"
+                    : "Afficher le mot de passe"
+                }
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -108,7 +115,7 @@ export default function SignUpPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full justify-center rounded-lg bg-ylang-rose px-3 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8D5E50] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ylang-rose"
+              className="group bg-ylang-rose focus-visible:outline-ylang-rose relative flex w-full justify-center rounded-lg px-3 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8D5E50] focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               {loading ? "Création..." : "S'inscrire"}
             </Button>
@@ -116,7 +123,7 @@ export default function SignUpPage() {
           <div className="text-center text-sm">
             <Link
               href="/sign-in"
-              className="font-medium text-ylang-rose hover:text-[#8D5E50]"
+              className="text-ylang-rose font-medium hover:text-[#8D5E50]"
             >
               Déjà un compte ? Se connecter
             </Link>

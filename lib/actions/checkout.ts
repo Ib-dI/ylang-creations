@@ -1,10 +1,9 @@
 "use server";
 
 import { customer } from "@/db/schema";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { createClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import Stripe from "stripe";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -113,18 +112,17 @@ export async function createCheckoutSession(
 ): Promise<CheckoutResult> {
   try {
     // 1. Verify user is authenticated
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session?.user) {
+    if (!user) {
       return {
         success: false,
         error: "Veuillez vous connecter pour commander",
       };
     }
-
-    const user = session.user;
 
     // 2. Validate cart is not empty
     if (!items || items.length === 0) {
@@ -152,14 +150,14 @@ export async function createCheckoutSession(
     // 4. Get or create Stripe customer
     const { stripeCustomerId, customerId } = await getOrCreateStripeCustomer(
       user.id,
-      user.email,
-      user.name || user.email,
+      user.email!,
+      user.user_metadata.full_name || user.email!,
     );
 
     // 5. Prepare metadata for webhook
     const metadata = {
       userId: user.id,
-      userEmail: user.email,
+      userEmail: user.email!,
       customerId,
       items: JSON.stringify(items),
     };
@@ -212,11 +210,12 @@ export async function createCheckoutSession(
  */
 export async function getCheckoutSession(sessionId: string) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session?.user) {
+    if (!user) {
       return { success: false, error: "Non authentifié" };
     }
 
@@ -225,7 +224,7 @@ export async function getCheckoutSession(sessionId: string) {
     });
 
     // Verify the session belongs to this user
-    if (checkoutSession.metadata?.userId !== session.user.id) {
+    if (checkoutSession.metadata?.userId !== user.id) {
       return { success: false, error: "Session non trouvée" };
     }
 
