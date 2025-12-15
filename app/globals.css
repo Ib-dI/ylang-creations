@@ -1,13 +1,17 @@
 @font-face {
   font-family: "Abramo";
-  src: url("/fonts/Abramo Regular.woff2") format("woff2");
+  src: url("/fonts/abramo-regular.woff2") format("woff2");
+  font-style: normal;
   font-weight: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Abramo Script";
-  src: url("/fonts/Abramo Script.woff2") format("woff2");
-  font-weight: bold;
+  src: url("/fonts/abramo-script.woff2") format("woff2");
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
 }
 
 @import "tailwindcss";
@@ -21,15 +25,15 @@
   --color-ylang-beige: #f5f1e8;
   --color-ylang-terracotta: #d4a89a;
   --color-ylang-sage: #c8d5b9;
-  --color-ylang-rose: #A77769;
+  --color-ylang-rose: #a77769;
   /* --color-ylang-rose: #b76e79; */
   --color-ylang-charcoal: #1a1a1a;
 
   /* Typography */
   --font-family-display: "Bricolage Grotesque", serif;
   --font-family-body: "Inter", sans-serif;
-  --font-family-script: "Abramo Script", serif;
-  --font-family-regular: "Abramo", serif;
+  --font-family-abramo-script: "Abramo Script", serif;
+  --font-family-abramo: "Abramo", serif;
 
   /* Spacing Premium */
   --spacing-section: 6rem;
@@ -59,6 +63,14 @@
 .font-body {
   font-family: var(--font-family-body);
   letter-spacing: -0.01em;
+}
+
+.font-abramo {
+  font-family: var(--font-family-abramo);
+}
+
+.font-abramo-script {
+  font-family: var(--font-family-abramo-script);
 }
 
 .section-padding {
