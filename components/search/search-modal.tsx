@@ -1,15 +1,10 @@
 "use client";
 
-import {
-  catalogProducts,
-  getSearchSuggestions,
-  searchProducts,
-  type CatalogProduct,
-} from "@/data/products";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
   Clock,
+  Loader2,
   Search,
   Sparkles,
   TrendingUp,
@@ -18,44 +13,110 @@ import {
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
+interface Product {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+  images?: string[];
+  description?: string;
+  new?: boolean;
+  featured?: boolean;
+  customizable?: boolean;
+  slug?: string;
+}
+
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+const SUGGESTIONS = [
+  "Gigoteuse",
+  "Tour de lit", 
+  "Couverture",
+  "Coussin musical",
+  "Cape de bain",
+  "Sac à langer",
+  "Personnalisé",
+  "Cadeau naissance"
+];
+
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = React.useState("");
-  const [results, setResults] = React.useState<CatalogProduct[]>([]);
+  const [results, setResults] = React.useState<Product[]>([]);
   const [recentSearches, setRecentSearches] = React.useState<string[]>([]);
+  const [popularProducts, setPopularProducts] = React.useState<Product[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Charger les recherches récentes depuis localStorage
+  // Debounce query for API calls
+  const [debouncedQuery, setDebouncedQuery] = React.useState(query);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  // Load recent searches and popular products
   React.useEffect(() => {
     const stored = localStorage.getItem("ylang-recent-searches");
     if (stored) {
       setRecentSearches(JSON.parse(stored));
     }
+
+    // Fetch popular products
+    const fetchPopular = async () => {
+      try {
+        const res = await fetch("/api/products?featured=true&limit=3");
+        if (res.ok) {
+          const data = await res.json();
+          setPopularProducts(data.products || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch popular products", error);
+      }
+    };
+    fetchPopular();
   }, []);
 
-  // Focus sur l'input quand la modal s'ouvre
+  // Focus input when modal opens
   React.useEffect(() => {
     if (isOpen && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
-  // Recherche en temps réel
+  // Search effect
   React.useEffect(() => {
-    if (query.length >= 2) {
-      const searchResults = searchProducts(query, 6);
-      setResults(searchResults);
-    } else {
-      setResults([]);
-    }
-  }, [query]);
+    const fetchResults = async () => {
+      if (debouncedQuery.length >= 2) {
+        setIsLoading(true);
+        try {
+          const res = await fetch(`/api/products?search=${encodeURIComponent(debouncedQuery)}&limit=6`);
+          if (res.ok) {
+            const data = await res.json();
+            setResults(data.products || []);
+          }
+        } catch (error) {
+          console.error("Search failed", error);
+          setResults([]);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setResults([]);
+      }
+    };
 
-  // Fermer avec Escape
+    fetchResults();
+  }, [debouncedQuery]);
+
+  // Close with Escape
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -64,7 +125,6 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return () => window.removeEventListener("keydown", handleEscape);
   }, [onClose]);
 
-  // Sauvegarder une recherche
   const saveSearch = (searchTerm: string) => {
     const updated = [
       searchTerm,
@@ -74,14 +134,12 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     localStorage.setItem("ylang-recent-searches", JSON.stringify(updated));
   };
 
-  // Naviguer vers un produit
-  const handleProductClick = (product: CatalogProduct) => {
-    saveSearch(query);
+  const handleProductClick = (product: Product) => {
+    saveSearch(query || product.name);
     onClose();
     router.push(`/produits/${product.id}`);
   };
 
-  // Naviguer vers les collections avec filtre
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
@@ -91,18 +149,12 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }
   };
 
-  // Recherche rapide depuis suggestions
   const handleQuickSearch = (term: string) => {
     setQuery(term);
     saveSearch(term);
     onClose();
     router.push(`/collections?search=${encodeURIComponent(term)}`);
   };
-
-  const suggestions = getSearchSuggestions();
-  const popularProducts = catalogProducts
-    .filter((p) => p.new || p.featured)
-    .slice(0, 3);
 
   return (
     <AnimatePresence>
@@ -129,7 +181,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {/* Search Input */}
               <form onSubmit={handleSearchSubmit} className="relative">
                 <div className="border-ylang-beige flex items-center border-b px-6 py-4">
-                  <Search className="text-ylang-charcoal/40 h-5 w-5 flex-shrink-0" />
+                  <Search className="text-ylang-charcoal/40 h-5 w-5 shrink-0" />
                   <input
                     ref={inputRef}
                     type="text"
@@ -161,8 +213,12 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
               {/* Content */}
               <div className="max-h-[60vh] overflow-y-auto">
-                {/* Résultats de recherche */}
-                {results.length > 0 ? (
+                {isLoading ? (
+                  <div className="flex h-40 items-center justify-center">
+                    <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+                  </div>
+                ) : results.length > 0 ? (
+                  /* Résultats de recherche */
                   <div className="p-4">
                     <p className="text-ylang-charcoal/60 font-body mb-3 px-2 text-sm">
                       {results.length} résultat{results.length > 1 ? "s" : ""}{" "}
@@ -175,7 +231,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           onClick={() => handleProductClick(product)}
                           className="hover:bg-ylang-beige/50 group flex w-full items-center gap-4 rounded-xl p-3 text-left transition-all"
                         >
-                          <div className="bg-ylang-beige relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg">
+                          <div className="bg-ylang-beige relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
                             <img
                               src={product.image}
                               alt={product.name}
@@ -190,7 +246,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               {product.category}
                             </p>
                           </div>
-                          <div className="flex-shrink-0 text-right">
+                          <div className="shrink-0 text-right">
                             <p className="font-display text-ylang-rose font-semibold">
                               {product.price}€
                             </p>
@@ -264,7 +320,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {suggestions.slice(0, 8).map((term) => (
+                        {SUGGESTIONS.map((term) => (
                           <button
                             key={term}
                             onClick={() => handleQuickSearch(term)}
@@ -276,7 +332,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       </div>
                     </div>
 
-                    {/* Produits populaires */}
+                    {/* Produits populaires (Featured) */}
                     {popularProducts.length > 0 && (
                       <div>
                         <div className="mb-3 flex items-center gap-2 px-2">

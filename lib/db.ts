@@ -11,18 +11,7 @@ if (!process.env.DATABASE_URL) {
   const urlObj = new URL(dbUrl);
   const isSupabase = dbUrl.includes("supabase");
   const isPooler = dbUrl.includes("pooler") || urlObj.port === "6543";
-  
-  console.log("📊 Database connection info:", {
-    host: urlObj.hostname,
-    port: urlObj.port || "5432 (default)",
-    database: urlObj.pathname.replace("/", ""),
-    sslMode: urlObj.searchParams.get("sslmode") || "not specified",
-    isSupabase,
-    isPooler,
-    recommendation: isSupabase && !isPooler 
-      ? "⚠️ Consider using Supabase connection pooler (port 6543) for better serverless compatibility"
-      : undefined,
-  });
+
 }
 
 // Determine SSL configuration based on connection string

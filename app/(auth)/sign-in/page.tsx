@@ -53,7 +53,7 @@ export default function SignInPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F9F6F3] px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-2xl">
+      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-xs">
         <div className="flex flex-col items-center">
           <div className="relative h-24 w-24">
             <Image
@@ -107,6 +107,14 @@ export default function SignInPage() {
                   <Eye className="h-5 w-5" />
                 )}
               </button>
+            </div>
+            <div className="flex justify-end">
+              <Link
+                href="/forgot-password"
+                className="text-ylang-rose text-sm font-medium hover:text-[#8D5E50]"
+              >
+                Mot de passe oublié ?
+              </Link>
             </div>
           </div>
 

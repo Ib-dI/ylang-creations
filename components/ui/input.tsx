@@ -35,12 +35,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         />
 
         {/* Underline animé */}
-        <div
+        {/* <div
           className={cn(
-            "from-ylang-rose to-ylang-terracotta absolute right-0 -bottom-1 left-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r transition-transform duration-500 group-focus-within:scale-x-100",
+            "from-ylang-rose to-ylang-terracotta absolute right-0 -bottom-1 left-0 h-0.5 origin-left scale-x-0 bg-linear-to-r transition-transform duration-500 group-focus-within:scale-x-100",
             error && "bg-red-500",
           )}
-        />
+        /> */}
 
         {/* Message d'erreur */}
         {error && (
