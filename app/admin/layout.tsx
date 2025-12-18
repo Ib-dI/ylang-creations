@@ -61,14 +61,24 @@ export default function AdminLayout({
   useEffect(() => {
     const checkAuth = async () => {
       const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        push("/sign-in");
+        return;
+      }
+
+      if (user.app_metadata?.role !== "admin") {
+        push("/");
+        return;
+      }
+
+      const {
         data: { session },
       } = await supabase.auth.getSession();
       setSession(session);
       setLoading(false);
-
-      if (!session) {
-        push("/sign-in");
-      }
     };
 
     checkAuth();

@@ -6,7 +6,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -22,8 +21,10 @@ import {
   Facebook,
   Heart,
   Instagram,
+  LayoutDashboard,
   LogOut,
   Menu,
+  Package,
   Search,
   ShoppingBag,
   User,
@@ -353,36 +354,95 @@ export function Header() {
               {session ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="text-ylang-charcoal hover:text-ylang-rose hidden transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 lg:block">
+                    <button className="text-ylang-charcoal hover:border-ylang-rose focus:ring-ylang-rose/20 h-9 w-9 transform overflow-hidden rounded-full border border-transparent bg-white/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 focus:ring-2 focus:outline-none">
                       {session.user.user_metadata?.avatar_url ? (
                         <img
                           src={session.user.user_metadata.avatar_url}
                           alt={session.user.user_metadata?.full_name ?? "User"}
-                          className="h-5 w-5 rounded-full"
+                          className="h-full w-full object-cover"
                         />
                       ) : (
-                        <User className="h-5 w-5" strokeWidth={1.5} />
+                        <div className="bg-ylang-rose/10 text-ylang-rose group-hover:bg-ylang-rose/20 flex h-full w-full items-center justify-center text-xs font-bold uppercase transition-colors">
+                          {session.user.email?.charAt(0) || "U"}
+                        </div>
                       )}
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <div className="bg-gray-50 px-2 py-1.5 text-sm font-medium text-gray-900">
-                      {session.user.user_metadata?.full_name || session.user.email}
+                  <DropdownMenuContent
+                    align="end"
+                    className="border-ylang-beige w-64 bg-white/95 p-2 shadow-xl backdrop-blur-md"
+                  >
+                    <div className="flex items-center gap-3 px-2 py-3">
+                      <div className="border-ylang-beige bg-ylang-cream flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border">
+                        {session.user.user_metadata?.avatar_url ? (
+                          <img
+                            src={session.user.user_metadata.avatar_url}
+                            alt={
+                              session.user.user_metadata?.full_name ?? "User"
+                            }
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-ylang-rose text-sm font-bold uppercase">
+                            {session.user.email?.charAt(0) || "U"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-gray-900">
+                          {session.user.user_metadata?.full_name ||
+                            session.user.email?.split("@")[0]}
+                        </p>
+                        <p className="truncate text-xs text-gray-500">
+                          {session.user.email}
+                        </p>
+                      </div>
                     </div>
-                    <div className="truncate px-2 py-1.5 text-xs text-gray-500">
-                      {session.user.email}
+
+                    <DropdownMenuSeparator className="bg-ylang-beige" />
+
+                    <div className="py-1">
+                      {session.user.app_metadata?.role === "admin" ? (
+                        <DropdownMenuItem asChild>
+                          <Link
+                            href="/admin"
+                            className="group hover:bg-ylang-beige hover:text-ylang-rose flex cursor-pointer items-center rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                          >
+                            <LayoutDashboard className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
+                            <span>Tableau de bord</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      ) : (
+                        <>
+                          <DropdownMenuItem
+                            onClick={() => router.push("/orders")}
+                            className="group hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                          >
+                            <Package className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
+                            <span>Mes Commandes</span>
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            onClick={() => router.push("/settings")}
+                            className="group hover:bg-ylang-beige cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                          >
+                            <User className="mr-3 h-4 w-4 text-gray-400" />
+                            <span>Mon Profil</span>
+                          </DropdownMenuItem>
+                        </>
+                      )}
                     </div>
-                    <DropdownMenuSeparator />
+
+                    <DropdownMenuSeparator className="bg-ylang-beige" />
+
                     <DropdownMenuItem
                       onClick={async () => {
                         await supabase.auth.signOut();
                         router.refresh();
                       }}
-                      className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"
+                      className="group cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                     >
-                      <LogOut className="mr-2 h-4 w-4" />
+                      <LogOut className="mr-3 h-4 w-4 text-red-400 group-hover:text-red-600" />
                       <span>Se déconnecter</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -750,12 +810,34 @@ export function Header() {
                     )}
                   </button>
 
-                  <button className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors">
-                    <User
-                      className="text-ylang-charcoal mb-1 h-5 w-5"
-                      strokeWidth={1.5}
-                    />
-                    <span className="text-ylang-charcoal text-xs">Compte</span>
+                  <button
+                    onClick={() => {
+                      closeMegaMenu();
+                      if (!session) {
+                        router.push("/sign-in");
+                      } else if (session.user.app_metadata?.role === "admin") {
+                        router.push("/admin");
+                      } else {
+                        router.push("/settings");
+                      }
+                    }}
+                    className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
+                  >
+                    {session?.user.user_metadata?.avatar_url ? (
+                      <img
+                        src={session.user.user_metadata.avatar_url}
+                        alt="Profile"
+                        className="mb-1 h-5 w-5 rounded-full object-cover"
+                      />
+                    ) : (
+                      <User
+                        className="text-ylang-charcoal mb-1 h-5 w-5"
+                        strokeWidth={1.5}
+                      />
+                    )}
+                    <span className="text-ylang-charcoal text-xs">
+                      {session ? "Compte" : "Connexion"}
+                    </span>
                   </button>
                 </div>
               </div>

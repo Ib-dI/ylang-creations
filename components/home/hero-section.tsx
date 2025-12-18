@@ -6,55 +6,70 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const SLIDES = [
+const DEFAULT_SLIDES = [
   {
-    id: 1,
-    // Rose to Terracotta
+    id: "1",
     bgClass: "bg-gradient-to-br from-ylang-rose to-ylang-terracotta",
     title: "Chaque création naît de vos désirs",
     subtitle: "Personnalisez chaque détail pour un univers unique",
     cta: "Créer maintenant",
     link: "/configurateur",
+    image: "",
   },
   {
-    id: 2,
-    // Terracotta to Sage
+    id: "2",
     bgClass: "bg-gradient-to-br from-ylang-terracotta to-ylang-sage",
     title: "Savoir-faire artisanal français",
     subtitle: "Une confection soignée pour le confort et la sécurité de bébé",
     cta: "Découvrir l'atelier",
     link: "/a-propos",
+    image: "",
   },
   {
-    id: 3,
-    // Sage to Rose
+    id: "3",
     bgClass: "bg-gradient-to-br from-ylang-sage to-ylang-rose",
     title: "Nouvelle Collection Printemps",
     subtitle: "Des couleurs douces et des matières naturelles",
     cta: "Voir la collection",
     link: "/collections?filter=new",
+    image: "",
   },
 ];
 
+
 export function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [slides, setSlides] = useState(DEFAULT_SLIDES);
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.heroSlides && data.heroSlides.length > 0) {
+          setSlides(data.heroSlides);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   // Auto-advance slider
   useEffect(() => {
+    if (slides.length <= 1) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
+
 
   return (
     <div className="group bg-ylang-beige/10 relative h-[600px] w-full overflow-hidden lg:h-[700px]">
@@ -65,20 +80,34 @@ export function HeroSection() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1 }}
-          className={`absolute inset-0 ${SLIDES[currentSlide].bgClass}`}
+          className={`absolute inset-0 ${
+            slides[currentSlide].image
+              ? ""
+              : slides[currentSlide].bgClass ||
+                "bg-linear-to-br from-ylang-rose to-ylang-terracotta"
+          }`}
+          style={
+            slides[currentSlide].image
+              ? {
+                  backgroundImage: `url(${slides[currentSlide].image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }
+              : {}
+          }
         >
           {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/10" />
+          <div className="absolute inset-0 bg-black/20" />
 
           {/* Content */}
-          {/* <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
             <motion.h1
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.8 }}
-              className="font-display mb-6 max-w-5xl text-4xl leading-tight font-bold text-white drop-shadow-lg md:text-6xl lg:text-7xl"
+              className="font-display mb-6 max-w-5xl text-4xl font-bold leading-tight text-white drop-shadow-lg md:text-6xl lg:text-7xl"
             >
-              {SLIDES[currentSlide].title}
+              {slides[currentSlide].title}
             </motion.h1>
 
             <motion.p
@@ -87,7 +116,7 @@ export function HeroSection() {
               transition={{ delay: 0.7, duration: 0.8 }}
               className="font-body mb-10 max-w-2xl text-lg font-light tracking-wide text-white/95 drop-shadow-md md:text-xl"
             >
-              {SLIDES[currentSlide].subtitle}
+              {slides[currentSlide].subtitle}
             </motion.p>
 
             <motion.div
@@ -95,17 +124,17 @@ export function HeroSection() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.9, duration: 0.8 }}
             >
-              <Link href={SLIDES[currentSlide].link}>
+              <Link href={slides[currentSlide].link || "/"}>
                 <Button
                   variant="luxury"
                   size="lg"
-                  className="px-10 py-6 text-lg tracking-widest uppercase transition-transform duration-300 hover:scale-105"
+                  className="px-10 py-6 text-lg uppercase tracking-widest transition-transform duration-300 hover:scale-105"
                 >
-                  {SLIDES[currentSlide].cta}
+                  {slides[currentSlide].cta || "Découvrir"}
                 </Button>
               </Link>
             </motion.div>
-          </div> */}
+          </div>
         </motion.div>
       </AnimatePresence>
 
@@ -130,7 +159,7 @@ export function HeroSection() {
 
       {/* Indicators */}
       <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 gap-4">
-        {SLIDES.map((_, index) => (
+        {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
@@ -143,6 +172,7 @@ export function HeroSection() {
           />
         ))}
       </div>
+
     </div>
   );
 }

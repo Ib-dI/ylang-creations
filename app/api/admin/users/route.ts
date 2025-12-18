@@ -36,33 +36,35 @@ export async function GET(request: Request) {
     const customers = await db.select().from(customer);
     const orders = await db.select().from(order);
 
-    // Format users with additional data
-    let formattedUsers = users.map((u) => {
-      // Logic to link Supabase auth user with app data (customer table) relies on matching ID
-      const customerRecord = customers.find((c) => c.userId === u.id);
-      const userOrders = customerRecord
-        ? orders.filter((o) => o.customerId === customerRecord.id)
-        : [];
-      const totalSpent = userOrders.reduce((sum, o) => {
-        return sum + parseFloat(o.totalAmount || "0") / 100;
-      }, 0);
+    // Format users with additional data and filter out admins
+    let formattedUsers = users
+      .filter((u) => u.app_metadata?.role !== "admin")
+      .map((u) => {
+        // Logic to link Supabase auth user with app data (customer table) relies on matching ID
+        const customerRecord = customers.find((c) => c.userId === u.id);
+        const userOrders = customerRecord
+          ? orders.filter((o) => o.customerId === customerRecord.id)
+          : [];
+        const totalSpent = userOrders.reduce((sum, o) => {
+          return sum + parseFloat(o.totalAmount || "0") / 100;
+        }, 0);
 
-      const fullName =
-        u.user_metadata?.full_name || u.user_metadata?.name || "Sans nom";
+        const fullName =
+          u.user_metadata?.full_name || u.user_metadata?.name || "Sans nom";
 
-      return {
-        id: u.id,
-        name: fullName,
-        email: u.email || "",
-        emailVerified: !!u.email_confirmed_at,
-        image: u.user_metadata?.avatar_url || null,
-        createdAt: u.created_at,
-        updatedAt: u.updated_at,
-        orderCount: userOrders.length,
-        totalSpent,
-        stripeCustomerId: customerRecord?.stripeCustomerId || null,
-      };
-    });
+        return {
+          id: u.id,
+          name: fullName,
+          email: u.email || "",
+          emailVerified: !!u.email_confirmed_at,
+          image: u.user_metadata?.avatar_url || null,
+          createdAt: u.created_at,
+          updatedAt: u.updated_at,
+          orderCount: userOrders.length,
+          totalSpent,
+          stripeCustomerId: customerRecord?.stripeCustomerId || null,
+        };
+      });
 
     // Apply search filter
     if (search) {

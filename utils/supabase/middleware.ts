@@ -34,16 +34,28 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/sign-in") &&
-    !request.nextUrl.pathname.startsWith("/sign-up") &&
-    request.nextUrl.pathname.startsWith("/admin")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone();
-    url.pathname = "/sign-in";
-    return NextResponse.redirect(url);
+  const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
+  const isAdminApiRoute = request.nextUrl.pathname.startsWith("/api/admin");
+
+  if (isAdminRoute || isAdminApiRoute) {
+    if (!user) {
+      if (isAdminApiRoute) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      const url = request.nextUrl.clone();
+      url.pathname = "/sign-in";
+      url.searchParams.set("next", request.nextUrl.pathname);
+      return NextResponse.redirect(url);
+    }
+
+    if (user.app_metadata?.role !== "admin") {
+      if (isAdminApiRoute) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;

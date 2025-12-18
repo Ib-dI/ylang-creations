@@ -102,3 +102,25 @@ export const product = pgTable("product", {
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });
+
+// Settings table
+export const settings = pgTable("settings", {
+  id: text("id").primaryKey(),
+  storeName: text("store_name").default("Ylang Créations"),
+  storeDescription: text("store_description"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  shippingEmail: text("shipping_email"),
+  adminEmail: text("admin_email"),
+  emailTemplates: text("email_templates"), // JSON string
+  currency: text("currency").default("eur"),
+  shippingFee: text("shipping_fee").default("9.90"),
+  freeShippingThreshold: text("free_shipping_threshold").default("150"),
+  notifications: text("notifications"), // JSON string
+  // Media settings
+  heroSlides: text("hero_slides"), // JSON string
+  craftsmanshipImage: text("craftsmanship_image"),
+  aboutImage: text("about_image"),
+  testimonials: text("testimonials"), // JSON string
+  updatedAt: timestamp("updated_at").notNull(),
+});

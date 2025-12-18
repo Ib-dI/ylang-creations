@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
-import { Eye, EyeOff } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,46 +13,177 @@ export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loadingProvider, setLoadingProvider] = useState<
+    "email" | "google" | null
+  >(null);
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    general: "",
+  });
+  const [toast, setToast] = useState({ show: false, message: "", type: "" });
   const router = useRouter();
   const supabase = createClient();
 
+  const showToast = (message: string, type: "error" | "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: "", type: "" });
+    }, 5000);
+  };
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      return "L'email est requis";
+    }
+    if (!emailRegex.test(email)) {
+      return "L'email n'est pas valide";
+    }
+    return "";
+  };
+
+  const validatePassword = (password: string) => {
+    if (!password) {
+      return "Le mot de passe est requis";
+    }
+    if (password.length < 6) {
+      return "Le mot de passe doit contenir au moins 6 caractères";
+    }
+    return "";
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    if (errors.email) {
+      setErrors((prev) => ({ ...prev, email: "", general: "" }));
+    }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (errors.password) {
+      setErrors((prev) => ({ ...prev, password: "", general: "" }));
+    }
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    // Validation côté client
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      setErrors({
+        email: emailError,
+        password: passwordError,
+        general: "",
+      });
+      return;
+    }
+
+    setLoadingProvider("email");
+    setErrors({ email: "", password: "", general: "" });
+
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      alert(error.message);
-      setLoading(false);
+      setLoadingProvider(null);
+
+      // Messages d'erreur personnalisés et sécurisés
+      let errorMessage = "Impossible de se connecter. Veuillez réessayer.";
+
+      // Utilisation du code d'erreur plutôt que du message
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage = "Email ou mot de passe incorrect";
+      } else if (error.message.includes("Email not confirmed")) {
+        errorMessage = "Veuillez confirmer votre email avant de vous connecter";
+      } else if (error.message.includes("Too many requests")) {
+        errorMessage = "Trop de tentatives. Veuillez réessayer plus tard";
+      }
+
+      setErrors((prev) => ({ ...prev, general: errorMessage }));
+      showToast(errorMessage, "error");
       return;
     }
 
-    router.refresh();
-    router.push("/");
+    showToast("Connexion réussie ! Redirection...", "success");
+
+    // Check role and redirect
+    const userRole = data.user?.app_metadata?.role;
+    const searchParams = new URLSearchParams(window.location.search);
+    const next = searchParams.get("next");
+
+    setTimeout(() => {
+      if (next) {
+        router.replace(next);
+      } else if (userRole === "admin") {
+        router.replace("/admin");
+      } else {
+        router.replace("/");
+      }
+    }, 1000);
   };
 
   const handleGoogleSignIn = async () => {
-    setLoading(true);
+    setLoadingProvider("google");
+    setErrors({ email: "", password: "", general: "" });
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const next = searchParams.get("next") ?? "/";
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
 
     if (error) {
-      alert(error.message);
-      setLoading(false);
+      setLoadingProvider(null);
+      const errorMessage =
+        "Erreur lors de la connexion avec Google. Veuillez réessayer.";
+      setErrors((prev) => ({ ...prev, general: errorMessage }));
+      showToast(errorMessage, "error");
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F9F6F3] px-4 py-12 sm:px-6 lg:px-8">
+      {/* Toast Notification avec aria-live pour l'accessibilité */}
+      {toast.show && (
+        <div
+          className="animate-in slide-in-from-top-5 fixed top-4 right-4 z-50 duration-300"
+          role="alert"
+          aria-live="assertive"
+        >
+          <div
+            className={`flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg ${
+              toast.type === "error"
+                ? "border border-red-200 bg-red-50"
+                : "border border-green-200 bg-green-50"
+            }`}
+          >
+            {toast.type === "error" ? (
+              <AlertCircle className="h-5 w-5 text-red-600" />
+            ) : (
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+            )}
+            <p
+              className={`text-sm font-medium ${
+                toast.type === "error" ? "text-red-800" : "text-green-800"
+              }`}
+            >
+              {toast.message}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-xs">
         <div className="flex flex-col items-center">
           <div className="relative h-24 w-24">
@@ -70,62 +201,121 @@ export default function SignInPage() {
             Connectez-vous à votre compte
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSignIn}>
-          <div className="space-y-4">
-            <div>
-              <Input
-                type="email"
-                required
-                className=""
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="relative">
-              <Input
-                type={showPassword ? "text" : "password"}
-                required
-                className="pr-10"
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="hover:text-ylang-rose absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-colors"
-                aria-label={
-                  showPassword
-                    ? "Masquer le mot de passe"
-                    : "Afficher le mot de passe"
-                }
-              >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-            <div className="flex justify-end">
-              <Link
-                href="/forgot-password"
-                className="text-ylang-rose text-sm font-medium hover:text-[#8D5E50]"
-              >
-                Mot de passe oublié ?
-              </Link>
-            </div>
-          </div>
 
-          <div>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="group bg-ylang-rose focus-visible:outline-ylang-rose relative flex w-full justify-center rounded-lg px-3 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8D5E50] focus-visible:outline-2 focus-visible:outline-offset-2"
+        <div className="mt-8 space-y-6">
+          {/* Message d'erreur général avec aria-live */}
+          {errors.general && (
+            <div
+              className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3"
+              role="alert"
+              aria-live="polite"
             >
-              {loading ? "Connexion..." : "Se connecter"}
-            </Button>
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
+              <p className="text-sm text-red-800">{errors.general}</p>
+            </div>
+          )}
+
+          {/* Formulaire avec balise form pour la soumission au clavier */}
+          <div className="space-y-6" onSubmit={handleSignIn}>
+            <div className="space-y-4">
+              <div>
+                <Input
+                  type="email"
+                  className={
+                    errors.email
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
+                  }
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => handleEmailChange(e.target.value)}
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
+                  disabled={loadingProvider !== null}
+                />
+                {errors.email && (
+                  <p
+                    id="email-error"
+                    className="mt-1 flex items-center gap-1 text-xs text-red-600"
+                    role="alert"
+                  >
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    className={`pr-10 ${errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                    placeholder="Mot de passe"
+                    value={password}
+                    onChange={(e) => handlePasswordChange(e.target.value)}
+                    aria-invalid={!!errors.password}
+                    aria-describedby={
+                      errors.password ? "password-error" : undefined
+                    }
+                    disabled={loadingProvider !== null}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleSignIn(e as any);
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="hover:text-ylang-rose absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-colors"
+                    aria-label={
+                      showPassword
+                        ? "Masquer le mot de passe"
+                        : "Afficher le mot de passe"
+                    }
+                    disabled={loadingProvider !== null}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p
+                    id="password-error"
+                    className="mt-1 flex items-center gap-1 text-xs text-red-600"
+                    role="alert"
+                  >
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex justify-end">
+                <Link
+                  href="/forgot-password"
+                  className="text-ylang-rose text-sm font-medium hover:text-[#8D5E50]"
+                  tabIndex={loadingProvider !== null ? -1 : 0}
+                >
+                  Mot de passe oublié ?
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              <Button
+                type="submit"
+                disabled={loadingProvider !== null}
+                onClick={handleSignIn}
+                className="group bg-ylang-rose focus-visible:outline-ylang-rose relative flex w-full justify-center rounded-lg px-3 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8D5E50] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loadingProvider === "email" ? "Connexion..." : "Se connecter"}
+              </Button>
+            </div>
           </div>
 
           <div className="relative my-4">
@@ -143,8 +333,8 @@ export default function SignInPage() {
             <button
               type="button"
               onClick={handleGoogleSignIn}
-              disabled={loading}
-              className="flex w-full transform items-center justify-center gap-2 rounded-xl border-2 border-gray-100 py-3 text-gray-700 transition-all ease-in-out hover:scale-[1.01] active:scale-[.98] active:duration-75"
+              disabled={loadingProvider !== null}
+              className="flex w-full transform items-center justify-center gap-2 rounded-xl border-2 border-gray-100 py-3 text-gray-700 transition-all ease-in-out hover:scale-[1.01] active:scale-[.98] active:duration-75 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path
@@ -164,18 +354,22 @@ export default function SignInPage() {
                   fill="#EA4335"
                 />
               </svg>
-              Se connecter avec Google
+              {loadingProvider === "google"
+                ? "Connexion..."
+                : "Se connecter avec Google"}
             </button>
           </div>
+
           <div className="text-center text-sm">
             <Link
               href="/sign-up"
-              className="text-ylang-rose font-medium hover:text-[#8D5E50]"
+              className="text-ylang-rose font-medium hover:text-[#8D5E0]"
+              tabIndex={loadingProvider !== null ? -1 : 0}
             >
               Pas encore de compte ? Créer un compte
             </Link>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

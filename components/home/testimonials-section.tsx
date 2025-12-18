@@ -1,22 +1,21 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
+import * as React from "react";
 
 interface Testimonial {
-  id: number
-  name: string
-  location: string
-  rating: number
-  text: string
-  product: string
-  image?: string
-  date: string
+  id: number;
+  name: string;
+  location: string;
+  rating: number;
+  text: string;
+  product: string;
+  image?: string;
+  date: string;
 }
 
-const testimonials: Testimonial[] = [
+const DUMMY_TESTIMONIALS: Testimonial[] = [
   {
     id: 1,
     name: "Sophie M.",
@@ -24,7 +23,7 @@ const testimonials: Testimonial[] = [
     rating: 5,
     text: "Une qualité exceptionnelle ! La gigoteuse personnalisée que j'ai commandée pour ma fille est magnifique. Les tissus sont doux, la confection est impeccable et le résultat dépasse mes attentes. Le configurateur est vraiment intuitif.",
     product: "Gigoteuse personnalisée",
-    date: "Il y a 2 semaines"
+    date: "Il y a 2 semaines",
   },
   {
     id: 2,
@@ -32,95 +31,98 @@ const testimonials: Testimonial[] = [
     location: "Lyon",
     rating: 5,
     text: "J'ai offert un tour de lit sur mesure pour la naissance de mon neveu. Les parents étaient émerveillés ! L'emballage était soigné et la personnalisation avec le prénom brodé est sublime. Je recommande à 200%.",
-    product: "Tour de lit brodé",
-    date: "Il y a 1 mois"
+    product: "Tour de l'it brodé",
+    date: "Il y a 1 mois",
   },
-  {
-    id: 3,
-    name: "Mathilde L.",
-    location: "Bordeaux",
-    rating: 5,
-    text: "Service client au top et produit d'une qualité rare. J'ai créé toute la décoration de la chambre de bébé avec Ylang Créations. Chaque pièce est unique et faite avec amour. Un vrai savoir-faire artisanal.",
-    product: "Ensemble décoration chambre",
-    date: "Il y a 3 semaines"
-  },
-  {
-    id: 4,
-    name: "Julie P.",
-    location: "Nantes",
-    rating: 5,
-    text: "Je cherchais du textile premium et personnalisable, j'ai trouvé exactement ce dont je rêvais. Les délais sont respectés, la communication est fluide et le résultat est juste parfait. Bravo pour ce travail !",
-    product: "Mobile musical personnalisé",
-    date: "Il y a 2 mois"
-  }
-]
+];
 
 export function TestimonialsSection() {
-  const [currentIndex, setCurrentIndex] = React.useState(0)
-  const [direction, setDirection] = React.useState(0)
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [direction, setDirection] = React.useState(0);
+  const [testimonialsList, setTestimonialsList] =
+    React.useState<any[]>(DUMMY_TESTIMONIALS);
 
-  const currentTestimonial = testimonials[currentIndex]
+  React.useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.testimonials && data.testimonials.length > 0) {
+          setTestimonialsList(data.testimonials);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const currentTestimonial = testimonialsList[currentIndex];
 
   const handleNext = () => {
-    setDirection(1)
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length)
-  }
+    if (testimonialsList.length <= 1) return;
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % testimonialsList.length);
+  };
 
   const handlePrev = () => {
-    setDirection(-1)
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)
-  }
+    if (testimonialsList.length <= 1) return;
+    setDirection(-1);
+    setCurrentIndex(
+      (prev) => (prev - 1 + testimonialsList.length) % testimonialsList.length,
+    );
+  };
 
   // Auto-play
   React.useEffect(() => {
-    const timer = setInterval(handleNext, 5000)
-    return () => clearInterval(timer)
-  }, [currentIndex])
+    if (testimonialsList.length <= 1) return;
+    const timer = setInterval(handleNext, 5000);
+    return () => clearInterval(timer);
+  }, [currentIndex, testimonialsList.length]);
 
   const variants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 1000 : -1000,
-      opacity: 0
+      opacity: 0,
     }),
     center: {
       x: 0,
-      opacity: 1
+      opacity: 1,
     },
     exit: (direction: number) => ({
       x: direction < 0 ? 1000 : -1000,
-      opacity: 0
-    })
-  }
+      opacity: 0,
+    }),
+  };
 
   return (
-    <section className="section-padding bg-linear-to-b from-ylang-beige/30 to-white relative overflow-hidden">
-      
+    <section className="section-padding from-ylang-beige/30 relative overflow-hidden bg-linear-to-b to-white">
       {/* Decoration */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-ylang-rose/5 rounded-full blur-3xl" />
+      <div className="bg-ylang-rose/5 absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="mb-16 text-center"
         >
-          <p className="text-sm font-body text-ylang-rose uppercase tracking-widest mb-3">
+          <p className="font-body text-ylang-rose mb-3 text-sm tracking-widest uppercase">
             Ils nous font confiance
           </p>
-          <h2 className="font-display text-4xl lg:text-5xl text-ylang-charcoal mb-6">
+          <h2 className="font-display text-ylang-charcoal mb-6 text-4xl lg:text-5xl">
             Témoignages clients
           </h2>
-          <div className="flex items-center justify-center gap-2 mb-4">
+          <div className="mb-4 flex items-center justify-center gap-2">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-6 h-6 fill-ylang-rose text-ylang-rose" />
+                <Star
+                  key={i}
+                  className="fill-ylang-rose text-ylang-rose h-6 w-6"
+                />
               ))}
             </div>
-            <span className="font-display text-2xl font-bold text-ylang-charcoal">4.9/5</span>
+            <span className="font-display text-ylang-charcoal text-2xl font-bold">
+              4.9/5
+            </span>
           </div>
           <p className="font-body text-ylang-charcoal/60">
             Basé sur plus de 850 avis vérifiés
@@ -128,12 +130,11 @@ export function TestimonialsSection() {
         </motion.div>
 
         {/* Testimonial Carousel */}
-        <div className="max-w-4xl mx-auto mb-12">
-          <div className="relative bg-white rounded-3xl shadow-md p-8 lg:p-12 min-h-[400px] flex flex-col justify-between">
-            
+        <div className="mx-auto mb-12 max-w-4xl">
+          <div className="relative flex min-h-[400px] flex-col justify-between rounded-3xl bg-white p-8 shadow-md lg:p-12">
             {/* Quote Icon */}
-            <div className="absolute -top-6 left-8 w-12 h-12 bg-ylang-rose rounded-full flex items-center justify-center shadow-lg">
-              <Quote className="w-6 h-6 text-white" />
+            <div className="bg-ylang-rose absolute -top-6 left-8 flex h-12 w-12 items-center justify-center rounded-full shadow-lg">
+              <Quote className="h-6 w-6 text-white" />
             </div>
 
             <AnimatePresence initial={false} custom={direction} mode="wait">
@@ -146,44 +147,56 @@ export function TestimonialsSection() {
                 exit="exit"
                 transition={{
                   x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 }
+                  opacity: { duration: 0.2 },
                 }}
-                className="flex flex-col justify-between h-full"
+                className="flex h-full flex-col justify-between"
               >
                 {/* Stars */}
-                <div className="flex gap-1 mb-6">
+                <div className="mb-6 flex gap-1">
                   {[...Array(currentTestimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-ylang-rose text-ylang-rose" />
+                    <Star
+                      key={i}
+                      className="fill-ylang-rose text-ylang-rose h-5 w-5"
+                    />
                   ))}
                 </div>
 
                 {/* Text */}
-                <p className="font-body text-lg lg:text-xl text-ylang-charcoal leading-relaxed mb-8">
+                <p className="font-body text-ylang-charcoal mb-8 text-lg leading-relaxed lg:text-xl">
                   "{currentTestimonial.text}"
                 </p>
 
                 {/* Author */}
-                <div className="flex items-center justify-between border-t border-ylang-beige pt-6">
+                <div className="border-ylang-beige flex items-center justify-between border-t pt-6">
                   <div className="flex items-center gap-4">
                     {/* Avatar */}
-                    <div className="w-14 h-14 bg-linear-to-br from-ylang-rose to-ylang-terracotta rounded-full flex items-center justify-center text-white font-display text-xl font-bold">
-                      {currentTestimonial.name.charAt(0)}
+                    <div className="from-ylang-rose to-ylang-terracotta font-display flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-linear-to-br text-xl font-bold text-white shadow-inner">
+                      {currentTestimonial.image ? (
+                        <img
+                          src={currentTestimonial.image}
+                          alt={currentTestimonial.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span>{currentTestimonial.name.charAt(0)}</span>
+                      )}
                     </div>
                     <div>
-                      <p className="font-display text-lg font-semibold text-ylang-charcoal">
+                      <p className="font-display text-ylang-charcoal text-lg font-semibold">
                         {currentTestimonial.name}
                       </p>
-                      <p className="font-body text-sm text-ylang-charcoal/60">
-                        {currentTestimonial.location} • {currentTestimonial.date}
+                      <p className="font-body text-ylang-charcoal/60 text-sm">
+                        {currentTestimonial.location} •{" "}
+                        {currentTestimonial.date}
                       </p>
                     </div>
                   </div>
 
-                  <div className="hidden sm:block text-right">
-                    <p className="font-body text-sm text-ylang-charcoal/60 mb-1">
+                  <div className="hidden text-right sm:block">
+                    <p className="font-body text-ylang-charcoal/60 mb-1 text-sm">
                       Produit acheté :
                     </p>
-                    <p className="font-display text-sm font-medium text-ylang-rose">
+                    <p className="font-display text-ylang-rose text-sm font-medium">
                       {currentTestimonial.product}
                     </p>
                   </div>
@@ -192,37 +205,37 @@ export function TestimonialsSection() {
             </AnimatePresence>
 
             {/* Navigation Buttons */}
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
+            <div className="absolute -bottom-6 left-1/2 flex -translate-x-1/2 gap-3">
               <button
                 onClick={handlePrev}
-                className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-ylang-charcoal hover:bg-ylang-rose hover:text-white transition-colors duration-300"
+                className="text-ylang-charcoal hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-colors duration-300 hover:text-white"
                 aria-label="Témoignage précédent"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="h-6 w-6" />
               </button>
               <button
                 onClick={handleNext}
-                className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-ylang-charcoal hover:bg-ylang-rose hover:text-white transition-colors duration-300"
+                className="text-ylang-charcoal hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-colors duration-300 hover:text-white"
                 aria-label="Témoignage suivant"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="h-6 w-6" />
               </button>
             </div>
           </div>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center gap-2 mt-12">
+          <div className="mt-12 flex justify-center gap-2">
             {testimonials.map((_, index) => (
               <button
                 key={index}
                 onClick={() => {
-                  setDirection(index > currentIndex ? 1 : -1)
-                  setCurrentIndex(index)
+                  setDirection(index > currentIndex ? 1 : -1);
+                  setCurrentIndex(index);
                 }}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? "w-8 bg-ylang-rose"
-                    : "w-2 bg-ylang-beige hover:bg-ylang-rose/50"
+                    ? "bg-ylang-rose w-8"
+                    : "bg-ylang-beige hover:bg-ylang-rose/50 w-2"
                 }`}
                 aria-label={`Aller au témoignage ${index + 1}`}
               />
@@ -236,7 +249,7 @@ export function TestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
-          className="grid grid-cols-2  gap-6 max-w-md mx-auto"
+          className="mx-auto grid max-w-md grid-cols-2 gap-6"
         >
           {[
             { icon: "✓", text: "Paiement sécurisé" },
@@ -244,10 +257,10 @@ export function TestimonialsSection() {
           ].map((badge, index) => (
             <div
               key={index}
-              className="flex flex-col items-center text-center p-4 bg-white rounded-xl shadow-sm"
+              className="flex flex-col items-center rounded-xl bg-white p-4 text-center shadow-sm"
             >
-              <span className="text-3xl mb-2">{badge.icon}</span>
-              <p className="font-body text-sm text-ylang-charcoal/70">
+              <span className="mb-2 text-3xl">{badge.icon}</span>
+              <p className="font-body text-ylang-charcoal/70 text-sm">
                 {badge.text}
               </p>
             </div>
@@ -255,5 +268,5 @@ export function TestimonialsSection() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 // Animation variants
 const fadeInUp = {
@@ -92,6 +93,19 @@ const stats = [
 ];
 
 export default function AProposPage() {
+  const [aboutImage, setAboutImage] = useState("/images/about/founder.jpg");
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.aboutImage) {
+          setAboutImage(data.aboutImage);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   return (
     <div className="bg-ylang-cream min-h-screen">
       {/* Hero Section */}
@@ -154,9 +168,9 @@ export default function AProposPage() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="bg-ylang-beige relative aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl">
+              <div className="bg-ylang-beige relative aspect-4/5 overflow-hidden rounded-3xl shadow-2xl">
                 <Image
-                  src="/images/about/founder.jpg"
+                  src={aboutImage}
                   alt="Mélissa, fondatrice de Ylang Créations"
                   fill
                   className="object-cover"
@@ -166,8 +180,9 @@ export default function AProposPage() {
                     target.style.display = "none";
                   }}
                 />
+
                 {/* Placeholder gradient si pas d'image */}
-                <div className="from-ylang-rose/30 via-ylang-beige to-ylang-sage/30 absolute inset-0 flex items-center justify-center bg-gradient-to-br">
+                <div className="from-ylang-rose/30 via-ylang-beige to-ylang-sage/30 absolute inset-0 flex items-center justify-center bg-linear-to-br">
                   <div className="text-center">
                     <Sparkles className="text-ylang-rose mx-auto mb-4 h-16 w-16" />
                     <p className="font-display text-ylang-charcoal text-xl">
@@ -372,7 +387,7 @@ export default function AProposPage() {
       </section>
 
       {/* Oeko-Tex Section */}
-      <section className="from-ylang-sage/20 via-ylang-cream to-ylang-beige/30 bg-gradient-to-br py-20 lg:py-28">
+      <section className="from-ylang-sage/20 via-ylang-cream to-ylang-beige/30 bg-linear-to-br py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <motion.div
@@ -453,7 +468,7 @@ export default function AProposPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="from-ylang-rose to-ylang-terracotta rounded-3xl bg-gradient-to-br p-12 text-center text-white lg:p-20"
+            className="from-ylang-rose to-ylang-terracotta rounded-3xl bg-linear-to-br p-12 text-center text-white lg:p-20"
           >
             <Sparkles className="mx-auto mb-6 h-12 w-12 opacity-80" />
             <h2 className="font-display mb-6 text-3xl font-bold lg:text-4xl">
