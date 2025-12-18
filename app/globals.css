@@ -50,6 +50,7 @@
   --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.12);
 
   /* Shadcn UI Colors fallback */
+  --color-primary: var(--color-ylang-rose);
   --color-popover: #ffffff;
   --color-popover-foreground: var(--color-ylang-charcoal);
   --color-muted: var(--color-ylang-beige);

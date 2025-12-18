@@ -1,10 +1,17 @@
 "use client";
 
 import { ProductCard } from "@/components/product/product-card";
+import { Slider } from "@/components/ui/slider";
 import { categories, type CatalogProduct } from "@/data/products";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Search, SlidersHorizontal, X , Loader2 } from "lucide-react";
+import {
+  ChevronDown,
+  Loader2,
+  Search,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
@@ -19,15 +26,24 @@ function CollectionsContent() {
   const [priceRange, setPriceRange] = useState([0, 200]);
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("featured");
+  const [onlyNew, setOnlyNew] = useState(false);
+  const [onlyCustomizable, setOnlyCustomizable] = useState(false);
 
-  const isDesktop = useMediaQuery("(min-width: 640px)");
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  // Ouvrir les filtres par défaut sur desktop
+  useEffect(() => {
+    if (isDesktop) {
+      setShowFilters(true);
+    }
+  }, [isDesktop]);
 
   // Charger les produits depuis l'API
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch("/api/products");
-        
+
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           console.error("Erreur chargement produits:", {
@@ -37,7 +53,7 @@ function CollectionsContent() {
           });
           return;
         }
-        
+
         const data = await response.json();
         if (data.products) {
           setProducts(data.products);
@@ -93,8 +109,16 @@ function CollectionsContent() {
         selectedCategory === "Tout" || product.category === selectedCategory;
       const matchesPrice =
         product.price >= priceRange[0] && product.price <= priceRange[1];
+      const matchesNew = !onlyNew || product.new;
+      const matchesCustomizable = !onlyCustomizable || product.customizable;
 
-      return matchesSearch && matchesCategory && matchesPrice;
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesPrice &&
+        matchesNew &&
+        matchesCustomizable
+      );
     });
 
     // Tri
@@ -142,99 +166,194 @@ function CollectionsContent() {
           <div className="flex flex-col gap-4 sm:flex-row">
             {/* Recherche */}
             <div className="relative flex-1">
-              <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <div className="absolute top-1/2 left-4 -translate-y-1/2">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
               <input
                 type="text"
-                placeholder="Rechercher un produit..."
+                placeholder="Rechercher une création..."
                 value={searchTerm}
                 onChange={(e) => updateSearchUrl(e.target.value)}
-                className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 font-body text-ylang-charcoal placeholder:text-ylang-charcoal/40 w-full rounded-xl border bg-white py-3 pr-4 pl-12 transition-all outline-none focus:ring-2"
+                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal w-full rounded-2xl border border-gray-200 bg-white py-3.5 pr-12 pl-12 transition-all outline-none placeholder:text-gray-400 focus:ring-4"
               />
               {searchTerm && (
                 <button
                   onClick={() => updateSearchUrl("")}
-                  className="absolute top-1/2 right-4 -translate-y-1/2"
+                  className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 transition-colors hover:bg-gray-100"
                 >
-                  <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
                 </button>
               )}
             </div>
 
-            {/* Bouton filtres mobile */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="border-ylang-beige hover:border-ylang-rose text-ylang-charcoal font-body flex items-center justify-center gap-2 rounded-xl border bg-white px-6 py-3 transition-colors sm:hidden"
-            >
-              <SlidersHorizontal className="h-5 w-5" />
-              Filtres
-            </button>
-
-            {/* Tri */}
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-xl border bg-white py-3 pr-10 pl-4 transition-all outline-none focus:ring-2"
+            <div className="flex items-center gap-3">
+              {/* Bouton filtres Desktop/Mobile */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`hover:border-ylang-rose font-body flex items-center justify-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-6 py-3.5 text-sm font-medium transition-all ${
+                  showFilters
+                    ? "border-ylang-rose bg-ylang-rose/5 text-ylang-rose"
+                    : "text-ylang-charcoal"
+                }`}
               >
-                <option value="featured">Mis en avant</option>
-                <option value="price-asc">Prix croissant</option>
-                <option value="price-desc">Prix décroissant</option>
-                <option value="name">Nom A-Z</option>
-              </select>
-              <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2" />
+                <SlidersHorizontal className="h-4 w-4" />
+                <span>{showFilters ? "Masquer les filtres" : "Filtres"}</span>
+                {(selectedCategory !== "Tout" ||
+                  priceRange[0] !== 0 ||
+                  priceRange[1] !== 200 ||
+                  onlyNew ||
+                  onlyCustomizable) && (
+                  <span className="bg-ylang-rose flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white">
+                    {(selectedCategory !== "Tout" ? 1 : 0) +
+                      (priceRange[0] !== 0 || priceRange[1] !== 200 ? 1 : 0) +
+                      (onlyNew ? 1 : 0) +
+                      (onlyCustomizable ? 1 : 0)}
+                  </span>
+                )}
+              </button>
+
+              {/* Tri */}
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-4"
+                >
+                  <option value="featured">Mis en avant</option>
+                  <option value="price-asc">Prix croissant</option>
+                  <option value="price-desc">Prix décroissant</option>
+                  <option value="name">Nom A-Z</option>
+                </select>
+                <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
+              </div>
             </div>
           </div>
 
           {/* Filtres desktop/mobile */}
           <AnimatePresence>
-            {(showFilters || isDesktop) && (
+            {showFilters && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="rounded-xl border border-gray-200 bg-white p-6"
+                initial={{ opacity: 0, height: 0, y: -10 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
               >
-                {/* Catégories */}
-                <div className="mb-6">
-                  <h3 className="mb-3 font-semibold text-gray-900">
-                    Catégories
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {categories.map((cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => setSelectedCategory(cat)}
-                        className={`font-body rounded-full px-4 py-2 text-sm transition-all ${
-                          selectedCategory === cat
-                            ? "bg-ylang-rose text-white"
-                            : "bg-ylang-beige/50 text-ylang-charcoal hover:bg-ylang-beige"
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                  {/* Catégories */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-display text-lg font-semibold text-gray-900">
+                        Catégories
+                      </h3>
+                      {selectedCategory !== "Tout" && (
+                        <button
+                          onClick={() => setSelectedCategory("Tout")}
+                          className="text-ylang-rose hover:text-ylang-rose/80 font-body text-xs font-medium underline underline-offset-4"
+                        >
+                          Réinitialiser
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2.5">
+                      {categories.map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => setSelectedCategory(cat)}
+                          className={`font-body relative rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
+                            selectedCategory === cat
+                              ? "bg-ylang-rose shadow-ylang-rose/20 text-white shadow-md"
+                              : "bg-ylang-beige/40 text-ylang-charcoal/70 hover:bg-ylang-beige hover:text-ylang-charcoal"
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Prix */}
-                <div>
-                  <h3 className="mb-3 font-semibold text-gray-900">
-                    Fourchette de prix
-                  </h3>
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="range"
-                      min="0"
-                      max="200"
-                      value={priceRange[1]}
-                      onChange={(e) =>
-                        setPriceRange([0, parseInt(e.target.value)])
-                      }
-                      className="flex-1"
-                    />
-                    <span className="min-w-20 text-sm text-gray-600">
-                      0 € - {priceRange[1]} €
-                    </span>
+                  {/* Prix */}
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-display text-lg font-semibold text-gray-900">
+                        Fourchette de prix
+                      </h3>
+                      <div className="bg-ylang-cream flex items-center gap-1 rounded-lg px-3 py-1.5 shadow-inner">
+                        <span className="font-body text-ylang-rose text-sm font-semibold">
+                          {priceRange[0]}€
+                        </span>
+                        <span className="text-ylang-charcoal/30 mx-1">-</span>
+                        <span className="font-body text-ylang-rose text-sm font-semibold">
+                          {priceRange[1]}€
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="px-2 pt-2">
+                      <Slider
+                        defaultValue={[0, 200]}
+                        max={200}
+                        step={5}
+                        value={priceRange}
+                        onValueChange={(value) => setPriceRange(value)}
+                        className="**:data-[slot=slider-range]:bg-ylang-rose **:data-[slot=slider-thumb]:border-ylang-rose **:data-[slot=slider-thumb]:hover:ring-ylang-rose/20 py-4"
+                      />
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { label: "- de 30€", min: 0, max: 30 },
+                        { label: "30€ - 60€", min: 30, max: 60 },
+                        { label: "60€ - 100€", min: 60, max: 100 },
+                        { label: "100€ +", min: 100, max: 200 },
+                      ].map((range) => (
+                        <button
+                          key={range.label}
+                          onClick={() => setPriceRange([range.min, range.max])}
+                          className={`font-body rounded-lg border px-3 py-1.5 text-xs transition-all ${
+                            priceRange[0] === range.min &&
+                            priceRange[1] === range.max
+                              ? "border-ylang-rose bg-ylang-rose/5 text-ylang-rose font-semibold"
+                              : "hover:border-ylang-rose/30 hover:text-ylang-rose border-gray-100 bg-white text-gray-500"
+                          }`}
+                        >
+                          {range.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Options supplémentaires */}
+                  <div className="space-y-4">
+                    <h3 className="font-display text-lg font-semibold text-gray-900">
+                      Options
+                    </h3>
+                    <div className="space-y-3">
+                      <label className="flex cursor-pointer items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={onlyNew}
+                          onChange={(e) => setOnlyNew(e.target.checked)}
+                          className="accent-ylang-rose focus:ring-ylang-rose h-5 w-5 rounded border-gray-300 transition-all"
+                        />
+                        <span className="font-body text-ylang-charcoal text-sm font-medium">
+                          Nouveautés uniquement
+                        </span>
+                      </label>
+                      <label className="flex cursor-pointer items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={onlyCustomizable}
+                          onChange={(e) =>
+                            setOnlyCustomizable(e.target.checked)
+                          }
+                          className="accent-ylang-rose focus:ring-ylang-rose h-5 w-5 rounded border-gray-300 transition-all"
+                        />
+                        <span className="font-body text-ylang-charcoal text-sm font-medium">
+                          Produits personnalisables
+                        </span>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -299,6 +418,8 @@ function CollectionsContent() {
                 updateSearchUrl("");
                 setSelectedCategory("Tout");
                 setPriceRange([0, 200]);
+                setOnlyNew(false);
+                setOnlyCustomizable(false);
               }}
               className="bg-ylang-rose hover:bg-ylang-rose/90 font-body rounded-xl px-6 py-3 text-white transition-colors"
             >
