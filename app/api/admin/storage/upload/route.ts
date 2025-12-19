@@ -5,18 +5,27 @@ import { NextResponse } from "next/server";
 // Force Node.js runtime for database connections
 export const runtime = "nodejs";
 
+// Types de fichiers autorisés
+const ALLOWED_MIME_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/gif",
+  "image/webp",
+];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 export async function POST(request: Request) {
   try {
-    // 1. Vérifier l'authentification
-    // 1. Vérifier l'authentification
+    // 1. Vérifier l'authentification ET le rôle admin
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      console.error("❌ Utilisateur non authentifié");
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    if (!user || user.app_metadata?.role !== "admin") {
+      console.error("❌ Accès non autorisé pour upload");
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
     console.log("✅ Utilisateur authentifié:", user.email);
@@ -37,21 +46,52 @@ export async function POST(request: Request) {
       );
     }
 
+    // 3. Validation du type de fichier
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      console.error("❌ Type de fichier non autorisé:", file.type);
+      return NextResponse.json(
+        {
+          error:
+            "Type de fichier non autorisé. Formats acceptés: PNG, JPEG, GIF, WebP",
+        },
+        { status: 400 },
+      );
+    }
+
+    // 4. Validation de la taille du fichier
+    if (file.size > MAX_FILE_SIZE) {
+      console.error("❌ Fichier trop volumineux:", file.size);
+      return NextResponse.json(
+        { error: "Le fichier ne doit pas dépasser 5MB" },
+        { status: 400 },
+      );
+    }
+
+    // 5. Validation du chemin (éviter les attaques de traversée de répertoire)
+    const sanitizedPath = path.replace(/\.\./g, "").replace(/\/\//g, "/");
+    if (sanitizedPath !== path) {
+      console.error("❌ Chemin suspect détecté:", path);
+      return NextResponse.json(
+        { error: "Chemin de fichier invalide" },
+        { status: 400 },
+      );
+    }
+
     console.log("📤 Uploading file:", {
       name: file.name,
       type: file.type,
       size: `${(file.size / 1024).toFixed(2)} KB`,
-      path: path,
+      path: sanitizedPath,
     });
 
     // 3. Convertir le fichier en buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // 4. Upload vers Supabase Storage
+    // 6. Upload vers Supabase Storage
     const { data, error } = await supabaseAdmin.storage
       .from("products")
-      .upload(path, buffer, {
+      .upload(sanitizedPath, buffer, {
         contentType: file.type,
         cacheControl: "3600",
         upsert: false,
@@ -96,8 +136,9 @@ export async function DELETE(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    // Vérification authentification ET rôle admin
+    if (!user || user.app_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

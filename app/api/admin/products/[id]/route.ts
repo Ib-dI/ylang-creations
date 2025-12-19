@@ -1,5 +1,6 @@
 import { product } from "@/db/schema";
 import { db } from "@/lib/db";
+import { formatZodErrors, updateProductSchema } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -18,8 +19,9 @@ export async function GET(
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    // Vérification authentification ET rôle admin
+    if (!user || user.app_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
     const { id } = await params;
@@ -77,12 +79,24 @@ export async function PATCH(
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    // Vérification authentification ET rôle admin
+    if (!user || user.app_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
     const { id } = await params;
     const body = await request.json();
+
+    // Validation avec Zod
+    const validation = updateProductSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: formatZodErrors(validation.error) },
+        { status: 400 },
+      );
+    }
+
+    const validatedData = validation.data;
 
     const updateData: Record<string, unknown> = {
       updatedAt: new Date(),
@@ -97,36 +111,42 @@ export async function PATCH(
       "sku",
       "isActive",
       "isFeatured",
-    ];
+    ] as const;
 
     for (const field of allowedFields) {
-      if (body[field] !== undefined) {
-        updateData[field] = body[field];
+      if (validatedData[field] !== undefined) {
+        updateData[field] = validatedData[field];
       }
     }
 
     // Handle numeric fields
-    if (body.price !== undefined) {
-      updateData.price = String(body.price);
+    if (validatedData.price !== undefined) {
+      updateData.price = String(validatedData.price);
     }
-    if (body.compareAtPrice !== undefined) {
-      updateData.compareAtPrice = body.compareAtPrice
-        ? String(body.compareAtPrice)
+    if (validatedData.compareAtPrice !== undefined) {
+      updateData.compareAtPrice = validatedData.compareAtPrice
+        ? String(validatedData.compareAtPrice)
         : null;
     }
-    if (body.stock !== undefined) {
-      updateData.stock = String(body.stock);
+    if (validatedData.stock !== undefined) {
+      updateData.stock = String(validatedData.stock);
     }
 
     // Handle JSON fields
-    if (body.images !== undefined) {
-      updateData.images = body.images ? JSON.stringify(body.images) : null;
+    if (validatedData.images !== undefined) {
+      updateData.images = validatedData.images
+        ? JSON.stringify(validatedData.images)
+        : null;
     }
-    if (body.tags !== undefined) {
-      updateData.tags = body.tags ? JSON.stringify(body.tags) : null;
+    if (validatedData.tags !== undefined) {
+      updateData.tags = validatedData.tags
+        ? JSON.stringify(validatedData.tags)
+        : null;
     }
-    if (body.options !== undefined) {
-      updateData.options = body.options ? JSON.stringify(body.options) : null;
+    if (validatedData.options !== undefined) {
+      updateData.options = validatedData.options
+        ? JSON.stringify(validatedData.options)
+        : null;
     }
 
     await db.update(product).set(updateData).where(eq(product.id, id));
@@ -149,8 +169,9 @@ export async function DELETE(
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    // Vérification authentification ET rôle admin
+    if (!user || user.app_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
     const { id } = await params;

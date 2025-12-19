@@ -100,7 +100,7 @@ export function HeroSection() {
           <div className="absolute inset-0 bg-black/20" />
 
           {/* Content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+          {/* <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
             <motion.h1
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -134,7 +134,7 @@ export function HeroSection() {
                 </Button>
               </Link>
             </motion.div>
-          </div>
+          </div> */}
         </motion.div>
       </AnimatePresence>
 
@@ -145,7 +145,7 @@ export function HeroSection() {
           className="pointer-events-auto -translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white"
           aria-label="Previous slide"
         >
-          <ChevronLeft className="h-8 w-8 lg:h-10 lg:w-10" strokeWidth={1} />
+          <ChevronLeft className="h-4 w-4 lg:h-10 lg:w-10" strokeWidth={1} />
         </button>
 
         <button
@@ -153,7 +153,7 @@ export function HeroSection() {
           className="pointer-events-auto translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white"
           aria-label="Next slide"
         >
-          <ChevronRight className="h-8 w-8 lg:h-10 lg:w-10" strokeWidth={1} />
+          <ChevronRight className="h-4 w-4 lg:h-10 lg:w-10" strokeWidth={1} />
         </button>
       </div>
 

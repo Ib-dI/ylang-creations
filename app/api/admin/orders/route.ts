@@ -16,8 +16,9 @@ export async function GET(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    // Vérification authentification ET rôle admin
+    if (!user || user.app_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
     // Get query params

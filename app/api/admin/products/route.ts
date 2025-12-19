@@ -1,5 +1,6 @@
 import { product } from "@/db/schema";
 import { db } from "@/lib/db";
+import { createProductSchema, formatZodErrors } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/server";
 import { desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -15,11 +16,10 @@ export async function GET(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      console.error(
-        "❌ Utilisateur non authentifié pour GET /api/admin/products",
-      );
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    // Vérification authentification ET rôle admin
+    if (!user || user.app_metadata?.role !== "admin") {
+      console.error("❌ Accès non autorisé pour GET /api/admin/products");
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -93,14 +93,23 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      console.error(
-        "❌ Utilisateur non authentifié pour POST /api/admin/products",
-      );
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    // Vérification authentification ET rôle admin
+    if (!user || user.app_metadata?.role !== "admin") {
+      console.error("❌ Accès non autorisé pour POST /api/admin/products");
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
     const body = await request.json();
+
+    // Validation avec Zod
+    const validation = createProductSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: formatZodErrors(validation.error) },
+        { status: 400 },
+      );
+    }
+
     const {
       name,
       description,
@@ -115,14 +124,7 @@ export async function POST(request: Request) {
       isFeatured,
       tags,
       options,
-    } = body;
-
-    if (!name || !price || !category) {
-      return NextResponse.json(
-        { error: "Nom, prix et catégorie requis" },
-        { status: 400 },
-      );
-    }
+    } = validation.data;
 
     // Generate slug from name
     const slug = name

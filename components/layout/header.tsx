@@ -303,11 +303,11 @@ export function Header() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between lg:h-20">
             {/* Bouton Menu - Gauche */}
-            <div className="flex items-center space-x-4" ref={megaMenuRef}>
+            <div className="flex items-center" ref={megaMenuRef}>
               <button
                 onClick={toggleMegaMenu}
                 className={cn(
-                  "flex items-center space-x-2 rounded-full px-3 py-2 transition-all duration-300",
+                  "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2",
                   "text-ylang-charcoal bg-white/50 backdrop-blur-sm hover:bg-white/80",
                   isMegaMenuOpen &&
                     "bg-ylang-rose hover:bg-ylang-rose/90 text-white",
@@ -330,22 +330,31 @@ export function Header() {
               className="group absolute left-1/2 -translate-x-1/2 transform"
             >
               <div className="relative">
+                {/* Logo Mobile */}
+                <Image
+                  src="/logo/ylang créations_6.png"
+                  alt="Ylang Créations"
+                  width={80}
+                  height={80}
+                  className="block transition-transform duration-300 group-hover:scale-105 sm:hidden"
+                />
+                {/* Logo Desktop */}
                 <Image
                   src="/logo/ylang créations_6.png"
                   alt="Ylang Créations"
                   width={100}
                   height={100}
-                  className="transition-transform duration-300 group-hover:scale-105"
+                  className="hidden transition-transform duration-300 group-hover:scale-105 sm:block"
                 />
               </div>
             </Link>
 
             {/* Actions - Droite */}
-            <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-4">
-              {/* Search */}
+            <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
+              {/* Search - caché sur très petit écran, accessible via le menu */}
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="text-ylang-charcoal hover:text-ylang-rose transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
+                className="text-ylang-charcoal hover:text-ylang-rose hidden transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:block"
               >
                 <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.5} />
               </button>
@@ -450,9 +459,9 @@ export function Header() {
               ) : (
                 <button
                   onClick={() => router.push("/sign-in")}
-                  className="text-ylang-charcoal hover:text-ylang-rose hidden transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 lg:block"
+                  className="text-ylang-charcoal hover:text-ylang-rose transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
                 >
-                  <User className="h-5 w-5" strokeWidth={1.5} />
+                  <User className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.5} />
                 </button>
               )}
 
@@ -637,6 +646,26 @@ export function Header() {
             className="bg-ylang-cream/98 border-ylang-beige fixed top-16 right-0 left-0 z-40 max-h-[calc(100vh-64px)] overflow-y-auto border-b shadow-2xl backdrop-blur-lg lg:hidden"
           >
             <nav className="px-4 py-6">
+              {/* Barre de recherche mobile - en premier */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6"
+              >
+                <button
+                  onClick={() => {
+                    closeMegaMenu();
+                    setIsSearchOpen(true);
+                  }}
+                  className="border-ylang-beige text-ylang-charcoal/60 hover:border-ylang-rose/50 mt-4 flex w-full items-center gap-3 rounded-xl border bg-white/80 px-4 py-3 transition-all duration-300 hover:bg-white"
+                >
+                  <Search className="h-5 w-5" strokeWidth={1.5} />
+                  <span className="font-body text-sm">
+                    Rechercher un produit...
+                  </span>
+                </button>
+              </motion.div>
+
               {/* Navigation principale mobile */}
               <div className="border-ylang-beige mb-6 space-y-3 border-b pb-6">
                 {mainNavigation.map((item, index) => (

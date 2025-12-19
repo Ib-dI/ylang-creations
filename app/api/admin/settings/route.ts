@@ -1,5 +1,6 @@
 import { settings } from "@/db/schema";
 import { db } from "@/lib/db";
+import { formatZodErrors, settingsSchema } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -69,11 +70,22 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    // Vérification authentification ET rôle admin
+    if (!user || user.app_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
     const body = await request.json();
+
+    // Validation avec Zod
+    const validation = settingsSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: formatZodErrors(validation.error) },
+        { status: 400 },
+      );
+    }
+
     const {
       storeName,
       storeDescription,
@@ -90,7 +102,7 @@ export async function POST(request: Request) {
       craftsmanshipImage,
       aboutImage,
       testimonials,
-    } = body;
+    } = validation.data;
 
     const now = new Date();
 

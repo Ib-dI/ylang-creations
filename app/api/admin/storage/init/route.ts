@@ -1,10 +1,19 @@
-import { supabaseAdmin } from "@/utils/supabase/server";
+import { createClient, supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+
+export const runtime = "nodejs";
 
 export async function POST() {
   try {
+    // Vérification authentification ET rôle admin
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    // 1. Check if bucket exists
+    if (!user || user.app_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+    }
     const { data: buckets, error: listError } =
       await supabaseAdmin.storage.listBuckets();
 
@@ -17,9 +26,8 @@ export async function POST() {
 
     if (!bucketExists) {
       // 2. Create bucket if it doesn't exist
-      const { data, error: createError } = await supabaseAdmin.storage.createBucket(
-        bucketName,
-        {
+      const { data, error: createError } =
+        await supabaseAdmin.storage.createBucket(bucketName, {
           public: true,
           fileSizeLimit: 5242880, // 5MB
           allowedMimeTypes: [
@@ -28,8 +36,7 @@ export async function POST() {
             "image/gif",
             "image/webp",
           ],
-        },
-      );
+        });
 
       if (createError) {
         throw createError;
