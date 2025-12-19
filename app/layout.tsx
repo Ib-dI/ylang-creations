@@ -34,11 +34,27 @@ const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Ylang Creations",
-  description:
-    "Ylang Creations est une entreprise spécialisée dans la création d'accessoires et de bijoux personnalisés.",
-};
+import { settings } from "@/db/schema";
+import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
+
+const SETTINGS_ID = "main-settings";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const result = await db
+    .select()
+    .from(settings)
+    .where(eq(settings.id, SETTINGS_ID))
+    .limit(1);
+
+  const s = result[0];
+
+  return {
+    title: s?.storeName || "Ylang Creations",
+    description:
+      s?.storeDescription || "Créations artisanales pour bébés et enfants",
+  };
+}
 
 export default function RootLayout({
   children,

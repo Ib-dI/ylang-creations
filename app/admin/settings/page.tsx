@@ -17,6 +17,7 @@ import {
   Save,
   Shield,
   Store,
+  ChevronDown,
   Trash2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -230,7 +231,10 @@ export default function SettingsPage() {
 
   const addHeroSlide = () => {
     const newSlide = {
-      id: crypto.randomUUID(),
+      id:
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : Math.random().toString(36).substring(2, 9),
       title: "Nouveau Slide",
       subtitle: "Description du slide",
       image: "",
@@ -261,14 +265,11 @@ export default function SettingsPage() {
 
   const addTestimonial = () => {
     const newTestimonial = {
-      id: crypto.randomUUID(),
-      name: "Nouveau Client",
-      location: "Ville",
-      rating: 5,
-      text: "Un super témoignage...",
-      product: "Produit acheté",
+      id:
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : Math.random().toString(36).substring(2, 9),
       image: "",
-      date: "Aujourd'hui",
     };
     setSettings((prev: any) => ({
       ...prev,
@@ -558,17 +559,20 @@ export default function SettingsPage() {
                     <label className="font-body text-ylang-charcoal/60 group-focus-within:text-ylang-rose absolute -top-2.5 left-3 bg-white px-2 text-xs tracking-wide uppercase transition-all duration-300 group-focus-within:font-medium">
                       Devise par défaut
                     </label>
-                    <select
-                      value={settings.currency}
-                      onChange={(e) =>
-                        handleSettingsChange("currency", e.target.value)
-                      }
-                      className="border-ylang-beige font-body text-ylang-charcoal focus:border-ylang-rose hover:border-ylang-terracotta/50 flex h-11 w-full rounded-lg border bg-white px-4 text-sm transition-all duration-300 focus:shadow-[0_0_0_4px_rgba(183,110,121,0.1)] focus:outline-none"
-                    >
-                      <option value="eur">EUR (€)</option>
-                      <option value="usd">USD ($)</option>
-                      <option value="gbp">GBP (£)</option>
-                    </select>
+                    
+                      <select
+                        value={settings.currency}
+                        onChange={(e) =>
+                          handleSettingsChange("currency", e.target.value)
+                        }
+                        className="border-ylang-beige font-body text-ylang-charcoal cursor-pointer appearance-none focus:border-ylang-rose hover:border-ylang-terracotta/50 flex h-11 w-full rounded-lg border bg-white px-4 text-sm transition-all duration-300 focus:shadow-[0_0_0_4px_rgba(183,110,121,0.1)] focus:outline-none"
+                      >
+                        <option value="eur">EUR (€)</option>
+                        <option value="usd">USD ($)</option>
+                        <option value="gbp">GBP (£)</option>
+                      </select>
+                      <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
+                    
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -581,7 +585,7 @@ export default function SettingsPage() {
                           handleSettingsChange("shippingFee", e.target.value)
                         }
                       />
-                      <span className="text-ylang-charcoal/60 absolute top-1/2 right-4 -translate-y-1/2">
+                      <span className="text-ylang-charcoal/60 absolute top-1/2 right-8 -translate-y-1/2">
                         €
                       </span>
                     </div>
@@ -597,7 +601,7 @@ export default function SettingsPage() {
                           )
                         }
                       />
-                      <span className="text-ylang-charcoal/60 absolute top-1/2 right-4 -translate-y-1/2">
+                      <span className="text-ylang-charcoal/60 absolute top-1/2 right-8 -translate-y-1/2">
                         €
                       </span>
                     </div>
@@ -829,144 +833,65 @@ export default function SettingsPage() {
                       </Button>
                     </div>
 
-                    <div className="grid gap-6">
+                    <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
                       {settings.testimonials.map((testimonial, index) => (
                         <div
                           key={testimonial.id}
-                          className="border-ylang-beige space-y-4 rounded-xl border p-6"
+                          className="group border-ylang-beige bg-ylang-cream relative aspect-5/4 overflow-hidden rounded-xl border"
                         >
-                          <div className="flex items-start justify-between">
-                            <span className="text-ylang-charcoal/60 text-sm font-medium">
-                              Témoignage #{index + 1}
-                            </span>
-                            <button
-                              onClick={() => removeTestimonial(testimonial.id)}
-                              className="p-1 text-red-500 hover:text-red-700"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-
-                          <div className="grid gap-4 lg:grid-cols-3">
-                            <div className="space-y-4 lg:col-span-2">
-                              <div className="grid grid-cols-2 gap-4">
-                                <Input
-                                  label="Nom du client"
-                                  value={testimonial.name}
-                                  onChange={(e) =>
-                                    updateTestimonial(
-                                      testimonial.id,
-                                      "name",
-                                      e.target.value,
-                                    )
+                          {testimonial.image ? (
+                            <>
+                              <img
+                                src={testimonial.image}
+                                alt={`Capture ${index + 1}`}
+                                className="h-full w-full object-cover"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                                <label className="cursor-pointer p-2 text-white">
+                                  <ImageIcon className="h-6 w-6" />
+                                  <input
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={(e) =>
+                                      e.target.files?.[0] &&
+                                      handleTestimonialImageUpload(
+                                        testimonial.id,
+                                        e.target.files[0],
+                                      )
+                                    }
+                                  />
+                                </label>
+                                <button
+                                  onClick={() =>
+                                    removeTestimonial(testimonial.id)
                                   }
-                                />
-                                <Input
-                                  label="Localisation (ex: Paris)"
-                                  value={testimonial.location}
-                                  onChange={(e) =>
-                                    updateTestimonial(
-                                      testimonial.id,
-                                      "location",
-                                      e.target.value,
-                                    )
-                                  }
-                                />
+                                  className="p-2 text-white hover:text-red-400"
+                                >
+                                  <Trash2 className="h-6 w-6" />
+                                </button>
                               </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                <Input
-                                  label="Note (1-5)"
-                                  type="number"
-                                  min="1"
-                                  max="5"
-                                  value={testimonial.rating}
-                                  onChange={(e) =>
-                                    updateTestimonial(
-                                      testimonial.id,
-                                      "rating",
-                                      parseInt(e.target.value),
-                                    )
-                                  }
-                                />
-                                <Input
-                                  label="Date du témoignage"
-                                  value={testimonial.date}
-                                  onChange={(e) =>
-                                    updateTestimonial(
-                                      testimonial.id,
-                                      "date",
-                                      e.target.value,
-                                    )
-                                  }
-                                />
-                              </div>
-                              <Input
-                                label="Produit acheté"
-                                value={testimonial.product}
+                            </>
+                          ) : (
+                            <label className="text-ylang-charcoal/40 hover:text-ylang-rose absolute inset-0 flex cursor-pointer flex-col items-center justify-center transition-colors">
+                              <ImageIcon className="mb-2 h-8 w-8" />
+                              <span className="text-xs font-medium">
+                                Ajouter capture
+                              </span>
+                              <input
+                                type="file"
+                                className="hidden"
+                                accept="image/*"
                                 onChange={(e) =>
-                                  updateTestimonial(
+                                  e.target.files?.[0] &&
+                                  handleTestimonialImageUpload(
                                     testimonial.id,
-                                    "product",
-                                    e.target.value,
+                                    e.target.files[0],
                                   )
                                 }
                               />
-                              <div className="space-y-1">
-                                <label className="text-ylang-charcoal/60 px-1 text-xs font-medium">
-                                  Témoignage (Texte)
-                                </label>
-                                <textarea
-                                  className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose w-full rounded-xl border px-4 py-3 text-sm"
-                                  rows={3}
-                                  value={testimonial.text}
-                                  onChange={(e) =>
-                                    updateTestimonial(
-                                      testimonial.id,
-                                      "text",
-                                      e.target.value,
-                                    )
-                                  }
-                                />
-                              </div>
-                            </div>
-
-                            <div className="flex flex-col items-center gap-4">
-                              <div className="border-ylang-beige bg-ylang-cream relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border">
-                                {testimonial.image ? (
-                                  <img
-                                    src={testimonial.image}
-                                    alt={testimonial.name}
-                                    className="h-full w-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="from-ylang-rose to-ylang-terracotta flex h-full w-full items-center justify-center bg-linear-to-br text-3xl font-bold text-white">
-                                    {testimonial.name?.charAt(0) || "U"}
-                                  </div>
-                                )}
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity hover:opacity-100">
-                                  <label className="cursor-pointer p-2 text-white">
-                                    <ImageIcon className="h-6 w-6" />
-                                    <input
-                                      type="file"
-                                      className="hidden"
-                                      accept="image/*"
-                                      onChange={(e) =>
-                                        e.target.files?.[0] &&
-                                        handleTestimonialImageUpload(
-                                          testimonial.id,
-                                          e.target.files[0],
-                                        )
-                                      }
-                                    />
-                                  </label>
-                                </div>
-                              </div>
-                              <p className="text-ylang-charcoal/40 px-4 text-center text-xs">
-                                Avatar client (optionnel, les initiales seront
-                                utilisées par défaut)
-                              </p>
-                            </div>
-                          </div>
+                            </label>
+                          )}
                         </div>
                       ))}
                     </div>

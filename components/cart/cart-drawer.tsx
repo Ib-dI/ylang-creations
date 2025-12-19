@@ -26,6 +26,7 @@ export function CartDrawer() {
     getTotalPrice,
     getShipping,
     getFinalPrice,
+    freeShippingThreshold,
   } = useCartStore();
 
   return (
@@ -54,23 +55,23 @@ export function CartDrawer() {
             className="fixed top-0 right-0 bottom-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-ylang-beige p-6">
+            <div className="border-ylang-beige flex items-center justify-between border-b p-6">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#b76e79]/10">
                   <ShoppingBag className="h-5 w-5 text-[#b76e79]" />
                 </div>
                 <div>
-                  <h2 className="font-display text-xl font-bold text-ylang-charcoal">
+                  <h2 className="font-display text-ylang-charcoal text-xl font-bold">
                     Votre panier
                   </h2>
-                  <p className="text-sm text-ylang-charcoal/60">
+                  <p className="text-ylang-charcoal/60 text-sm">
                     {getTotalItems()} article{getTotalItems() > 1 ? "s" : ""}
                   </p>
                 </div>
               </div>
               <button
                 onClick={closeCart}
-                className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-ylang-beige"
+                className="hover:bg-ylang-beige flex h-10 w-10 items-center justify-center rounded-full transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -80,13 +81,13 @@ export function CartDrawer() {
             <div className="flex-1 overflow-y-auto p-6">
               {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
-                  <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-ylang-beige">
-                    <Package className="h-10 w-10 text-ylang-charcoal/40" />
+                  <div className="bg-ylang-beige mb-4 flex h-20 w-20 items-center justify-center rounded-full">
+                    <Package className="text-ylang-charcoal/40 h-10 w-10" />
                   </div>
-                  <p className="font-display mb-2 text-lg text-ylang-charcoal">
+                  <p className="font-display text-ylang-charcoal mb-2 text-lg">
                     Votre panier est vide
                   </p>
-                  <p className="mb-6 text-sm text-ylang-charcoal/60">
+                  <p className="text-ylang-charcoal/60 mb-6 text-sm">
                     Commencez à créer votre produit unique
                   </p>
                   <Button variant="primary" onClick={closeCart} asChild>
@@ -101,7 +102,7 @@ export function CartDrawer() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: -100 }}
-                      className="rounded-2xl bg-ylang-cream p-4"
+                      className="bg-ylang-cream rounded-2xl p-4"
                     >
                       <div className="flex gap-4">
                         {/* Thumbnail */}
@@ -120,19 +121,19 @@ export function CartDrawer() {
 
                         {/* Info */}
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-display mb-1 font-semibold text-ylang-charcoal">
+                          <h3 className="font-display text-ylang-charcoal mb-1 font-semibold">
                             {item.productName}
                           </h3>
-                          <p className="mb-2 text-xs text-ylang-charcoal/60">
+                          <p className="text-ylang-charcoal/60 mb-2 text-xs">
                             Tissu: {item.configuration.fabricName}
                           </p>
                           {item.configuration.embroidery && (
-                            <p className="mb-1 text-xs text-ylang-charcoal/60">
+                            <p className="text-ylang-charcoal/60 mb-1 text-xs">
                               Broderie: "{item.configuration.embroidery}"
                             </p>
                           )}
                           {item.configuration.accessories.length > 0 && (
-                            <p className="text-xs text-ylang-charcoal/60">
+                            <p className="text-ylang-charcoal/60 text-xs">
                               +{item.configuration.accessories.length}{" "}
                               accessoire
                               {item.configuration.accessories.length > 1
@@ -158,18 +159,18 @@ export function CartDrawer() {
                             onClick={() =>
                               updateQuantity(item.id, item.quantity - 1)
                             }
-                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white transition-colors hover:bg-ylang-beige"
+                            className="hover:bg-ylang-beige flex h-8 w-8 items-center justify-center rounded-lg bg-white transition-colors"
                           >
                             <Minus className="h-4 w-4" />
                           </button>
-                          <span className="w-8 text-center font-medium text-ylang-charcoal">
+                          <span className="text-ylang-charcoal w-8 text-center font-medium">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() =>
                               updateQuantity(item.id, item.quantity + 1)
                             }
-                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white transition-colors hover:bg-ylang-beige"
+                            className="hover:bg-ylang-beige flex h-8 w-8 items-center justify-center rounded-lg bg-white transition-colors"
                           >
                             <Plus className="h-4 w-4" />
                           </button>
@@ -187,17 +188,17 @@ export function CartDrawer() {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t border-ylang-beige bg-ylang-cream p-6">
+              <div className="border-ylang-beige bg-ylang-cream border-t p-6">
                 <div className="mb-4 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-ylang-charcoal/70">Sous-total</span>
-                    <span className="font-medium text-ylang-charcoal">
+                    <span className="text-ylang-charcoal font-medium">
                       {getTotalPrice().toFixed(2)}€
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-ylang-charcoal/70">Livraison</span>
-                    <span className="font-medium text-ylang-charcoal">
+                    <span className="text-ylang-charcoal font-medium">
                       {getShipping() === 0 ? (
                         <span className="text-green-600">Offerte</span>
                       ) : (
@@ -205,14 +206,16 @@ export function CartDrawer() {
                       )}
                     </span>
                   </div>
-                  {getTotalPrice() < 100 && (
-                    <p className="text-xs text-ylang-charcoal/60">
-                      Plus que {(100 - getTotalPrice()).toFixed(2)}€ pour la
-                      livraison offerte
+                  {getTotalPrice() < freeShippingThreshold && (
+                    <p className="text-ylang-charcoal/60 text-xs">
+                      Plus que{" "}
+                      {(freeShippingThreshold - getTotalPrice()).toFixed(2)}€
+                      pour la livraison offerte
                     </p>
                   )}
+
                   <div className="flex justify-between border-t border-[#e8dcc8] pt-3">
-                    <span className="font-display font-bold text-ylang-charcoal">
+                    <span className="font-display text-ylang-charcoal font-bold">
                       Total
                     </span>
                     <span className="font-display text-2xl font-bold text-[#b76e79]">
@@ -236,7 +239,7 @@ export function CartDrawer() {
 
                 <button
                   onClick={closeCart}
-                  className="mt-3 w-full text-sm text-ylang-charcoal/60 transition-colors hover:text-ylang-charcoal"
+                  className="text-ylang-charcoal/60 hover:text-ylang-charcoal mt-3 w-full text-sm transition-colors"
                 >
                   Continuer mes achats
                 </button>

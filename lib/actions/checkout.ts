@@ -1,6 +1,6 @@
 "use server";
 
-import { customer } from "@/db/schema";
+import { customer, settings } from "@/db/schema";
 import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
@@ -129,7 +129,26 @@ export async function createCheckoutSession(
       return { success: false, error: "Votre panier est vide" };
     }
 
-    // 3. Create Stripe line items
+    // 3. Get shipping settings
+    const settingsResult = await db
+      .select()
+      .from(settings)
+      .where(eq(settings.id, "main-settings"))
+      .limit(1);
+
+    const s = settingsResult[0];
+    const shippingFeeValue = parseFloat(s?.shippingFee || "9.90");
+    const freeShippingThresholdValue = parseFloat(
+      s?.freeShippingThreshold || "150",
+    );
+
+    const subtotal = items.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0,
+    );
+    const isFreeShipping = subtotal >= freeShippingThresholdValue;
+
+    // 4. Create Stripe line items
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
       (item) => ({
         price_data: {
@@ -146,6 +165,27 @@ export async function createCheckoutSession(
         quantity: item.quantity,
       }),
     );
+
+    // 5. Setup shipping options
+    const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] =
+      [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: isFreeShipping ? 0 : Math.round(shippingFeeValue * 100),
+              currency: "eur",
+            },
+            display_name: isFreeShipping
+              ? "Livraison Gratuite"
+              : "Livraison Standard",
+            delivery_estimate: {
+              minimum: { unit: "business_day", value: 5 },
+              maximum: { unit: "business_day", value: 10 },
+            },
+          },
+        },
+      ];
 
     // 4. Get or create Stripe customer
     const { stripeCustomerId, customerId } = await getOrCreateStripeCustomer(
@@ -190,6 +230,7 @@ export async function createCheckoutSession(
           "CA", // Canada
         ],
       },
+      shipping_options: shippingOptions,
       metadata,
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout`,

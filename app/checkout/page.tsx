@@ -20,7 +20,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function CheckoutPage() {
-  const { items, getTotalPrice, getShipping, getFinalPrice } = useCartStore();
+  const {
+    items,
+    getTotalPrice,
+    getShipping,
+    getFinalPrice,
+    freeShippingThreshold,
+  } = useCartStore();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -219,12 +226,14 @@ export default function CheckoutPage() {
                     )}
                   </span>
                 </div>
-                {getTotalPrice() < 100 && (
+                {getTotalPrice() < freeShippingThreshold && (
                   <p className="text-ylang-charcoal/60 text-xs">
-                    Plus que {(100 - getTotalPrice()).toFixed(2)}€ pour la
-                    livraison offerte
+                    Plus que{" "}
+                    {(freeShippingThreshold - getTotalPrice()).toFixed(2)}€ pour
+                    la livraison offerte
                   </p>
                 )}
+
                 <div className="flex justify-between border-t border-[#e8dcc8] pt-3">
                   <span className="font-display text-ylang-charcoal font-bold">
                     Total TTC

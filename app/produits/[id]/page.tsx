@@ -18,7 +18,13 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
     parsedImages = [];
   }
 
-  let parsedOptions: any = {};
+  let parsedOptions: {
+    sizes?: string[];
+    defaultSize?: string;
+    features?: string[];
+    longDescription?: string;
+    customizable?: boolean;
+  } = {};
   try {
     parsedOptions = p.options ? JSON.parse(p.options) : {};
   } catch (e) {
@@ -33,14 +39,15 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
     image: parsedImages[0] || "/images/placeholder.jpg",
     images: parsedImages,
     description: p.description || "",
-    longDescription: p.description || "", // Using description as longDescription for now
-    features: [], // DB doesn't have features yet
+    longDescription: parsedOptions.longDescription || p.description || "",
+    features: parsedOptions.features || [],
     new:
       new Date(p.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     featured: p.isFeatured,
-    customizable: true,
+    customizable: parsedOptions.customizable ?? true,
     sizes: parsedOptions.sizes || [],
-    defaultSize: parsedOptions.sizes?.[0] || undefined,
+    defaultSize:
+      parsedOptions.defaultSize || parsedOptions.sizes?.[0] || undefined,
   };
 }
 

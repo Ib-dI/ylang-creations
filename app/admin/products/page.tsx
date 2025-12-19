@@ -4,15 +4,27 @@ import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowUpRight,
+  Box,
+  Check,
   Edit,
   Eye,
   EyeOff,
+  FileText,
+  Image as ImageIcon,
+  Info,
+  Layers,
   Loader2,
   Package,
+  Palette,
   Plus,
   Search,
+  Settings,
+  Sparkles,
   Star,
+  Tags,
   Trash2,
+  ChevronDown,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,6 +44,13 @@ interface Product {
   isActive: boolean;
   isFeatured: boolean;
   tags: string[];
+  options: {
+    sizes?: string[];
+    defaultSize?: string;
+    features?: string[];
+    longDescription?: string;
+    customizable?: boolean;
+  };
   createdAt: Date;
 }
 
@@ -44,6 +63,22 @@ const categories = [
   "Les Jeux",
 ];
 
+type TabId = "general" | "media" | "details" | "options" | "seo";
+
+interface Tab {
+  id: TabId;
+  label: string;
+  icon: any;
+}
+
+const tabs: Tab[] = [
+  { id: "general", label: "Général", icon: Info },
+  { id: "media", label: "Médias", icon: ImageIcon },
+  { id: "details", label: "Détails", icon: FileText },
+  { id: "options", label: "Options", icon: Settings },
+  { id: "seo", label: "Visibilité", icon: Tags },
+];
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,11 +87,13 @@ export default function ProductsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabId>("general");
 
   // Form state
   const [formData, setFormData] = useState({
     name: "",
     description: "",
+    longDescription: "",
     price: "",
     compareAtPrice: "",
     category: "",
@@ -65,9 +102,16 @@ export default function ProductsPage() {
     sku: "",
     isActive: true,
     isFeatured: false,
+    customizable: true,
     images: [] as (string | File)[],
     tags: "",
+    features: [] as string[],
+    sizes: [] as string[],
+    defaultSize: "",
   });
+
+  const [newFeature, setNewFeature] = useState("");
+  const [newSize, setNewSize] = useState("");
 
   useEffect(() => {
     fetchProducts();
@@ -101,6 +145,7 @@ export default function ProductsPage() {
       setFormData({
         name: product.name,
         description: product.description || "",
+        longDescription: product.options?.longDescription || "",
         price: String(product.price),
         compareAtPrice: product.compareAtPrice
           ? String(product.compareAtPrice)
@@ -111,14 +156,19 @@ export default function ProductsPage() {
         sku: product.sku || "",
         isActive: product.isActive,
         isFeatured: product.isFeatured,
+        customizable: product.options?.customizable ?? true,
         images: product.images,
         tags: product.tags.join(", "),
+        features: product.options?.features || [],
+        sizes: product.options?.sizes || [],
+        defaultSize: product.options?.defaultSize || "",
       });
     } else {
       setEditingProduct(null);
       setFormData({
         name: "",
         description: "",
+        longDescription: "",
         price: "",
         compareAtPrice: "",
         category: "",
@@ -127,10 +177,15 @@ export default function ProductsPage() {
         sku: "",
         isActive: true,
         isFeatured: false,
+        customizable: true,
         images: [],
         tags: "",
+        features: [],
+        sizes: [],
+        defaultSize: "",
       });
     }
+    setActiveTab("general");
     setShowModal(true);
   };
 
@@ -140,7 +195,9 @@ export default function ProductsPage() {
       // 1. Upload new images (Files)
       const uploadedImageUrls: string[] = [];
       const existingImageUrls: string[] = [];
-      const folderId = crypto.randomUUID();
+      const folderId =
+        globalThis.crypto?.randomUUID?.() ||
+        `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
       for (const item of formData.images) {
         if (typeof item === "string") {
@@ -161,7 +218,6 @@ export default function ProductsPage() {
 
           if (!response.ok) {
             console.error("Failed to upload image");
-            // Continue with other images or throw? Let's verify
             continue;
           }
 
@@ -190,6 +246,13 @@ export default function ProductsPage() {
           .split(",")
           .map((t) => t.trim())
           .filter(Boolean),
+        options: {
+          sizes: formData.sizes,
+          defaultSize: formData.defaultSize,
+          features: formData.features,
+          longDescription: formData.longDescription,
+          customizable: formData.customizable,
+        },
       };
 
       const url = editingProduct
@@ -255,16 +318,69 @@ export default function ProductsPage() {
     }
   };
 
+  const addFeature = () => {
+    if (newFeature.trim()) {
+      setFormData({
+        ...formData,
+        features: [...formData.features, newFeature.trim()],
+      });
+      setNewFeature("");
+    }
+  };
+
+  const removeFeature = (index: number) => {
+    setFormData({
+      ...formData,
+      features: formData.features.filter((_, i) => i !== index),
+    });
+  };
+
+  const addSize = () => {
+    if (newSize.trim() && !formData.sizes.includes(newSize.trim())) {
+      setFormData({
+        ...formData,
+        sizes: [...formData.sizes, newSize.trim()],
+      });
+      setNewSize("");
+    }
+  };
+
+  const removeSize = (index: number) => {
+    const removedSize = formData.sizes[index];
+    setFormData({
+      ...formData,
+      sizes: formData.sizes.filter((_, i) => i !== index),
+      defaultSize:
+        formData.defaultSize === removedSize ? "" : formData.defaultSize,
+    });
+  };
+
   return (
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">
-          Produits
-        </h1>
-        <p className="text-ylang-charcoal/60">
-          Gérez votre catalogue de produits ({products.length} produits)
-        </p>
+        <div className="mb-2 flex items-center gap-3">
+          <div className="from-ylang-rose/20 to-ylang-gold/20 flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br">
+            <Package className="text-ylang-rose h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="text-ylang-charcoal text-3xl font-bold">Produits</h1>
+            <p className="text-ylang-charcoal/60 text-sm">
+              Gérez votre catalogue de produits
+            </p>
+          </div>
+        </div>
+        <div className="text-ylang-charcoal/40 flex items-center gap-2 text-sm">
+          <span className="bg-ylang-beige rounded-full px-3 py-1">
+            {products.length} produits au total
+          </span>
+          <span className="bg-ylang-beige rounded-full px-3 py-1">
+            {products.filter((p) => p.isActive).length} actifs
+          </span>
+          <span className="bg-ylang-beige rounded-full px-3 py-1">
+            {products.filter((p) => p.isFeatured).length} en vedette
+          </span>
+        </div>
       </div>
 
       {/* Actions bar */}
@@ -282,18 +398,21 @@ export default function ProductsPage() {
         </div>
 
         {/* Category filter */}
-        <select
-          value={selectedCategory || ""}
-          onChange={(e) => setSelectedCategory(e.target.value || null)}
-          className="border-ylang-beige focus:ring-ylang-rose/20 rounded-xl border bg-white px-4 py-3 focus:ring-2 focus:outline-none"
-        >
-          <option value="">Toutes les catégories</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            value={selectedCategory || ""}
+            onChange={(e) => setSelectedCategory(e.target.value || null)}
+            className=" focus:ring-ylang-rose/20 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
+          >
+            <option value="">Toutes les catégories</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
+        </div>
 
         {/* Add button */}
         <Button
@@ -332,21 +451,32 @@ export default function ProductsPage() {
               key={product.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="border-ylang-beige overflow-hidden rounded-2xl border bg-white transition-shadow hover:shadow-lg"
+              className="group border-ylang-beige overflow-hidden rounded-2xl border bg-white transition-all hover:shadow-lg"
             >
               {/* Image */}
-              <div className="bg-ylang-beige relative aspect-square">
+              <div className="bg-ylang-beige relative aspect-square overflow-hidden">
                 {product.images[0] ? (
                   <img
                     src={product.images[0]}
                     alt={product.name}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center">
                     <Package className="text-ylang-charcoal/20 h-12 w-12" />
                   </div>
                 )}
+
+                {/* Overlay on hover */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/20 group-hover:opacity-100">
+                  <button
+                    onClick={() => handleOpenModal(product)}
+                    className="flex items-center gap-2 rounded-full bg-white px-4 py-2 font-medium shadow-lg transition-transform hover:scale-105"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Modifier
+                  </button>
+                </div>
 
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
@@ -359,6 +489,12 @@ export default function ProductsPage() {
                     <span className="flex items-center gap-1 rounded-full bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
                       <Star className="h-3 w-3" />
                       Vedette
+                    </span>
+                  )}
+                  {product.options?.customizable && (
+                    <span className="flex items-center gap-1 rounded-full bg-purple-500 px-2 py-1 text-xs font-medium text-white">
+                      <Palette className="h-3 w-3" />
+                      Personnalisable
                     </span>
                   )}
                 </div>
@@ -451,274 +587,739 @@ export default function ProductsPage() {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Premium Modal */}
       <AnimatePresence>
         {showModal && (
           <>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/50"
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
               onClick={() => setShowModal(false)}
             />
+
+            {/* Modal Panel */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-4 z-50 flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl lg:inset-auto lg:top-1/2 lg:left-1/2 lg:max-h-[90vh] lg:w-full lg:max-w-2xl lg:-translate-x-1/2 lg:-translate-y-1/2"
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col bg-white shadow-2xl md:w-[800px] lg:w-[900px]"
             >
-              {/* Modal header */}
-              <div className="border-ylang-beige flex items-center justify-between border-b p-6">
-                <h2 className="text-ylang-charcoal text-xl font-bold">
-                  {editingProduct ? "Modifier le produit" : "Nouveau produit"}
-                </h2>
+              {/* Modal Header */}
+              <div className="from-ylang-rose/5 via-ylang-gold/5 to-ylang-beige/30 flex items-center justify-between border-b bg-linear-to-r px-8 py-6">
+                <div className="flex items-center gap-4">
+                  <div className="from-ylang-rose to-ylang-gold flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br shadow-lg">
+                    {editingProduct ? (
+                      <Edit className="h-6 w-6 text-white" />
+                    ) : (
+                      <Sparkles className="h-6 w-6 text-white" />
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="text-ylang-charcoal text-2xl font-bold">
+                      {editingProduct
+                        ? "Modifier le produit"
+                        : "Nouveau produit"}
+                    </h2>
+                    <p className="text-ylang-charcoal/60 text-sm">
+                      {editingProduct
+                        ? `Modification de "${editingProduct.name}"`
+                        : "Créez un nouveau produit pour votre catalogue"}
+                    </p>
+                  </div>
+                </div>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="hover:bg-ylang-beige rounded-lg p-2 transition-colors"
+                  className="hover:bg-ylang-beige rounded-xl p-3 transition-colors"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-6 w-6" />
                 </button>
               </div>
 
-              {/* Modal content */}
-              <div className="flex-1 space-y-6 overflow-y-auto p-6">
-                {/* Images Upload */}
-                <div>
-                  <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                    Images du produit
-                  </label>
-                  <ImageUpload
-                    value={formData.images}
-                    onChange={(urls) =>
-                      setFormData({ ...formData, images: urls })
-                    }
-                    onRemove={(url) =>
-                      setFormData({
-                        ...formData,
-                        images: formData.images.filter(
-                          (current) => current !== url,
-                        ),
-                      })
-                    }
-                  />
-                </div>
-
-                {/* Name */}
-                <div>
-                  <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                    Nom du produit *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 focus:ring-2 focus:outline-none"
-                    placeholder="Ex: Gigoteuse 4 saisons"
-                  />
-                </div>
-
-                {/* Description */}
-                <div>
-                  <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                    Description
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    rows={3}
-                    className="border-ylang-beige focus:ring-ylang-rose/20 w-full resize-none rounded-xl border px-4 py-3 focus:ring-2 focus:outline-none"
-                    placeholder="Description du produit..."
-                  />
-                </div>
-
-                {/* Price & Compare price */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                      Prix (€) *
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) =>
-                        setFormData({ ...formData, price: e.target.value })
-                      }
-                      className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 focus:ring-2 focus:outline-none"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                      Prix barré (€)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.compareAtPrice}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          compareAtPrice: e.target.value,
-                        })
-                      }
-                      className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 focus:ring-2 focus:outline-none"
-                      placeholder="0.00"
-                    />
-                  </div>
-                </div>
-
-                {/* Category */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                      Catégorie *
-                    </label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) =>
-                        setFormData({ ...formData, category: e.target.value })
-                      }
-                      className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 focus:ring-2 focus:outline-none"
+              {/* Tabs Navigation */}
+              <div className="border-ylang-beige flex gap-1 border-b bg-gray-50/50 px-8 py-3">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
+                        activeTab === tab.id
+                          ? "bg-ylang-rose text-white shadow-md"
+                          : "text-ylang-charcoal/60 hover:text-ylang-charcoal hover:bg-white hover:shadow-sm"
+                      }`}
                     >
-                      <option value="">Sélectionner...</option>
-                      {categories.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                      Sous-catégorie
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.subcategory}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          subcategory: e.target.value,
-                        })
-                      }
-                      className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 focus:ring-2 focus:outline-none"
-                      placeholder="Ex: Gigoteuses"
-                    />
-                  </div>
-                </div>
+                      <Icon className="h-4 w-4" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
 
-                {/* Stock & SKU */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                      Stock
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.stock}
-                      onChange={(e) =>
-                        setFormData({ ...formData, stock: e.target.value })
-                      }
-                      className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 focus:ring-2 focus:outline-none"
-                      placeholder="0"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                      SKU
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.sku}
-                      onChange={(e) =>
-                        setFormData({ ...formData, sku: e.target.value })
-                      }
-                      className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 focus:ring-2 focus:outline-none"
-                      placeholder="Ex: GIG-4S-001"
-                    />
-                  </div>
-                </div>
+              {/* Modal Content */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-8">
+                  {/* General Tab */}
+                  {activeTab === "general" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-6"
+                    >
+                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                        <h3 className="text-ylang-charcoal mb-4 flex items-center gap-2 text-lg font-semibold">
+                          <Info className="text-ylang-rose h-5 w-5" />
+                          Informations de base
+                        </h3>
 
-                {/* Tags */}
-                <div>
-                  <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
-                    Tags (séparés par des virgules)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.tags}
-                    onChange={(e) =>
-                      setFormData({ ...formData, tags: e.target.value })
-                    }
-                    className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 focus:ring-2 focus:outline-none"
-                    placeholder="Ex: nouveau, promo, best-seller"
-                  />
-                </div>
+                        {/* Name */}
+                        <div className="mb-4">
+                          <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                            Nom du produit{" "}
+                            <span className="text-ylang-rose">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.name}
+                            onChange={(e) =>
+                              setFormData({ ...formData, name: e.target.value })
+                            }
+                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 text-lg transition-all focus:ring-2 focus:outline-none"
+                            placeholder="Ex: Gigoteuse 4 saisons personnalisée"
+                          />
+                        </div>
 
-                {/* Options */}
-                <div className="flex items-center gap-6">
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.isActive}
-                      onChange={(e) =>
-                        setFormData({ ...formData, isActive: e.target.checked })
-                      }
-                      className="border-ylang-beige text-ylang-rose focus:ring-ylang-rose/20 h-5 w-5 rounded"
-                    />
-                    <span className="text-ylang-charcoal text-sm">
-                      Produit actif
-                    </span>
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.isFeatured}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          isFeatured: e.target.checked,
-                        })
-                      }
-                      className="border-ylang-beige text-ylang-rose focus:ring-ylang-rose/20 h-5 w-5 rounded"
-                    />
-                    <span className="text-ylang-charcoal text-sm">
-                      Mettre en vedette
-                    </span>
-                  </label>
+                        {/* Description */}
+                        <div className="mb-4">
+                          <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                            Description courte
+                          </label>
+                          <textarea
+                            value={formData.description}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                description: e.target.value,
+                              })
+                            }
+                            rows={3}
+                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full resize-none rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                            placeholder="Une brève description pour les listes et aperçus..."
+                          />
+                        </div>
+
+                        {/* Category and Subcategory */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                              Catégorie{" "}
+                              <span className="text-ylang-rose">*</span>
+                            </label>
+                            <div className="relative">
+                              <select
+                                value={formData.category}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    category: e.target.value,
+                                  })
+                                }
+                                className="w-full focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
+                              >
+                                <option value="">Sélectionner...</option>
+                                {categories.map((cat) => (
+                                  <option key={cat} value={cat}>
+                                    {cat}
+                                  </option>
+                                ))}
+                              </select>
+                              <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                              Sous-catégorie
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.subcategory}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  subcategory: e.target.value,
+                                })
+                              }
+                              className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 transition-all focus:ring-2 focus:outline-none"
+                              placeholder="Ex: Gigoteuses"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Pricing */}
+                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                        <h3 className="text-ylang-charcoal mb-4 flex items-center gap-2 text-lg font-semibold">
+                          <Box className="text-ylang-rose h-5 w-5" />
+                          Prix et Stock
+                        </h3>
+
+                        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                          <div>
+                            <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                              Prix (€){" "}
+                              <span className="text-ylang-rose">*</span>
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={formData.price}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    price: e.target.value,
+                                  })
+                                }
+                                className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 pr-8 transition-all focus:ring-2 focus:outline-none"
+                                placeholder="0.00"
+                              />
+                              <span className="text-ylang-charcoal/40 absolute top-1/2 right-4 -translate-y-1/2">
+                                €
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                              Prix barré (€)
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={formData.compareAtPrice}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    compareAtPrice: e.target.value,
+                                  })
+                                }
+                                className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 pr-8 transition-all focus:ring-2 focus:outline-none"
+                                placeholder="0.00"
+                              />
+                              <span className="text-ylang-charcoal/40 absolute top-1/2 right-4 -translate-y-1/2">
+                                €
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                              Stock
+                            </label>
+                            <input
+                              type="number"
+                              value={formData.stock}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  stock: e.target.value,
+                                })
+                              }
+                              className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 transition-all focus:ring-2 focus:outline-none"
+                              placeholder="0"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                              SKU
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.sku}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  sku: e.target.value,
+                                })
+                              }
+                              className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 transition-all focus:ring-2 focus:outline-none"
+                              placeholder="GIG-4S-001"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Media Tab */}
+                  {activeTab === "media" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-6"
+                    >
+                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                        <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
+                          <ImageIcon className="text-ylang-rose h-5 w-5" />
+                          Images du produit
+                        </h3>
+                        <p className="text-ylang-charcoal/60 mb-6 text-sm">
+                          Ajoutez jusqu'a 5 images. La première image sera
+                          l'image principale.
+                        </p>
+
+                        <ImageUpload
+                          value={formData.images}
+                          onChange={(urls) =>
+                            setFormData({ ...formData, images: urls })
+                          }
+                          onRemove={(url) =>
+                            setFormData({
+                              ...formData,
+                              images: formData.images.filter(
+                                (current) => current !== url,
+                              ),
+                            })
+                          }
+                        />
+
+                        {formData.images.length > 0 && (
+                          <div className="border-ylang-beige mt-6 rounded-xl border bg-blue-50/50 p-4">
+                            <div className="flex items-start gap-3">
+                              <Info className="mt-0.5 h-5 w-5 text-blue-500" />
+                              <div>
+                                <p className="font-medium text-blue-700">
+                                  Conseil pour les images
+                                </p>
+                                <p className="text-sm text-blue-600">
+                                  Utilisez des images de haute qualité (min.
+                                  800x800px) avec un fond neutre pour un rendu
+                                  optimal.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Details Tab */}
+                  {activeTab === "details" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-6"
+                    >
+                      {/* Long Description */}
+                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                        <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
+                          <FileText className="text-ylang-rose h-5 w-5" />
+                          Description détaillée
+                        </h3>
+                        <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                          Décrivez votre produit en détail pour la page produit.
+                        </p>
+
+                        <textarea
+                          value={formData.longDescription}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              longDescription: e.target.value,
+                            })
+                          }
+                          rows={6}
+                          className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full resize-none rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                          placeholder="Décrivez les matériaux, le processus de fabrication, les avantages du produit..."
+                        />
+                      </div>
+
+                      {/* Features */}
+                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                        <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
+                          <Check className="text-ylang-rose h-5 w-5" />
+                          Caractéristiques
+                        </h3>
+                        <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                          Listez les points clés de votre produit.
+                        </p>
+
+                        {/* Existing features */}
+                        {formData.features.length > 0 && (
+                          <div className="mb-4 space-y-2">
+                            {formData.features.map((feature, index) => (
+                              <div
+                                key={index}
+                                className="border-ylang-beige flex items-center gap-3 rounded-lg border bg-white px-4 py-3"
+                              >
+                                <Check className="text-ylang-rose h-4 w-4 shrink-0" />
+                                <span className="flex-1">{feature}</span>
+                                <button
+                                  onClick={() => removeFeature(index)}
+                                  className="rounded-full p-1 text-red-500 transition-colors hover:bg-red-50"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Add new feature */}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={newFeature}
+                            onChange={(e) => setNewFeature(e.target.value)}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" &&
+                              (e.preventDefault(), addFeature())
+                            }
+                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose flex-1 rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                            placeholder="Ex: 100% coton certifié Oeko-Tex"
+                          />
+                          <Button
+                            variant="secondary"
+                            onClick={addFeature}
+                            className="shrink-0"
+                          >
+                            <Plus className="h-4 w-4" />
+                            Ajouter
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Options Tab */}
+                  {activeTab === "options" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-6"
+                    >
+                      {/* Customizable */}
+                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100">
+                              <Palette className="h-6 w-6 text-purple-600" />
+                            </div>
+                            <div>
+                              <h3 className="text-ylang-charcoal text-lg font-semibold">
+                                Produit personnalisable
+                              </h3>
+                              <p className="text-ylang-charcoal/60 text-sm">
+                                Le client pourra personnaliser ce produit
+                                (broderie, couleurs, etc.)
+                              </p>
+                            </div>
+                          </div>
+                          <label className="relative inline-flex cursor-pointer items-center">
+                            <input
+                              type="checkbox"
+                              checked={formData.customizable}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  customizable: e.target.checked,
+                                })
+                              }
+                              className="peer sr-only"
+                            />
+                            <div className="peer h-7 w-12 rounded-full bg-gray-200 peer-checked:bg-purple-600 peer-focus:ring-4 peer-focus:ring-purple-300 after:absolute after:top-0.5 after:left-0.5 after:h-6 after:w-6 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-5 peer-checked:after:border-white"></div>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Sizes */}
+                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                        <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
+                          <Layers className="text-ylang-rose h-5 w-5" />
+                          Tailles disponibles
+                        </h3>
+                        <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                          Définissez les tailles disponibles pour ce produit.
+                        </p>
+
+                        {/* Existing sizes */}
+                        {formData.sizes.length > 0 && (
+                          <div className="mb-4 flex flex-wrap gap-2">
+                            {formData.sizes.map((size, index) => (
+                              <div
+                                key={index}
+                                className={`flex items-center gap-2 rounded-full border px-4 py-2 ${
+                                  formData.defaultSize === size
+                                    ? "border-ylang-rose bg-ylang-rose/10 text-ylang-rose"
+                                    : "border-ylang-beige bg-white"
+                                }`}
+                              >
+                                <span className="text-sm font-medium">
+                                  {size}
+                                </span>
+                                {formData.defaultSize === size && (
+                                  <span className="text-xs opacity-60">
+                                    (défaut)
+                                  </span>
+                                )}
+                                <button
+                                  onClick={() => removeSize(index)}
+                                  className="ml-1 rounded-full p-0.5 text-red-300 transition-colors hover:bg-red-50"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Add new size */}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={newSize}
+                            onChange={(e) => setNewSize(e.target.value)}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" &&
+                              (e.preventDefault(), addSize())
+                            }
+                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose flex-1 rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                            placeholder="Ex: 0-6 mois, S, M, L..."
+                          />
+                          <Button
+                            variant="secondary"
+                            onClick={addSize}
+                            className="shrink-0"
+                          >
+                            <Plus className="h-4 w-4" />
+                            Ajouter
+                          </Button>
+                        </div>
+
+                        {/* Default size selector */}
+                        {formData.sizes.length > 0 && (
+                          <div className="mt-4">
+                            <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                              Taille par défaut
+                            </label>
+                            <select
+                              value={formData.defaultSize}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  defaultSize: e.target.value,
+                                })
+                              }
+                              className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                            >
+                              <option value="">Sélectionner...</option>
+                              {formData.sizes.map((size) => (
+                                <option key={size} value={size}>
+                                  {size}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* SEO/Visibility Tab */}
+                  {activeTab === "seo" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-6"
+                    >
+                      {/* Status Cards */}
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Active */}
+                        <div
+                          className={`cursor-pointer rounded-2xl border-2 p-6 transition-all ${
+                            formData.isActive
+                              ? "border-green-500 bg-green-50"
+                              : "border-ylang-beige bg-white hover:border-gray-300"
+                          }`}
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              isActive: !formData.isActive,
+                            })
+                          }
+                        >
+                          <div className="flex items-start gap-4">
+                            <div
+                              className={`flex h-12 w-12 items-center justify-center rounded-xl ${
+                                formData.isActive
+                                  ? "bg-green-500 text-white"
+                                  : "bg-gray-100 text-gray-400"
+                              }`}
+                            >
+                              <Eye className="h-6 w-6" />
+                            </div>
+                            <div>
+                              <h4 className="text-ylang-charcoal font-semibold">
+                                Produit actif
+                              </h4>
+                              <p className="text-ylang-charcoal/60 text-sm">
+                                Visible dans la boutique
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Featured */}
+                        <div
+                          className={`cursor-pointer rounded-2xl border-2 p-6 transition-all ${
+                            formData.isFeatured
+                              ? "border-yellow-500 bg-yellow-50"
+                              : "border-ylang-beige bg-white hover:border-gray-300"
+                          }`}
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              isFeatured: !formData.isFeatured,
+                            })
+                          }
+                        >
+                          <div className="flex items-start gap-4">
+                            <div
+                              className={`flex h-12 w-12 items-center justify-center rounded-xl ${
+                                formData.isFeatured
+                                  ? "bg-yellow-500 text-white"
+                                  : "bg-gray-100 text-gray-400"
+                              }`}
+                            >
+                              <Star className="h-6 w-6" />
+                            </div>
+                            <div>
+                              <h4 className="text-ylang-charcoal font-semibold">
+                                En vedette
+                              </h4>
+                              <p className="text-ylang-charcoal/60 text-sm">
+                                Affiché sur la page d'accueil
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Tags */}
+                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                        <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
+                          <Tags className="text-ylang-rose h-5 w-5" />
+                          Tags
+                        </h3>
+                        <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                          Ajoutez des tags pour améliorer la recherche et le
+                          filtrage (séparés par des virgules).
+                        </p>
+
+                        <input
+                          type="text"
+                          value={formData.tags}
+                          onChange={(e) =>
+                            setFormData({ ...formData, tags: e.target.value })
+                          }
+                          className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                          placeholder="Ex: nouveau, promo, best-seller, coton-bio"
+                        />
+
+                        {formData.tags && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {formData.tags.split(",").map(
+                              (tag, i) =>
+                                tag.trim() && (
+                                  <span
+                                    key={i}
+                                    className="bg-ylang-beige text-ylang-charcoal rounded-full px-3 py-1 text-sm"
+                                  >
+                                    #{tag.trim()}
+                                  </span>
+                                ),
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Preview Link */}
+                      {editingProduct && (
+                        <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-blue-50 to-white p-6">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-ylang-charcoal mb-1 font-semibold">
+                                Aperçu du produit
+                              </h3>
+                              <p className="text-ylang-charcoal/60 text-sm">
+                                Voir le produit tel qu'il apparaît aux clients
+                              </p>
+                            </div>
+                            <a
+                              href={`/produits/${editingProduct.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="bg-ylang-charcoal flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-black"
+                            >
+                              Voir la page
+                              <ArrowUpRight className="h-4 w-4" />
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
                 </div>
               </div>
 
-              {/* Modal footer */}
-              <div className="border-ylang-beige flex items-center justify-end gap-3 border-t p-6">
-                <Button variant="secondary" onClick={() => setShowModal(false)}>
-                  Annuler
-                </Button>
-                <Button
-                  variant="luxury"
-                  onClick={handleSave}
-                  disabled={
-                    isSaving ||
-                    !formData.name ||
-                    !formData.price ||
-                    !formData.category
-                  }
-                >
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Enregistrement...
-                    </>
-                  ) : (
-                    "Enregistrer"
+              {/* Modal Footer */}
+              <div className="border-ylang-beige flex items-center justify-between border-t bg-gray-50/50 px-8 py-5">
+                <div className="text-ylang-charcoal/40 text-sm">
+                  {editingProduct && (
+                    <span>
+                      Dernière modification:{" "}
+                      {new Date(editingProduct.createdAt).toLocaleDateString(
+                        "fr-FR",
+                      )}
+                    </span>
                   )}
-                </Button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="secondary"
+                    onClick={() => setShowModal(false)}
+                    className="px-6"
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    variant="luxury"
+                    onClick={handleSave}
+                    disabled={
+                      isSaving ||
+                      !formData.name ||
+                      !formData.price ||
+                      !formData.category
+                    }
+                    className="px-8"
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Enregistrement...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="mr-2 h-4 w-4" />
+                        {editingProduct ? "Mettre à jour" : "Créer le produit"}
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </motion.div>
           </>

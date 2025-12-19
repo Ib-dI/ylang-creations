@@ -216,6 +216,25 @@ export function Header() {
   );
   const cartCount = useCartStore((state) => state.getTotalItems());
   const wishlistCount = useWishlistStore((state) => state.getTotalItems());
+  const setShippingConfig = useCartStore((state) => state.setShippingConfig);
+  const freeShippingThreshold = useCartStore(
+    (state) => state.freeShippingThreshold,
+  );
+
+  React.useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && !data.error) {
+          setShippingConfig(
+            parseFloat(data.shippingFee) || 9.9,
+            parseFloat(data.freeShippingThreshold) || 150,
+          );
+        }
+      })
+      .catch(console.error);
+  }, [setShippingConfig]);
+
   const megaMenuRef = React.useRef<HTMLDivElement>(null);
 
   // Correction 1: Nouvelle référence pour le conteneur du menu mobile
@@ -294,7 +313,7 @@ export function Header() {
               </a>
             </div>
             <p className="font-body hidden text-[10px] font-medium tracking-widest text-white uppercase sm:block">
-              Livraison offerte dès 150€ d'achat
+              Livraison offerte dès {freeShippingThreshold}€ d&apos;achat
             </p>
           </div>
         </div>
