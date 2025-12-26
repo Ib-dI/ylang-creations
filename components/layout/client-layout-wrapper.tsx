@@ -3,6 +3,7 @@
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { WishlistDrawer } from "@/components/wishlist/wishlist-drawer";
 import { usePathname } from "next/navigation";
+import { CookieBanner } from "./cookie-banner";
 import { Footer } from "./footer";
 import { Header } from "./header";
 
@@ -25,6 +26,7 @@ export function ClientLayoutWrapper({
       <Footer />
       <CartDrawer />
       <WishlistDrawer />
+      <CookieBanner />
     </>
   );
 }

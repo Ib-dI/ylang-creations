@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Politique de Confidentialité | Ylang Créations",
@@ -110,9 +111,12 @@ export default function ConfidentialitePage() {
             <p>
               Nos cookies améliorent l'accès à notre site et identifient les
               visiteurs réguliers. En outre, nos cookies améliorent l'expérience
-              d'utilisateur grâce au suivi et au ciblage de ses intérêts.
-              Cependant, cette utilisation des cookies n'est en aucune façon
-              liée à des informations personnelles identifiables sur notre site.
+              d'utilisateur grâce au suivi et au ciblage de ses intérêts. Pour
+              plus d'informations, veuillez consulter notre{" "}
+              <Link href="/cookies" className="text-ylang-rose hover:underline">
+                politique de cookies
+              </Link>{" "}
+              dédiée.
             </p>
           </section>
 

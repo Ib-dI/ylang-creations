@@ -7,25 +7,38 @@ import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 
+// Navigation principale (synchronisée avec header.tsx)
+const mainNavigation = [
+  { name: "Créations", href: "/collections" },
+  { name: "Créations sur mesure", href: "/configurateur", featured: true },
+  { name: "Nouvelle collection", href: "/collections?filter=new" },
+  { name: "La marque", href: "/a-propos" },
+  { name: "Contact", href: "/contact" },
+];
+
+// Catégories boutique (synchronisées avec megaMenuCategories du header)
 const footerLinks = {
   shop: [
-    { name: "Toutes les collections", href: "/collections" },
-    { name: "Linge de lit bébé", href: "/collections/linge-lit" },
-    { name: "Décoration chambre", href: "/collections/decoration" },
-    { name: "Cadeaux de naissance", href: "/collections/cadeaux" },
-    { name: "Sur mesure", href: "/configurateur" },
+    { name: "La Chambre", href: "/collections?category=chambre" },
+    { name: "La Toilette", href: "/collections?category=toilette" },
+    {
+      name: "Linge de naissance",
+      href: "/collections?category=linge-naissance",
+    },
+    { name: "Accessoires", href: "/collections?category=accessoires" },
+    { name: "Bagageries/Promenade", href: "/collections?category=bagageries" },
+    { name: "Les Jeux", href: "/collections?category=jeux" },
   ],
   company: [
-    { name: "Notre histoire", href: "/a-propos" },
+    { name: "La marque", href: "/a-propos" },
     { name: "Savoir-faire artisanal", href: "/a-propos#savoir-faire" },
     { name: "Nos engagements", href: "/a-propos#engagements" },
-    { name: "Blog & Inspirations", href: "/blog" },
     { name: "Contact", href: "/contact" },
   ],
   help: [
     { name: "Guide des tailles", href: "/aide/tailles" },
     { name: "Comment personnaliser", href: "/aide/personnalisation" },
-    { name: "Livraison & Retours", href: "/aide/livraison" },
+    // { name: "Livraison & Retours", href: "/aide/livraison" },
     { name: "Entretien des produits", href: "/aide/entretien" },
     { name: "FAQ", href: "/aide/faq" },
   ],
@@ -37,25 +50,6 @@ const footerLinks = {
     { name: "Cookies", href: "/cookies" },
   ],
 };
-type NavigationType = {
-  name: string;
-  href: string;
-  featured?: boolean;
-};
-
-const navigation: NavigationType[] = [
-  { name: "Accueil", href: "/" },
-  { name: "Boutique", href: "/boutique" },
-  { name: "Collections", href: "/collections" },
-  {
-    name: "Créer sur mesure",
-    href: "/configurateur",
-    featured: true, // Badge "Nouveau" ✨
-  },
-  { name: "Notre atelier", href: "/atelier" },
-  { name: "Blog", href: "/blog" },
-  { name: "Contact", href: "/contact" },
-];
 
 const socialLinks = [
   {
@@ -166,7 +160,7 @@ export function Footer() {
               <Button
                 type="submit"
                 variant={isSubscribed ? "secondary" : "primary"}
-                size="lg"
+                size="sm"
                 className="whitespace-nowrap sm:w-auto"
               >
                 {isSubscribed ? "✓ Inscrit !" : "S'inscrire"}

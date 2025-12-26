@@ -34,13 +34,13 @@ interface SearchModalProps {
 
 const SUGGESTIONS = [
   "Gigoteuse",
-  "Tour de lit", 
+  "Tour de lit",
   "Couverture",
   "Coussin musical",
   "Cape de bain",
   "Sac à langer",
   "Personnalisé",
-  "Cadeau naissance"
+  "Cadeau naissance",
 ];
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
@@ -97,7 +97,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       if (debouncedQuery.length >= 2) {
         setIsLoading(true);
         try {
-          const res = await fetch(`/api/products?search=${encodeURIComponent(debouncedQuery)}&limit=6`);
+          const res = await fetch(
+            `/api/products?search=${encodeURIComponent(debouncedQuery)}&limit=6`,
+          );
           if (res.ok) {
             const data = await res.json();
             setResults(data.products || []);
@@ -132,6 +134,17 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     ].slice(0, 5);
     setRecentSearches(updated);
     localStorage.setItem("ylang-recent-searches", JSON.stringify(updated));
+  };
+
+  const removeRecentSearch = (term: string) => {
+    const updated = recentSearches.filter((s) => s !== term);
+    setRecentSearches(updated);
+    localStorage.setItem("ylang-recent-searches", JSON.stringify(updated));
+  };
+
+  const clearAllRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem("ylang-recent-searches");
   };
 
   const handleProductClick = (product: Product) => {
@@ -175,7 +188,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed top-0 right-0 left-0 z-50 mx-auto max-w-3xl p-4 pt-20 lg:pt-24"
+            className="fixed top-0 right-0 left-0 z-50 mx-auto max-w-3xl p-4 pt-4 sm:pt-20 lg:pt-24"
           >
             <div className="bg-ylang-cream border-ylang-beige overflow-hidden rounded-2xl border shadow-2xl">
               {/* Search Input */}
@@ -291,21 +304,43 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     {/* Recherches récentes */}
                     {recentSearches.length > 0 && (
                       <div>
-                        <div className="mb-3 flex items-center gap-2 px-2">
-                          <Clock className="text-ylang-charcoal/40 h-4 w-4" />
-                          <span className="text-ylang-charcoal/60 font-body text-sm">
-                            Recherches récentes
-                          </span>
+                        <div className="mb-3 flex items-center justify-between px-2">
+                          <div className="flex items-center gap-2">
+                            <Clock className="text-ylang-charcoal/40 h-4 w-4" />
+                            <span className="text-ylang-charcoal/60 font-body text-sm">
+                              Recherches récentes
+                            </span>
+                          </div>
+                          <button
+                            onClick={clearAllRecentSearches}
+                            className="text-ylang-charcoal/40 hover:text-ylang-rose font-body text-xs transition-colors"
+                          >
+                            Tout effacer
+                          </button>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {recentSearches.map((term) => (
-                            <button
+                            <div
                               key={term}
-                              onClick={() => handleQuickSearch(term)}
-                              className="bg-ylang-beige/50 text-ylang-charcoal font-body hover:bg-ylang-rose rounded-full px-4 py-2 text-sm transition-all hover:text-white"
+                              className="bg-ylang-beige/50 hover:bg-ylang-beige group relative flex items-center gap-1 rounded-full pr-2 transition-all"
                             >
-                              {term}
-                            </button>
+                              <button
+                                onClick={() => handleQuickSearch(term)}
+                                className="text-ylang-charcoal font-body py-2 pl-4 text-sm"
+                              >
+                                {term}
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeRecentSearch(term);
+                                }}
+                                className="text-ylang-charcoal/30 hover:text-ylang-rose hover:bg-ylang-rose/10 rounded-full p-1 transition-all"
+                                aria-label={`Supprimer ${term}`}
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
                           ))}
                         </div>
                       </div>
