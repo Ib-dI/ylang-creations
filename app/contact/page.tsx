@@ -35,8 +35,8 @@ const contactInfo = [
   {
     icon: Phone,
     label: "Téléphone",
-    value: "+262 693 53 08 58",
-    href: "tel:+262693530858",
+    value: "*********",
+    href: "tel:#",
     description: "Du lundi au vendredi, 9h-18h",
   },
   {
@@ -49,7 +49,7 @@ const contactInfo = [
   {
     icon: MapPin,
     label: "Localisation",
-    value: "Île de la Réunion",
+    value: "Mayotte / Île de la Réunion",
     href: null,
     description: "Livraison France entière",
   },
@@ -524,7 +524,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="from-ylang-rose to-ylang-terracotta rounded-3xl bg-linear-to-br p-12 text-center text-white lg:p-16"
+            className="from-ylang-yellow to-ylang-yellow/50 rounded-3xl bg-linear-to-br p-12 text-center text-white lg:p-16"
           >
             <Sparkles className="mx-auto mb-6 h-10 w-10 opacity-80" />
             <h2 className="font-display mb-4 text-2xl font-bold lg:text-3xl">
@@ -539,7 +539,7 @@ export default function ContactPage() {
                 <Button
                   variant="secondary"
                   size="lg"
-                  className="text-ylang-rose hover:bg-ylang-cream bg-white"
+                  className=""
                 >
                   <Sparkles className="mr-2 h-5 w-5" />
                   Créer sur mesure
@@ -549,7 +549,7 @@ export default function ContactPage() {
                 <Button
                   variant="luxury"
                   size="lg"
-                  className="border-white text-white hover:bg-white/10"
+                  className=""
                 >
                   Voir les collections
                 </Button>
