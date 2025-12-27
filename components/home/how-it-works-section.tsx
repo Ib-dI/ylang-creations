@@ -87,7 +87,7 @@ export function HowItWorksSection() {
 
                 {/* Icon */}
                 <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <step.icon className="w-8 h-8 text-ylang-rose" />
+                  <step.icon className="w-8 h-8 text-ylang-terracotta" />
                 </div>
 
                 {/* Content */}
@@ -102,7 +102,7 @@ export function HowItWorksSection() {
                 <ul className="space-y-2">
                   {step.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <Check className="w-5 h-5 text-ylang-rose shrink-0 mt-0.5" />
+                      <Check className="w-5 h-5 text-ylang-terracotta shrink-0 mt-0.5" />
                       <span className="text-sm font-body text-ylang-charcoal/60">
                         {feature}
                       </span>

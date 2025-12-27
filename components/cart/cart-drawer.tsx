@@ -12,7 +12,6 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 export function CartDrawer() {
@@ -108,11 +107,10 @@ export function CartDrawer() {
                         {/* Thumbnail */}
                         <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
                           {item.thumbnail ? (
-                            <Image
+                            <img
                               src={item.thumbnail}
                               alt={item.productName}
-                              fill
-                              className="object-cover"
+                              className="h-full w-full object-cover"
                             />
                           ) : (
                             <span className="text-3xl">🛏️</span>

@@ -135,7 +135,7 @@ export default function AProposPage() {
             >
               Élégance, raffinement
               <br />
-              <span className="text-ylang-rose">& personnalisation</span>
+              <span className="text-ylang-terracotta">& personnalisation</span>
             </motion.h1>
             <motion.p
               variants={fadeInUp}
@@ -168,7 +168,7 @@ export default function AProposPage() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="bg-ylang-beige relative aspect-4/5 overflow-hidden rounded-3xl shadow-2xl">
+              <div className="bg-ylang-beige relative aspect-4/5 overflow-hidden rounded-3xl shadow-md">
                 <Image
                   src={aboutImage}
                   alt="Mélissa, fondatrice de Ylang Créations"
@@ -195,7 +195,7 @@ export default function AProposPage() {
                 </div>
               </div>
               {/* Decorative badge */}
-              <div className="absolute -right-6 -bottom-6 rounded-2xl bg-white p-6 shadow-xl">
+              <div className="absolute -right-6 -bottom-6 rounded-2xl bg-white p-6 shadow-sm">
                 <p className="font-display text-ylang-rose text-3xl font-bold">
                   2019
                 </p>
@@ -282,7 +282,7 @@ export default function AProposPage() {
             viewport={{ once: true }}
             className="mb-16 text-center"
           >
-            <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
+            <p className="text-ylang-yellow font-body mb-3 text-sm tracking-widest uppercase">
               Notre parcours
             </p>
             <h2 className="font-display text-ylang-charcoal text-3xl font-bold lg:text-4xl">
@@ -326,7 +326,7 @@ export default function AProposPage() {
                   </div>
 
                   {/* Icon */}
-                  <div className="bg-ylang-rose relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-lg">
+                  <div className="bg-ylang-yellow relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-lg">
                     <item.icon className="h-7 w-7 text-white" />
                   </div>
 
@@ -371,8 +371,8 @@ export default function AProposPage() {
                 transition={{ delay: index * 0.1 }}
                 className="group rounded-2xl bg-white p-8 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
               >
-                <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose mb-6 flex h-14 w-14 items-center justify-center rounded-xl transition-colors">
-                  <value.icon className="text-ylang-rose h-7 w-7 transition-colors group-hover:text-white" />
+                <div className="bg-ylang-rose/10 group-hover:bg-ylang-terracotta mb-6 flex h-14 w-14 items-center justify-center rounded-xl transition-colors">
+                  <value.icon className="text-ylang-terracotta h-7 w-7 transition-colors group-hover:text-white" />
                 </div>
                 <h3 className="font-display text-ylang-charcoal mb-3 text-lg">
                   {value.title}
@@ -396,7 +396,7 @@ export default function AProposPage() {
               viewport={{ once: true }}
               className="space-y-6"
             >
-              <div className="bg-ylang-sage/30 inline-flex items-center gap-2 rounded-full px-4 py-2">
+              <div className="bg-ylang-yellow/30 inline-flex items-center gap-2 rounded-full px-4 py-2">
                 <Leaf className="text-ylang-charcoal h-5 w-5" />
                 <span className="font-body text-ylang-charcoal text-sm font-medium">
                   Démarche éco-responsable
@@ -446,9 +446,9 @@ export default function AProposPage() {
               {stats.map((stat, index) => (
                 <div
                   key={stat.label}
-                  className="rounded-2xl bg-white p-6 text-center shadow-lg"
+                  className="rounded-2xl bg-white p-6 text-center shadow-xs"
                 >
-                  <p className="font-display text-ylang-rose text-3xl font-bold lg:text-4xl">
+                  <p className="font-display text-ylang-yellow text-3xl font-bold lg:text-4xl">
                     {stat.value}
                   </p>
                   <p className="font-body text-ylang-charcoal/60 mt-2 text-sm">
@@ -468,7 +468,7 @@ export default function AProposPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="from-ylang-rose to-ylang-terracotta rounded-3xl bg-linear-to-br p-12 text-center text-white lg:p-20"
+            className="from-ylang-yellow to-ylang-yellow/50 rounded-3xl bg-linear-to-br p-12 text-center text-white lg:p-20"
           >
             <Sparkles className="mx-auto mb-6 h-12 w-12 opacity-80" />
             <h2 className="font-display mb-6 text-3xl font-bold lg:text-4xl">
@@ -487,7 +487,7 @@ export default function AProposPage() {
                 <Button
                   variant="secondary"
                   size="lg"
-                  className="text-ylang-rose hover:bg-ylang-cream bg-white"
+                  className="text-ylang-terracotta hover:bg-ylang-cream bg-white"
                 >
                   Découvrir nos créations
                 </Button>

@@ -13,10 +13,8 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
-  Download,
   Package,
   Palette,
-  Plus,
   ShoppingBag,
   Sparkles,
   Type,
@@ -32,6 +30,7 @@ interface Product {
   icon: string;
   baseImage: string;
   maskImage: string;
+  colorMaskImage?: string;
 }
 
 interface Fabric {
@@ -55,6 +54,7 @@ interface Configuration {
   embroidery: string;
   embroideryColor: string;
   accessories: string[];
+  selectedColor: string | null;
 }
 
 const ProductConfigurator = () => {
@@ -65,7 +65,7 @@ const ProductConfigurator = () => {
       id: "bib",
       name: "Bavoir",
       description: "Bavoir naissance ergonomique",
-      basePrice: 25,
+      basePrice: 13,
       icon: "👶",
       baseImage: "/images/produits/bavoir-base.png",
       maskImage: "/images/produits/bavoir-mask.png",
@@ -81,12 +81,31 @@ const ProductConfigurator = () => {
     },
     {
       id: "bag",
-      name: "Sac à langer",
+      name: "Sac",
       description: "Grand sac pratique et élégant",
-      basePrice: 85,
+      basePrice: 25,
       icon: "👜",
       baseImage: "/images/produits/sac-base.png",
       maskImage: "/images/produits/sac-mask.png",
+    },
+    {
+      id: "bag2",
+      name: "Sac à langer",
+      description: "Grand sac pratique et élégant",
+      basePrice: 23,
+      icon: "👜",
+      baseImage: "/images/produits/sac-a-langer-base.png",
+      maskImage: "/images/produits/sac-a-langer-mask.png",
+    },
+    {
+      id: "gigo",
+      name: "Gigoteuse",
+      description: "Gigoteuse raffinée",
+      basePrice: 19,
+      icon: "👗",
+      baseImage: "/images/produits/gigoteuse-base.png",
+      maskImage: "/images/produits/gigoteuse-mask.png",
+      colorMaskImage: "/images/produits/gigoteuse-color-mask.png",
     },
   ];
 
@@ -265,6 +284,20 @@ const ProductConfigurator = () => {
     { name: "Gris Anthracite", hex: "#36454F" },
   ];
 
+  // Palette de couleurs pour les éléments avec color mask
+  const productColors = [
+    { name: "Rose Poudré", hex: "#E8B4B8" },
+    { name: "Terracotta", hex: "#C4756C" },
+    { name: "Bleu Ciel", hex: "#89CFF0" },
+    { name: "Vert Sauge", hex: "#9DC183" },
+    { name: "Jaune Miel", hex: "#F5D76E" },
+    { name: "Lilas", hex: "#C8A2C8" },
+    { name: "Corail", hex: "#FF8A80" },
+    { name: "Beige", hex: "#D4C4A8" },
+    { name: "Menthe", hex: "#98FF98" },
+    { name: "Pêche", hex: "#FFCBA4" },
+  ];
+
   const accessories: Accessory[] = [
     { id: "bow", name: "Noeud décoratif", price: 5, emoji: "🎀" },
     { id: "lace", name: "Finition dentelle", price: 8, emoji: "🕸️" },
@@ -283,6 +316,7 @@ const ProductConfigurator = () => {
     embroidery: "",
     embroideryColor: embroideryColors[0].hex,
     accessories: [],
+    selectedColor: null,
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -379,6 +413,17 @@ const ProductConfigurator = () => {
       return;
     }
 
+    // Capturer l'image du canvas comme thumbnail
+    const canvas = canvasRef.current;
+    let thumbnailDataUrl: string | undefined;
+    if (canvas) {
+      try {
+        thumbnailDataUrl = canvas.toDataURL("image/png");
+      } catch (e) {
+        console.warn("Impossible de capturer le thumbnail du canvas", e);
+      }
+    }
+
     const uniqueId = `custom-${configuration.product.id}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
     const cartItem = {
@@ -393,7 +438,7 @@ const ProductConfigurator = () => {
       },
       price: totalPrice(),
       quantity: 1,
-      // thumbnail: ... (could save canvas dataURL here if needed)
+      thumbnail: thumbnailDataUrl,
     };
 
     addItem(cartItem);
@@ -539,7 +584,90 @@ const ProductConfigurator = () => {
           }
         }
 
-        // ÉTAPE 3: Ajouter un léger overlay pour plus de profondeur (optionnel)
+        // ÉTAPE 3: Appliquer le colorMask si disponible et une couleur est sélectionnée
+        if (
+          configuration.product.colorMaskImage &&
+          configuration.selectedColor
+        ) {
+          try {
+            const colorMaskImg = await loadImage(
+              configuration.product.colorMaskImage,
+            );
+
+            // Créer un canvas temporaire pour le color mask
+            const colorMaskCanvas = document.createElement("canvas");
+            colorMaskCanvas.width = canvas.width;
+            colorMaskCanvas.height = canvas.height;
+            const colorMaskCtx = colorMaskCanvas.getContext("2d");
+
+            if (colorMaskCtx) {
+              // Dessiner le color mask
+              colorMaskCtx.drawImage(
+                colorMaskImg,
+                0,
+                0,
+                canvas.width,
+                canvas.height,
+              );
+              const colorMaskData = colorMaskCtx.getImageData(
+                0,
+                0,
+                canvas.width,
+                canvas.height,
+              );
+
+              // Récupérer les données actuelles du canvas principal
+              const currentData = ctx.getImageData(
+                0,
+                0,
+                canvas.width,
+                canvas.height,
+              );
+
+              // Parser la couleur sélectionnée
+              const selectedColorHex = configuration.selectedColor;
+              const colorR = parseInt(selectedColorHex.slice(1, 3), 16);
+              const colorG = parseInt(selectedColorHex.slice(3, 5), 16);
+              const colorB = parseInt(selectedColorHex.slice(5, 7), 16);
+
+              // Appliquer la couleur avec blend mode multiply sur les zones du color mask
+              for (let i = 0; i < colorMaskData.data.length; i += 4) {
+                const maskAlpha = colorMaskData.data[i] / 255; // Canal rouge comme alpha
+
+                if (maskAlpha > 0.1) {
+                  const baseR = currentData.data[i];
+                  const baseG = currentData.data[i + 1];
+                  const baseB = currentData.data[i + 2];
+
+                  // Multiply blend avec la couleur sélectionnée
+                  let finalR = (baseR * colorR) / 255;
+                  let finalG = (baseG * colorG) / 255;
+                  let finalB = (baseB * colorB) / 255;
+
+                  // Augmenter la luminosité
+                  const brightnessFactor = 1.4;
+                  finalR = Math.min(255, finalR * brightnessFactor);
+                  finalG = Math.min(255, finalG * brightnessFactor);
+                  finalB = Math.min(255, finalB * brightnessFactor);
+
+                  // Appliquer avec l'alpha du masque
+                  currentData.data[i] =
+                    finalR * maskAlpha + baseR * (1 - maskAlpha);
+                  currentData.data[i + 1] =
+                    finalG * maskAlpha + baseG * (1 - maskAlpha);
+                  currentData.data[i + 2] =
+                    finalB * maskAlpha + baseB * (1 - maskAlpha);
+                }
+              }
+
+              ctx.putImageData(currentData, 0, 0);
+            }
+          } catch (e) {
+            console.warn("Erreur lors de l'application du color mask", e);
+          }
+        }
+
+        // ÉTAPE 4: Ajouter un léger overlay pour plus de profondeur (optionnel)
         if (maskImg) {
           ctx.globalCompositeOperation = "overlay";
           ctx.globalAlpha = 0.15; // Très subtil
@@ -608,6 +736,7 @@ const ProductConfigurator = () => {
     configuration.fabric,
     configuration.embroidery,
     configuration.embroideryColor,
+    configuration.selectedColor,
   ]);
 
   // const downloadImage = () => {
@@ -673,9 +802,9 @@ const ProductConfigurator = () => {
           </div>
         </div>
 
-        {/* RIGHT: Options (Scrollable) */}
-        <div className="flex h-1/2 flex-col overflow-y-auto bg-white lg:h-full lg:w-1/2">
-          <div className="flex-1 p-6 lg:p-4">
+        {/* RIGHT: Options (Scrollable content with sticky footer) */}
+        <div className="flex flex-col bg-white lg:h-[calc(100vh-90px)] lg:w-1/2">
+          <div className="flex-1 overflow-y-auto p-6 lg:p-4">
             {/* Progress bar */}
             <div className="mb-6">
               <div className="mb-4 flex items-center justify-between">
@@ -779,6 +908,77 @@ const ProductConfigurator = () => {
                       );
                     })}
                   </div>
+
+                  {/* Color Selection - uniquement si le produit a un colorMaskImage */}
+                  {configuration.product?.colorMaskImage && (
+                    <div className="mt-6 rounded-2xl border-2 border-dashed border-[#e8dcc8] bg-[#faf9f6] p-4">
+                      <div className="mb-3 flex items-center gap-2">
+                        <Palette className="text-ylang-rose h-5 w-5" />
+                        <h3 className="text-lg font-bold text-[#1a1a1a]">
+                          Personnalisez la couleur
+                        </h3>
+                      </div>
+                      <p className="mb-4 text-sm text-[#1a1a1a]/60">
+                        Ce produit dispose d'éléments personnalisables en
+                        couleur
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        {productColors.map((color) => (
+                          <button
+                            key={color.hex}
+                            onClick={() =>
+                              setConfiguration((prev) => ({
+                                ...prev,
+                                selectedColor:
+                                  prev.selectedColor === color.hex
+                                    ? null
+                                    : color.hex,
+                              }))
+                            }
+                            className={`group relative h-10 w-10 rounded-full border-2 transition-all duration-300 ${
+                              configuration.selectedColor === color.hex
+                                ? "ring-ylang-rose scale-110 border-white shadow-lg ring-2 ring-offset-2"
+                                : "border-white/50 hover:scale-110 hover:shadow-md"
+                            }`}
+                            style={{ backgroundColor: color.hex }}
+                            title={color.name}
+                          >
+                            {configuration.selectedColor === color.hex && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Check className="h-5 w-5 text-white drop-shadow-md" />
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                      {configuration.selectedColor && (
+                        <div className="mt-3 flex items-center gap-2">
+                          <div
+                            className="h-4 w-4 rounded-full border border-[#e8dcc8]"
+                            style={{
+                              backgroundColor: configuration.selectedColor,
+                            }}
+                          />
+                          <span className="text-sm font-medium text-[#1a1a1a]/70">
+                            {productColors.find(
+                              (c) => c.hex === configuration.selectedColor,
+                            )?.name || "Couleur sélectionnée"}
+                          </span>
+                          <button
+                            onClick={() =>
+                              setConfiguration((prev) => ({
+                                ...prev,
+                                selectedColor: null,
+                              }))
+                            }
+                            className="text-ylang-rose ml-auto text-xs hover:underline"
+                          >
+                            Réinitialiser
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
 
@@ -807,86 +1007,84 @@ const ProductConfigurator = () => {
                             Doux et respirants
                           </p>
                         </div>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <button className="text-ylang-rose hover:text-ylang-terracotta flex items-center gap-1 text-sm font-semibold transition-colors">
-                              Voir tout
-                              <ChevronRight className="h-4 w-4" />
-                            </button>
-                          </DialogTrigger>
-                          <DialogContent
-                            className="z-50 max-h-[85vh] max-w-5xl overflow-hidden bg-white p-0"
-                            showCloseButton={true}
-                          >
-                            <div className="sticky top-0 z-20 border-b border-[#e8dcc8] bg-white px-6 py-5">
-                              <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold">
-                                  Cotons Unis
-                                </DialogTitle>
-                                <DialogDescription className="text-base">
-                                  Tous nos cotons unis de qualité premium •{" "}
-                                  {
-                                    fabrics.filter((f) =>
-                                      f.id.startsWith("coton"),
-                                    ).length
-                                  }{" "}
-                                  motifs
-                                </DialogDescription>
-                              </DialogHeader>
-                            </div>
-                            <div
-                              className="overflow-y-auto px-6 py-6"
-                              style={{ maxHeight: "calc(85vh - 100px)" }}
+                        {fabrics.filter((f) => f.id.startsWith("coton"))
+                          .length > 5 && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <button className="text-ylang-rose hover:text-ylang-terracotta flex items-center gap-1 text-sm font-semibold transition-colors">
+                                Voir tout
+                                <ChevronRight className="h-4 w-4" />
+                              </button>
+                            </DialogTrigger>
+                            <DialogContent
+                              className="z-50 max-h-[85vh] max-w-5xl overflow-hidden bg-white p-0"
+                              showCloseButton={true}
                             >
-                              <div className="grid grid-cols-3 gap-5 sm:grid-cols-4 md:grid-cols-5">
-                                {fabrics
-                                  .filter((f) => f.id.startsWith("coton"))
-                                  .map((fabric) => {
-                                    const isSelected =
-                                      configuration.fabric?.id === fabric.id;
-                                    return (
-                                      <button
-                                        key={fabric.id}
-                                        onClick={() => {
-                                          setConfiguration((prev) => ({
-                                            ...prev,
-                                            fabric,
-                                          }));
-                                        }}
-                                        className={`group relative flex flex-col overflow-hidden border-2 transition-all duration-300 ${
-                                          isSelected
-                                            ? "border-ylang-rose ring-ylang-rose scale-95"
-                                            : "hover:border-ylang-rose/30 border-gray-100 hover:scale-105"
-                                        }`}
-                                      >
-                                        <div
-                                          className="h-24 w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                          style={{
-                                            backgroundImage: `url('${fabric.image}')`,
-                                          }}
-                                        />
-                                        <div className="bg-white p-3">
-                                          <h4 className="mb-1 truncate text-xs font-semibold text-[#1a1a1a]">
-                                            {fabric.name}
-                                          </h4>
-                                          {/* <p className="text-ylang-rose text-sm font-bold">
-                                            {fabric.price === 0
-                                              ? "Inclus"
-                                              : `+${fabric.price}€`}
-                                          </p> */}
-                                        </div>
-                                        {isSelected && (
-                                          <div className="bg-ylang-rose absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg">
-                                            <Check className="h-3 w-3 text-white" />
-                                          </div>
-                                        )}
-                                      </button>
-                                    );
-                                  })}
+                              <div className="sticky top-0 z-20 border-b border-[#e8dcc8] bg-white px-6 py-5">
+                                <DialogHeader>
+                                  <DialogTitle className="text-2xl font-bold">
+                                    Cotons Unis
+                                  </DialogTitle>
+                                  <DialogDescription className="text-base">
+                                    Tous nos cotons unis de qualité premium •{" "}
+                                    {
+                                      fabrics.filter((f) =>
+                                        f.id.startsWith("coton"),
+                                      ).length
+                                    }{" "}
+                                    motifs
+                                  </DialogDescription>
+                                </DialogHeader>
                               </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                              <div
+                                className="overflow-y-auto px-6 py-6"
+                                style={{ maxHeight: "calc(85vh - 100px)" }}
+                              >
+                                <div className="grid grid-cols-3 gap-5 sm:grid-cols-4 md:grid-cols-5">
+                                  {fabrics
+                                    .filter((f) => f.id.startsWith("coton"))
+                                    .map((fabric) => {
+                                      const isSelected =
+                                        configuration.fabric?.id === fabric.id;
+                                      return (
+                                        <button
+                                          key={fabric.id}
+                                          onClick={() => {
+                                            setConfiguration((prev) => ({
+                                              ...prev,
+                                              fabric,
+                                            }));
+                                          }}
+                                          className={`group relative flex flex-col overflow-hidden border-2 transition-all duration-300 ${
+                                            isSelected
+                                              ? "border-ylang-rose ring-ylang-rose scale-95"
+                                              : "hover:border-ylang-rose/30 border-gray-100 hover:scale-105"
+                                          }`}
+                                        >
+                                          <div
+                                            className="h-24 w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                            style={{
+                                              backgroundImage: `url('${fabric.image}')`,
+                                            }}
+                                          />
+                                          <div className="bg-white p-3">
+                                            <h4 className="mb-1 truncate text-xs font-semibold text-[#1a1a1a]">
+                                              {fabric.name}
+                                            </h4>
+                                          </div>
+                                          {isSelected && (
+                                            <div className="bg-ylang-rose absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg">
+                                              <Check className="h-3 w-3 text-white" />
+                                            </div>
+                                          )}
+                                        </button>
+                                      );
+                                    })}
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
                       </div>
                       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
                         {fabrics
@@ -948,86 +1146,84 @@ const ProductConfigurator = () => {
                             Extensible et confortable
                           </p>
                         </div>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <button className="text-ylang-rose hover:text-ylang-terracotta flex items-center gap-1 text-sm font-semibold transition-colors">
-                              Voir tout
-                              <ChevronRight className="h-4 w-4" />
-                            </button>
-                          </DialogTrigger>
-                          <DialogContent
-                            className="z-50 max-h-[85vh] max-w-5xl overflow-hidden bg-white p-0"
-                            showCloseButton={true}
-                          >
-                            <div className="sticky top-0 z-20 border-b border-[#e8dcc8] bg-white px-6 py-5">
-                              <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold">
-                                  Jersey Coton
-                                </DialogTitle>
-                                <DialogDescription className="text-base">
-                                  Tous nos tissus jersey doux et extensibles •{" "}
-                                  {
-                                    fabrics.filter((f) =>
-                                      f.id.startsWith("jersey"),
-                                    ).length
-                                  }{" "}
-                                  motifs
-                                </DialogDescription>
-                              </DialogHeader>
-                            </div>
-                            <div
-                              className="overflow-y-auto px-6 py-6"
-                              style={{ maxHeight: "calc(85vh - 100px)" }}
+                        {fabrics.filter((f) => f.id.startsWith("jersey"))
+                          .length > 5 && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <button className="text-ylang-rose hover:text-ylang-terracotta flex items-center gap-1 text-sm font-semibold transition-colors">
+                                Voir tout
+                                <ChevronRight className="h-4 w-4" />
+                              </button>
+                            </DialogTrigger>
+                            <DialogContent
+                              className="z-50 max-h-[85vh] max-w-5xl overflow-hidden bg-white p-0"
+                              showCloseButton={true}
                             >
-                              <div className="grid grid-cols-3 gap-5 sm:grid-cols-4 md:grid-cols-5">
-                                {fabrics
-                                  .filter((f) => f.id.startsWith("jersey"))
-                                  .map((fabric) => {
-                                    const isSelected =
-                                      configuration.fabric?.id === fabric.id;
-                                    return (
-                                      <button
-                                        key={fabric.id}
-                                        onClick={() => {
-                                          setConfiguration((prev) => ({
-                                            ...prev,
-                                            fabric,
-                                          }));
-                                        }}
-                                        className={`group relative flex flex-col overflow-hidden border-2 transition-all duration-300 ${
-                                          isSelected
-                                            ? "border-ylang-rose ring-ylang-rose scale-95"
-                                            : "hover:border-ylang-rose/30 border-gray-100 hover:scale-105"
-                                        }`}
-                                      >
-                                        <div
-                                          className="h-24 w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                          style={{
-                                            backgroundImage: `url('${fabric.image}')`,
-                                          }}
-                                        />
-                                        <div className="bg-white p-3">
-                                          <h4 className="mb-1 truncate text-xs font-semibold text-[#1a1a1a]">
-                                            {fabric.name}
-                                          </h4>
-                                          {/* <p className="text-ylang-rose text-sm font-bold">
-                                            {fabric.price === 0
-                                              ? "Inclus"
-                                              : `+${fabric.price}€`}
-                                          </p> */}
-                                        </div>
-                                        {isSelected && (
-                                          <div className="bg-ylang-rose absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg">
-                                            <Check className="h-3 w-3 text-white" />
-                                          </div>
-                                        )}
-                                      </button>
-                                    );
-                                  })}
+                              <div className="sticky top-0 z-20 border-b border-[#e8dcc8] bg-white px-6 py-5">
+                                <DialogHeader>
+                                  <DialogTitle className="text-2xl font-bold">
+                                    Jersey Coton
+                                  </DialogTitle>
+                                  <DialogDescription className="text-base">
+                                    Tous nos tissus jersey doux et extensibles •{" "}
+                                    {
+                                      fabrics.filter((f) =>
+                                        f.id.startsWith("jersey"),
+                                      ).length
+                                    }{" "}
+                                    motifs
+                                  </DialogDescription>
+                                </DialogHeader>
                               </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                              <div
+                                className="overflow-y-auto px-6 py-6"
+                                style={{ maxHeight: "calc(85vh - 100px)" }}
+                              >
+                                <div className="grid grid-cols-3 gap-5 sm:grid-cols-4 md:grid-cols-5">
+                                  {fabrics
+                                    .filter((f) => f.id.startsWith("jersey"))
+                                    .map((fabric) => {
+                                      const isSelected =
+                                        configuration.fabric?.id === fabric.id;
+                                      return (
+                                        <button
+                                          key={fabric.id}
+                                          onClick={() => {
+                                            setConfiguration((prev) => ({
+                                              ...prev,
+                                              fabric,
+                                            }));
+                                          }}
+                                          className={`group relative flex flex-col overflow-hidden border-2 transition-all duration-300 ${
+                                            isSelected
+                                              ? "border-ylang-rose ring-ylang-rose scale-95"
+                                              : "hover:border-ylang-rose/30 border-gray-100 hover:scale-105"
+                                          }`}
+                                        >
+                                          <div
+                                            className="h-24 w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                            style={{
+                                              backgroundImage: `url('${fabric.image}')`,
+                                            }}
+                                          />
+                                          <div className="bg-white p-3">
+                                            <h4 className="mb-1 truncate text-xs font-semibold text-[#1a1a1a]">
+                                              {fabric.name}
+                                            </h4>
+                                          </div>
+                                          {isSelected && (
+                                            <div className="bg-ylang-rose absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg">
+                                              <Check className="h-3 w-3 text-white" />
+                                            </div>
+                                          )}
+                                        </button>
+                                      );
+                                    })}
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
                       </div>
                       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
                         {fabrics
@@ -1089,86 +1285,84 @@ const ProductConfigurator = () => {
                             Motifs classiques élégants
                           </p>
                         </div>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <button className="text-ylang-rose hover:text-ylang-terracotta flex items-center gap-1 text-sm font-semibold transition-colors">
-                              Voir tout
-                              <ChevronRight className="h-4 w-4" />
-                            </button>
-                          </DialogTrigger>
-                          <DialogContent
-                            className="z-50 max-h-[85vh] max-w-5xl overflow-hidden bg-white p-0"
-                            showCloseButton={true}
-                          >
-                            <div className="sticky top-0 z-20 border-b border-[#e8dcc8] bg-white px-6 py-5">
-                              <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold">
-                                  Toile de Jouy
-                                </DialogTitle>
-                                <DialogDescription className="text-base">
-                                  Motifs classiques et élégants •{" "}
-                                  {
-                                    fabrics.filter((f) =>
-                                      f.id.startsWith("toile"),
-                                    ).length
-                                  }{" "}
-                                  motifs
-                                </DialogDescription>
-                              </DialogHeader>
-                            </div>
-                            <div
-                              className="overflow-y-auto px-6 py-6"
-                              style={{ maxHeight: "calc(85vh - 100px)" }}
+                        {fabrics.filter((f) => f.id.startsWith("toile"))
+                          .length > 5 && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <button className="text-ylang-rose hover:text-ylang-terracotta flex items-center gap-1 text-sm font-semibold transition-colors">
+                                Voir tout
+                                <ChevronRight className="h-4 w-4" />
+                              </button>
+                            </DialogTrigger>
+                            <DialogContent
+                              className="z-50 max-h-[85vh] max-w-5xl overflow-hidden bg-white p-0"
+                              showCloseButton={true}
                             >
-                              <div className="grid grid-cols-3 gap-5 sm:grid-cols-4 md:grid-cols-5">
-                                {fabrics
-                                  .filter((f) => f.id.startsWith("toile"))
-                                  .map((fabric) => {
-                                    const isSelected =
-                                      configuration.fabric?.id === fabric.id;
-                                    return (
-                                      <button
-                                        key={fabric.id}
-                                        onClick={() => {
-                                          setConfiguration((prev) => ({
-                                            ...prev,
-                                            fabric,
-                                          }));
-                                        }}
-                                        className={`group relative flex flex-col overflow-hidden border-2 transition-all duration-300 ${
-                                          isSelected
-                                            ? "border-ylang-rose scale-95"
-                                            : "hover:border-ylang-rose/30 border-gray-100 hover:scale-105"
-                                        }`}
-                                      >
-                                        <div
-                                          className="h-24 w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                          style={{
-                                            backgroundImage: `url('${fabric.image}')`,
-                                          }}
-                                        />
-                                        <div className="bg-white p-3">
-                                          <h4 className="mb-1 truncate text-xs font-bold text-[#1a1a1a]">
-                                            {fabric.name}
-                                          </h4>
-                                          {/* <p className="text-ylang-rose text-sm font-bold">
-                                            {fabric.price === 0
-                                              ? "Inclus"
-                                              : `+${fabric.price}€`}
-                                          </p> */}
-                                        </div>
-                                        {isSelected && (
-                                          <div className="bg-ylang-rose absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg">
-                                            <Check className="h-3 w-3 text-white" />
-                                          </div>
-                                        )}
-                                      </button>
-                                    );
-                                  })}
+                              <div className="sticky top-0 z-20 border-b border-[#e8dcc8] bg-white px-6 py-5">
+                                <DialogHeader>
+                                  <DialogTitle className="text-2xl font-bold">
+                                    Toile de Jouy
+                                  </DialogTitle>
+                                  <DialogDescription className="text-base">
+                                    Motifs classiques et élégants •{" "}
+                                    {
+                                      fabrics.filter((f) =>
+                                        f.id.startsWith("toile"),
+                                      ).length
+                                    }{" "}
+                                    motifs
+                                  </DialogDescription>
+                                </DialogHeader>
                               </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                              <div
+                                className="overflow-y-auto px-6 py-6"
+                                style={{ maxHeight: "calc(85vh - 100px)" }}
+                              >
+                                <div className="grid grid-cols-3 gap-5 sm:grid-cols-4 md:grid-cols-5">
+                                  {fabrics
+                                    .filter((f) => f.id.startsWith("toile"))
+                                    .map((fabric) => {
+                                      const isSelected =
+                                        configuration.fabric?.id === fabric.id;
+                                      return (
+                                        <button
+                                          key={fabric.id}
+                                          onClick={() => {
+                                            setConfiguration((prev) => ({
+                                              ...prev,
+                                              fabric,
+                                            }));
+                                          }}
+                                          className={`group relative flex flex-col overflow-hidden border-2 transition-all duration-300 ${
+                                            isSelected
+                                              ? "border-ylang-rose scale-95"
+                                              : "hover:border-ylang-rose/30 border-gray-100 hover:scale-105"
+                                          }`}
+                                        >
+                                          <div
+                                            className="h-24 w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                            style={{
+                                              backgroundImage: `url('${fabric.image}')`,
+                                            }}
+                                          />
+                                          <div className="bg-white p-3">
+                                            <h4 className="mb-1 truncate text-xs font-bold text-[#1a1a1a]">
+                                              {fabric.name}
+                                            </h4>
+                                          </div>
+                                          {isSelected && (
+                                            <div className="bg-ylang-rose absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg">
+                                              <Check className="h-3 w-3 text-white" />
+                                            </div>
+                                          )}
+                                        </button>
+                                      );
+                                    })}
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
                       </div>
                       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
                         {fabrics
@@ -1230,86 +1424,84 @@ const ProductConfigurator = () => {
                             Carreaux intemporels
                           </p>
                         </div>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <button className="text-ylang-rose hover:text-ylang-terracotta flex items-center gap-1 text-sm font-semibold transition-colors">
-                              Voir tout
-                              <ChevronRight className="h-4 w-4" />
-                            </button>
-                          </DialogTrigger>
-                          <DialogContent
-                            className="w-70vw z-50 max-h-[85vh] overflow-hidden bg-white p-0"
-                            showCloseButton={true}
-                          >
-                            <div className="sticky top-0 z-20 border-b border-[#e8dcc8] bg-white px-6 py-5">
-                              <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold">
-                                  Vichy
-                                </DialogTitle>
-                                <DialogDescription className="text-base">
-                                  Carreaux classiques intemporels •{" "}
-                                  {
-                                    fabrics.filter((f) =>
-                                      f.id.startsWith("vichy"),
-                                    ).length
-                                  }{" "}
-                                  motifs
-                                </DialogDescription>
-                              </DialogHeader>
-                            </div>
-                            <div
-                              className="overflow-y-auto px-6 py-6"
-                              style={{ maxHeight: "calc(85vh - 100px)" }}
+                        {fabrics.filter((f) => f.id.startsWith("vichy"))
+                          .length > 5 && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <button className="text-ylang-rose hover:text-ylang-terracotta flex items-center gap-1 text-sm font-semibold transition-colors">
+                                Voir tout
+                                <ChevronRight className="h-4 w-4" />
+                              </button>
+                            </DialogTrigger>
+                            <DialogContent
+                              className="w-70vw z-50 max-h-[85vh] overflow-hidden bg-white p-0"
+                              showCloseButton={true}
                             >
-                              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
-                                {fabrics
-                                  .filter((f) => f.id.startsWith("vichy"))
-                                  .map((fabric) => {
-                                    const isSelected =
-                                      configuration.fabric?.id === fabric.id;
-                                    return (
-                                      <button
-                                        key={fabric.id}
-                                        onClick={() => {
-                                          setConfiguration((prev) => ({
-                                            ...prev,
-                                            fabric,
-                                          }));
-                                        }}
-                                        className={`group relative flex flex-col overflow-hidden border-2 transition-all duration-300 ${
-                                          isSelected
-                                            ? "border-ylang-rose ring-ylang-rose scale-[0.98] shadow-md"
-                                            : "hover:border-ylang-rose/30 border-gray-100 hover:scale-[1.02]"
-                                        }`}
-                                      >
-                                        <div
-                                          className="h-24 w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                                          style={{
-                                            backgroundImage: `url('${fabric.image}')`,
-                                          }}
-                                        />
-                                        <div className="bg-white p-3">
-                                          <h4 className="mb-1 truncate text-xs font-bold text-[#1a1a1a]">
-                                            {fabric.name}
-                                          </h4>
-                                          {/* <p className="text-ylang-rose text-sm font-bold">
-                                            {fabric.price === 0
-                                              ? "Inclus"
-                                              : `+${fabric.price}€`}
-                                          </p> */}
-                                        </div>
-                                        {isSelected && (
-                                          <div className="bg-ylang-rose absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg">
-                                            <Check className="h-3 w-3 text-white" />
-                                          </div>
-                                        )}
-                                      </button>
-                                    );
-                                  })}
+                              <div className="sticky top-0 z-20 border-b border-[#e8dcc8] bg-white px-6 py-5">
+                                <DialogHeader>
+                                  <DialogTitle className="text-2xl font-bold">
+                                    Vichy
+                                  </DialogTitle>
+                                  <DialogDescription className="text-base">
+                                    Carreaux classiques intemporels •{" "}
+                                    {
+                                      fabrics.filter((f) =>
+                                        f.id.startsWith("vichy"),
+                                      ).length
+                                    }{" "}
+                                    motifs
+                                  </DialogDescription>
+                                </DialogHeader>
                               </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                              <div
+                                className="overflow-y-auto px-6 py-6"
+                                style={{ maxHeight: "calc(85vh - 100px)" }}
+                              >
+                                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
+                                  {fabrics
+                                    .filter((f) => f.id.startsWith("vichy"))
+                                    .map((fabric) => {
+                                      const isSelected =
+                                        configuration.fabric?.id === fabric.id;
+                                      return (
+                                        <button
+                                          key={fabric.id}
+                                          onClick={() => {
+                                            setConfiguration((prev) => ({
+                                              ...prev,
+                                              fabric,
+                                            }));
+                                          }}
+                                          className={`group relative flex flex-col overflow-hidden border-2 transition-all duration-300 ${
+                                            isSelected
+                                              ? "border-ylang-rose ring-ylang-rose scale-[0.98] shadow-md"
+                                              : "hover:border-ylang-rose/30 border-gray-100 hover:scale-[1.02]"
+                                          }`}
+                                        >
+                                          <div
+                                            className="h-24 w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                                            style={{
+                                              backgroundImage: `url('${fabric.image}')`,
+                                            }}
+                                          />
+                                          <div className="bg-white p-3">
+                                            <h4 className="mb-1 truncate text-xs font-bold text-[#1a1a1a]">
+                                              {fabric.name}
+                                            </h4>
+                                          </div>
+                                          {isSelected && (
+                                            <div className="bg-ylang-rose absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg">
+                                              <Check className="h-3 w-3 text-white" />
+                                            </div>
+                                          )}
+                                        </button>
+                                      );
+                                    })}
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
                       </div>
                       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
                         {fabrics
@@ -1542,8 +1734,8 @@ const ProductConfigurator = () => {
             </div>
           </div>
 
-          {/* Footer Navigation */}
-          <div className="border-t border-[#e8dcc8] bg-white p-6">
+          {/* Footer Navigation - Sticky */}
+          <div className="sticky bottom-0 border-t border-[#e8dcc8] bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] lg:p-6">
             <div className="flex items-center justify-between gap-4">
               <button
                 onClick={goPrevious}

@@ -21,16 +21,14 @@
 
 @theme inline {
   /* Colors Premium */
-  --color-ylang-cream: #faf9f6;
-  --color-ylang-beige: #f5f1e8;
-  --color-ylang-terracotta: #d4a89a;
-  --color-ylang-sage: #d5b2a9;
+  --color-ylang-terracotta: #d5b2a9;
   --color-ylang-rose: #a77769;
-  /* --color-ylang-rose: #b76e79; */
-  --color-ylang-charcoal: #1a1a1a;
   --color-ylang-white: #edeae3;
   --color-ylang-gray: #cfc6c4;
   --color-ylang-yellow: #e8cb9f;
+  --color-ylang-beige: #f5f1e8;
+  --color-ylang-charcoal: #1a1a1a;
+  --color-ylang-cream: #faf9f6;
 
   /* Typography */
   --font-family-display: "Bricolage Grotesque", serif;
