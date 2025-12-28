@@ -6,6 +6,7 @@ import {
   Geist_Mono,
   Inter,
   Playfair_Display,
+  Rouge_Script
 } from "next/font/google";
 import "./globals.css";
 
@@ -32,6 +33,11 @@ const playfairDisplay = Playfair_Display({
 const bricolageGrotesque = Bricolage_Grotesque({
   variable: "--font-bricolage-grotesque",
   subsets: ["latin"],
+});
+
+const rougeScript = Rouge_Script({
+  weight: "400",
+  variable: "--font-rouge-script"
 });
 
 import { settings } from "@/db/schema";
@@ -67,7 +73,7 @@ export default function RootLayout({
         <link rel="icon" href="/logo/logo-1.png" type="image/png" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${playfairDisplay.variable} ${bricolageGrotesque.variable} font-body bg-ylang-cream antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${playfairDisplay.variable} ${bricolageGrotesque.variable} ${rougeScript.variable} font-body bg-ylang-cream antialiased`}
       >
         <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
       </body>
