@@ -1,6 +1,12 @@
 "use server";
 
-import { customer, settings } from "@/db/schema";
+import {
+  account,
+  customer,
+  session,
+  settings,
+  user as userTable,
+} from "@/db/schema";
 import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
@@ -37,6 +43,83 @@ async function getOrCreateStripeCustomer(
   email: string,
   name: string,
 ): Promise<{ stripeCustomerId: string; customerId: string }> {
+  // Ensure user exists in our local database (mirrored from Supabase)
+  const existingUser = await db
+    .select()
+    .from(userTable)
+    .where(eq(userTable.id, userId))
+    .limit(1);
+
+  if (existingUser.length === 0) {
+    // Check if user exists with same email but different ID (e.g. from a previous signup or seeded data)
+    const existingUserByEmail = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.email, email))
+      .limit(1);
+
+    const now = new Date();
+
+    if (existingUserByEmail.length > 0) {
+      console.log(
+        `Found existing user with email ${email} but different ID. Migrating data...`,
+      );
+      const oldUserId = existingUserByEmail[0].id;
+      const tempEmail = `temp_${Date.now()}_${email}`;
+
+      // 1. Create new user with temp email to avoid unique constraint
+      await db.insert(userTable).values({
+        id: userId,
+        name: name,
+        email: tempEmail,
+        emailVerified: existingUserByEmail[0].emailVerified,
+        image: existingUserByEmail[0].image,
+        createdAt: existingUserByEmail[0].createdAt,
+        updatedAt: now,
+      });
+
+      // 2. Migrate related records
+      // Migrate customer
+      await db
+        .update(customer)
+        .set({ userId: userId })
+        .where(eq(customer.userId, oldUserId));
+
+      // Migrate accounts (OAuth)
+      await db
+        .update(account)
+        .set({ userId: userId })
+        .where(eq(account.userId, oldUserId));
+
+      // Migrate sessions
+      await db
+        .update(session)
+        .set({ userId: userId })
+        .where(eq(session.userId, oldUserId));
+
+      // 3. Delete old user
+      await db.delete(userTable).where(eq(userTable.id, oldUserId));
+
+      // 4. Restore real email on new user
+      await db
+        .update(userTable)
+        .set({ email: email })
+        .where(eq(userTable.id, userId));
+
+      console.log("User migration complete.");
+    } else {
+      // Normal creation
+      await db.insert(userTable).values({
+        id: userId,
+        name: name,
+        email: email,
+        emailVerified: false,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+  }
+
   // Check if customer exists in our database
   const existingCustomer = await db
     .select()

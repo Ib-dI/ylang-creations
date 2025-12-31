@@ -1,5 +1,6 @@
-import { order } from "@/db/schema";
+import { order, product } from "@/db/schema";
 import { db } from "@/lib/db";
+import { eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
       }
 
       // Parse items
-      let items;
+      let items: any[] = [];
       try {
         items = JSON.parse(metadata.items);
       } catch {
@@ -73,52 +74,53 @@ export async function POST(req: Request) {
       const now = new Date();
 
       try {
-        await db.insert(order).values({
-          id: orderId,
-          customerId: metadata.customerId,
-          stripeSessionId: session.id,
-          stripePaymentIntentId:
-            typeof session.payment_intent === "string"
-              ? session.payment_intent
-              : (session.payment_intent?.id ?? null),
-          status: "paid",
-          totalAmount: String(session.amount_total ?? 0),
-          currency: session.currency ?? "eur",
-          shippingAddress: (session as any).shipping_details
-            ? JSON.stringify((session as any).shipping_details)
-            : session.customer_details
-              ? JSON.stringify(session.customer_details)
-              : null,
-          items: JSON.stringify(items),
-          createdAt: now,
-          updatedAt: now,
+        // Start a transaction to ensure order creation and stock update happen together
+        await db.transaction(async (tx) => {
+          // 1. Create order
+          await tx.insert(order).values({
+            id: orderId,
+            customerId: metadata.customerId,
+            stripeSessionId: session.id,
+            stripePaymentIntentId:
+              typeof session.payment_intent === "string"
+                ? session.payment_intent
+                : (session.payment_intent?.id ?? null),
+            status: "paid",
+            totalAmount: String(session.amount_total ?? 0),
+            currency: session.currency ?? "eur",
+            shippingAddress: (session as any).shipping_details
+              ? JSON.stringify((session as any).shipping_details)
+              : session.customer_details
+                ? JSON.stringify(session.customer_details)
+                : null,
+            items: JSON.stringify(items),
+            createdAt: now,
+            updatedAt: now,
+          });
+
+          // 2. Decrement stock for each item
+          for (const item of items) {
+            if (item.productId && item.quantity) {
+              console.log(
+                `📉 Decrementing stock for product ${item.productId} by ${item.quantity}`,
+              );
+
+              // Note: stock is stored as text in the schema, so we cast to integer for math
+              // and ensure we don't go below 0 (optional, but good practice)
+              await tx
+                .update(product)
+                .set({
+                  stock: sql`GREATEST(0, CAST(${product.stock} AS INTEGER) - ${item.quantity})::text`,
+                  updatedAt: now,
+                })
+                .where(eq(product.id, item.productId));
+            }
+          }
         });
 
-        console.log("✅ Order created:", orderId);
-
-        // Optional: Send confirmation emails
-        // You can uncomment this when email templates are set up
-        /*
-        const customerRecord = await db
-          .select()
-          .from(customer)
-          .where(eq(customer.id, metadata.customerId))
-          .limit(1);
-
-        if (customerRecord.length > 0) {
-          await sendOrderConfirmationEmail({
-            to: customerRecord[0].email,
-            orderNumber: orderId.slice(0, 8).toUpperCase(),
-            customerName: customerRecord[0].name || "Client",
-            items: items,
-            total: (session.amount_total ?? 0) / 100,
-            shipping: 0,
-            shippingAddress: session.shipping_details?.address || {},
-          });
-        }
-        */
+        console.log("✅ Order created and stock updated:", orderId);
       } catch (err) {
-        console.error("❌ Failed to create order:", err);
+        console.error("❌ Failed to create order or update stock:", err);
       }
 
       break;

@@ -25,6 +25,11 @@ export async function GET(
     console.log("Fetching details for userId:", userId, "Type:", typeof userId);
 
     // Get user from Supabase Auth
+    if (!supabaseAdmin) {
+      throw new Error(
+        "Serveur mal configuré : SUPABASE_SERVICE_ROLE_KEY manquant.",
+      );
+    }
     const { data: authUser, error: authError } =
       await supabaseAdmin.auth.admin.getUserById(userId);
 

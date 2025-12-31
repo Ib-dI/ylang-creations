@@ -24,6 +24,12 @@ export async function GET(request: Request) {
 
     // Get all users from Supabase Auth
     // Note: listUsers defaults to page 1, limit 50. Adjust as needed for pagination.
+    if (!supabaseAdmin) {
+      throw new Error(
+        "Serveur mal configuré : SUPABASE_SERVICE_ROLE_KEY manquant.",
+      );
+    }
+
     const {
       data: { users },
       error: usersError,
