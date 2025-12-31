@@ -10,6 +10,7 @@ import {
 import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import Stripe from "stripe";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -287,8 +288,11 @@ export async function createCheckoutSession(
     };
 
     // 6. Create Stripe Checkout Session
+    const headersList = await headers();
+    const origin = headersList.get("origin");
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL ||
+      origin ||
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
       "http://localhost:3000";
 
