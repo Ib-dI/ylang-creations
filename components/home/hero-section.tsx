@@ -42,7 +42,7 @@ export function HeroSection() {
   const [slides, setSlides] = useState(DEFAULT_SLIDES);
 
   useEffect(() => {
-    fetch("/api/admin/settings")
+    fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
         if (data && data.heroSlides && data.heroSlides.length > 0) {

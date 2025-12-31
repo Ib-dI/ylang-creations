@@ -19,7 +19,7 @@ const buttonVariants = cva(
         ],
         secondary: [
           "border-2 border-ylang-rose text-ylang-rose bg-transparent",
-          "hover:bg-ylang-rose hover:text-ylang-charcoal",
+          "hover:bg-ylang-rose hover:text-ylang-white",
           "hover:shadow-[0_4px_20px_rgba(183,110,121,0.25)]",
           "hover:scale-[1.02] active:scale-[0.98]",
         ],

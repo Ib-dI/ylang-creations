@@ -71,6 +71,7 @@ export const updateProductSchema = createProductSchema.partial();
 const orderStatusValues = [
   "pending",
   "paid",
+  "in_production",
   "shipped",
   "delivered",
   "cancelled",

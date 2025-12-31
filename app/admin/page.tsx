@@ -36,7 +36,7 @@ function StatCard({
   };
 
   return (
-    <div className="border-ylang-beige rounded-2xl border bg-white p-6 transition-shadow hover:shadow-lg">
+    <div className="border-ylang-beige rounded-2xl border-2 bg-white p-6 ">
       <div className="mb-4 flex items-start justify-between">
         <div
           className={`h-12 w-12 ${colorClasses[color as keyof typeof colorClasses]} flex items-center justify-center rounded-xl`}
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
       <div className="mb-8 grid gap-6 sm:grid-cols-3">
         <Link
           href="/admin/orders"
-          className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+          className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-md"
         >
           <div className="flex items-center gap-4">
             <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
 
         <Link
           href="/admin/products"
-          className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+          className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-md"
         >
           <div className="flex items-center gap-4">
             <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
 
         <Link
           href="/admin/users"
-          className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+          className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-md"
         >
           <div className="flex items-center gap-4">
             <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Orders */}
-      <div className="border-ylang-beige rounded-2xl border bg-white shadow-lg">
+      <div className="border-ylang-beige rounded-2xl border bg-white shadow-md">
         <div className="border-ylang-beige border-b p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-ylang-charcoal text-xl font-bold">

@@ -27,6 +27,7 @@ interface CartItem {
   price: number;
   quantity: number;
   image?: string;
+  configuration?: any;
 }
 
 interface CheckoutResult {

@@ -8,7 +8,7 @@ export function TestimonialsSection() {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    fetch("/api/admin/settings")
+    fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
         if (data && data.testimonials) {

@@ -1,7 +1,7 @@
 import { product } from "@/db/schema";
 import { db } from "@/lib/db";
 import { formatZodErrors, updateProductSchema } from "@/lib/validations";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, supabaseAdmin } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -176,6 +176,63 @@ export async function DELETE(
 
     const { id } = await params;
 
+    // 1. Récupérer le produit pour avoir la liste des images
+    const products = await db
+      .select({ images: product.images })
+      .from(product)
+      .where(eq(product.id, id))
+      .limit(1);
+
+    if (products.length > 0) {
+      const p = products[0];
+      let images: string[] = [];
+
+      try {
+        images = p.images ? JSON.parse(p.images) : [];
+      } catch (e) {
+        console.error("Error parsing images JSON:", e);
+      }
+
+      // 2. Supprimer les images du stockage Supabase
+      if (images.length > 0 && supabaseAdmin) {
+        const pathsToDelete: string[] = [];
+
+        for (const imageUrl of images) {
+          try {
+            // Extraire le chemin relatif de l'URL
+            // Format typique: .../storage/v1/object/public/products/folder/file.jpg
+            if (imageUrl.includes("/products/")) {
+              const parts = imageUrl.split("/products/");
+              if (parts.length > 1) {
+                // Le chemin est tout ce qui est après "/products/"
+                pathsToDelete.push(parts[1]);
+              }
+            }
+          } catch (e) {
+            console.error("Error parsing image URL:", imageUrl, e);
+          }
+        }
+
+        if (pathsToDelete.length > 0) {
+          console.log("Deleting images from storage:", pathsToDelete);
+          const { error: storageError } = await supabaseAdmin.storage
+            .from("products")
+            .remove(pathsToDelete);
+
+          if (storageError) {
+            console.error(
+              "Error deleting images from storage:",
+              storageError.message,
+            );
+            // On continue quand même la suppression du produit
+          } else {
+            console.log("Images deleted successfully");
+          }
+        }
+      }
+    }
+
+    // 3. Supprimer le produit
     await db.delete(product).where(eq(product.id, id));
 
     return NextResponse.json({ success: true });

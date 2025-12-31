@@ -130,7 +130,7 @@ export default async function OrdersPage() {
                           Montant total
                         </p>
                         <p className="text-ylang-rose font-bold">
-                          {parseFloat(order.totalAmount).toFixed(2)}€
+                          {(parseFloat(order.totalAmount) / 100).toFixed(2)}€
                         </p>
                       </div>
                       <div>

@@ -63,6 +63,7 @@ export default function CheckoutPage() {
         price: item.price,
         quantity: item.quantity,
         image: item.thumbnail,
+        configuration: item.configuration,
       }));
 
       const result = await createCheckoutSession(checkoutItems);

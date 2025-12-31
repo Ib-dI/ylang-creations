@@ -15,7 +15,8 @@ export interface Order {
     productName: string;
     quantity: number;
     price: number;
-    configuration: {
+    image?: string;
+    configuration?: {
       fabricName: string;
       embroidery?: string;
       accessories: string[];

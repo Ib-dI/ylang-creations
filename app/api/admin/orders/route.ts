@@ -53,15 +53,38 @@ export async function GET(request: Request) {
       let parsedAddress = null;
 
       try {
-        parsedItems = JSON.parse(o.items || "[]");
+        const rawItems = JSON.parse(o.items || "[]");
+        parsedItems = rawItems.map((item: any) => ({
+          productId: item.productId,
+          productName: item.productName || item.name || "Produit",
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image || item.thumbnail || null,
+          configuration: item.configuration || null,
+        }));
       } catch {
         parsedItems = [];
       }
 
       try {
-        parsedAddress = JSON.parse(o.shippingAddress || "{}");
+        const rawAddress = JSON.parse(o.shippingAddress || "{}");
+        // Normalize Stripe address structure
+        const stripeAddress = rawAddress.address || rawAddress;
+        parsedAddress = {
+          address:
+            stripeAddress.line1 +
+            (stripeAddress.line2 ? `, ${stripeAddress.line2}` : ""),
+          city: stripeAddress.city || "",
+          postalCode: stripeAddress.postal_code || "",
+          country: stripeAddress.country || "",
+        };
       } catch {
-        parsedAddress = {};
+        parsedAddress = {
+          address: "Inconnue",
+          city: "",
+          postalCode: "",
+          country: "",
+        };
       }
 
       return {

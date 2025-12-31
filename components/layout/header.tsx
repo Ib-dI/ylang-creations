@@ -222,7 +222,7 @@ export function Header() {
   );
 
   React.useEffect(() => {
-    fetch("/api/admin/settings")
+    fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
         if (data && !data.error) {
@@ -451,7 +451,7 @@ export function Header() {
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
-                            onClick={() => router.push("/settings")}
+                            onClick={() => router.push("/profil")}
                             className="group hover:bg-ylang-beige cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
                           >
                             <User className="mr-3 h-4 w-4 text-gray-400" />
@@ -866,7 +866,7 @@ export function Header() {
                       } else if (session.user.app_metadata?.role === "admin") {
                         router.push("/admin");
                       } else {
-                        router.push("/settings");
+                        router.push("/profil");
                       }
                     }}
                     className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors"

@@ -63,9 +63,23 @@ export async function GET(
     }
 
     try {
-      parsedAddress = JSON.parse(o.shippingAddress || "{}");
+      const rawAddress = JSON.parse(o.shippingAddress || "{}");
+      // Handle Stripe structure where address is nested in 'address' property
+      const addr = rawAddress.address || rawAddress;
+
+      parsedAddress = {
+        address: addr.line1 || "",
+        city: addr.city || "",
+        postalCode: addr.postal_code || "",
+        country: addr.country || "",
+      };
     } catch {
-      parsedAddress = {};
+      parsedAddress = {
+        address: "",
+        city: "",
+        postalCode: "",
+        country: "",
+      };
     }
 
     return NextResponse.json({

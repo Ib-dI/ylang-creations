@@ -126,7 +126,7 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch("/api/admin/settings", {
+      const response = await fetch("/api/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),
@@ -319,7 +319,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     // Fetch settings on mount
-    fetch("/api/admin/settings")
+    fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
         if (data && !data.error) {

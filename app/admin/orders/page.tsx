@@ -1,6 +1,5 @@
 "use client";
 
-import OrderDetailModal from "@/components/admin/order-detail-modal";
 import StatusBadge from "@/components/admin/status-badge";
 import { Button } from "@/components/ui/button";
 import { useAdminStore } from "@/lib/store/admin-store";
@@ -14,17 +13,17 @@ import {
   RefreshCw,
   Search,
 } from "lucide-react";
+import Link from "next/link";
 import * as React from "react";
 
 export default function OrdersPage() {
-  const { orders, setOrders, setSelectedOrder, filterByStatus, searchOrders } =
+  const { orders, setOrders, filterByStatus, searchOrders, updateOrderStatus } =
     useAdminStore();
   const [statusFilter, setStatusFilter] = React.useState<OrderStatus | "all">(
     "all",
   );
   const [searchQuery, setSearchQuery] = React.useState("");
   const [filteredOrders, setFilteredOrders] = React.useState(orders);
-  const [showModal, setShowModal] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
 
   // Charger les commandes
@@ -89,22 +88,85 @@ export default function OrdersPage() {
     },
   ];
 
-  const handleViewOrder = (order: (typeof orders)[0]) => {
-    setSelectedOrder(order);
-    setShowModal(true);
-  };
-
-  const handleUpdateStatus = async (orderId: string, status: string) => {
+  const handleUpdateStatus = async (orderId: string, status: OrderStatus) => {
     try {
-      await fetch(`/api/admin/orders/${orderId}`, {
+      const response = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-      fetchOrders();
+
+      if (response.ok) {
+        updateOrderStatus(orderId, status);
+      }
     } catch (error) {
       console.error("Error updating order:", error);
     }
+  };
+
+  const handleExportCSV = () => {
+    // Define headers
+    const headers = [
+      "No Commande",
+      "Date",
+      "Client",
+      "Email",
+      "Statut",
+      "Total",
+      "Rue",
+      "Code Postal",
+      "Ville",
+      "Pays",
+      "Articles",
+    ];
+
+    // Format data rows
+    const rows = filteredOrders.map((order) => {
+      const itemsList = order.items
+        .map(
+          (i) =>
+            `${i.quantity}x ${i.productName} ${i.configuration ? `(${i.configuration.fabricName})` : ""}`,
+        )
+        .join(", ");
+
+      const addr = order.shippingAddress || {};
+
+      // Helper to escape CSV fields
+      const escape = (field: string | undefined | null) => {
+        if (!field) return "";
+        return `"${String(field).replace(/"/g, '""')}"`;
+      };
+
+      return [
+        escape(order.orderNumber),
+        escape(new Date(order.createdAt).toLocaleDateString("fr-FR")),
+        escape(order.customerName),
+        escape(order.customerEmail),
+        escape(order.status),
+        escape(order.total.toFixed(2).replace(".", ",")),
+        escape(addr.address),
+        escape(addr.postalCode),
+        escape(addr.city),
+        escape(addr.country),
+        escape(itemsList),
+      ].join(";");
+    });
+
+    // Combine headers and rows
+    const csvContent = "\uFEFF" + [headers.join(";"), ...rows].join("\n"); // Add BOM and use semicolon
+
+    // Create download link
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `commandes_export_${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -124,7 +186,7 @@ export default function OrdersPage() {
             <RefreshCw className="mr-2 h-4 w-4" />
             Actualiser
           </Button>
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="sm" onClick={handleExportCSV}>
             <Download className="mr-2 h-4 w-4" />
             Exporter CSV
           </Button>
@@ -264,13 +326,13 @@ export default function OrdersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleViewOrder(order)}
+                          <Link
+                            href={`/admin/orders/${order.id}`}
                             className="bg-ylang-beige text-ylang-charcoal flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm transition-colors hover:bg-[#e8dcc8]"
                           >
                             <Eye className="h-4 w-4" />
                             Voir
-                          </button>
+                          </Link>
                           {order.status === "paid" && (
                             <button
                               onClick={() =>
@@ -301,12 +363,6 @@ export default function OrdersPage() {
           )}
         </div>
       )}
-
-      {/* Order Detail Modal */}
-      <OrderDetailModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-      />
     </div>
   );
 }
