@@ -4,37 +4,31 @@ import { HowItWorksSection } from "@/components/home/how-it-works-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { ProductCard } from "@/components/product/product-card";
 import type { CatalogProduct } from "@/data/products";
-import { createClient } from "@/utils/supabase/server";
+import { product as productTable } from "@/db/schema";
+import { db } from "@/lib/db";
+import { and, desc, eq } from "drizzle-orm";
 import { Loader2 } from "lucide-react";
+import { unstable_noStore as noStore } from "next/cache";
 import { Suspense } from "react";
 
 async function FeaturedProductsData() {
-  const supabase = await createClient();
-  
-  // Fetch featured products from Supabase
-  const { data: products, error } = await supabase
-    .from("product")
-    .select("*")
-    .eq("is_active", true)
-    .eq("is_featured", true)
-    .order("created_at", { ascending: false })
-    .limit(4);
+  // Force dynamic rendering to always get fresh data
+  noStore();
 
-  if (error) {
-    console.error("Error fetching featured products:", error);
-    return (
-      <div className="text-ylang-charcoal/60 col-span-full py-12 text-center">
-        Erreur lors du chargement des produits
-      </div>
-    );
-  }
+  // Fetch featured products using Drizzle (consistent with rest of app)
+  const products = await db
+    .select()
+    .from(productTable)
+    .where(and(eq(productTable.isActive, true), eq(productTable.isFeatured, true)))
+    .orderBy(desc(productTable.createdAt))
+    .limit(4);
 
   // Calculate threshold date outside of map function
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   // Format products to match CatalogProduct type
-  const formattedProducts: CatalogProduct[] = (products || []).map((p) => {
+  const formattedProducts: CatalogProduct[] = products.map((p) => {
     let parsedImages: string[] = [];
     try {
       parsedImages = p.images ? JSON.parse(p.images) : [];
@@ -63,8 +57,8 @@ async function FeaturedProductsData() {
       description: p.description || "",
       longDescription: p.description || "",
       features: [],
-      new: new Date(p.created_at) > thirtyDaysAgo,
-      featured: p.is_featured,
+      new: new Date(p.createdAt) > thirtyDaysAgo,
+      featured: p.isFeatured,
       customizable: true,
       sizes: parsedOptions.sizes || [],
       defaultSize: parsedOptions.sizes?.[0] || undefined,
