@@ -80,6 +80,7 @@ export async function POST(request: Request) {
     // Validation avec Zod
     const validation = settingsSchema.safeParse(body);
     if (!validation.success) {
+      console.error("Zod Validation Error:", formatZodErrors(validation.error));
       return NextResponse.json(
         { error: formatZodErrors(validation.error) },
         { status: 400 },

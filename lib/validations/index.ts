@@ -47,16 +47,15 @@ export const createProductSchema = z.object({
     .int("Le stock doit être un entier")
     .min(0, "Le stock ne peut pas être négatif")
     .max(99999, "Le stock ne doit pas dépasser 99999")
-    .optional()
-    .default(0),
+    .optional(),
   sku: z
     .string()
     .max(50, "Le SKU ne doit pas dépasser 50 caractères")
     .optional()
     .nullable()
     .transform((val) => (val ? sanitizeString(val) : val)),
-  isActive: z.boolean().optional().default(true),
-  isFeatured: z.boolean().optional().default(false),
+  isActive: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
   tags: z
     .array(z.string().max(50))
     .max(20, "Maximum 20 tags")
@@ -98,99 +97,105 @@ export const updateOrderSchema = z.object({
 });
 
 // --- Schéma Paramètres ---
-export const settingsSchema = z.object({
-  storeName: z
-    .string()
-    .min(1, "Le nom du magasin est requis")
-    .max(100, "Le nom du magasin ne doit pas dépasser 100 caractères")
-    .transform(sanitizeString)
-    .optional(),
-  storeDescription: z
-    .string()
-    .max(500, "La description ne doit pas dépasser 500 caractères")
-    .optional()
-    .nullable()
-    .transform((val) => (val ? sanitizeString(val) : val)),
-  contactEmail: z
-    .string()
-    .email("Email de contact invalide")
-    .max(100)
-    .optional()
-    .nullable(),
-  contactPhone: z
-    .string()
-    .max(20, "Le téléphone ne doit pas dépasser 20 caractères")
-    .regex(/^[+\d\s()-]*$/, "Format de téléphone invalide")
-    .optional()
-    .nullable(),
-  shippingEmail: z
-    .string()
-    .email("Email d'expédition invalide")
-    .max(100)
-    .optional()
-    .nullable(),
-  adminEmail: z
-    .string()
-    .email("Email admin invalide")
-    .max(100)
-    .optional()
-    .nullable(),
-  emailTemplates: z
-    .object({
-      orderConfirmation: z.boolean().optional(),
-      shippingNotification: z.boolean().optional(),
-      adminNotification: z.boolean().optional(),
-    })
-    .optional()
-    .nullable(),
-  currency: z.enum(["eur", "usd", "gbp"]).optional().default("eur"),
-  shippingFee: z
-    .union([z.string(), z.number()])
-    .transform((val) => String(val))
-    .optional(),
-  freeShippingThreshold: z
-    .union([z.string(), z.number()])
-    .transform((val) => String(val))
-    .optional(),
-  notifications: z
-    .object({
-      newOrder: z.boolean().optional(),
-      lowStock: z.boolean().optional(),
-      newCustomer: z.boolean().optional(),
-      dailySummary: z.boolean().optional(),
-    })
-    .optional()
-    .nullable(),
-  heroSlides: z
-    .array(
-      z.object({
-        id: z.string().optional(),
-        image: z.string().optional(),
-        title: z.string().max(200).optional(),
-        subtitle: z.string().max(500).optional(),
-        buttonText: z.string().max(50).optional(),
-        buttonLink: z.string().max(200).optional(),
-      }),
-    )
-    .max(10, "Maximum 10 slides")
-    .optional()
-    .nullable(),
-  craftsmanshipImage: z.string().optional().nullable(),
-  aboutImage: z.string().optional().nullable(),
-  testimonials: z
-    .array(
-      z.object({
-        id: z.string().optional(),
-        name: z.string().max(100).optional(),
-        text: z.string().max(500).optional(),
-        image: z.string().optional(),
-        rating: z.number().min(1).max(5).optional(),
-      }),
-    )
-    .max(20, "Maximum 20 témoignages")
-    .optional()
-    .nullable(),
-});
+export const settingsSchema = z
+  .object({
+    storeName: z
+      .string()
+      .max(200, "Le nom du magasin ne doit pas dépasser 200 caractères")
+      .transform(sanitizeString)
+      .optional()
+      .nullable(),
+    storeDescription: z
+      .string()
+      .max(2000, "La description ne doit pas dépasser 2000 caractères")
+      .optional()
+      .nullable()
+      .transform((val) => (val ? sanitizeString(val) : val)),
+    contactEmail: z
+      .string()
+      .email("Email de contact invalide")
+      .or(z.literal(""))
+      .optional()
+      .nullable(),
+    contactPhone: z
+      .string()
+      .max(50, "Le téléphone ne doit pas dépasser 50 caractères")
+      .optional()
+      .nullable(),
+    shippingEmail: z
+      .string()
+      .email("Email d'expédition invalide")
+      .or(z.literal(""))
+      .optional()
+      .nullable(),
+    adminEmail: z
+      .string()
+      .email("Email admin invalide")
+      .or(z.literal(""))
+      .optional()
+      .nullable(),
+    emailTemplates: z
+      .object({
+        orderConfirmation: z.boolean().optional().nullable(),
+        shippingNotification: z.boolean().optional().nullable(),
+        adminNotification: z.boolean().optional().nullable(),
+      })
+      .optional()
+      .nullable(),
+    currency: z.string().optional().default("eur"),
+    shippingFee: z
+      .union([z.string(), z.number()])
+      .transform((val) => String(val))
+      .optional()
+      .nullable(),
+    freeShippingThreshold: z
+      .union([z.string(), z.number()])
+      .transform((val) => String(val))
+      .optional()
+      .nullable(),
+    notifications: z
+      .object({
+        newOrder: z.boolean().optional().nullable(),
+        lowStock: z.boolean().optional().nullable(),
+        newCustomer: z.boolean().optional().nullable(),
+        dailySummary: z.boolean().optional().nullable(),
+      })
+      .optional()
+      .nullable(),
+    heroSlides: z
+      .array(
+        z.object({
+          id: z.string().optional().nullable(),
+          image: z.string().optional().nullable(),
+          title: z.string().max(500).optional().nullable(),
+          subtitle: z.string().max(1000).optional().nullable(),
+          link: z.string().max(500).optional().nullable(),
+          cta: z.string().max(100).optional().nullable(),
+          buttonText: z.string().optional().nullable(),
+          buttonLink: z.string().optional().nullable(),
+        }),
+      )
+      .optional()
+      .nullable(),
+    craftsmanshipImage: z.string().optional().nullable(),
+    aboutImage: z.string().optional().nullable(),
+    testimonials: z
+      .array(
+        z.object({
+          id: z.string().optional().nullable(),
+          name: z.string().max(200).optional().nullable(),
+          text: z.string().max(2000).optional().nullable(),
+          image: z.string().optional().nullable(),
+          rating: z.union([z.number(), z.string()]).optional().nullable(),
+          location: z.string().max(200).optional().nullable(),
+          product: z.string().max(500).optional().nullable(),
+          date: z.string().optional().nullable(),
+        }),
+      )
+      .optional()
+      .nullable(),
+  })
+  .passthrough();
 
 // --- Schéma Checkout (panier) ---
 export const checkoutItemSchema = z.object({

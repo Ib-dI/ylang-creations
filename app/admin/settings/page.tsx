@@ -7,6 +7,7 @@ import {
   AlertCircle,
   Bell,
   CheckCircle2,
+  ChevronDown,
   CreditCard,
   Eye,
   EyeOff,
@@ -17,7 +18,6 @@ import {
   Save,
   Shield,
   Store,
-  ChevronDown,
   Trash2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -126,7 +126,7 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch("/api/settings", {
+      const response = await fetch("/api/admin/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(settings),
@@ -319,7 +319,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     // Fetch settings on mount
-    fetch("/api/settings")
+    fetch("/api/admin/settings")
       .then((res) => res.json())
       .then((data) => {
         if (data && !data.error) {
@@ -559,20 +559,19 @@ export default function SettingsPage() {
                     <label className="font-body text-ylang-charcoal/60 group-focus-within:text-ylang-rose absolute -top-2.5 left-3 bg-white px-2 text-xs tracking-wide uppercase transition-all duration-300 group-focus-within:font-medium">
                       Devise par défaut
                     </label>
-                    
-                      <select
-                        value={settings.currency}
-                        onChange={(e) =>
-                          handleSettingsChange("currency", e.target.value)
-                        }
-                        className="border-ylang-beige font-body text-ylang-charcoal cursor-pointer appearance-none focus:border-ylang-rose hover:border-ylang-terracotta/50 flex h-11 w-full rounded-lg border bg-white px-4 text-sm transition-all duration-300 focus:shadow-[0_0_0_4px_rgba(183,110,121,0.1)] focus:outline-none"
-                      >
-                        <option value="eur">EUR (€)</option>
-                        <option value="usd">USD ($)</option>
-                        <option value="gbp">GBP (£)</option>
-                      </select>
-                      <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
-                    
+
+                    <select
+                      value={settings.currency}
+                      onChange={(e) =>
+                        handleSettingsChange("currency", e.target.value)
+                      }
+                      className="border-ylang-beige font-body text-ylang-charcoal focus:border-ylang-rose hover:border-ylang-terracotta/50 flex h-11 w-full cursor-pointer appearance-none rounded-lg border bg-white px-4 text-sm transition-all duration-300 focus:shadow-[0_0_0_4px_rgba(183,110,121,0.1)] focus:outline-none"
+                    >
+                      <option value="eur">EUR (€)</option>
+                      <option value="usd">USD ($)</option>
+                      <option value="gbp">GBP (£)</option>
+                    </select>
+                    <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
