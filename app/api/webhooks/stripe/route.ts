@@ -51,12 +51,19 @@ export async function POST(req: Request) {
       const session = event.data.object as Stripe.Checkout.Session;
 
       console.log("✅ Checkout session completed:", session.id);
+      console.log(
+        "📦 Metadata received:",
+        JSON.stringify(session.metadata, null, 2),
+      );
 
       // Get metadata
       const metadata = session.metadata;
 
       if (!metadata?.customerId || !metadata?.items) {
-        console.error("❌ Missing metadata in session");
+        console.error("❌ Missing or incomplete metadata in session:", {
+          customerId: !!metadata?.customerId,
+          items: !!metadata?.items,
+        });
         break;
       }
 
@@ -76,6 +83,7 @@ export async function POST(req: Request) {
       try {
         // Start a transaction to ensure order creation and stock update happen together
         await db.transaction(async (tx) => {
+          console.log("📝 Creating order and updating stock in database...");
           // 1. Create order
           await tx.insert(order).values({
             id: orderId,

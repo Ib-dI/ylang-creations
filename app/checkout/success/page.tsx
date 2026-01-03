@@ -43,10 +43,13 @@ function SuccessContent() {
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [orderNumber, setOrderNumber] = useState<string>("");
   const { clearCart } = useCartStore();
 
-  // Générer un numéro de commande
-  const orderNumber = `YC${Date.now().toString().slice(-8)}`;
+  useEffect(() => {
+    // Générer un numéro de commande côté client uniquement
+    setOrderNumber(`YC${Date.now().toString().slice(-8)}`);
+  }, []);
 
   useEffect(() => {
     async function fetchSession() {
@@ -105,7 +108,7 @@ function SuccessContent() {
   }
 
   return (
-    <div className="from-ylang-cream to-ylang-beige min-h-screen bg-linear-to-br pt-24 pb-12">
+    <div className="from-ylang-terracotta/50 to-ylang-terracotta/30 min-h-screen bg-linear-to-br pt-24 pb-12">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Success Animation */}
         <motion.div
