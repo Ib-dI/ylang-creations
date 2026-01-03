@@ -33,6 +33,7 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
 
   return {
     id: p.id,
+    slug: p.slug,
     name: p.name,
     category: p.category,
     price: parseFloat(p.price),

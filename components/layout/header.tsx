@@ -49,18 +49,48 @@ const megaMenuCategories = [
     title: "LA CHAMBRE",
     href: "/collections?category=chambre",
     items: [
-      { name: "Coussin musical", href: "/collections?category=coussin-musical" },
+      {
+        name: "Coussin musical",
+        href: "/collections?category=coussin-musical",
+      },
       { name: "Couverture", href: "/collections?category=couverture" },
       { name: "Draps de lit bébé", href: "/collections?category=draps-lit" },
-      { name: "Gigoteuse légère 0/3", href: "/collections?category=gigoteuse-legere-0-3" },
-      { name: "Gigoteuse légère 3/6", href: "/collections?category=gigoteuse-legere-3-6" },
-      { name: "Gigoteuse légère 6/12", href: "/collections?category=gigoteuse-legere-6-12" },
-      { name: "Gigoteuse légère 12/24", href: "/collections?category=gigoteuse-legere-12-24" },
-      { name: "Gigoteuse molletonnée 0/3", href: "/collections?category=gigoteuse-molletonnee-0-3" },
-      { name: "Gigoteuse molletonnée 3/6", href: "/collections?category=gigoteuse-molletonnee-3-6" },
-      { name: "Gigoteuse molletonnée 6/12", href: "/collections?category=gigoteuse-molletonnee-6-12" },
-      { name: "Gigoteuse molletonnée 12/24", href: "/collections?category=gigoteuse-molletonnee-12-24" },
-      { name: "Housse matelas à langer", href: "/collections?category=housse-matelas" },
+      {
+        name: "Gigoteuse légère 0/3",
+        href: "/collections?category=gigoteuse-legere-0-3",
+      },
+      {
+        name: "Gigoteuse légère 3/6",
+        href: "/collections?category=gigoteuse-legere-3-6",
+      },
+      {
+        name: "Gigoteuse légère 6/12",
+        href: "/collections?category=gigoteuse-legere-6-12",
+      },
+      {
+        name: "Gigoteuse légère 12/24",
+        href: "/collections?category=gigoteuse-legere-12-24",
+      },
+      {
+        name: "Gigoteuse molletonnée 0/3",
+        href: "/collections?category=gigoteuse-molletonnee-0-3",
+      },
+      {
+        name: "Gigoteuse molletonnée 3/6",
+        href: "/collections?category=gigoteuse-molletonnee-3-6",
+      },
+      {
+        name: "Gigoteuse molletonnée 6/12",
+        href: "/collections?category=gigoteuse-molletonnee-6-12",
+      },
+      {
+        name: "Gigoteuse molletonnée 12/24",
+        href: "/collections?category=gigoteuse-molletonnee-12-24",
+      },
+      {
+        name: "Housse matelas à langer",
+        href: "/collections?category=housse-matelas",
+      },
       { name: "Lange carré blanc", href: "/collections?category=lange-carre" },
       { name: "Mobile de lit", href: "/collections?category=mobile-lit" },
       { name: "Tour de lit", href: "/collections?category=tour-de-lit" },
@@ -73,7 +103,10 @@ const megaMenuCategories = [
       { name: "Bavoir", href: "/collections?category=bavoir" },
       { name: "Cape de bain", href: "/collections?category=cape-de-bain" },
       { name: "Gant de toilette", href: "/collections?category=gant-toilette" },
-      { name: "Serviette de toilette", href: "/collections?category=serviette-toilette" },
+      {
+        name: "Serviette de toilette",
+        href: "/collections?category=serviette-toilette",
+      },
     ],
   },
   {
@@ -83,18 +116,30 @@ const megaMenuCategories = [
       { name: "Pyjama", href: "/collections?category=pyjama" },
       { name: "Chaussons", href: "/collections?category=chaussons" },
       { name: "Pantalon", href: "/collections?category=pantalon" },
-      { name: "Gilet cache-cœur", href: "/collections?category=gilet-cache-coeur" },
+      {
+        name: "Gilet cache-cœur",
+        href: "/collections?category=gilet-cache-coeur",
+      },
       { name: "Bloomer", href: "/collections?category=bloomer" },
-      { name: "Robe chasuble 12 mois", href: "/collections?category=robe-chasuble" },
+      {
+        name: "Robe chasuble 12 mois",
+        href: "/collections?category=robe-chasuble",
+      },
     ],
   },
   {
     title: "ACCESSOIRES",
     href: "/collections?category=accessoires",
     items: [
-      { name: "Anneaux de dentition", href: "/collections?category=anneaux-dentition" },
+      {
+        name: "Anneaux de dentition",
+        href: "/collections?category=anneaux-dentition",
+      },
       { name: "Attache tétine", href: "/collections?category=attache-tetine" },
-      { name: "Brosse à cheveux", href: "/collections?category=brosse-cheveux" },
+      {
+        name: "Brosse à cheveux",
+        href: "/collections?category=brosse-cheveux",
+      },
     ],
   },
   {
@@ -104,12 +149,30 @@ const megaMenuCategories = [
       { name: "Valisette", href: "/collections?category=valisette" },
       { name: "Vanity", href: "/collections?category=vanity" },
       { name: "Sac à langer", href: "/collections?category=sac-a-langer" },
-      { name: "Sac à dos maternelle", href: "/collections?category=sac-dos-maternelle" },
-      { name: "Matelas à langer nomade", href: "/collections?category=matelas-langer-nomade" },
-      { name: "Protège carnet de santé", href: "/collections?category=protege-carnet-sante" },
-      { name: "Protège livret de famille", href: "/collections?category=protege-livret-famille" },
-      { name: "Protège passeport", href: "/collections?category=protege-passeport" },
-      { name: "Trousse de toilette", href: "/collections?category=trousse-toilette" },
+      {
+        name: "Sac à dos maternelle",
+        href: "/collections?category=sac-dos-maternelle",
+      },
+      {
+        name: "Matelas à langer nomade",
+        href: "/collections?category=matelas-langer-nomade",
+      },
+      {
+        name: "Protège carnet de santé",
+        href: "/collections?category=protege-carnet-sante",
+      },
+      {
+        name: "Protège livret de famille",
+        href: "/collections?category=protege-livret-famille",
+      },
+      {
+        name: "Protège passeport",
+        href: "/collections?category=protege-passeport",
+      },
+      {
+        name: "Trousse de toilette",
+        href: "/collections?category=trousse-toilette",
+      },
     ],
   },
   {
@@ -127,9 +190,9 @@ const megaMenuCategories = [
 // Badge de compteur animé (composant léger)
 const AnimatedBadge = React.memo(({ count }: { count: number }) => {
   if (count === 0) return null;
-  
+
   return (
-    <span className="bg-ylang-rose absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium text-white lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px] animate-scale-in">
+    <span className="bg-ylang-rose animate-scale-in absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium text-white lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px]">
       {count}
     </span>
   );
@@ -146,13 +209,17 @@ export function Header() {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = React.useState(false);
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
-  const [expandedCategory, setExpandedCategory] = React.useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = React.useState<string | null>(
+    null,
+  );
 
   // Store hooks
   const cartCount = useCartStore((state) => state.getTotalItems());
   const wishlistCount = useWishlistStore((state) => state.getTotalItems());
   const setShippingConfig = useCartStore((state) => state.setShippingConfig);
-  const freeShippingThreshold = useCartStore((state) => state.freeShippingThreshold);
+  const freeShippingThreshold = useCartStore(
+    (state) => state.freeShippingThreshold,
+  );
 
   // Refs
   const megaMenuRef = React.useRef<HTMLDivElement>(null);
@@ -164,7 +231,9 @@ export function Header() {
       setSession(session);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
 
@@ -179,7 +248,7 @@ export function Header() {
         if (data && !data.error) {
           setShippingConfig(
             parseFloat(data.shippingFee) || 9.9,
-            parseFloat(data.freeShippingThreshold) || 150
+            parseFloat(data.freeShippingThreshold) || 150,
           );
         }
       })
@@ -198,7 +267,7 @@ export function Header() {
         ticking = true;
       }
     };
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -206,10 +275,18 @@ export function Header() {
   // Click outside effect
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const isClickInsideMegaMenu = megaMenuRef.current?.contains(event.target as Node);
-      const isClickInsideMobileMenu = mobileMenuRef.current?.contains(event.target as Node);
+      const isClickInsideMegaMenu = megaMenuRef.current?.contains(
+        event.target as Node,
+      );
+      const isClickInsideMobileMenu = mobileMenuRef.current?.contains(
+        event.target as Node,
+      );
 
-      if (isMegaMenuOpen && !isClickInsideMegaMenu && !isClickInsideMobileMenu) {
+      if (
+        isMegaMenuOpen &&
+        !isClickInsideMegaMenu &&
+        !isClickInsideMobileMenu
+      ) {
         setIsMegaMenuOpen(false);
       }
     };
@@ -219,7 +296,7 @@ export function Header() {
   }, [isMegaMenuOpen]);
 
   const toggleMegaMenu = React.useCallback(() => {
-    setIsMegaMenuOpen(prev => !prev);
+    setIsMegaMenuOpen((prev) => !prev);
   }, []);
 
   const closeMegaMenu = React.useCallback(() => {
@@ -237,7 +314,7 @@ export function Header() {
       <header
         className={cn(
           "bg-pattern fixed top-0 right-0 left-0 z-50 transition-all duration-500",
-          isScrolled && "shadow-[0_2px_20px_rgba(0,0,0,0.08)]"
+          isScrolled && "shadow-[0_2px_20px_rgba(0,0,0,0.08)]",
         )}
       >
         {/* Barre Social Media */}
@@ -276,12 +353,15 @@ export function Header() {
             <div className="flex items-center" ref={megaMenuRef}>
               <button
                 onClick={toggleMegaMenu}
-                aria-label={isMegaMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                aria-label={
+                  isMegaMenuOpen ? "Fermer le menu" : "Ouvrir le menu"
+                }
                 aria-expanded={isMegaMenuOpen}
                 className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2",
                   "text-ylang-charcoal bg-white/50 backdrop-blur-sm hover:bg-white/80",
-                  isMegaMenuOpen && "bg-ylang-rose hover:bg-ylang-rose/90 text-white"
+                  isMegaMenuOpen &&
+                    "bg-ylang-rose hover:bg-ylang-rose/90 text-white",
                 )}
               >
                 {isMegaMenuOpen ? (
@@ -336,7 +416,7 @@ export function Header() {
               {session ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button 
+                    <button
                       aria-label="Mon compte"
                       className="text-ylang-charcoal hover:border-ylang-rose focus:ring-ylang-rose/20 h-9 w-9 transform overflow-hidden rounded-full border border-transparent bg-white/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 focus:ring-2 focus:outline-none"
                     >
@@ -353,13 +433,18 @@ export function Header() {
                       )}
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="border-ylang-beige w-64 bg-white/95 p-2 shadow-xl backdrop-blur-md">
+                  <DropdownMenuContent
+                    align="end"
+                    className="border-ylang-beige w-64 bg-white/95 p-2 shadow-xl backdrop-blur-md"
+                  >
                     <div className="flex items-center gap-3 px-2 py-3">
                       <div className="border-ylang-beige bg-ylang-cream flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border">
                         {session.user.user_metadata?.avatar_url ? (
                           <img
                             src={session.user.user_metadata.avatar_url}
-                            alt={session.user.user_metadata?.full_name ?? "User"}
+                            alt={
+                              session.user.user_metadata?.full_name ?? "User"
+                            }
                             className="h-full w-full object-cover"
                           />
                         ) : (
@@ -370,9 +455,12 @@ export function Header() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-gray-900">
-                          {session.user.user_metadata?.full_name || session.user.email?.split("@")[0]}
+                          {session.user.user_metadata?.full_name ||
+                            session.user.email?.split("@")[0]}
                         </p>
-                        <p className="truncate text-xs text-gray-500">{session.user.email}</p>
+                        <p className="truncate text-xs text-gray-500">
+                          {session.user.email}
+                        </p>
                       </div>
                     </div>
 
@@ -383,7 +471,7 @@ export function Header() {
                         <DropdownMenuItem asChild>
                           <Link
                             href="/admin"
-                            className="group hover:bg-ylang-beige hover:text-ylang-rose flex cursor-pointer items-center rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                            className="group focus:text-ylang-rose data-[highlighted]:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose flex cursor-pointer items-center rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
                           >
                             <LayoutDashboard className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
                             <span>Tableau de bord</span>
@@ -391,12 +479,18 @@ export function Header() {
                         </DropdownMenuItem>
                       ) : (
                         <>
-                          <DropdownMenuItem onClick={() => router.push("/orders")} className="group hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors">
+                          <DropdownMenuItem
+                            onClick={() => router.push("/orders")}
+                            className="group focus:text-ylang-rose data-[highlighted]:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                          >
                             <Package className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
                             <span>Mes Commandes</span>
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => router.push("/profil")} className="group hover:bg-ylang-beige cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors">
-                            <User className="mr-3 h-4 w-4 text-gray-400" />
+                          <DropdownMenuItem
+                            onClick={() => router.push("/profil")}
+                            className="group focus:text-ylang-rose data-[highlighted]:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                          >
+                            <User className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
                             <span>Mon Profil</span>
                           </DropdownMenuItem>
                         </>
@@ -405,8 +499,11 @@ export function Header() {
 
                     <DropdownMenuSeparator className="bg-ylang-beige" />
 
-                    <DropdownMenuItem onClick={handleSignOut} className="group cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50">
-                      <LogOut className="mr-3 h-4 w-4 text-red-400 group-hover:text-red-600" />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="group cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 focus:text-red-700 data-[highlighted]:text-red-700"
+                    >
+                      <LogOut className="mr-3 h-4 w-4 text-red-400 group-hover:text-red-700" />
                       <span>Se déconnecter</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -437,7 +534,10 @@ export function Header() {
                 aria-label="Mon panier"
                 className="text-ylang-charcoal hover:text-ylang-rose group relative transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
               >
-                <ShoppingBag className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.5} />
+                <ShoppingBag
+                  className="h-4 w-4 lg:h-5 lg:w-5"
+                  strokeWidth={1.5}
+                />
                 <AnimatedBadge count={cartCount} />
               </button>
 
@@ -460,8 +560,8 @@ export function Header() {
       {/* Mega Menu Desktop - Optimisé sans framer-motion */}
       {isMegaMenuOpen && (
         <div
-          className="bg-ylang-cream/98 fixed top-20 right-0 left-0 z-40 hidden shadow-2xl backdrop-blur-lg lg:block animate-fade-in-down"
-          style={{ animation: 'fadeInDown 0.3s ease-out' }}
+          className="bg-ylang-cream/98 animate-fade-in-down fixed top-20 right-0 left-0 z-40 hidden shadow-2xl backdrop-blur-lg lg:block"
+          style={{ animation: "fadeInDown 0.3s ease-out" }}
         >
           <div className="mx-auto max-w-7xl px-8 py-10">
             <div className="flex gap-12">
@@ -482,17 +582,19 @@ export function Header() {
                             "group flex items-center justify-between text-lg font-light tracking-wide transition-all duration-300",
                             isActive
                               ? "text-ylang-rose font-medium"
-                              : "text-ylang-charcoal hover:text-ylang-rose hover:translate-x-2"
+                              : "text-ylang-charcoal hover:text-ylang-rose hover:translate-x-2",
                           )}
                         >
                           <span>
                             {item.name}
-                            {item.featured && <span className="ml-2 text-sm">✨</span>}
+                            {item.featured && (
+                              <span className="ml-2 text-sm">✨</span>
+                            )}
                           </span>
                           <ChevronRight
                             className={cn(
                               "h-4 w-4 opacity-0 transition-all duration-300 group-hover:opacity-100",
-                              isActive && "text-ylang-rose opacity-100"
+                              isActive && "text-ylang-rose opacity-100",
                             )}
                           />
                         </Link>
@@ -500,8 +602,6 @@ export function Header() {
                     );
                   })}
                 </ul>
-
-                
               </div>
 
               {/* Grille Catégories */}
@@ -512,7 +612,11 @@ export function Header() {
                 <div className="grid grid-cols-5 gap-x-6 gap-y-8">
                   {megaMenuCategories.map((category) => (
                     <div key={category.title} className="space-y-4">
-                      <Link href={category.href} onClick={closeMegaMenu} className="group block">
+                      <Link
+                        href={category.href}
+                        onClick={closeMegaMenu}
+                        className="group block"
+                      >
                         <h3 className="text-ylang-rose font-heading text-sm font-bold tracking-wider transition-colors">
                           {category.title}
                         </h3>
@@ -548,8 +652,8 @@ export function Header() {
       {isMegaMenuOpen && (
         <div
           ref={mobileMenuRef}
-          className="bg-ylang-cream/98 border-ylang-beige fixed top-16 right-0 left-0 z-40 max-h-[calc(100vh-64px)] overflow-y-auto border-b shadow-2xl backdrop-blur-lg lg:hidden animate-fade-in"
-          style={{ animation: 'fadeIn 0.3s ease-out' }}
+          className="bg-ylang-cream/98 border-ylang-beige animate-fade-in fixed top-16 right-0 left-0 z-40 max-h-[calc(100vh-64px)] overflow-y-auto border-b shadow-2xl backdrop-blur-lg lg:hidden"
+          style={{ animation: "fadeIn 0.3s ease-out" }}
         >
           <nav className="px-4 py-6">
             {/* Recherche Mobile */}
@@ -562,7 +666,9 @@ export function Header() {
                 className="border-ylang-beige text-ylang-charcoal/60 hover:border-ylang-rose/50 mt-4 flex w-full items-center gap-3 rounded-xl border bg-white/80 px-4 py-3 transition-all duration-300 hover:bg-white"
               >
                 <Search className="h-5 w-5" strokeWidth={1.5} />
-                <span className="font-body text-sm">Rechercher un produit...</span>
+                <span className="font-body text-sm">
+                  Rechercher un produit...
+                </span>
               </button>
             </div>
 
@@ -572,7 +678,7 @@ export function Header() {
                 <div
                   key={item.href}
                   style={{
-                    animation: `slideInLeft 0.3s ease-out ${index * 0.05}s both`
+                    animation: `slideInLeft 0.3s ease-out ${index * 0.05}s both`,
                   }}
                 >
                   <Link
@@ -583,7 +689,7 @@ export function Header() {
                       pathname === item.href
                         ? "bg-ylang-rose font-medium text-white"
                         : "text-ylang-charcoal hover:bg-ylang-beige",
-                      item.featured && "border-ylang-rose border-2"
+                      item.featured && "border-ylang-rose border-2",
                     )}
                   >
                     {item.name}
@@ -602,33 +708,39 @@ export function Header() {
                 <div
                   key={category.title}
                   style={{
-                    animation: `slideInLeft 0.3s ease-out ${(mainNavigation.length + index) * 0.05}s both`
+                    animation: `slideInLeft 0.3s ease-out ${(mainNavigation.length + index) * 0.05}s both`,
                   }}
                 >
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setExpandedCategory(expandedCategory === category.title ? null : category.title);
+                      setExpandedCategory(
+                        expandedCategory === category.title
+                          ? null
+                          : category.title,
+                      );
                     }}
                     className="text-ylang-charcoal hover:bg-ylang-beige/50 flex w-full items-center justify-between rounded-lg px-4 py-3 transition-colors"
                   >
                     <span className="font-body text-sm font-medium">
                       {category.title}
                       {category.subtitle && (
-                        <span className="text-ylang-rose ml-2 text-[10px] italic">{category.subtitle}</span>
+                        <span className="text-ylang-rose ml-2 text-[10px] italic">
+                          {category.subtitle}
+                        </span>
                       )}
                     </span>
                     <ChevronDown
                       className={cn(
                         "h-4 w-4 transition-transform duration-200",
-                        expandedCategory === category.title && "rotate-180"
+                        expandedCategory === category.title && "rotate-180",
                       )}
                       strokeWidth={1.5}
                     />
                   </button>
 
                   {expandedCategory === category.title && (
-                    <div className="overflow-hidden animate-slide-down">
+                    <div className="animate-slide-down overflow-hidden">
                       <div className="bg-ylang-beige/30 ml-4 space-y-1 rounded-lg px-4 py-2">
                         {category.items.map((item) => (
                           <Link
@@ -637,7 +749,10 @@ export function Header() {
                             onClick={closeMegaMenu}
                             className="text-ylang-charcoal/80 hover:text-ylang-rose font-body flex items-center py-2 text-sm transition-colors"
                           >
-                            <ChevronRight className="mr-2 h-3 w-3" strokeWidth={1.5} />
+                            <ChevronRight
+                              className="mr-2 h-3 w-3"
+                              strokeWidth={1.5}
+                            />
                             {item.name}
                           </Link>
                         ))}
@@ -670,7 +785,10 @@ export function Header() {
                   aria-label="Rechercher"
                   className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
                 >
-                  <Search className="text-ylang-charcoal mb-1 h-5 w-5" strokeWidth={1.5} />
+                  <Search
+                    className="text-ylang-charcoal mb-1 h-5 w-5"
+                    strokeWidth={1.5}
+                  />
                   <span className="text-ylang-charcoal text-xs">Recherche</span>
                 </button>
 
@@ -682,7 +800,10 @@ export function Header() {
                   aria-label="Mes favoris"
                   className="bg-ylang-beige/50 hover:bg-ylang-beige relative flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
                 >
-                  <Heart className="text-ylang-charcoal mb-1 h-5 w-5" strokeWidth={1.5} />
+                  <Heart
+                    className="text-ylang-charcoal mb-1 h-5 w-5"
+                    strokeWidth={1.5}
+                  />
                   <span className="text-ylang-charcoal text-xs">Favoris</span>
                   {wishlistCount > 0 && (
                     <span className="bg-ylang-rose absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-white">
@@ -699,7 +820,10 @@ export function Header() {
                   aria-label="Mon panier"
                   className="bg-ylang-beige/50 hover:bg-ylang-beige relative flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
                 >
-                  <ShoppingBag className="text-ylang-charcoal mb-1 h-5 w-5" strokeWidth={1.5} />
+                  <ShoppingBag
+                    className="text-ylang-charcoal mb-1 h-5 w-5"
+                    strokeWidth={1.5}
+                  />
                   <span className="text-ylang-charcoal text-xs">Panier</span>
                   {cartCount > 0 && (
                     <span className="bg-ylang-rose absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-white">
@@ -729,7 +853,10 @@ export function Header() {
                       className="mb-1 h-5 w-5 rounded-full object-cover"
                     />
                   ) : (
-                    <User className="text-ylang-charcoal mb-1 h-5 w-5" strokeWidth={1.5} />
+                    <User
+                      className="text-ylang-charcoal mb-1 h-5 w-5"
+                      strokeWidth={1.5}
+                    />
                   )}
                   <span className="text-ylang-charcoal text-xs">
                     {session ? "Compte" : "Connexion"}
@@ -741,7 +868,10 @@ export function Header() {
         </div>
       )}
 
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
 
       {/* Animations CSS */}
       <style jsx>{`
@@ -757,8 +887,12 @@ export function Header() {
         }
 
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
 
         @keyframes slideInLeft {

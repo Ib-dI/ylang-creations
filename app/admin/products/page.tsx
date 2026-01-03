@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   Box,
   Check,
+  ChevronDown,
   Edit,
   Eye,
   EyeOff,
@@ -14,6 +15,8 @@ import {
   Image as ImageIcon,
   Info,
   Layers,
+  LayoutGrid,
+  List,
   Loader2,
   Package,
   Palette,
@@ -24,7 +27,6 @@ import {
   Star,
   Tags,
   Trash2,
-  ChevronDown,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -88,6 +90,7 @@ export default function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("general");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -397,21 +400,49 @@ export default function ProductsPage() {
           />
         </div>
 
-        {/* Category filter */}
-        <div className="relative">
-          <select
-            value={selectedCategory || ""}
-            onChange={(e) => setSelectedCategory(e.target.value || null)}
-            className=" focus:ring-ylang-rose/20 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
-          >
-            <option value="">Toutes les catégories</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
+        <div className="flex items-center gap-2">
+          {/* Category filter */}
+          <div className="relative">
+            <select
+              value={selectedCategory || ""}
+              onChange={(e) => setSelectedCategory(e.target.value || null)}
+              className="focus:ring-ylang-rose/20 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
+            >
+              <option value="">Toutes les catégories</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
+          </div>
+
+          {/* View Toggle */}
+          <div className="flex items-center rounded-2xl border border-gray-200 bg-white p-1">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`rounded-xl p-2.5 transition-all ${
+                viewMode === "grid"
+                  ? "bg-ylang-rose text-white shadow-md"
+                  : "text-ylang-charcoal/40 hover:text-ylang-charcoal hover:bg-gray-50"
+              }`}
+              title="Vue grille"
+            >
+              <LayoutGrid className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`rounded-xl p-2.5 transition-all ${
+                viewMode === "list"
+                  ? "bg-ylang-rose text-white shadow-md"
+                  : "text-ylang-charcoal/40 hover:text-ylang-charcoal hover:bg-gray-50"
+              }`}
+              title="Vue liste"
+            >
+              <List className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         {/* Add button */}
@@ -444,7 +475,7 @@ export default function ProductsPage() {
             Ajouter un produit
           </Button>
         </div>
-      ) : (
+      ) : viewMode === "grid" ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProducts.map((product) => (
             <motion.div
@@ -584,6 +615,160 @@ export default function ProductsPage() {
               </div>
             </motion.div>
           ))}
+        </div>
+      ) : (
+        <div className="border-ylang-beige overflow-hidden rounded-2xl border bg-white shadow-sm">
+          <div className="border-ylang-beige text-ylang-charcoal/60 hidden grid-cols-[80px_1fr_150px_120px_100px_180px] items-center gap-4 border-b bg-gray-50/50 px-6 py-4 text-sm font-semibold lg:grid">
+            <div>Image</div>
+            <div>Produit</div>
+            <div>Catégorie</div>
+            <div>Prix</div>
+            <div>Stock</div>
+            <div className="text-right">Actions</div>
+          </div>
+          <div className="divide-ylang-beige/50 divide-y">
+            {filteredProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="grid grid-cols-1 items-center gap-4 px-6 py-4 transition-colors hover:bg-gray-50/50 lg:grid-cols-[80px_1fr_150px_120px_100px_180px]"
+              >
+                {/* Image */}
+                <div className="bg-ylang-beige h-16 w-16 overflow-hidden rounded-xl">
+                  {product.images[0] ? (
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <Package className="text-ylang-charcoal/20 h-6 w-6" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div>
+                  <h3 className="text-ylang-charcoal font-semibold">
+                    {product.name}
+                  </h3>
+                  <div className="mt-1 flex flex-wrap gap-2 lg:hidden">
+                    <span className="text-ylang-rose text-xs font-medium">
+                      {product.category}
+                    </span>
+                    <span className="text-ylang-charcoal/40 text-sm">
+                      {product.price.toFixed(2)}€
+                    </span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {!product.isActive && (
+                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-600">
+                        Inactif
+                      </span>
+                    )}
+                    {product.isFeatured && (
+                      <span className="flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-medium text-yellow-600">
+                        <Star className="h-2.5 w-2.5" />
+                        Vedette
+                      </span>
+                    )}
+                    {product.options?.customizable && (
+                      <span className="flex items-center gap-1 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-medium text-purple-600">
+                        <Palette className="h-2.5 w-2.5" />
+                        Personnalisable
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Category */}
+                <div className="hidden lg:block">
+                  <span className="text-ylang-charcoal/60 text-sm">
+                    {product.category}
+                  </span>
+                </div>
+
+                {/* Price */}
+                <div className="hidden lg:block">
+                  <div className="flex flex-col">
+                    <span className="text-ylang-rose font-semibold">
+                      {product.price.toFixed(2)}€
+                    </span>
+                    {product.compareAtPrice && (
+                      <span className="text-ylang-charcoal/40 text-xs line-through">
+                        {product.compareAtPrice.toFixed(2)}€
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Stock */}
+                <div className="hidden lg:block">
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs font-medium ${
+                      product.stock === 0
+                        ? "bg-red-100 text-red-600"
+                        : product.stock < 5
+                          ? "bg-orange-100 text-orange-600"
+                          : "bg-green-100 text-green-600"
+                    }`}
+                  >
+                    {product.stock} en stock
+                  </span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    onClick={() => handleOpenModal(product)}
+                    className="hover:bg-ylang-beige text-ylang-charcoal rounded-lg bg-gray-50 p-2 transition-colors"
+                    title="Modifier"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleToggleActive(product)}
+                    className={`rounded-lg p-2 transition-colors ${
+                      product.isActive
+                        ? "bg-green-50 text-green-600 hover:bg-green-100"
+                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                    }`}
+                    title={product.isActive ? "Désactiver" : "Activer"}
+                  >
+                    {product.isActive ? (
+                      <Eye className="h-4 w-4" />
+                    ) : (
+                      <EyeOff className="h-4 w-4" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => handleToggleFeatured(product)}
+                    className={`rounded-lg p-2 transition-colors ${
+                      product.isFeatured
+                        ? "bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
+                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                    }`}
+                    title={
+                      product.isFeatured
+                        ? "Retirer vedette"
+                        : "Mettre en vedette"
+                    }
+                  >
+                    <Star className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product.id)}
+                    className="rounded-lg bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -728,7 +913,7 @@ export default function ProductsPage() {
                                     category: e.target.value,
                                   })
                                 }
-                                className="w-full focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
+                                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal w-full cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
                               >
                                 <option value="">Sélectionner...</option>
                                 {categories.map((cat) => (
