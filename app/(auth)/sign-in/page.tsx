@@ -153,7 +153,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F9F6F3] px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-ylang-terracotta/30 px-4 py-12 sm:px-6 lg:px-8">
       {/* Toast Notification avec aria-live pour l'accessibilité */}
       {toast.show && (
         <div

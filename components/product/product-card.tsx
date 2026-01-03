@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { Heart, Sparkles} from "lucide-react";
+import { Heart, Wand2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
@@ -23,10 +22,18 @@ interface ProductCardProps {
     customizable?: boolean;
   };
   className?: string;
+  priority?: boolean; // Pour les 2-4 premiers produits
+  index?: number; // Pour les animations échelonnées
 }
 
-export function ProductCard({ product, className }: ProductCardProps) {
+export function ProductCard({ 
+  product, 
+  className,
+  priority = false,
+  index = 0
+}: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+  const [isHovered, setIsHovered] = React.useState(false);
 
   // Wishlist store
   const { isInWishlist, toggleItem } = useWishlistStore();
@@ -34,59 +41,62 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   const images = product.images || [product.image];
 
+  // Optimisation: Précharger seulement l'image suivante au hover
+  React.useEffect(() => {
+    if (isHovered && images.length > 1 && currentImageIndex < images.length - 1) {
+      const nextImage = new window.Image();
+      nextImage.src = images[currentImageIndex + 1];
+    }
+  }, [isHovered, currentImageIndex, images]);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      whileHover={{ y: -4 }}
+    <div
       className={cn("group", className)}
+      style={{
+        // Animation CSS pure au lieu de framer-motion
+        animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <Card className="relative overflow-hidden border-0 bg-white transition-all duration-500">
+      <Card className="relative overflow-hidden border-0 bg-white transition-all duration-500 hover:shadow-lg">
         {/* Image Container */}
         <Link href={`/produits/${product.id}`}>
           <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden">
-            {/* Image principale avec effet zoom subtil */}
+            {/* Image principale */}
             <div className="relative h-full w-full">
               <Image
                 src={images[currentImageIndex]}
                 alt={product.name}
                 fill
-                className="ease-slow-j origin-center object-cover transition-transform duration-500 group-hover:scale-[1.15]"
-                sizes="(max-width: 560px) 100vw, (max-width: 800px) 50vw, 25vw"
+                priority={priority}
+                loading={priority ? "eager" : "lazy"}
+                quality={85}
+                className="origin-center object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             </div>
 
             {/* Overlay élégant au hover */}
             <div className="absolute inset-0 bg-linear-to-t from-white/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-            {/* CTA qui slide du bas au hover */}
-            <motion.div
-              className="absolute inset-x-0 bottom-0 translate-y-full p-4 transition-transform duration-300 group-hover:translate-y-0"
-              initial={{ y: "100%" }}
-            >
-              <Button variant="primary" className="w-full shadow-lg">
-                <Sparkles className="mr-2 h-4 w-4" />
-                Personnaliser
-              </Button>
-            </motion.div>
 
             {/* Thumbnails si plusieurs images */}
             {images.length > 1 && (
               <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                {images.map((_, index) => (
+                {images.map((_, imgIndex) => (
                   <button
-                    key={index}
+                    key={imgIndex}
                     onClick={(e) => {
                       e.preventDefault();
-                      setCurrentImageIndex(index);
+                      setCurrentImageIndex(imgIndex);
                     }}
+                    aria-label={`Voir image ${imgIndex + 1}`}
                     className={cn(
                       "h-2 w-2 rounded-full transition-all duration-300",
-                      currentImageIndex === index
+                      currentImageIndex === imgIndex
                         ? "w-6 bg-white"
-                        : "bg-white/50 hover:bg-white/80",
+                        : "bg-white/50 hover:bg-white/80"
                     )}
                   />
                 ))}
@@ -95,21 +105,21 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </div>
         </Link>
 
-        {/* Badges */}
+        {/* Badges - Animation CSS pure */}
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           {product.new && (
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-              className="bg-ylang-rose rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-white uppercase shadow-lg"
+            <div
+              className="bg-ylang-terracotta rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-white uppercase shadow-lg"
+              style={{
+                animation: "scaleRotate 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s both"
+              }}
             >
               Nouveauté
-            </motion.div>
+            </div>
           )}
           {product.customizable && (
             <div className="bg-ylang-sage/90 text-ylang-charcoal flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider uppercase backdrop-blur-sm">
-              <Sparkles className="h-3 w-3" />
+              <Wand2 className="h-3 w-3" />
               Sur mesure
             </div>
           )}
@@ -129,6 +139,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               customizable: product.customizable,
             });
           }}
+          aria-label={isWishlisted ? "Retirer des favoris" : "Ajouter aux favoris"}
           className="group/heart absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur-sm transition-transform duration-300 hover:scale-110"
         >
           <Heart
@@ -136,13 +147,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
               "h-5 w-5 transition-all duration-300",
               isWishlisted
                 ? "fill-ylang-rose text-ylang-rose scale-110"
-                : "text-ylang-charcoal/60 group-hover/heart:text-ylang-rose group-hover/heart:scale-110",
+                : "text-ylang-charcoal/60 group-hover/heart:text-ylang-rose group-hover/heart:scale-110"
             )}
           />
         </button>
 
         {/* Infos produit */}
-        <div className="space-y-1.5 p-3">
+        <div className="space-y-1.5 p-3 bg-ylang-beige">
           <div>
             <p className="font-body text-ylang-charcoal/50 mb-0.5 text-xs tracking-widest uppercase">
               {product.category}
@@ -154,15 +165,47 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </Link>
           </div>
 
-          <div className="flex items-baseline justify-between w-full">
+          <div className="flex items-center justify-between gap-2 w-full">
             <Button variant="secondary" size="sm" className="group" asChild>
               <Link href={`/produits/${product.id}`}>
                 Découvrir
               </Link>
             </Button>
+            
+            {product.customizable && (
+              <Button variant="primary" size="sm" className="group" asChild>
+                <Link href={`/produits/${product.id}`}>
+                  <Wand2 className="mr-1.5 h-3.5 w-3.5" />
+                  Personnaliser
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </Card>
-    </motion.div>
+
+      {/* Animations CSS dans un style tag */}
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes scaleRotate {
+          0% {
+            transform: scale(0) rotate(-180deg);
+          }
+          100% {
+            transform: scale(1) rotate(0deg);
+          }
+        }
+      `}</style>
+    </div>
   );
 }

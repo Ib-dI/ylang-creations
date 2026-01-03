@@ -83,7 +83,7 @@ export function Footer() {
       <div className="border-ylang-beige/50 mt-4 border-t pt-8">
         <div className="grid grid-cols-2 items-center justify-items-center gap-6 md:grid-cols-4">
           <div className="text-center">
-            <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-beige/60 border-ylang-white border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
               <span className="text-2xl">🇫🇷</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -94,7 +94,7 @@ export function Footer() {
           </div>
 
           <div className="text-center">
-            <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-beige/60 border-ylang-white border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
               <span className="text-2xl">🌿</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -105,7 +105,7 @@ export function Footer() {
           </div>
 
           <div className="text-center">
-            <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-beige/60 border-ylang-white border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
               <span className="text-2xl">✂️</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -116,7 +116,7 @@ export function Footer() {
           </div>
 
           <div className="text-center">
-            <div className="bg-ylang-beige/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-beige/60 border-ylang-white border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
               <span className="text-2xl">💫</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">

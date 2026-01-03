@@ -3,6 +3,7 @@ import type { Product as ConfiguratorProduct } from "@/types/configurator";
 // Type pour les produits du catalogue
 export interface CatalogProduct {
   id: string;
+  slug: string;
   name: string;
   category: string;
   price: number;
@@ -22,6 +23,7 @@ export interface CatalogProduct {
 export const catalogProducts: CatalogProduct[] = [
   {
     id: "1",
+    slug: "gigoteuse-fleurie-personnalisee",
     name: "Gigoteuse fleurie personnalisée",
     category: "Linge de lit bébé",
     price: 89,
@@ -50,6 +52,7 @@ export const catalogProducts: CatalogProduct[] = [
   },
   {
     id: "2",
+    slug: "tour-de-lit-nuage",
     name: "Tour de lit nuage",
     category: "Décoration chambre",
     price: 65,
@@ -77,6 +80,7 @@ export const catalogProducts: CatalogProduct[] = [
   },
   {
     id: "3",
+    slug: "ensemble-bebe-personnalise",
     name: "Ensemble bébé personnalisé",
     category: "Vêtements bébé",
     price: 79,
@@ -104,6 +108,7 @@ export const catalogProducts: CatalogProduct[] = [
   },
   {
     id: "4",
+    slug: "carnet-de-dessins-personnalise",
     name: "Carnet de dessins personnalisé",
     category: "Accessoires",
     price: 14.95,
@@ -129,6 +134,7 @@ export const catalogProducts: CatalogProduct[] = [
   },
   {
     id: "5",
+    slug: "ubidoll-mahoraise-personnalise",
     name: "Ubidoll mahoraise personnalisé",
     category: "Jouets",
     price: 35,
@@ -155,6 +161,7 @@ export const catalogProducts: CatalogProduct[] = [
   },
   {
     id: "6",
+    slug: "coussin-decoratif-etoile",
     name: "Coussin décoratif étoile",
     category: "Décoration chambre",
     price: 45,
@@ -180,6 +187,7 @@ export const catalogProducts: CatalogProduct[] = [
   },
   {
     id: "7",
+    slug: "sac-a-main-personnalise",
     name: "Sac à main personnalisé",
     category: "Accessoires",
     price: 125,
@@ -205,6 +213,7 @@ export const catalogProducts: CatalogProduct[] = [
   },
   {
     id: "8",
+    slug: "ensemble-bebe-premium",
     name: "Ensemble bébé personnalisé",
     category: "Vêtements bébé",
     price: 95,

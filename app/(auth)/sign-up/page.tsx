@@ -58,7 +58,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F9F6F3] px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-ylang-terracotta/30 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-xs">
         <div className="flex flex-col items-center">
           <div className="relative h-24 w-24">
@@ -69,7 +69,7 @@ export default function SignUpPage() {
               className="object-contain"
             />
           </div>
-          <h2 className="font-abramo-script mt-6 text-center text-6xl tracking-tight text-[#1A1A1A]">
+          <h2 className="font-abramo-script mt-6 text-center text-6xl tracking-tight text-ylang-charcoal">
             Créer un compte
           </h2>
           <p className="mt-2 text-center text-sm text-gray-500">

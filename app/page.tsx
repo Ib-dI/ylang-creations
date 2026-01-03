@@ -8,14 +8,49 @@ import { product as productTable } from "@/db/schema";
 import { db } from "@/lib/db";
 import { and, desc, eq } from "drizzle-orm";
 import { Loader2 } from "lucide-react";
-import { unstable_noStore as noStore } from "next/cache";
 import { Suspense } from "react";
 
-async function FeaturedProductsData() {
-  // Force dynamic rendering to always get fresh data
-  noStore();
+// Fonction de formatage réutilisable
+function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
+  let parsedImages: string[] = [];
+  try {
+    parsedImages = p.images ? JSON.parse(p.images) : [];
+  } catch {
+    parsedImages = [];
+  }
 
-  // Fetch featured products using Drizzle (consistent with rest of app)
+  interface ParsedOptions {
+    sizes?: string[];
+  }
+
+  let parsedOptions: ParsedOptions = {};
+  try {
+    parsedOptions = p.options ? JSON.parse(p.options) : {};
+  } catch {
+    parsedOptions = {};
+  }
+
+  return {
+    id: p.id,
+    name: p.name,
+    category: p.category,
+    price: parseFloat(p.price),
+    image: parsedImages[0] || "/images/placeholder.jpg",
+    images: parsedImages,
+    description: p.description || "",
+    longDescription: p.description || "",
+    features: [],
+    new: new Date(p.createdAt) > thirtyDaysAgo,
+    featured: p.isFeatured,
+    customizable: true,
+    sizes: parsedOptions.sizes || [],
+    defaultSize: parsedOptions.sizes?.[0] || undefined,
+    slug: p.slug,
+  };
+}
+
+async function FeaturedProductsData() {
+  // Fetch featured products
   const products = await db
     .select()
     .from(productTable)
@@ -23,48 +58,12 @@ async function FeaturedProductsData() {
     .orderBy(desc(productTable.createdAt))
     .limit(4);
 
-  // Calculate threshold date outside of map function
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  // Format products to match CatalogProduct type
-  const formattedProducts: CatalogProduct[] = products.map((p) => {
-    let parsedImages: string[] = [];
-    try {
-      parsedImages = p.images ? JSON.parse(p.images) : [];
-    } catch {
-      parsedImages = [];
-    }
-
-    interface ParsedOptions {
-      sizes?: string[];
-    }
-
-    let parsedOptions: ParsedOptions = {};
-    try {
-      parsedOptions = p.options ? JSON.parse(p.options) : {};
-    } catch {
-      parsedOptions = {};
-    }
-
-    return {
-      id: p.id,
-      name: p.name,
-      category: p.category,
-      price: parseFloat(p.price),
-      image: parsedImages[0] || "/images/placeholder.jpg",
-      images: parsedImages,
-      description: p.description || "",
-      longDescription: p.description || "",
-      features: [],
-      new: new Date(p.createdAt) > thirtyDaysAgo,
-      featured: p.isFeatured,
-      customizable: true,
-      sizes: parsedOptions.sizes || [],
-      defaultSize: parsedOptions.sizes?.[0] || undefined,
-      slug: p.slug,
-    };
-  });
+  const formattedProducts: CatalogProduct[] = products.map((p) =>
+    formatProduct(p, thirtyDaysAgo)
+  );
 
   if (formattedProducts.length === 0) {
     return (
@@ -83,14 +82,34 @@ async function FeaturedProductsData() {
   );
 }
 
+// Composant de fallback optimisé
+function ProductsLoadingFallback() {
+  return (
+    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {[1, 2, 3, 4].map((i) => (
+        <div
+          key={i}
+          className="bg-white rounded-lg overflow-hidden shadow-sm animate-pulse"
+        >
+          <div className="aspect-square bg-gray-200" />
+          <div className="p-4 space-y-3">
+            <div className="h-4 bg-gray-200 rounded w-3/4" />
+            <div className="h-4 bg-gray-200 rounded w-1/2" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <>
-      {/* Hero Section */}
+      {/* Hero Section - Critical, pas de Suspense */}
       <HeroSection />
 
-      {/* Featured Products */}
-      <section className="section-padding bg-white">
+      {/* Featured Products avec Suspense pour streaming */}
+      <section className="section-padding bg-ylang-terracotta/30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <p className="font-body text-ylang-rose mb-3 text-sm tracking-widest uppercase">
@@ -105,25 +124,42 @@ export default function Home() {
             </p>
           </div>
 
-          <Suspense
-            fallback={
-              <div className="flex h-64 items-center justify-center">
-                <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
-              </div>
-            }
-          >
+          <Suspense fallback={<ProductsLoadingFallback />}>
             <FeaturedProductsData />
           </Suspense>
         </div>
       </section>
-      {/* Savoir-faire */}
-      <CraftsmanshipSection />
 
-      {/* Comment ça marche */}
-      <HowItWorksSection />
+      {/* Sections avec lazy loading via Suspense */}
+      <Suspense
+        fallback={
+          <div className="h-96 bg-ylang-cream flex items-center justify-center">
+            <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+          </div>
+        }
+      >
+        <CraftsmanshipSection />
+      </Suspense>
 
-      {/* Témoignages */}
-      <TestimonialsSection />
+      <Suspense
+        fallback={
+          <div className="h-96 bg-white flex items-center justify-center">
+            <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+          </div>
+        }
+      >
+        <HowItWorksSection />
+      </Suspense>
+
+      <Suspense
+        fallback={
+          <div className="h-96 bg-ylang-cream flex items-center justify-center">
+            <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+          </div>
+        }
+      >
+        <TestimonialsSection />
+      </Suspense>
     </>
   );
 }

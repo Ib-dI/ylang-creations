@@ -81,7 +81,7 @@ export function WishlistDrawer() {
             </div>
 
             {/* Items */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto bg-ylang-terracotta/50 p-6">
               {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
                   <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-ylang-beige">
