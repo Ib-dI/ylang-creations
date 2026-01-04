@@ -188,7 +188,7 @@ export default function OrderDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdfaf6] p-8">
+    <div className="p-8">
       {/* Back Button */}
       <Link
         href="/admin/orders"

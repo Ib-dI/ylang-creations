@@ -280,11 +280,18 @@ export async function createCheckoutSession(
     );
 
     // 5. Prepare metadata for webhook
+    const itemsJson = JSON.stringify(items);
+    if (itemsJson.length > 500) {
+      console.warn(
+        "⚠️ Stripe metadata limit exceeded (500 chars). Items list might be truncated.",
+      );
+    }
+
     const metadata = {
       userId: user.id,
       userEmail: user.email!,
       customerId,
-      items: JSON.stringify(items),
+      items: itemsJson,
     };
 
     // 6. Create Stripe Checkout Session

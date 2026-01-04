@@ -328,7 +328,7 @@ export default function OrdersPage() {
                         <div className="flex items-center gap-2">
                           <Link
                             href={`/admin/orders/${order.id}`}
-                            className="bg-ylang-beige text-ylang-charcoal flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm transition-colors hover:bg-[#e8dcc8]"
+                            className="bg-ylang-beige text-ylang-charcoal flex items-center gap-1 rounded-lg px-3 py-1 text-sm transition-colors hover:bg-[#e8dcc8]"
                           >
                             <Eye className="h-4 w-4" />
                             Voir
@@ -338,7 +338,7 @@ export default function OrdersPage() {
                               onClick={() =>
                                 handleUpdateStatus(order.id, "in_production")
                               }
-                              className="rounded-lg bg-orange-100 px-3 py-1.5 text-sm text-orange-700 transition-colors hover:bg-orange-200"
+                              className="rounded-lg border border-orange-200 bg-orange-100 px-3 py-1 text-sm text-orange-700 transition-colors hover:bg-orange-200"
                             >
                               Production
                             </button>
@@ -348,7 +348,7 @@ export default function OrdersPage() {
                               onClick={() =>
                                 handleUpdateStatus(order.id, "shipped")
                               }
-                              className="rounded-lg bg-purple-100 px-3 py-1.5 text-sm text-purple-700 transition-colors hover:bg-purple-200"
+                              className="rounded-lg border border-purple-200 bg-purple-100 px-3 py-1 text-sm text-purple-700 transition-colors hover:bg-purple-200"
                             >
                               Expédier
                             </button>

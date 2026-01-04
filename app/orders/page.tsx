@@ -62,7 +62,7 @@ export default async function OrdersPage() {
   }
 
   return (
-    <div className="from-ylang-cream to-ylang-beige min-h-screen bg-linear-to-br pt-24 pb-12">
+    <div className="from-ylang-terracotta/50 to-ylang-terracotta/30 min-h-screen bg-linear-to-br pt-24 pb-12">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Link
@@ -140,12 +140,14 @@ export default async function OrdersPage() {
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
                             order.status === "paid"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-green-100 text-green-600 border border-green-200"
                               : order.status === "shipped"
-                                ? "bg-blue-100 text-blue-800"
+                                ? "bg-blue-100 text-blue-600 border border-blue-200"
                                 : order.status === "delivered"
-                                  ? "bg-purple-100 text-purple-800"
-                                  : "bg-gray-100 text-gray-800"
+                                  ? "bg-purple-100 text-purple-600 border border-purple-200"
+                                  : order.status === "in_production"
+                                    ? "bg-orange-100 text-orange-600 border border-orange-200"
+                                    : "bg-gray-100 text-gray-600 border border-gray-200"
                           }`}
                         >
                           {order.status === "paid"
@@ -154,8 +156,8 @@ export default async function OrdersPage() {
                               ? "Expédiée"
                               : order.status === "delivered"
                                 ? "Livrée"
-                                : order.status === "pending"
-                                  ? "En attente"
+                                : order.status === "in_production"
+                                  ? "En production"
                                   : order.status}
                         </span>
                       </div>

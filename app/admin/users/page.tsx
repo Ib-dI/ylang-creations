@@ -67,7 +67,7 @@ export default function UsersPage() {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold text-ylang-charcoal">Clients</h1>
+        <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">Clients</h1>
         <p className="text-ylang-charcoal/60">
           Gérez vos clients et consultez leurs informations
         </p>
@@ -75,56 +75,60 @@ export default function UsersPage() {
 
       {/* Stats */}
       <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-ylang-beige bg-white p-6">
+        <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500">
               <Users className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-ylang-charcoal">{totalUsers}</p>
-              <p className="text-sm text-ylang-charcoal/60">Total utilisateurs</p>
+              <p className="text-ylang-charcoal text-2xl font-bold">
+                {totalUsers}
+              </p>
+              <p className="text-ylang-charcoal/60 text-sm">
+                Total utilisateurs
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-ylang-beige bg-white p-6">
+        <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500">
               <CheckCircle className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-ylang-charcoal">
+              <p className="text-ylang-charcoal text-2xl font-bold">
                 {verifiedUsers}
               </p>
-              <p className="text-sm text-ylang-charcoal/60">Emails vérifiés</p>
+              <p className="text-ylang-charcoal/60 text-sm">Emails vérifiés</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-ylang-beige bg-white p-6">
+        <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500">
               <ShoppingBag className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-ylang-charcoal">
+              <p className="text-ylang-charcoal text-2xl font-bold">
                 {activeCustomers}
               </p>
-              <p className="text-sm text-ylang-charcoal/60">Clients actifs</p>
+              <p className="text-ylang-charcoal/60 text-sm">Clients actifs</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-ylang-beige bg-white p-6">
+        <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500">
               <Euro className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-ylang-charcoal">
+              <p className="text-ylang-charcoal text-2xl font-bold">
                 {totalRevenue.toFixed(0)}€
               </p>
-              <p className="text-sm text-ylang-charcoal/60">CA total clients</p>
+              <p className="text-ylang-charcoal/60 text-sm">CA total clients</p>
             </div>
           </div>
         </div>
@@ -133,13 +137,13 @@ export default function UsersPage() {
       {/* Search */}
       <div className="mb-6">
         <div className="relative max-w-md">
-          <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-ylang-charcoal/40" />
+          <Search className="text-ylang-charcoal/40 absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Rechercher un client..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-xl border border-ylang-beige bg-white py-3 pr-4 pl-12 focus:ring-2 focus:ring-ylang-rose/20 focus:outline-none"
+            className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border bg-white py-3 pr-4 pl-12 focus:ring-2 focus:outline-none"
           />
         </div>
       </div>
@@ -147,12 +151,12 @@ export default function UsersPage() {
       {/* Users table */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-ylang-rose" />
+          <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
         </div>
       ) : filteredUsers.length === 0 ? (
-        <div className="rounded-2xl border border-ylang-beige bg-white py-20 text-center">
-          <Users className="mx-auto mb-4 h-16 w-16 text-ylang-charcoal/20" />
-          <h3 className="mb-2 text-xl font-semibold text-ylang-charcoal">
+        <div className="border-ylang-terracotta rounded-2xl border bg-white py-20 text-center">
+          <Users className="text-ylang-charcoal/20 mx-auto mb-4 h-16 w-16" />
+          <h3 className="text-ylang-charcoal mb-2 text-xl font-semibold">
             Aucun client trouvé
           </h3>
           <p className="text-ylang-charcoal/60">
@@ -162,50 +166,50 @@ export default function UsersPage() {
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-ylang-beige bg-white">
+        <div className="border-ylang-terracotta overflow-hidden rounded-2xl border bg-white">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-ylang-cream">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium tracking-wider text-ylang-charcoal/60 uppercase">
+                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
                     Client
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium tracking-wider text-ylang-charcoal/60 uppercase">
+                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
                     Email vérifié
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium tracking-wider text-ylang-charcoal/60 uppercase">
+                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
                     Commandes
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium tracking-wider text-ylang-charcoal/60 uppercase">
+                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
                     Total dépensé
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium tracking-wider text-ylang-charcoal/60 uppercase">
+                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
                     Inscrit le
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-medium tracking-wider text-ylang-charcoal/60 uppercase">
+                  <th className="text-ylang-charcoal/60 px-6 py-4 text-right text-xs font-medium tracking-wider uppercase">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-ylang-beige">
+              <tbody className="divide-ylang-beige divide-y">
                 {filteredUsers.map((user, index) => (
                   <motion.tr
                     key={user.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="transition-colors hover:bg-ylang-cream"
+                    className="hover:bg-ylang-cream transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-ylang-rose to-ylang-terracotta font-bold text-white">
+                        <div className="from-ylang-rose to-ylang-terracotta flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br font-bold text-white">
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-medium text-ylang-charcoal">
+                          <p className="text-ylang-charcoal font-medium">
                             {user.name}
                           </p>
-                          <p className="text-xs text-ylang-charcoal/60">
+                          <p className="text-ylang-charcoal/60 text-xs">
                             {user.email}
                           </p>
                         </div>
@@ -226,19 +230,19 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <ShoppingBag className="h-4 w-4 text-ylang-charcoal/40" />
-                        <span className="font-medium text-ylang-charcoal">
+                        <ShoppingBag className="text-ylang-charcoal/40 h-4 w-4" />
+                        <span className="text-ylang-charcoal font-medium">
                           {user.orderCount}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="font-bold text-ylang-rose">
+                      <span className="text-ylang-rose font-bold">
                         {user.totalSpent.toFixed(2)}€
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 text-sm text-ylang-charcoal/60">
+                      <div className="text-ylang-charcoal/60 flex items-center gap-2 text-sm">
                         <Calendar className="h-4 w-4" />
                         {new Date(user.createdAt).toLocaleDateString("fr-FR")}
                       </div>
@@ -246,7 +250,7 @@ export default function UsersPage() {
                     <td className="px-6 py-4 text-right whitespace-nowrap">
                       <Link
                         href={`/admin/users/${user.id}`}
-                        className="inline-flex items-center gap-1 rounded-lg bg-ylang-beige px-3 py-1.5 text-sm text-ylang-charcoal transition-colors hover:bg-[#e8dcc8]"
+                        className="bg-ylang-beige text-ylang-charcoal inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm transition-colors hover:bg-[#e8dcc8]"
                       >
                         <Eye className="h-4 w-4" />
                         Voir

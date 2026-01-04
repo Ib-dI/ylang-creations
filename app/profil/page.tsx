@@ -148,14 +148,14 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F9F6F3]">
+      <div className="flex min-h-screen items-center justify-center bg-ylang-terracotta/50">
         <div className="border-ylang-rose h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F6F3] px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-ylang-terracotta/50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -170,7 +170,7 @@ export default function ProfilePage() {
         <div className="grid gap-8 md:grid-cols-3">
           {/* Sidebar / User Card */}
           <div className="md:col-span-1">
-            <div className="shadow-card hover:shadow-elevated rounded-3xl bg-white p-6 transition-shadow duration-300">
+            <div className="rounded-3xl bg-white p-6">
               <AvatarUpload
                 value={user?.user_metadata?.avatar_url}
                 onChange={handleAvatarChange}
@@ -330,7 +330,7 @@ export default function ProfilePage() {
                 <Button
                   type="submit"
                   disabled={updating || uploadingAvatar}
-                  className="bg-ylang-rose rounded-xl px-8 py-6 text-base font-bold text-white shadow-lg transition-transform hover:scale-105 hover:bg-[#8D5E50] active:scale-95 disabled:opacity-70 disabled:hover:scale-100"
+                  className="bg-ylang-rose/80 rounded-xl px-8 py-6 text-base font-bold text-white transition-transform hover:scale-102 hover:bg-ylang-rose active:scale-95 disabled:opacity-70 disabled:hover:scale-100"
                 >
                   {updating ? (
                     <>Processing...</>

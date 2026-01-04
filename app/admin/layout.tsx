@@ -91,7 +91,7 @@ export default function AdminLayout({
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
+      <div className="bg-ylang-terracotta/30 flex h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500" />
       </div>
     );
@@ -102,7 +102,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="from-ylang-cream to-ylang-beige min-h-screen bg-linear-to-br">
+    <div className="bg-ylang-terracotta/30 min-h-screen">
       {/* Mobile menu button */}
       <div className="fixed top-4 left-4 z-50 lg:hidden">
         <button

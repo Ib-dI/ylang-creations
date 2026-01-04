@@ -108,7 +108,7 @@ function SuccessContent() {
   }
 
   return (
-    <div className="from-ylang-terracotta/50 to-ylang-terracotta/30 min-h-screen bg-linear-to-br pt-24 pb-12">
+    <div suppressHydrationWarning={true} className="from-ylang-terracotta/50 to-ylang-terracotta/30 min-h-screen bg-linear-to-br pt-24 pb-12">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Success Animation */}
         <motion.div

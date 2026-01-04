@@ -192,6 +192,36 @@ export default function SettingsPage() {
     }
   };
 
+  const handleResetData = async () => {
+    const confirmReset = confirm(
+      "Êtes-vous sûr de vouloir réinitialiser toutes les données transactionnelles (Commandes et Clients) ? Les comptes utilisateurs seront conservés.",
+    );
+
+    if (!confirmReset) return;
+
+    const resetProducts = confirm(
+      "Souhaitez-vous également remettre tous les stocks de vos produits à zéro ?",
+    );
+
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/admin/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resetProducts }),
+      });
+
+      if (!response.ok) throw new Error("Erreur lors de la réinitialisation");
+
+      showToast("Toutes les données ont été réinitialisées", "success");
+    } catch (error) {
+      console.error(error);
+      showToast("Erreur lors de la réinitialisation des données", "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleImageUpload = async (
     field: string,
     file: File,
@@ -393,7 +423,7 @@ export default function SettingsPage() {
 
         {/* Content */}
         <div className="lg:col-span-3">
-          <div className="border-ylang-beige rounded-2xl border bg-white p-6">
+          <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
             {activeTab === "store" && (
               <div className="space-y-6">
                 <h2 className="text-ylang-charcoal mb-4 text-xl font-bold">
@@ -1089,20 +1119,17 @@ export default function SettingsPage() {
                   <Button
                     variant="link"
                     className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    onClick={() => {
-                      if (
-                        confirm(
-                          "Êtes-vous sûr de vouloir réinitialiser toutes les données ? Cette action est irréversible.",
-                        )
-                      ) {
-                        showToast(
-                          "Action non implémentée pour la sécurité",
-                          "error",
-                        );
-                      }
-                    }}
+                    disabled={isSaving}
+                    onClick={handleResetData}
                   >
-                    Réinitialiser toutes les données
+                    {isSaving && activeTab === "security" ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Réinitialisation...
+                      </>
+                    ) : (
+                      "Réinitialiser toutes les données"
+                    )}
                   </Button>
                 </div>
               </div>

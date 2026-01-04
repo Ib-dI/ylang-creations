@@ -1,19 +1,89 @@
 "use client";
-
 import StatusBadge from "@/components/admin/status-badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useAdminStore } from "@/lib/store/admin-store";
+import { cn } from "@/lib/utils";
 import type { DashboardStats } from "@/types/admin";
+import { motion } from "framer-motion";
 import {
   Clock,
   Euro,
   Loader2,
   Package,
   ShoppingBag,
+  TrendingDown,
   TrendingUp,
   Users,
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+function RevenueChart({ data }: { data: { name: string; revenue: number }[] }) {
+  if (!data || data.length === 0) return null;
+
+  return (
+    <div className="h-[300px] w-full pt-4">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data}>
+          <defs>
+            <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#a77769" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#a77769" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+          <XAxis
+            dataKey="name"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#666", fontSize: 12 }}
+            dy={10}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#666", fontSize: 12 }}
+            tickFormatter={(value) => `${value}€`}
+          />
+          <Tooltip
+            contentStyle={{
+              borderRadius: "12px",
+              border: "none",
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            }}
+            formatter={(value: number | undefined) => [
+              `${(value || 0).toFixed(2)}€`,
+              "Revenu",
+            ]}
+          />
+          <Area
+            type="monotone"
+            dataKey="revenue"
+            stroke="#a77769"
+            strokeWidth={3}
+            fillOpacity={1}
+            fill="url(#colorRevenue)"
+            animationDuration={1500}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
 function StatCard({
   title,
@@ -21,12 +91,14 @@ function StatCard({
   icon: Icon,
   trend,
   color = "blue",
+  onTrendClick,
 }: {
   title: string;
   value: string | number;
   icon: React.ElementType<{ className?: string }>;
   trend?: string;
   color?: "blue" | "green" | "orange" | "purple";
+  onTrendClick?: () => void;
 }) {
   const colorClasses = {
     blue: "bg-blue-500",
@@ -35,8 +107,14 @@ function StatCard({
     purple: "bg-purple-500",
   };
 
+  const isPositive = typeof trend === "string" && trend.startsWith("+");
+  const trendColorClass = isPositive ? "text-green-600" : "text-red-600";
+  const trendBgClass = isPositive
+    ? "bg-green-50 hover:bg-green-100"
+    : "bg-red-50 hover:bg-red-100";
+
   return (
-    <div className="border-ylang-beige rounded-2xl border-2 bg-white p-6 ">
+    <div className="group border-ylang-terracotta relative overflow-hidden rounded-2xl border bg-white p-6 transition-all">
       <div className="mb-4 flex items-start justify-between">
         <div
           className={`h-12 w-12 ${colorClasses[color as keyof typeof colorClasses]} flex items-center justify-center rounded-xl`}
@@ -44,14 +122,28 @@ function StatCard({
           <Icon className="h-6 w-6 text-white" />
         </div>
         {trend && (
-          <div className="flex items-center gap-1 text-sm font-medium text-green-600">
-            <TrendingUp className="h-4 w-4" />
+          <button
+            onClick={onTrendClick}
+            className={cn(
+              "flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium transition-colors",
+              onTrendClick
+                ? `${trendBgClass} ${trendColorClass} cursor-pointer`
+                : trendColorClass,
+            )}
+          >
+            {isPositive ? (
+              <TrendingUp className="h-4 w-4" />
+            ) : (
+              <TrendingDown className="h-4 w-4" />
+            )}
             {trend}
-          </div>
+          </button>
         )}
       </div>
       <p className="text-ylang-charcoal mb-1 text-2xl font-bold">{value}</p>
-      <p className="text-ylang-charcoal/60 text-sm">{title}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-ylang-charcoal/60 text-sm">{title}</p>
+      </div>
     </div>
   );
 }
@@ -59,14 +151,19 @@ function StatCard({
 export default function AdminDashboard() {
   const { orders, setOrders } = useAdminStore();
   const [isLoading, setIsLoading] = React.useState(true);
-  const [stats, setStats] = React.useState<DashboardStats>({
+  const [isChartOpen, setIsChartOpen] = React.useState(false);
+  const [stats, setStats] = React.useState<
+    DashboardStats & { thisMonthRevenue: number }
+  >({
     totalOrders: 0,
     totalRevenue: 0,
     pendingOrders: 0,
     inProduction: 0,
     averageOrderValue: 0,
-    revenueGrowth: 12.5,
+    revenueGrowth: 0,
+    thisMonthRevenue: 0,
   });
+  const [chartData, setChartData] = React.useState<any[]>([]);
 
   // Charger les commandes
   React.useEffect(() => {
@@ -74,24 +171,90 @@ export default function AdminDashboard() {
       try {
         const response = await fetch("/api/admin/orders");
         const data = await response.json();
-        setOrders(data.orders || []);
+        const ordersList = data.orders || [];
+        setOrders(ordersList);
+
+        // Filterm les commandes annulées pour les stats financières
+        const validOrders = ordersList.filter(
+          (o: any) => o.status !== "cancelled",
+        );
 
         // Calculer les stats
-        const ordersList = data.orders || [];
-        const totalOrders = ordersList.length;
-        const totalRevenue = ordersList.reduce(
+        const totalOrders = validOrders.length;
+        const totalRevenue = validOrders.reduce(
           (sum: number, order: { total: number }) => sum + (order.total || 0),
           0,
         );
-        const pendingOrders = ordersList.filter(
+        const pendingOrders = validOrders.filter(
           (o: { status: string }) =>
             o.status === "pending" || o.status === "paid",
         ).length;
-        const inProduction = ordersList.filter(
+        const inProduction = validOrders.filter(
           (o: { status: string }) => o.status === "in_production",
         ).length;
         const averageOrderValue =
           totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+        // Calcul de la croissance (CE MOIS vs MOIS DERNIER)
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        const lastMonthYear =
+          currentMonth === 0 ? currentYear - 1 : currentYear;
+
+        const thisMonthRevenue = validOrders
+          .filter((o: any) => {
+            const d = new Date(o.createdAt);
+            return (
+              d.getMonth() === currentMonth && d.getFullYear() === currentYear
+            );
+          })
+          .reduce((sum: number, o: any) => sum + (o.total || 0), 0);
+
+        const lastMonthRevenue = validOrders
+          .filter((o: any) => {
+            const d = new Date(o.createdAt);
+            return (
+              d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear
+            );
+          })
+          .reduce((sum: number, o: any) => sum + (o.total || 0), 0);
+
+        const revenueGrowth =
+          lastMonthRevenue > 0
+            ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+            : thisMonthRevenue > 0
+              ? 100
+              : 0;
+
+        // Données du graphique (6 derniers mois)
+        const months = Array.from({ length: 6 }, (_, i) => {
+          const d = new Date();
+          d.setMonth(d.getMonth() - (5 - i));
+          return {
+            month: d.getMonth(),
+            year: d.getFullYear(),
+            label: d.toLocaleDateString("fr-FR", { month: "short" }),
+          };
+        });
+
+        const computedChartData = months.map((m) => {
+          const monthlyRevenue = validOrders
+            .filter((o: any) => {
+              const d = new Date(o.createdAt);
+              return d.getMonth() === m.month && d.getFullYear() === m.year;
+            })
+            .reduce((sum: number, o: any) => sum + (o.total || 0), 0);
+
+          return {
+            name: m.label,
+            revenue: monthlyRevenue,
+          };
+        });
+
+        setChartData(computedChartData);
 
         setStats({
           totalOrders,
@@ -99,7 +262,8 @@ export default function AdminDashboard() {
           pendingOrders,
           inProduction,
           averageOrderValue,
-          revenueGrowth: 0, // TODO: Monter ce calcul avec les commandes du mois dernier
+          revenueGrowth: parseFloat(revenueGrowth.toFixed(1)),
+          thisMonthRevenue,
         });
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -113,8 +277,8 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+      <div className="flex h-[80vh] items-center justify-center">
+        <Loader2 className="text-ylang-rose h-10 w-10 animate-spin" />
       </div>
     );
   }
@@ -132,19 +296,25 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <StatCard
+          title="CA (Mois en cours)"
+          value={`${stats.thisMonthRevenue.toFixed(0)}€`}
+          icon={Euro}
+          trend={`${stats.revenueGrowth > 0 ? "+" : ""}${stats.revenueGrowth}%`}
+          color="green"
+          onTrendClick={() => setIsChartOpen(true)}
+        />
         <StatCard
           title="Total Commandes"
           value={stats.totalOrders}
           icon={ShoppingBag}
           color="blue"
-        />
-        <StatCard
-          title="Chiffre d'affaires"
-          value={`${stats.totalRevenue.toFixed(0)}€`}
-          icon={Euro}
-          trend={`+${stats.revenueGrowth}%`}
-          color="green"
         />
         <StatCard
           title="En attente"
@@ -158,7 +328,7 @@ export default function AdminDashboard() {
           icon={Package}
           color="purple"
         />
-      </div>
+      </motion.div>
 
       {/* Quick Actions */}
       <div className="mb-8 grid gap-6 sm:grid-cols-3">
@@ -215,7 +385,12 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Orders */}
-      <div className="border-ylang-beige rounded-2xl border bg-white shadow-md">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="border-ylang-terracotta rounded-2xl border bg-white shadow-xs"
+      >
         <div className="border-ylang-beige border-b p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-ylang-charcoal text-xl font-bold">
@@ -260,9 +435,12 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-ylang-beige divide-y">
-                {orders.slice(0, 5).map((order) => (
-                  <tr
+                {orders.slice(0, 5).map((order, idx) => (
+                  <motion.tr
                     key={order.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 + idx * 0.05 }}
                     className="hover:bg-ylang-cream transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -292,13 +470,49 @@ export default function AdminDashboard() {
                     <td className="text-ylang-charcoal/60 px-6 py-4 text-sm whitespace-nowrap">
                       {new Date(order.createdAt).toLocaleDateString("fr-FR")}
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
-      </div>
+      </motion.div>
+
+      {/* Revenue Modal */}
+      <Dialog open={isChartOpen} onOpenChange={setIsChartOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-ylang-charcoal text-2xl font-bold">
+              Analyse du chiffre d&apos;affaires
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 border-t pt-6">
+            <div className="mb-6 grid grid-cols-2 gap-4">
+              <div className="border-ylang-beige bg-ylang-cream/10 rounded-2xl border p-4">
+                <p className="text-ylang-charcoal/60 text-sm font-medium">
+                  Revenu Total
+                </p>
+                <p className="text-ylang-charcoal text-xl font-bold">
+                  {stats.totalRevenue.toFixed(2)}€
+                </p>
+              </div>
+              <div className="border-ylang-beige bg-ylang-cream/10 rounded-2xl border p-4">
+                <p className="text-ylang-charcoal/60 text-sm font-medium">
+                  Croissance
+                </p>
+                <p className="text-xl font-bold text-green-600">
+                  {stats.revenueGrowth > 0 ? "+" : ""}
+                  {stats.revenueGrowth}%
+                </p>
+              </div>
+            </div>
+            <RevenueChart data={chartData} />
+            <p className="text-ylang-charcoal/40 mt-6 text-center text-xs italic">
+              Données basées sur les 6 derniers mois d&apos;activité
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

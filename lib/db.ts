@@ -50,8 +50,8 @@ function getSSLConfig() {
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
   // Increase connection limit for development/concurrent usage
-  // Vercel serverless might prefer 1, but local needs more for webhooks + frontend
-  max: process.env.NODE_ENV === "development" ? 10 : 1,
+  // Vercel serverless might prefer 1, but we need at least a few for webhooks + frontend
+  max: process.env.NODE_ENV === "development" ? 10 : 5,
   // Timeouts optimized for serverless
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 30000,

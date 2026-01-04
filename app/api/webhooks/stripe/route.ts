@@ -1,4 +1,4 @@
-import { order, product } from "@/db/schema";
+import { customer as customerTable, order, product } from "@/db/schema";
 import { db } from "@/lib/db";
 import { eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -84,6 +84,20 @@ export async function POST(req: Request) {
         // Start a transaction to ensure order creation and stock update happen together
         await db.transaction(async (tx) => {
           console.log("📝 Creating order and updating stock in database...");
+
+          // Verify customer exists
+          const existingCustomer = await tx
+            .select()
+            .from(customerTable) // Use imported alias to avoid conflicts
+            .where(eq(customerTable.id, metadata.customerId))
+            .limit(1);
+
+          if (existingCustomer.length === 0) {
+            throw new Error(
+              `Customer not found with ID: ${metadata.customerId}`,
+            );
+          }
+
           // 1. Create order
           await tx.insert(order).values({
             id: orderId,
@@ -113,8 +127,6 @@ export async function POST(req: Request) {
                 `📉 Decrementing stock for product ${item.productId} by ${item.quantity}`,
               );
 
-              // Note: stock is stored as text in the schema, so we cast to integer for math
-              // and ensure we don't go below 0 (optional, but good practice)
               await tx
                 .update(product)
                 .set({
@@ -129,6 +141,14 @@ export async function POST(req: Request) {
         console.log("✅ Order created and stock updated:", orderId);
       } catch (err) {
         console.error("❌ Failed to create order or update stock:", err);
+        // CRITICAL: Return 500 so Stripe retries the webhook
+        return NextResponse.json(
+          {
+            error: "Database operation failed",
+            details: err instanceof Error ? err.message : "Unknown error",
+          },
+          { status: 500 },
+        );
       }
 
       break;
