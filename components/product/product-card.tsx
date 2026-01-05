@@ -106,7 +106,7 @@ export function ProductCard({
         </Link>
 
         {/* Badges - Animation CSS pure */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2">
+        <div className="absolute top-4 left-4 flex flex-col gap-2 transition-all duration-300 group-hover:opacity-0">
           {product.new && (
             <div
               className="bg-ylang-terracotta rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-white uppercase shadow-lg"
@@ -118,7 +118,7 @@ export function ProductCard({
             </div>
           )}
           {product.customizable && (
-            <div className="bg-ylang-sage/90 text-ylang-charcoal flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider uppercase backdrop-blur-sm">
+            <div className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider uppercase bg-ylang-yellow text-white">
               <Wand2 className="h-3 w-3" />
               Sur mesure
             </div>

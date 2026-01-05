@@ -223,6 +223,7 @@ export function Header() {
 
   // Refs
   const megaMenuRef = React.useRef<HTMLDivElement>(null);
+  const desktopMegaMenuRef = React.useRef<HTMLDivElement>(null);
   const mobileMenuRef = React.useRef<HTMLDivElement>(null);
 
   // Auth effect
@@ -278,6 +279,9 @@ export function Header() {
       const isClickInsideMegaMenu = megaMenuRef.current?.contains(
         event.target as Node,
       );
+      const isClickInsideDesktopMegaMenu = desktopMegaMenuRef.current?.contains(
+        event.target as Node,
+      );
       const isClickInsideMobileMenu = mobileMenuRef.current?.contains(
         event.target as Node,
       );
@@ -285,6 +289,7 @@ export function Header() {
       if (
         isMegaMenuOpen &&
         !isClickInsideMegaMenu &&
+        !isClickInsideDesktopMegaMenu &&
         !isClickInsideMobileMenu
       ) {
         setIsMegaMenuOpen(false);
@@ -471,7 +476,7 @@ export function Header() {
                         <DropdownMenuItem asChild>
                           <Link
                             href="/admin"
-                            className="group focus:text-ylang-rose data-[highlighted]:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose flex cursor-pointer items-center rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                            className="group focus:text-ylang-rose data-highlighted:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose flex cursor-pointer items-center rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
                           >
                             <LayoutDashboard className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
                             <span>Tableau de bord</span>
@@ -481,14 +486,14 @@ export function Header() {
                         <>
                           <DropdownMenuItem
                             onClick={() => router.push("/orders")}
-                            className="group focus:text-ylang-rose data-[highlighted]:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                            className="group focus:text-ylang-rose data-highlighted:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
                           >
                             <Package className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
                             <span>Mes Commandes</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => router.push("/profil")}
-                            className="group focus:text-ylang-rose data-[highlighted]:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                            className="group focus:text-ylang-rose data-highlighted:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
                           >
                             <User className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
                             <span>Mon Profil</span>
@@ -501,7 +506,7 @@ export function Header() {
 
                     <DropdownMenuItem
                       onClick={handleSignOut}
-                      className="group cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 focus:text-red-700 data-[highlighted]:text-red-700"
+                      className="group cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 focus:text-red-700 data-highlighted:text-red-700"
                     >
                       <LogOut className="mr-3 h-4 w-4 text-red-400 group-hover:text-red-700" />
                       <span>Se déconnecter</span>
@@ -560,6 +565,7 @@ export function Header() {
       {/* Mega Menu Desktop - Optimisé sans framer-motion */}
       {isMegaMenuOpen && (
         <div
+          ref={desktopMegaMenuRef}
           className="bg-ylang-cream/98 animate-fade-in-down fixed top-20 right-0 left-0 z-40 hidden shadow-2xl backdrop-blur-lg lg:block"
           style={{ animation: "fadeInDown 0.3s ease-out" }}
         >

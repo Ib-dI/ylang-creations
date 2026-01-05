@@ -17,9 +17,9 @@ import {
   Share2,
   Shield,
   ShoppingBag,
-  Sparkles,
   Star,
   Truck,
+  Wand2,
   ZoomIn,
 } from "lucide-react";
 import Link from "next/link";
@@ -60,7 +60,7 @@ export default function ProductDetails({
   };
 
   return (
-    <div className="bg-ylang-cream section-padding min-h-screen">
+    <div className="bg-ylang-terracotta/30 section-padding min-h-screen">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="font-body text-ylang-charcoal/60 mb-8 flex items-center text-sm">
@@ -96,8 +96,8 @@ export default function ProductDetails({
 
               {/* Badges */}
               {product.customizable && (
-                <div className="bg-ylang-sage/90 text-ylang-charcoal font-body absolute top-4 left-4 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium backdrop-blur-sm">
-                  <Sparkles className="h-4 w-4" />
+                <div className="bg-ylang-sage/90 text-ylang-charcoal bg-ylang-yellow font-body absolute top-4 left-4 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
+                  <Wand2 className="h-4 w-4" />
                   Sur mesure
                 </div>
               )}
@@ -211,7 +211,7 @@ export default function ProductDetails({
                 </div>
                 <Link href={`/configurateur?product=${product.id}`}>
                   <Button variant="luxury" size="lg" className="w-full">
-                    <Sparkles className="mr-2 h-5 w-5" />
+                    <Wand2 className="mr-2 h-5 w-5" />
                     Personnaliser ce produit
                   </Button>
                 </Link>
@@ -259,21 +259,19 @@ export default function ProductDetails({
                     customizable: product.customizable,
                   })
                 }
-                className={`font-body flex flex-1 items-center justify-center gap-2 rounded-xl border-2 py-3 transition-all ${
+                className={`font-body group flex flex-1 bg-ylang-beige items-center justify-center gap-2 rounded-xl border-2 py-3 transition-all ${
                   isWishlisted
                     ? "border-ylang-rose bg-ylang-rose/10 text-ylang-rose"
-                    : "border-ylang-beige hover:border-ylang-rose text-ylang-charcoal"
+                    : "border-ylang-beige/10 hover:border-ylang-rose hover:text-ylang-rose text-ylang-charcoal"
                 }`}
               >
                 <Heart
-                  className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`}
+                  className={`h-5 w-5 group-hover:text-ylang-rose transition-colors ${isWishlisted ? "fill-current" : ""}`}
                 />
                 {isWishlisted ? "Ajouté aux favoris" : "Ajouter aux favoris"}
               </button>
 
-              <button className="border-ylang-beige hover:border-ylang-charcoal/30 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 transition-colors">
-                <Share2 className="text-ylang-charcoal h-5 w-5" />
-              </button>
+            
             </div>
 
             {/* Points forts */}
@@ -319,7 +317,7 @@ export default function ProductDetails({
               </div>
               <div className="flex items-start gap-3">
                 <div className="bg-ylang-sage/30 rounded-lg p-2">
-                  <Sparkles className="text-ylang-charcoal h-5 w-5" />
+                  <Wand2 className="text-ylang-charcoal h-5 w-5" />
                 </div>
                 <div>
                   <p className="font-display text-ylang-charcoal text-sm">
@@ -339,7 +337,7 @@ export default function ProductDetails({
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-16 rounded-2xl bg-white p-8 shadow-(--shadow-card)"
+          className="mb-16 rounded-2xl bg-white p-8 border border-ylang-rose"
         >
           <h2 className="font-display text-ylang-charcoal mb-6 text-2xl">
             Description détaillée

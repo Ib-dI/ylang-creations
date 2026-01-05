@@ -15,6 +15,16 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
+const slugify = (text: string) => {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .trim();
+};
+
 function CollectionsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -78,8 +88,12 @@ function CollectionsContent() {
     if (searchQuery) {
       setSearchTerm(searchQuery);
     }
-    if (categoryQuery && categories.includes(categoryQuery)) {
-      setSelectedCategory(categoryQuery);
+    if (categoryQuery) {
+      // Rechercher si la catégorie correspond à une catégorie existante (slugifiée)
+      const foundCategory = categories.find(
+        (cat) => slugify(cat) === slugify(categoryQuery),
+      );
+      setSelectedCategory(foundCategory || categoryQuery);
     }
   }, [searchParams]);
 
@@ -106,11 +120,39 @@ function CollectionsContent() {
         (product.description &&
           product.description.toLowerCase().includes(searchLower));
       const matchesCategory =
-        selectedCategory === "Tout" || product.category === selectedCategory;
+        selectedCategory === "Tout" ||
+        product.category === selectedCategory ||
+        slugify(product.category) === slugify(selectedCategory) ||
+        // Gérer les catégories parentes (ex: 'chambre' matches 'Coussin musical')
+        (selectedCategory === "chambre" &&
+          [
+            "coussin",
+            "couverture",
+            "draps",
+            "gigoteuse",
+            "housse-matelas",
+            "mobile-lit",
+            "tour-de-lit",
+            "chambre",
+            "lit",
+            "sommeil",
+          ].some(
+            (sub) =>
+              slugify(product.category).includes(sub) ||
+              slugify(product.name).includes(sub),
+          )) ||
+        (selectedCategory === "toilette" &&
+          ["bavoir", "cape", "gant", "serviette", "bain", "toilette"].some(
+            (sub) =>
+              slugify(product.category).includes(sub) ||
+              slugify(product.name).includes(sub),
+          ));
+
       const matchesPrice =
         product.price >= priceRange[0] && product.price <= priceRange[1];
-      const matchesNew = !onlyNew || product.new;
-      const matchesCustomizable = !onlyCustomizable || product.customizable;
+      const matchesNew = !onlyNew || product.new === true;
+      const matchesCustomizable =
+        !onlyCustomizable || product.customizable === true;
 
       return (
         matchesSearch &&
@@ -138,10 +180,18 @@ function CollectionsContent() {
     }
 
     return filtered;
-  }, [products, searchTerm, selectedCategory, priceRange, sortBy]);
+  }, [
+    products,
+    searchTerm,
+    selectedCategory,
+    priceRange,
+    sortBy,
+    onlyNew,
+    onlyCustomizable,
+  ]);
 
   return (
-    <div className="bg-ylang-cream section-padding min-h-screen">
+    <div className="bg-ylang-terracotta/50 section-padding min-h-screen">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -174,7 +224,7 @@ function CollectionsContent() {
                 placeholder="Rechercher une création..."
                 value={searchTerm}
                 onChange={(e) => updateSearchUrl(e.target.value)}
-                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal w-full rounded-2xl border border-gray-200 bg-white py-3.5 pr-12 pl-12 transition-all outline-none placeholder:text-gray-400 focus:ring-4"
+                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal w-full rounded-2xl border border-ylang-rose bg-white py-3.5 pr-12 pl-12 transition-all outline-none placeholder:text-gray-400 focus:ring-4"
               />
               {searchTerm && (
                 <button
@@ -190,7 +240,7 @@ function CollectionsContent() {
               {/* Bouton filtres Desktop/Mobile */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`hover:border-ylang-rose font-body flex items-center justify-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-6 py-3.5 text-sm font-medium transition-all ${
+                className={`font-body flex items-center justify-center gap-2.5 rounded-2xl border border-ylang-rose bg-white px-6 py-3.5 text-sm font-medium transition-all ${
                   showFilters
                     ? "border-ylang-rose bg-ylang-rose/5 text-ylang-rose"
                     : "text-ylang-charcoal"
@@ -217,7 +267,7 @@ function CollectionsContent() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-4"
+                  className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-ylang-rose bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-4"
                 >
                   <option value="featured">Mis en avant</option>
                   <option value="price-asc">Prix croissant</option>
@@ -237,7 +287,7 @@ function CollectionsContent() {
                 animate={{ opacity: 1, height: "auto", y: 0 }}
                 exit={{ opacity: 0, height: 0, y: -10 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+                className="overflow-hidden rounded-2xl border border-ylang-rose bg-white p-6 shadow-sm"
               >
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                   {/* Catégories */}

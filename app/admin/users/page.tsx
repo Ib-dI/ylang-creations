@@ -217,12 +217,12 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {user.emailVerified ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+                        <span className="inline-flex items-center gap-1 border-green-200 border rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
                           <CheckCircle className="h-3 w-3" />
                           Vérifié
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-700">
+                        <span className="inline-flex items-center gap-1 border-orange-200 border rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-700">
                           <XCircle className="h-3 w-3" />
                           Non vérifié
                         </span>
@@ -250,7 +250,7 @@ export default function UsersPage() {
                     <td className="px-6 py-4 text-right whitespace-nowrap">
                       <Link
                         href={`/admin/users/${user.id}`}
-                        className="bg-ylang-beige text-ylang-charcoal inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm transition-colors hover:bg-[#e8dcc8]"
+                        className="bg-ylang-beige text-ylang-charcoal inline-flex items-center gap-1 rounded-lg px-3 py-1 text-sm transition-colors hover:bg-[#e8dcc8]"
                       >
                         <Eye className="h-4 w-4" />
                         Voir
