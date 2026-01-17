@@ -31,7 +31,7 @@ import {
   Trash2,
   Users,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function SettingsPage() {
   const supabase = createClient();
@@ -52,6 +52,9 @@ export default function SettingsPage() {
     { id: "media", label: "Médias", icon: ImageIcon },
     { id: "security", label: "Sécurité", icon: Shield },
   ];
+
+  // Pending Uploads State
+  const pendingUploads = useRef(new Map<string, File>());
 
   // Settings State
   const [settings, setSettings] = useState({
@@ -139,17 +142,96 @@ export default function SettingsPage() {
     }));
   };
 
+  const uploadFile = async (file: File, path: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("path", path);
+
+    const res = await fetch("/api/admin/storage/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      throw new Error(data.error);
+    }
+    return data.url;
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
+    console.log("🔍 Saving settings...");
+
     try {
+      // 1. Upload pending images
+      let updatedSettings = { ...settings };
+      const uploads = [];
+
+      // Process Hero Slides
+      updatedSettings.heroSlides = await Promise.all(
+        settings.heroSlides.map(async (slide) => {
+          if (slide.image && slide.image.startsWith("blob:")) {
+            const file = pendingUploads.current.get(slide.image);
+            if (file) {
+              const path = `settings/hero/${Date.now()}-${file.name}`;
+              const url = await uploadFile(file, path);
+              return { ...slide, image: url };
+            }
+          }
+          return slide;
+        }),
+      );
+
+      // Process Testimonials
+      updatedSettings.testimonials = await Promise.all(
+        settings.testimonials.map(async (t) => {
+          if (t.image && t.image.startsWith("blob:")) {
+            const file = pendingUploads.current.get(t.image);
+            if (file) {
+              const path = `settings/testimonials/${Date.now()}-${file.name}`;
+              const url = await uploadFile(file, path);
+              return { ...t, image: url };
+            }
+          }
+          return t;
+        }),
+      );
+
+      // Process Craftsmanship Image
+      if (
+        settings.craftsmanshipImage &&
+        settings.craftsmanshipImage.startsWith("blob:")
+      ) {
+        const file = pendingUploads.current.get(settings.craftsmanshipImage);
+        if (file) {
+          const path = `settings/craftsmanship/${Date.now()}-${file.name}`;
+          const url = await uploadFile(file, path);
+          updatedSettings.craftsmanshipImage = url;
+        }
+      }
+
+      // Process About Image
+      if (settings.aboutImage && settings.aboutImage.startsWith("blob:")) {
+        const file = pendingUploads.current.get(settings.aboutImage);
+        if (file) {
+          const path = `settings/about/${Date.now()}-${file.name}`;
+          const url = await uploadFile(file, path);
+          updatedSettings.aboutImage = url;
+        }
+      }
+
+      // 2. Save Settings
       const response = await fetch("/api/admin/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(updatedSettings),
       });
 
       if (!response.ok) throw new Error("Erreur lors de la sauvegarde");
 
+      setSettings(updatedSettings); // Update local state with real URLs
+      pendingUploads.current.clear(); // Clear pending uploads
       showToast("Paramètres mis à jour avec succès", "success");
     } catch (error) {
       console.error(error);
@@ -241,40 +323,19 @@ export default function SettingsPage() {
     }
   };
 
-  const handleImageUpload = async (
-    field: string,
-    file: File,
-    slideId?: string,
-  ) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("path", `settings/${Date.now()}-${file.name}`);
+  const handleImageUpload = (field: string, file: File, slideId?: string) => {
+    const previewUrl = URL.createObjectURL(file);
+    pendingUploads.current.set(previewUrl, file);
 
-    try {
-      const res = await fetch("/api/admin/storage/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        if (slideId) {
-          setSettings((prev) => ({
-            ...prev,
-            heroSlides: prev.heroSlides.map((s) =>
-              s.id === slideId ? { ...s, image: data.url } : s,
-            ),
-          }));
-        } else {
-          handleSettingsChange(field, data.url);
-        }
-        showToast("Image téléchargée avec succès", "success");
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (error) {
-      console.error(error);
-      showToast("Erreur lors du téléchargement de l'image", "error");
+    if (slideId) {
+      setSettings((prev) => ({
+        ...prev,
+        heroSlides: prev.heroSlides.map((s) =>
+          s.id === slideId ? { ...s, image: previewUrl } : s,
+        ),
+      }));
+    } else {
+      handleSettingsChange(field, previewUrl);
     }
   };
 
@@ -342,32 +403,15 @@ export default function SettingsPage() {
     }));
   };
 
-  const handleTestimonialImageUpload = async (id: string, file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("path", `settings/testimonials/${Date.now()}-${file.name}`);
+  const handleTestimonialImageUpload = (id: string, file: File) => {
+    const previewUrl = URL.createObjectURL(file);
+    pendingUploads.current.set(previewUrl, file);
 
-    try {
-      const res = await fetch("/api/admin/storage/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        updateTestimonial(id, "image", data.url);
-        showToast("Image téléchargée avec succès", "success");
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (error) {
-      console.error(error);
-      showToast("Erreur lors du téléchargement de l'image", "error");
-    }
+    updateTestimonial(id, "image", previewUrl);
   };
 
   useEffect(() => {
-    // Fetch settings on mount
+    // Initial fetch
     fetch("/api/admin/settings")
       .then((res) => res.json())
       .then((data) => {
@@ -376,6 +420,66 @@ export default function SettingsPage() {
         }
       })
       .catch(console.error);
+
+    // Real-time subscription
+    const channel = supabase
+      .channel("schema-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "settings",
+          filter: "id=eq.main-settings",
+        },
+        (payload) => {
+          console.log("Real-time update received:", payload);
+          const newData = payload.new as any;
+
+          // Parse JSON fields if they are strings in the payload
+          const parsedData = {
+            ...newData,
+            emailTemplates:
+              typeof newData.email_templates === "string"
+                ? JSON.parse(newData.email_templates)
+                : newData.emailTemplates,
+            notifications:
+              typeof newData.notifications === "string"
+                ? JSON.parse(newData.notifications)
+                : newData.notifications,
+            heroSlides:
+              typeof newData.hero_slides === "string"
+                ? JSON.parse(newData.hero_slides)
+                : newData.heroSlides,
+            testimonials:
+              typeof newData.testimonials === "string"
+                ? JSON.parse(newData.testimonials)
+                : newData.testimonials,
+            storeName: newData.store_name,
+            storeDescription: newData.store_description,
+            contactEmail: newData.contact_email,
+            contactPhone: newData.contact_phone,
+            shippingEmail: newData.shipping_email,
+            adminEmail: newData.admin_email,
+            shippingFee: newData.shipping_fee,
+            freeShippingThreshold: newData.free_shipping_threshold,
+            craftsmanshipImage: newData.craftsmanship_image,
+            aboutImage: newData.about_image,
+          };
+
+          setSettings((prev) => ({
+            ...prev,
+            ...parsedData,
+          }));
+
+          showToast("Paramètres mis à jour en temps réel", "success");
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return (
@@ -410,13 +514,36 @@ export default function SettingsPage() {
       )}
 
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">
-          Paramètres
-        </h1>
-        <p className="text-ylang-charcoal/60">
-          Configurez les paramètres de votre boutique
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">
+            Paramètres
+          </h1>
+          <p className="text-ylang-charcoal/60">
+            Configurez les paramètres de votre boutique
+          </p>
+        </div>
+
+        {activeTab !== "security" && (
+          <Button
+            variant="luxury"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center gap-2"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Enregistrement...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Enregistrer
+              </>
+            )}
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-8 lg:grid-cols-4">

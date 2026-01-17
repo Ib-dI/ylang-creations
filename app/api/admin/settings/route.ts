@@ -120,17 +120,23 @@ export async function POST(request: Request) {
       contactPhone,
       shippingEmail,
       adminEmail,
-      emailTemplates: JSON.stringify(emailTemplates),
+      emailTemplates: JSON.stringify(emailTemplates ?? {}),
       currency,
       shippingFee: String(shippingFee),
       freeShippingThreshold: String(freeShippingThreshold),
-      notifications: JSON.stringify(notifications),
-      heroSlides: JSON.stringify(heroSlides),
+      notifications: JSON.stringify(notifications ?? {}),
+      heroSlides: JSON.stringify(heroSlides ?? []),
       craftsmanshipImage,
       aboutImage,
-      testimonials: JSON.stringify(testimonials),
+      testimonials: JSON.stringify(testimonials ?? []),
       updatedAt: now,
     };
+
+    console.log("💾 Saving settings to DB:", {
+      id: SETTINGS_ID,
+      heroSlidesCount: heroSlides?.length,
+      testimonialsCount: testimonials?.length,
+    });
 
     if (result.length === 0) {
       await db.insert(settings).values({

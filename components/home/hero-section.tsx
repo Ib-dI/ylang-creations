@@ -1,9 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const DEFAULT_SLIDES = [
@@ -54,7 +52,7 @@ export function HeroSection() {
 
   // Fetch settings
   useEffect(() => {
-    fetch("/api/settings")
+    fetch("/api/settings", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data && data.heroSlides && data.heroSlides.length > 0) {
@@ -103,17 +101,20 @@ export function HeroSection() {
     setTimeout(() => setIsTransitioning(false), 1000);
   }, [isTransitioning, slides.length]);
 
-  const goToSlide = useCallback((index: number) => {
-    if (isTransitioning || index === currentSlide) return;
-    setIsTransitioning(true);
-    setCurrentSlide(index);
-    setTimeout(() => setIsTransitioning(false), 1000);
-  }, [isTransitioning, currentSlide]);
+  const goToSlide = useCallback(
+    (index: number) => {
+      if (isTransitioning || index === currentSlide) return;
+      setIsTransitioning(true);
+      setCurrentSlide(index);
+      setTimeout(() => setIsTransitioning(false), 1000);
+    },
+    [isTransitioning, currentSlide],
+  );
 
   const currentSlideData = slides[currentSlide];
 
   return (
-    <section 
+    <section
       className="group bg-ylang-beige/10 relative h-[600px] w-full overflow-hidden lg:h-[700px]"
       aria-label="Hero carousel"
     >
@@ -124,7 +125,7 @@ export function HeroSection() {
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
               index === currentSlide ? "opacity-100" : "opacity-0"
-            } ${slide.image ? "" : slide.bgClass || "bg-linear-to-br from-ylang-rose to-ylang-terracotta"}`}
+            } ${slide.image ? "" : slide.bgClass || "from-ylang-rose to-ylang-terracotta bg-linear-to-br"}`}
             style={
               slide.image
                 ? {
@@ -147,7 +148,7 @@ export function HeroSection() {
                 className="object-cover"
               />
             )}
-            
+
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/20" />
           </div>
@@ -198,7 +199,10 @@ export function HeroSection() {
             className="pointer-events-auto -translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Diapositive précédente"
           >
-            <ChevronLeft className="h-6 w-6 lg:h-10 lg:w-10" strokeWidth={1.5} />
+            <ChevronLeft
+              className="h-6 w-6 lg:h-10 lg:w-10"
+              strokeWidth={1.5}
+            />
           </button>
 
           <button
@@ -207,14 +211,17 @@ export function HeroSection() {
             className="pointer-events-auto translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Diapositive suivante"
           >
-            <ChevronRight className="h-6 w-6 lg:h-10 lg:w-10" strokeWidth={1.5} />
+            <ChevronRight
+              className="h-6 w-6 lg:h-10 lg:w-10"
+              strokeWidth={1.5}
+            />
           </button>
         </div>
       )}
 
       {/* Indicators - Visible seulement si plusieurs slides */}
       {slides.length > 1 && (
-        <div 
+        <div
           className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 gap-4"
           role="tablist"
           aria-label="Navigation du carrousel"

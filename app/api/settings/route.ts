@@ -4,6 +4,8 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 60; // Cache 60 secondes max
 
 const SETTINGS_ID = "main-settings";
 
@@ -33,7 +35,7 @@ export async function GET() {
     }
 
     const s = result[0];
-    
+
     // On ne retourne que les données publiques nécessaires au front
     // On exclut les données sensibles comme adminEmail, notifications, emailTemplates...
     return NextResponse.json({

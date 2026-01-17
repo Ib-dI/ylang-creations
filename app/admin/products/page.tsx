@@ -794,52 +794,64 @@ export default function ProductsPage() {
               className="fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col bg-white shadow-2xl md:w-[800px] lg:w-[900px]"
             >
               {/* Modal Header */}
-              <div className="from-ylang-rose/5 via-ylang-gold/5 to-ylang-beige/30 flex items-center justify-between border-b bg-linear-to-r px-8 py-6">
-                <div className="flex items-center gap-4">
-                  <div className="from-ylang-rose to-ylang-gold flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br shadow-lg">
-                    {editingProduct ? (
-                      <Edit className="h-6 w-6 text-white" />
-                    ) : (
-                      <Sparkles className="h-6 w-6 text-white" />
-                    )}
-                  </div>
-                  <div>
-                    <h2 className="text-ylang-charcoal text-2xl font-bold">
-                      {editingProduct
-                        ? "Modifier le produit"
-                        : "Nouveau produit"}
-                    </h2>
-                    <p className="text-ylang-charcoal/60 text-sm">
-                      {editingProduct
-                        ? `Modification de "${editingProduct.name}"`
-                        : "Créez un nouveau produit pour votre catalogue"}
-                    </p>
-                  </div>
+              <div className="relative overflow-hidden border-b border-ylang-beige/50 bg-linear-to-r from-ylang-cream via-white to-ylang-beige/30 px-8 py-6">
+                {/* Decorative background */}
+                <div className="absolute inset-0 opacity-30">
+                  <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-ylang-rose/20 blur-2xl" />
+                  <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-ylang-terracotta/20 blur-2xl" />
                 </div>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="hover:bg-ylang-beige rounded-xl p-3 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </button>
+                
+                <div className="relative flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-ylang-rose to-ylang-terracotta shadow-lg shadow-ylang-rose/25">
+                      {editingProduct ? (
+                        <Edit className="h-6 w-6 text-white" />
+                      ) : (
+                        <Sparkles className="h-6 w-6 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      <h2 className="text-ylang-charcoal text-2xl font-bold">
+                        {editingProduct
+                          ? "Modifier le produit"
+                          : "Nouveau produit"}
+                      </h2>
+                      <p className="text-ylang-charcoal/60 text-sm">
+                        {editingProduct
+                          ? `Modification de "${editingProduct.name}"`
+                          : "Créez un nouveau produit pour votre catalogue"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="rounded-xl p-3 text-ylang-charcoal/60 transition-all hover:bg-ylang-beige hover:text-ylang-charcoal"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
               </div>
 
               {/* Tabs Navigation */}
-              <div className="border-ylang-beige flex gap-1 border-b bg-gray-50/50 px-8 py-3">
+              <div className="flex gap-1 border-b border-ylang-beige bg-linear-to-r from-ylang-cream/50 to-white px-8 py-3">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
                   return (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
-                        activeTab === tab.id
-                          ? "bg-ylang-rose text-white shadow-md"
-                          : "text-ylang-charcoal/60 hover:text-ylang-charcoal hover:bg-white hover:shadow-sm"
+                      className={`relative flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
+                        isActive
+                          ? "bg-ylang-rose text-white shadow-md shadow-ylang-rose/25"
+                          : "text-ylang-charcoal/60 hover:text-ylang-charcoal hover:bg-ylang-beige/50"
                       }`}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className={`h-4 w-4 ${isActive ? "" : "text-ylang-terracotta/60"}`} />
                       {tab.label}
+                      {isActive && (
+                        <span className="absolute -bottom-3 left-1/2 h-1 w-8 -translate-x-1/2 rounded-full bg-ylang-rose" />
+                      )}
                     </button>
                   );
                 })}
@@ -855,9 +867,11 @@ export default function ProductsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-6"
                     >
-                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-4 flex items-center gap-2 text-lg font-semibold">
-                          <Info className="text-ylang-rose h-5 w-5" />
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                            <Info className="text-ylang-rose h-4 w-4" />
+                          </div>
                           Informations de base
                         </h3>
 
@@ -946,9 +960,11 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Pricing */}
-                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-4 flex items-center gap-2 text-lg font-semibold">
-                          <Box className="text-ylang-rose h-5 w-5" />
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-terracotta/10">
+                            <Box className="text-ylang-terracotta h-4 w-4" />
+                          </div>
                           Prix et Stock
                         </h3>
 
@@ -1046,12 +1062,14 @@ export default function ProductsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-6"
                     >
-                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
-                          <ImageIcon className="text-ylang-rose h-5 w-5" />
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                            <ImageIcon className="text-ylang-rose h-4 w-4" />
+                          </div>
                           Images du produit
                         </h3>
-                        <p className="text-ylang-charcoal/60 mb-6 text-sm">
+                        <p className="text-ylang-charcoal/60 mb-6 ml-10 text-sm">
                           Ajoutez jusqu'a 5 images. La première image sera
                           l'image principale.
                         </p>
@@ -1072,14 +1090,14 @@ export default function ProductsPage() {
                         />
 
                         {formData.images.length > 0 && (
-                          <div className="border-ylang-beige mt-6 rounded-xl border bg-blue-50/50 p-4">
+                          <div className="mt-6 rounded-xl border border-ylang-terracotta/20 bg-ylang-cream/50 p-4">
                             <div className="flex items-start gap-3">
-                              <Info className="mt-0.5 h-5 w-5 text-blue-500" />
+                              <Info className="mt-0.5 h-5 w-5 shrink-0 text-ylang-terracotta" />
                               <div>
-                                <p className="font-medium text-blue-700">
+                                <p className="font-medium text-ylang-charcoal">
                                   Conseil pour les images
                                 </p>
-                                <p className="text-sm text-blue-600">
+                                <p className="text-sm text-ylang-charcoal/70">
                                   Utilisez des images de haute qualité (min.
                                   800x800px) avec un fond neutre pour un rendu
                                   optimal.
@@ -1100,12 +1118,14 @@ export default function ProductsPage() {
                       className="space-y-6"
                     >
                       {/* Long Description */}
-                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
-                          <FileText className="text-ylang-rose h-5 w-5" />
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                            <FileText className="text-ylang-rose h-4 w-4" />
+                          </div>
                           Description détaillée
                         </h3>
-                        <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                        <p className="text-ylang-charcoal/60 mb-4 ml-10 text-sm">
                           Décrivez votre produit en détail pour la page produit.
                         </p>
 
@@ -1124,12 +1144,14 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Features */}
-                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
-                          <Check className="text-ylang-rose h-5 w-5" />
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100">
+                            <Check className="text-green-600 h-4 w-4" />
+                          </div>
                           Caractéristiques
                         </h3>
-                        <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                        <p className="text-ylang-charcoal/60 mb-4 ml-10 text-sm">
                           Listez les points clés de votre produit.
                         </p>
 
@@ -1188,7 +1210,7 @@ export default function ProductsPage() {
                       className="space-y-6"
                     >
                       {/* Customizable */}
-                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                      <div className="rounded-2xl border border-purple-200 bg-linear-to-br from-white to-purple-50/30 p-6 shadow-sm">
                         <div className="flex items-start justify-between">
                           <div className="flex items-start gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100">
@@ -1222,12 +1244,14 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Sizes */}
-                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
-                          <Layers className="text-ylang-rose h-5 w-5" />
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                            <Layers className="text-ylang-rose h-4 w-4" />
+                          </div>
                           Tailles disponibles
                         </h3>
-                        <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                        <p className="text-ylang-charcoal/60 mb-4 ml-10 text-sm">
                           Définissez les tailles disponibles pour ce produit.
                         </p>
 
@@ -1395,12 +1419,14 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Tags */}
-                      <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-white to-gray-50/50 p-6">
+                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
-                          <Tags className="text-ylang-rose h-5 w-5" />
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                            <Tags className="text-ylang-rose h-4 w-4" />
+                          </div>
                           Tags
                         </h3>
-                        <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                        <p className="text-ylang-charcoal/60 mb-4 ml-10 text-sm">
                           Ajoutez des tags pour améliorer la recherche et le
                           filtrage (séparés par des virgules).
                         </p>
@@ -1434,21 +1460,26 @@ export default function ProductsPage() {
 
                       {/* Preview Link */}
                       {editingProduct && (
-                        <div className="border-ylang-beige/50 rounded-2xl border bg-linear-to-br from-blue-50 to-white p-6">
+                        <div className="rounded-2xl border border-ylang-rose/20 bg-linear-to-br from-ylang-cream/50 to-white p-6 shadow-sm">
                           <div className="flex items-center justify-between">
-                            <div>
-                              <h3 className="text-ylang-charcoal mb-1 font-semibold">
-                                Aperçu du produit
-                              </h3>
-                              <p className="text-ylang-charcoal/60 text-sm">
-                                Voir le produit tel qu'il apparaît aux clients
-                              </p>
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ylang-rose/10">
+                                <Eye className="h-5 w-5 text-ylang-rose" />
+                              </div>
+                              <div>
+                                <h3 className="text-ylang-charcoal font-semibold">
+                                  Aperçu du produit
+                                </h3>
+                                <p className="text-ylang-charcoal/60 text-sm">
+                                  Voir le produit tel qu'il apparaît aux clients
+                                </p>
+                              </div>
                             </div>
                             <a
                               href={`/produits/${editingProduct.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="bg-ylang-charcoal flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-black"
+                              className="flex items-center gap-2 rounded-xl bg-ylang-rose px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-ylang-rose/25 transition-all hover:bg-ylang-rose/90 hover:shadow-lg"
                             >
                               Voir la page
                               <ArrowUpRight className="h-4 w-4" />
@@ -1462,15 +1493,19 @@ export default function ProductsPage() {
               </div>
 
               {/* Modal Footer */}
-              <div className="border-ylang-beige flex items-center justify-between border-t bg-gray-50/50 px-8 py-5">
-                <div className="text-ylang-charcoal/40 text-sm">
+              <div className="flex items-center justify-between border-t border-ylang-beige bg-linear-to-r from-ylang-cream/50 to-white px-8 py-5">
+                <div className="text-ylang-charcoal/50 text-sm">
                   {editingProduct && (
-                    <span>
-                      Dernière modification:{" "}
-                      {new Date(editingProduct.createdAt).toLocaleDateString(
-                        "fr-FR",
-                      )}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-ylang-terracotta/40" />
+                      <span>
+                        Dernière modification:{" "}
+                        {new Date(editingProduct.createdAt).toLocaleDateString(
+                          "fr-FR",
+                          { day: "numeric", month: "short", year: "numeric" }
+                        )}
+                      </span>
+                    </div>
                   )}
                 </div>
                 <div className="flex items-center gap-3">
