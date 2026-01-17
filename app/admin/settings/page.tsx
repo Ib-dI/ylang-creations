@@ -142,6 +142,9 @@ export default function SettingsPage() {
     }));
   };
 
+  // Initial Images State (to track deletions)
+  const initialImages = useRef<Set<string>>(new Set());
+
   const uploadFile = async (file: File, path: string) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -159,14 +162,58 @@ export default function SettingsPage() {
     return data.url;
   };
 
+  const deleteFile = async (url: string) => {
+    try {
+      const res = await fetch(
+        `/api/admin/storage/upload?path=${encodeURIComponent(url)}`,
+        {
+          method: "DELETE",
+        },
+      );
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Failed to delete file:", url, res.status, errorData);
+      }
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     console.log("🔍 Saving settings...");
 
     try {
-      // 1. Upload pending images
+      // 1. Identify images to delete
+      const currentImages = new Set<string>();
+
+      // Collect current non-blob images
+      settings.heroSlides.forEach((s) => {
+        if (s.image && !s.image.startsWith("blob:")) currentImages.add(s.image);
+      });
+      settings.testimonials.forEach((t) => {
+        if (t.image && !t.image.startsWith("blob:")) currentImages.add(t.image);
+      });
+      if (
+        settings.craftsmanshipImage &&
+        !settings.craftsmanshipImage.startsWith("blob:")
+      ) {
+        currentImages.add(settings.craftsmanshipImage);
+      }
+      if (settings.aboutImage && !settings.aboutImage.startsWith("blob:")) {
+        currentImages.add(settings.aboutImage);
+      }
+
+      // Find removed images
+      const imagesToDelete = Array.from(initialImages.current).filter(
+        (url) => !currentImages.has(url),
+      );
+
+      // Delete removed images from storage
+      await Promise.all(imagesToDelete.map((url) => deleteFile(url)));
+
+      // 2. Upload pending images
       let updatedSettings = { ...settings };
-      const uploads = [];
 
       // Process Hero Slides
       updatedSettings.heroSlides = await Promise.all(
@@ -221,7 +268,7 @@ export default function SettingsPage() {
         }
       }
 
-      // 2. Save Settings
+      // 3. Save Settings
       const response = await fetch("/api/admin/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -231,6 +278,21 @@ export default function SettingsPage() {
       if (!response.ok) throw new Error("Erreur lors de la sauvegarde");
 
       setSettings(updatedSettings); // Update local state with real URLs
+
+      // Update initial images set with new state
+      const newInitialImages = new Set<string>();
+      updatedSettings.heroSlides.forEach(
+        (s) => s.image && newInitialImages.add(s.image),
+      );
+      updatedSettings.testimonials.forEach(
+        (t) => t.image && newInitialImages.add(t.image),
+      );
+      if (updatedSettings.craftsmanshipImage)
+        newInitialImages.add(updatedSettings.craftsmanshipImage);
+      if (updatedSettings.aboutImage)
+        newInitialImages.add(updatedSettings.aboutImage);
+      initialImages.current = newInitialImages;
+
       pendingUploads.current.clear(); // Clear pending uploads
       showToast("Paramètres mis à jour avec succès", "success");
     } catch (error) {
@@ -417,6 +479,20 @@ export default function SettingsPage() {
       .then((data) => {
         if (data && !data.error) {
           setSettings((prev) => ({ ...prev, ...data }));
+
+          // Populate initial images for deletion tracking
+          const images = new Set<string>();
+          if (data.heroSlides) {
+            data.heroSlides.forEach((s: any) => s.image && images.add(s.image));
+          }
+          if (data.testimonials) {
+            data.testimonials.forEach(
+              (t: any) => t.image && images.add(t.image),
+            );
+          }
+          if (data.craftsmanshipImage) images.add(data.craftsmanshipImage);
+          if (data.aboutImage) images.add(data.aboutImage);
+          initialImages.current = images;
         }
       })
       .catch(console.error);
@@ -519,7 +595,7 @@ export default function SettingsPage() {
           <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">
             Paramètres
           </h1>
-          <p className="text-ylang-charcoal/60">
+          <p className="text-ylang-terracotta">
             Configurez les paramètres de votre boutique
           </p>
         </div>
@@ -546,10 +622,10 @@ export default function SettingsPage() {
         )}
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-4">
+      <div className="grid gap-8 lg:grid-cols-5">
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <nav className="space-y-1">
+          <nav className="space-y-1 w-56">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -568,7 +644,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-4">
           <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
             {activeTab === "store" && (
               <div className="space-y-6">

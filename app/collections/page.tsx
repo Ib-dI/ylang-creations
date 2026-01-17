@@ -80,22 +80,124 @@ function CollectionsContent() {
     fetchProducts();
   }, []);
 
+  // Configuration du mapping des catégories URL vers les catégories d'affichage
+  const categoryMapping: Record<string, string> = useMemo(
+    () => ({
+      // La Chambre
+      chambre: "La chambre",
+      "coussin-musical": "La chambre",
+      couverture: "La chambre",
+      "draps-lit": "La chambre",
+      "gigoteuse-legere-0-3": "La chambre",
+      "gigoteuse-legere-3-6": "La chambre",
+      "gigoteuse-legere-6-12": "La chambre",
+      "gigoteuse-legere-12-24": "La chambre",
+      "gigoteuse-molletonnee-0-3": "La chambre",
+      "gigoteuse-molletonnee-3-6": "La chambre",
+      "gigoteuse-molletonnee-6-12": "La chambre",
+      "gigoteuse-molletonnee-12-24": "La chambre",
+      "housse-matelas": "La chambre",
+      "lange-carre": "La chambre",
+      "mobile-lit": "La chambre",
+      "tour-de-lit": "La chambre",
+
+      // La Toilette
+      toilette: "La Toilette",
+      bavoir: "La Toilette",
+      "cape-de-bain": "La Toilette",
+      "gant-toilette": "La Toilette",
+      "serviette-toilette": "La Toilette",
+
+      // Linge de naissance
+      "linge-naissance": "Linge de naissance",
+      pyjama: "Linge de naissance",
+      chaussons: "Linge de naissance",
+      pantalon: "Linge de naissance",
+      "gilet-cache-coeur": "Linge de naissance",
+      bloomer: "Linge de naissance",
+      "robe-chasuble": "Linge de naissance",
+
+      // Accessoires
+      accessoires: "Accessoires",
+      "anneaux-dentition": "Accessoires",
+      "attache-tetine": "Accessoires",
+      "brosse-cheveux": "Accessoires",
+
+      // Bagageries
+      bagageries: "Bagageries/promenade",
+      valisette: "Bagageries/promenade",
+      vanity: "Bagageries/promenade",
+      "sac-a-langer": "Bagageries/promenade",
+      "sac-dos-maternelle": "Bagageries/promenade",
+      "matelas-langer-nomade": "Bagageries/promenade",
+      "protege-carnet-sante": "Bagageries/promenade",
+      "protege-livret-famille": "Bagageries/promenade",
+      "protege-passeport": "Bagageries/promenade",
+      "trousse-toilette": "Bagageries/promenade",
+
+      // Jeux
+      jeux: "Les jeux",
+      poupees: "Les jeux",
+      bebes: "Les jeux",
+      "accessoires-jeux": "Les jeux",
+    }),
+    [],
+  );
+
   // Synchroniser avec les paramètres URL
   useEffect(() => {
     const searchQuery = searchParams.get("search");
     const categoryQuery = searchParams.get("category");
 
+    // Helper pour formater le nom de la catégorie (ex: "coussin-musical" -> "Coussin musical")
+    const formatCategoryName = (slug: string) => {
+      // Cas spéciaux
+      if (slug === "sac-dos-maternelle") return "Sac à dos";
+      if (slug === "gilet-cache-coeur") return "Gilet cache-cœur";
+      if (slug === "protege-carnet-sante") return "Protège carnet de santé";
+
+      return slug
+        .split("-")
+        .map((word, index) =>
+          index === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word,
+        )
+        .join(" ");
+    };
+
     if (searchQuery) {
       setSearchTerm(searchQuery);
+    } else if (categoryQuery) {
+      // Trouver la catégorie parente correspondante
+      const mappedCategory = categoryMapping[categoryQuery];
+
+      if (mappedCategory) {
+        setSelectedCategory(mappedCategory);
+
+        // Si c'est une sous-catégorie (pas la catégorie principale elle-même), on met le nom dans la recherche
+        const isMainCategorySlug = [
+          "chambre",
+          "toilette",
+          "linge-naissance",
+          "accessoires",
+          "bagageries",
+          "jeux",
+        ].includes(categoryQuery);
+
+        if (!isMainCategorySlug) {
+          setSearchTerm(formatCategoryName(categoryQuery));
+        } else {
+          setSearchTerm("");
+        }
+      } else {
+        // Fallback: essai de correspondance directe
+        const foundCategory = categories.find(
+          (cat) => slugify(cat) === slugify(categoryQuery),
+        );
+        setSelectedCategory(foundCategory || categoryQuery);
+        setSearchTerm("");
+      }
     }
-    if (categoryQuery) {
-      // Rechercher si la catégorie correspond à une catégorie existante (slugifiée)
-      const foundCategory = categories.find(
-        (cat) => slugify(cat) === slugify(categoryQuery),
-      );
-      setSelectedCategory(foundCategory || categoryQuery);
-    }
-  }, [searchParams]);
+  }, [searchParams, categoryMapping]);
 
   // Mettre à jour l'URL quand la recherche change
   const updateSearchUrl = (term: string) => {
@@ -106,6 +208,35 @@ function CollectionsContent() {
     } else {
       params.delete("search");
     }
+    router.replace(`/collections?${params.toString()}`, { scroll: false });
+  };
+
+  // Réinitialiser tous les filtres
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("Tout");
+    setPriceRange([0, 200]);
+    setOnlyNew(false);
+    setOnlyCustomizable(false);
+    router.replace("/collections", { scroll: false });
+  };
+
+  // Mettre à jour la catégorie et l'URL
+  const updateCategory = (category: string) => {
+    setSelectedCategory(category);
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (category === "Tout") {
+      params.delete("category");
+      // Si on réinitialise la catégorie, on garde la recherche si elle est pertinente,
+      // ou on peut décider de nettoyer aussi si c'était une recherche liée à une sous-catégorie.
+      // Pour l'instant, simplifions en gardant la recherche si elle existe.
+    } else {
+      // Pour les catégories principales, on utilise le slug simple
+      const slug = slugify(category);
+      params.set("category", slug);
+    }
+
     router.replace(`/collections?${params.toString()}`, { scroll: false });
   };
 
@@ -203,7 +334,11 @@ function CollectionsContent() {
             Nos Collections
           </p>
           <h1 className="text-ylang-charcoal font-display mb-4 text-4xl font-bold lg:text-5xl">
-            Créations sur mesure
+            {searchTerm
+              ? searchTerm.charAt(0).toUpperCase() + searchTerm.slice(1)
+              : selectedCategory === "Tout"
+                ? "Créations sur mesure"
+                : selectedCategory}
           </h1>
           <p className="text-ylang-charcoal/60 font-body mx-auto max-w-2xl text-lg">
             Découvrez notre univers de textile personnalisé pour bébé et
@@ -224,7 +359,7 @@ function CollectionsContent() {
                 placeholder="Rechercher une création..."
                 value={searchTerm}
                 onChange={(e) => updateSearchUrl(e.target.value)}
-                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal w-full rounded-2xl border border-ylang-rose bg-white py-3.5 pr-12 pl-12 transition-all outline-none placeholder:text-gray-400 focus:ring-4"
+                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal border-ylang-rose w-full rounded-2xl border bg-white py-3.5 pr-12 pl-12 transition-all outline-none placeholder:text-gray-400 focus:ring-4"
               />
               {searchTerm && (
                 <button
@@ -240,7 +375,7 @@ function CollectionsContent() {
               {/* Bouton filtres Desktop/Mobile */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`font-body flex items-center justify-center gap-2.5 rounded-2xl border border-ylang-rose bg-white px-6 py-3.5 text-sm font-medium transition-all ${
+                className={`font-body border-ylang-rose flex items-center justify-center gap-2.5 rounded-2xl border bg-white px-6 py-3.5 text-sm font-medium transition-all ${
                   showFilters
                     ? "border-ylang-rose bg-ylang-rose/5 text-ylang-rose"
                     : "text-ylang-charcoal"
@@ -267,7 +402,7 @@ function CollectionsContent() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-ylang-rose bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-4"
+                  className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal border-ylang-rose cursor-pointer appearance-none rounded-2xl border bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-4"
                 >
                   <option value="featured">Mis en avant</option>
                   <option value="price-asc">Prix croissant</option>
@@ -287,7 +422,7 @@ function CollectionsContent() {
                 animate={{ opacity: 1, height: "auto", y: 0 }}
                 exit={{ opacity: 0, height: 0, y: -10 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="overflow-hidden rounded-2xl border border-ylang-rose bg-white p-6 shadow-sm"
+                className="border-ylang-rose overflow-hidden rounded-2xl border bg-white p-6 shadow-sm"
               >
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                   {/* Catégories */}
@@ -298,7 +433,7 @@ function CollectionsContent() {
                       </h3>
                       {selectedCategory !== "Tout" && (
                         <button
-                          onClick={() => setSelectedCategory("Tout")}
+                          onClick={() => updateCategory("Tout")}
                           className="text-ylang-rose hover:text-ylang-rose/80 font-body text-xs font-medium underline underline-offset-4"
                         >
                           Réinitialiser
@@ -309,7 +444,7 @@ function CollectionsContent() {
                       {categories.map((cat) => (
                         <button
                           key={cat}
-                          onClick={() => setSelectedCategory(cat)}
+                          onClick={() => updateCategory(cat)}
                           className={`font-body relative rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
                             selectedCategory === cat
                               ? "bg-ylang-rose shadow-ylang-rose/20 text-white shadow-md"
@@ -464,13 +599,7 @@ function CollectionsContent() {
               Essayez de modifier vos filtres ou votre recherche
             </p>
             <button
-              onClick={() => {
-                updateSearchUrl("");
-                setSelectedCategory("Tout");
-                setPriceRange([0, 200]);
-                setOnlyNew(false);
-                setOnlyCustomizable(false);
-              }}
+              onClick={clearFilters}
               className="bg-ylang-rose hover:bg-ylang-rose/90 font-body rounded-xl px-6 py-3 text-white transition-colors"
             >
               Réinitialiser les filtres

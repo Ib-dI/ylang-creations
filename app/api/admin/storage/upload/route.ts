@@ -137,7 +137,13 @@ export async function DELETE(request: Request) {
     } = await supabase.auth.getUser();
 
     // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
+    if (!user) {
+      console.log("❌ DELETE: No user found");
+      return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+    }
+
+    if (user.app_metadata?.role !== "admin") {
+      console.log("❌ DELETE: User is not admin", user.app_metadata?.role);
       return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
