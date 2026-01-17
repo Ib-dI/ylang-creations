@@ -10,7 +10,7 @@ import {
   MapPin,
   Scissors,
   Shield,
-  Sparkles,
+  Wand2,
   Users,
 } from "lucide-react";
 import Image from "next/image";
@@ -107,7 +107,7 @@ export default function AProposPage() {
   }, []);
 
   return (
-    <div className="bg-ylang-cream min-h-screen">
+    <div className="bg-ylang-terracotta/30 min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-32">
         {/* Background decorative elements */}
@@ -152,14 +152,24 @@ export default function AProposPage() {
             >
               Avec amour, Mélissa
             </motion.p>
+            <motion.div
+              variants={fadeInUp}
+              className="flex items-center justify-center w-full"
+            >
+              <Image
+              width={200}
+              height={200}
+              src={"/Illustrations/Porte Jouet 3.png"}
+              alt="Illustration de la marque Ylang Créations" />
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
       {/* Story Section */}
-      <section className="py-20 lg:py-28">
+      <section className="py-20 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-12">
             {/* Image */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -184,7 +194,7 @@ export default function AProposPage() {
                 {/* Placeholder gradient si pas d'image */}
                 <div className="from-ylang-rose/30 via-ylang-beige to-ylang-sage/30 absolute inset-0 flex items-center justify-center bg-linear-to-br">
                   <div className="text-center">
-                    <Sparkles className="text-ylang-rose mx-auto mb-4 h-16 w-16" />
+                    <Wand2 className="text-ylang-rose mx-auto mb-4 h-16 w-16" />
                     <p className="font-display text-ylang-charcoal text-xl">
                       Mélissa
                     </p>
@@ -340,7 +350,7 @@ export default function AProposPage() {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 lg:py-28">
+      <section id="engagements" className="py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -470,7 +480,6 @@ export default function AProposPage() {
             viewport={{ once: true }}
             className="from-ylang-yellow to-ylang-yellow/50 rounded-3xl bg-linear-to-br p-12 text-center text-white lg:p-20"
           >
-            <Sparkles className="mx-auto mb-6 h-12 w-12 opacity-80" />
             <h2 className="font-display mb-6 text-3xl font-bold lg:text-4xl">
               Notre concept
             </h2>
@@ -498,7 +507,7 @@ export default function AProposPage() {
                   size="lg"
                   className="border-white text-white hover:bg-white/10"
                 >
-                  <Sparkles className="mr-2 h-5 w-5" />
+                  <Wand2 className="mr-2 h-5 w-5" />
                   Créer sur mesure
                 </Button>
               </Link>
@@ -508,7 +517,7 @@ export default function AProposPage() {
       </section>
 
       {/* Contact CTA */}
-      <section className="border-ylang-beige border-t py-20">
+      <section className="py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

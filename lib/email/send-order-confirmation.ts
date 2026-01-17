@@ -1,37 +1,52 @@
-import { Resend } from 'resend'
-import { OrderConfirmationEmail } from '@/emails/order-confirmation'
+import { OrderConfirmationEmail } from "@/emails/order-confirmation";
+import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY!)
+const resend = new Resend(process.env.RESEND_API_KEY!);
+
+// ============================================
+// CONFIGURATION EXPÉDITEUR
+// ============================================
+// 🧪 Mode Sandbox (actif) - Pour les tests avec Resend
+const FROM_EMAIL_ORDERS = "Ylang Créations <onboarding@resend.dev>";
+const FROM_EMAIL_NOTIFICATIONS = "Ylang Créations <onboarding@resend.dev>";
+
+// 🚀 Mode Production (à activer quand le domaine sera vérifié)
+// Décommentez les lignes ci-dessous et commentez les lignes sandbox ci-dessus
+// const FROM_EMAIL_ORDERS = 'Ylang Créations <commandes@ylang-creations.fr>'
+// const FROM_EMAIL_NOTIFICATIONS = 'Ylang Créations <notifications@ylang-creations.fr>'
+// ============================================
 
 interface SendOrderConfirmationParams {
-  to: string
-  orderNumber: string
-  customerName: string
+  to: string;
+  orderNumber: string;
+  customerName: string;
   items: Array<{
-    productName: string
-    quantity: number
-    price: number
+    productName: string;
+    quantity: number;
+    price: number;
     configuration: {
-      fabricName: string
-      embroidery?: string
-      accessories: string[]
-    }
-  }>
-  total: number
-  shipping: number
+      fabricName: string;
+      embroidery?: string;
+      accessories: string[];
+    };
+  }>;
+  total: number;
+  shipping: number;
   shippingAddress: {
-    address: string
-    addressComplement?: string
-    postalCode: string
-    city: string
-    country: string
-  }
+    address: string;
+    addressComplement?: string;
+    postalCode: string;
+    city: string;
+    country: string;
+  };
 }
 
-export async function sendOrderConfirmationEmail(params: SendOrderConfirmationParams) {
+export async function sendOrderConfirmationEmail(
+  params: SendOrderConfirmationParams,
+) {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Ylang Créations <commandes@ylang-creations.fr>',
+      from: FROM_EMAIL_ORDERS,
       to: [params.to],
       subject: `✨ Commande confirmée ${params.orderNumber}`,
       react: OrderConfirmationEmail({
@@ -40,31 +55,33 @@ export async function sendOrderConfirmationEmail(params: SendOrderConfirmationPa
         items: params.items,
         total: params.total,
         shipping: params.shipping,
-        shippingAddress: params.shippingAddress
-      })
-    })
+        shippingAddress: params.shippingAddress,
+      }),
+    });
 
     if (error) {
-      console.error('❌ Erreur envoi email:', error)
-      return { success: false, error }
+      console.error("❌ Erreur envoi email:", error);
+      return { success: false, error };
     }
 
-    console.log('✅ Email de confirmation envoyé:', data?.id)
-    return { success: true, data }
-    
+    console.log("✅ Email de confirmation envoyé:", data?.id);
+    return { success: true, data };
   } catch (error) {
-    console.error('❌ Erreur Resend:', error)
-    return { success: false, error }
+    console.error("❌ Erreur Resend:", error);
+    return { success: false, error };
   }
 }
 
-
 // Fonction utilitaire pour envoyer un email de notification admin
-export async function sendAdminNotificationEmail(orderNumber: string, customerName: string, total: number) {
+export async function sendAdminNotificationEmail(
+  orderNumber: string,
+  customerName: string,
+  total: number,
+) {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Ylang Créations <notifications@ylang-creations.fr>',
-      to: ['admin@ylang-creations.fr'], // Votre email admin
+      from: FROM_EMAIL_NOTIFICATIONS,
+      to: ["admin@ylang-creations.fr"], // Votre email admin
       subject: `🎉 Nouvelle commande ${orderNumber}`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
@@ -74,19 +91,18 @@ export async function sendAdminNotificationEmail(orderNumber: string, customerNa
           <p><strong>Montant :</strong> ${total.toFixed(2)}€</p>
           <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/orders/${orderNumber}" style="display: inline-block; padding: 12px 24px; background-color: #b76e79; color: white; text-decoration: none; border-radius: 8px; margin-top: 10px;">Voir la commande</a></p>
         </div>
-      `
-    })
+      `,
+    });
 
     if (error) {
-      console.error('❌ Erreur notification admin:', error)
-      return { success: false, error }
+      console.error("❌ Erreur notification admin:", error);
+      return { success: false, error };
     }
 
-    console.log('✅ Notification admin envoyée')
-    return { success: true, data }
-    
+    console.log("✅ Notification admin envoyée");
+    return { success: true, data };
   } catch (error) {
-    console.error('❌ Erreur notification admin:', error)
-    return { success: false, error }
+    console.error("❌ Erreur notification admin:", error);
+    return { success: false, error };
   }
 }

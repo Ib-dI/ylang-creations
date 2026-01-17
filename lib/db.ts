@@ -2,99 +2,57 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "../db/schema";
 
-if (!process.env.DATABASE_URL) {
+// 1. Connection string setup
+const DATABASE_URL = process.env.DATABASE_URL;
+
+if (!DATABASE_URL) {
   console.error(
     "❌ DATABASE_URL is not set. Please configure it in your environment variables.",
   );
-  // Don't throw during build time, but log the error
-} else {
-  // Log connection info (without sensitive data) for debugging
-  const dbUrl = process.env.DATABASE_URL;
-  const urlObj = new URL(dbUrl);
-  const isSupabase = dbUrl.includes("supabase");
-  const isPooler = dbUrl.includes("pooler") || urlObj.port === "6543";
 }
 
-// Determine SSL configuration based on connection string
+// 2. SSL configuration helper
 function getSSLConfig() {
-  const connectionString = process.env.DATABASE_URL || "";
-
-  // Supabase and most cloud databases require SSL
+  const connectionString = DATABASE_URL || "";
   if (
     connectionString.includes("supabase") ||
     connectionString.includes("neon.tech") ||
     connectionString.includes("vercel-storage.com") ||
     connectionString.includes("railway.app") ||
-    connectionString.includes("render.com")
-  ) {
-    return {
-      rejectUnauthorized: false, // Required for Supabase and most cloud providers
-    };
-  }
-
-  // Check if connection string explicitly requires SSL
-  if (
+    connectionString.includes("render.com") ||
     connectionString.includes("sslmode=require") ||
     connectionString.includes("ssl=true")
   ) {
-    return {
-      rejectUnauthorized: false,
-    };
+    return { rejectUnauthorized: false };
   }
-
-  // Default: no SSL for local development
   return false;
 }
 
-// Create pool with optimized settings for Vercel serverless
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL!,
-  // Increase connection limit for development/concurrent usage
-  // Vercel serverless might prefer 1, but we need at least a few for webhooks + frontend
-  max: process.env.NODE_ENV === "development" ? 10 : 5,
-  // Timeouts optimized for serverless
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 30000,
-  // SSL configuration for Supabase and cloud databases
-  ssl: getSSLConfig(),
-  // Keep-alive for better connection reuse
-  keepAlive: true,
-  keepAliveInitialDelayMillis: 10000,
-  // Statement timeout to prevent hanging queries
-  statement_timeout: 30000,
-});
+// 3. Singleton pattern for Global Object (Prevents multiple pools in dev)
+const globalForDb = global as unknown as {
+  pool: Pool | undefined;
+};
 
-// Type for PostgreSQL connection errors
-interface PostgresError extends Error {
-  code?: string;
-  errno?: number | string;
-  syscall?: string;
-  hostname?: string;
-}
-
-// Handle pool errors with detailed logging
-pool.on("error", (err: PostgresError) => {
-  console.error("❌ Unexpected database pool error:", {
-    message: err.message,
-    code: err.code,
-    errno: err.errno,
-    syscall: err.syscall,
-    hostname: err.hostname,
+// 4. Create or reuse pool
+export const pool =
+  globalForDb.pool ??
+  new Pool({
+    connectionString: DATABASE_URL,
+    max: process.env.NODE_ENV === "development" ? 10 : 5,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 30000,
+    ssl: getSSLConfig(),
+    keepAlive: true,
+    keepAliveInitialDelayMillis: 10000,
+    statement_timeout: 30000,
   });
 
-  // If it's a connection error, provide helpful guidance
-  if (err.code === "ENOTFOUND" || err.code === "ECONNREFUSED") {
-    const dbUrl = process.env.DATABASE_URL || "";
-    if (dbUrl.includes("supabase") && !dbUrl.includes("pooler")) {
-      console.error(
-        "💡 Tip: For Supabase on Vercel, use the connection pooler:",
-      );
-      console.error("   - Port 6543 (Transaction mode) or 5432 (Session mode)");
-      console.error(
-        "   - Format: postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require",
-      );
-    }
-  }
+if (process.env.NODE_ENV !== "production") globalForDb.pool = pool;
+
+// 5. Handle pool errors
+pool.on("error", (err: any) => {
+  console.error("❌ Unexpected database pool error:", err);
 });
 
+// 6. Export Drizzle instance
 export const db = drizzle(pool, { schema });

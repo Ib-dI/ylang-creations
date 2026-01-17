@@ -31,13 +31,25 @@ import { eq } from "drizzle-orm";
 
 const SETTINGS_ID = "main-settings";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const result = await db
-    .select()
-    .from(settings)
-    .where(eq(settings.id, SETTINGS_ID))
-    .limit(1);
+import { unstable_cache } from "next/cache";
 
+const getCachedSettings = unstable_cache(
+  async () => {
+    return await db
+      .select()
+      .from(settings)
+      .where(eq(settings.id, SETTINGS_ID))
+      .limit(1);
+  },
+  ["main-settings"],
+  {
+    revalidate: 3600, // 1 hour
+    tags: ["settings"],
+  },
+);
+
+export async function generateMetadata(): Promise<Metadata> {
+  const result = await getCachedSettings();
   const s = result[0];
 
   return {

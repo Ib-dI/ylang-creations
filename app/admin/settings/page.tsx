@@ -1,10 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import {
   AlertCircle,
+  AlertTriangle,
   Bell,
   CheckCircle2,
   ChevronDown,
@@ -14,11 +23,13 @@ import {
   Image as ImageIcon,
   Loader2,
   Mail,
+  Package,
   Plus,
   Save,
   Shield,
   Store,
   Trash2,
+  Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -27,6 +38,11 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("store");
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "", type: "" });
+
+  // Reset Dialog State
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [resetStep, setResetStep] = useState<1 | 2>(1);
+  const [resetProducts, setResetProducts] = useState(false);
 
   const tabs = [
     { id: "store", label: "Boutique", icon: Store },
@@ -192,17 +208,19 @@ export default function SettingsPage() {
     }
   };
 
+  const openResetDialog = () => {
+    setResetStep(1);
+    setResetProducts(false);
+    setShowResetDialog(true);
+  };
+
+  const closeResetDialog = () => {
+    setShowResetDialog(false);
+    setResetStep(1);
+    setResetProducts(false);
+  };
+
   const handleResetData = async () => {
-    const confirmReset = confirm(
-      "Êtes-vous sûr de vouloir réinitialiser toutes les données transactionnelles (Commandes et Clients) ? Les comptes utilisateurs seront conservés.",
-    );
-
-    if (!confirmReset) return;
-
-    const resetProducts = confirm(
-      "Souhaitez-vous également remettre tous les stocks de vos produits à zéro ?",
-    );
-
     setIsSaving(true);
     try {
       const response = await fetch("/api/admin/reset", {
@@ -214,6 +232,7 @@ export default function SettingsPage() {
       if (!response.ok) throw new Error("Erreur lors de la réinitialisation");
 
       showToast("Toutes les données ont été réinitialisées", "success");
+      closeResetDialog();
     } catch (error) {
       console.error(error);
       showToast("Erreur lors de la réinitialisation des données", "error");
@@ -1119,18 +1138,160 @@ export default function SettingsPage() {
                   <Button
                     variant="link"
                     className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    disabled={isSaving}
-                    onClick={handleResetData}
+                    onClick={openResetDialog}
                   >
-                    {isSaving && activeTab === "security" ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Réinitialisation...
-                      </>
-                    ) : (
-                      "Réinitialiser toutes les données"
-                    )}
+                    Réinitialiser toutes les données
                   </Button>
+
+                  {/* Modern Reset Confirmation Dialog */}
+                  <Dialog
+                    open={showResetDialog}
+                    onOpenChange={setShowResetDialog}
+                  >
+                    <DialogContent
+                      className="sm:max-w-md"
+                      showCloseButton={!isSaving}
+                    >
+                      {resetStep === 1 ? (
+                        <>
+                          <DialogHeader className="space-y-4">
+                            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-orange-100 to-red-100">
+                              <AlertTriangle className="h-8 w-8 text-orange-600" />
+                            </div>
+                            <DialogTitle className="text-center text-xl">
+                              Réinitialiser les données
+                            </DialogTitle>
+                            <DialogDescription className="text-center">
+                              Cette action supprimera définitivement toutes les
+                              données transactionnelles.
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="my-4 space-y-3">
+                            <div className="flex items-start gap-3 rounded-lg border border-red-100 bg-red-50/50 p-3">
+                              <Users className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+                              <div>
+                                <p className="font-medium text-red-800">
+                                  Clients
+                                </p>
+                                <p className="text-sm text-red-600">
+                                  Toutes les données clients seront supprimées
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-3 rounded-lg border border-red-100 bg-red-50/50 p-3">
+                              <Package className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+                              <div>
+                                <p className="font-medium text-red-800">
+                                  Commandes
+                                </p>
+                                <p className="text-sm text-red-600">
+                                  Tout l&apos;historique des commandes sera
+                                  effacé
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3">
+                              <CheckCircle2 className="h-5 w-5 text-green-600" />
+                              <p className="text-sm text-green-700">
+                                Les comptes utilisateurs seront conservés
+                              </p>
+                            </div>
+                          </div>
+
+                          <DialogFooter className="gap-2 sm:gap-2">
+                            <Button
+                              variant="ghost"
+                              onClick={closeResetDialog}
+                              className="flex-1 sm:flex-none"
+                            >
+                              Annuler
+                            </Button>
+                            <Button
+                              variant="luxury"
+                              onClick={() => setResetStep(2)}
+                              className="flex-1 bg-orange-600 hover:bg-orange-700 sm:flex-none"
+                            >
+                              Continuer
+                            </Button>
+                          </DialogFooter>
+                        </>
+                      ) : (
+                        <>
+                          <DialogHeader className="space-y-4">
+                            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-red-100 to-red-200">
+                              <Trash2 className="h-8 w-8 text-red-600" />
+                            </div>
+                            <DialogTitle className="text-center text-xl">
+                              Options de réinitialisation
+                            </DialogTitle>
+                            <DialogDescription className="text-center">
+                              Souhaitez-vous également réinitialiser les stocks
+                              ?
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="my-4">
+                            <label
+                              className={`flex cursor-pointer items-center gap-4 rounded-xl border-2 p-4 transition-all ${
+                                resetProducts
+                                  ? "border-red-400 bg-red-50"
+                                  : "border-gray-200 hover:border-gray-300"
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={resetProducts}
+                                onChange={(e) =>
+                                  setResetProducts(e.target.checked)
+                                }
+                                className="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"
+                              />
+                              <div>
+                                <p className="font-medium text-gray-900">
+                                  Remettre les stocks à zéro
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  Tous les produits auront un stock de 0 unités
+                                </p>
+                              </div>
+                            </label>
+                          </div>
+
+                          <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                            <p className="text-center text-sm font-medium text-red-800">
+                              ⚠️ Cette action est irréversible
+                            </p>
+                          </div>
+
+                          <DialogFooter className="mt-4 gap-2 sm:gap-2">
+                            <Button
+                              variant="ghost"
+                              onClick={() => setResetStep(1)}
+                              disabled={isSaving}
+                              className="flex-1 sm:flex-none"
+                            >
+                              Retour
+                            </Button>
+                            <Button
+                              onClick={handleResetData}
+                              disabled={isSaving}
+                              className="flex-1 bg-red-600 text-white hover:bg-red-700 sm:flex-none"
+                            >
+                              {isSaving ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Réinitialisation...
+                                </>
+                              ) : (
+                                "Confirmer la réinitialisation"
+                              )}
+                            </Button>
+                          </DialogFooter>
+                        </>
+                      )}
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             )}

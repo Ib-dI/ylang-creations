@@ -1,5 +1,6 @@
 import { customer as customerTable, order, product } from "@/db/schema";
 import { db } from "@/lib/db";
+import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation";
 import { eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -139,6 +140,68 @@ export async function POST(req: Request) {
         });
 
         console.log("✅ Order created and stock updated:", orderId);
+
+        // ============================================
+        // ENVOI EMAIL DE CONFIRMATION
+        // ============================================
+        try {
+          const customerEmail = session.customer_details?.email;
+          const customerName = session.customer_details?.name || "Client";
+
+          // Parse shipping address from Stripe session
+          const shippingDetails = (session as any).shipping_details?.address;
+
+          if (customerEmail && shippingDetails) {
+            console.log("📧 Sending confirmation email to:", customerEmail);
+
+            // Map items to email format
+            const emailItems = items.map((item: any) => ({
+              productName: item.name || item.productName || "Produit",
+              quantity: item.quantity || 1,
+              price: item.price || 0,
+              configuration: {
+                fabricName:
+                  item.configuration?.fabricName ||
+                  item.configuration?.fabric?.name ||
+                  "Standard",
+                embroidery: item.configuration?.embroidery || undefined,
+                accessories:
+                  item.configuration?.accessories?.map((a: any) =>
+                    typeof a === "string" ? a : a.name,
+                  ) || [],
+              },
+            }));
+
+            // Calculate subtotal (amount_total is in cents)
+            const total = (session.amount_total ?? 0) / 100;
+
+            await sendOrderConfirmationEmail({
+              to: customerEmail,
+              orderNumber: orderId.slice(0, 8).toUpperCase(), // Short order ID
+              customerName,
+              items: emailItems,
+              total,
+              shipping: 0, // Livraison offerte ou extraire des line_items
+              shippingAddress: {
+                address: shippingDetails.line1 || "",
+                addressComplement: shippingDetails.line2 || undefined,
+                postalCode: shippingDetails.postal_code || "",
+                city: shippingDetails.city || "",
+                country: shippingDetails.country || "France",
+              },
+            });
+
+            console.log("✅ Email de confirmation envoyé à:", customerEmail);
+          } else {
+            console.warn("⚠️ Could not send email - missing:", {
+              email: !!customerEmail,
+              shippingDetails: !!shippingDetails,
+            });
+          }
+        } catch (emailError) {
+          // Ne pas bloquer le webhook si l'email échoue
+          console.error("❌ Failed to send confirmation email:", emailError);
+        }
       } catch (err) {
         console.error("❌ Failed to create order or update stock:", err);
         // CRITICAL: Return 500 so Stripe retries the webhook
