@@ -1,6 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -91,6 +99,15 @@ export default function ProductsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("general");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // Delete confirmation state
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    productId: string | null;
+  }>({
+    isOpen: false,
+    productId: null,
+  });
 
   // Form state
   const [formData, setFormData] = useState({
@@ -279,15 +296,23 @@ export default function ProductsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) return;
+  const handleDelete = (id: string) => {
+    setDeleteConfirmation({ isOpen: true, productId: id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmation.productId) return;
 
     try {
-      const response = await fetch(`/api/admin/products/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/admin/products/${deleteConfirmation.productId}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (response.ok) {
+        setDeleteConfirmation({ isOpen: false, productId: null });
         fetchProducts();
       }
     } catch (error) {
@@ -794,16 +819,16 @@ export default function ProductsPage() {
               className="fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col bg-white shadow-2xl md:w-[800px] lg:w-[900px]"
             >
               {/* Modal Header */}
-              <div className="relative overflow-hidden border-b border-ylang-beige/50 bg-linear-to-r from-ylang-cream via-white to-ylang-beige/30 px-8 py-6">
+              <div className="border-ylang-beige/50 from-ylang-cream to-ylang-beige/30 relative overflow-hidden border-b bg-linear-to-r via-white px-8 py-6">
                 {/* Decorative background */}
                 <div className="absolute inset-0 opacity-30">
-                  <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-ylang-rose/20 blur-2xl" />
-                  <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-ylang-terracotta/20 blur-2xl" />
+                  <div className="bg-ylang-rose/20 absolute -top-12 -right-12 h-32 w-32 rounded-full blur-2xl" />
+                  <div className="bg-ylang-terracotta/20 absolute -bottom-8 -left-8 h-24 w-24 rounded-full blur-2xl" />
                 </div>
-                
+
                 <div className="relative flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-ylang-rose to-ylang-terracotta shadow-lg shadow-ylang-rose/25">
+                    <div className="from-ylang-rose to-ylang-terracotta shadow-ylang-rose/25 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br shadow-lg">
                       {editingProduct ? (
                         <Edit className="h-6 w-6 text-white" />
                       ) : (
@@ -825,7 +850,7 @@ export default function ProductsPage() {
                   </div>
                   <button
                     onClick={() => setShowModal(false)}
-                    className="rounded-xl p-3 text-ylang-charcoal/60 transition-all hover:bg-ylang-beige hover:text-ylang-charcoal"
+                    className="text-ylang-charcoal/60 hover:bg-ylang-beige hover:text-ylang-charcoal rounded-xl p-3 transition-all"
                   >
                     <X className="h-6 w-6" />
                   </button>
@@ -833,7 +858,7 @@ export default function ProductsPage() {
               </div>
 
               {/* Tabs Navigation */}
-              <div className="flex gap-1 border-b border-ylang-beige bg-linear-to-r from-ylang-cream/50 to-white px-8 py-3">
+              <div className="border-ylang-beige from-ylang-cream/50 flex gap-1 border-b bg-linear-to-r to-white px-8 py-3">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -843,14 +868,16 @@ export default function ProductsPage() {
                       onClick={() => setActiveTab(tab.id)}
                       className={`relative flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
                         isActive
-                          ? "bg-ylang-rose text-white shadow-md shadow-ylang-rose/25"
+                          ? "bg-ylang-rose shadow-ylang-rose/25 text-white shadow-md"
                           : "text-ylang-charcoal/60 hover:text-ylang-charcoal hover:bg-ylang-beige/50"
                       }`}
                     >
-                      <Icon className={`h-4 w-4 ${isActive ? "" : "text-ylang-terracotta/60"}`} />
+                      <Icon
+                        className={`h-4 w-4 ${isActive ? "" : "text-ylang-terracotta/60"}`}
+                      />
                       {tab.label}
                       {isActive && (
-                        <span className="absolute -bottom-3 left-1/2 h-1 w-8 -translate-x-1/2 rounded-full bg-ylang-rose" />
+                        <span className="bg-ylang-rose absolute -bottom-3 left-1/2 h-1 w-8 -translate-x-1/2 rounded-full" />
                       )}
                     </button>
                   );
@@ -867,9 +894,9 @@ export default function ProductsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-6"
                     >
-                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-4 flex items-center gap-2 text-lg font-semibold">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                          <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <Info className="text-ylang-rose h-4 w-4" />
                           </div>
                           Informations de base
@@ -960,9 +987,9 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Pricing */}
-                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-4 flex items-center gap-2 text-lg font-semibold">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-terracotta/10">
+                          <div className="bg-ylang-terracotta/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <Box className="text-ylang-terracotta h-4 w-4" />
                           </div>
                           Prix et Stock
@@ -1062,9 +1089,9 @@ export default function ProductsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-6"
                     >
-                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                          <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <ImageIcon className="text-ylang-rose h-4 w-4" />
                           </div>
                           Images du produit
@@ -1090,14 +1117,14 @@ export default function ProductsPage() {
                         />
 
                         {formData.images.length > 0 && (
-                          <div className="mt-6 rounded-xl border border-ylang-terracotta/20 bg-ylang-cream/50 p-4">
+                          <div className="border-ylang-terracotta/20 bg-ylang-cream/50 mt-6 rounded-xl border p-4">
                             <div className="flex items-start gap-3">
-                              <Info className="mt-0.5 h-5 w-5 shrink-0 text-ylang-terracotta" />
+                              <Info className="text-ylang-terracotta mt-0.5 h-5 w-5 shrink-0" />
                               <div>
-                                <p className="font-medium text-ylang-charcoal">
+                                <p className="text-ylang-charcoal font-medium">
                                   Conseil pour les images
                                 </p>
-                                <p className="text-sm text-ylang-charcoal/70">
+                                <p className="text-ylang-charcoal/70 text-sm">
                                   Utilisez des images de haute qualité (min.
                                   800x800px) avec un fond neutre pour un rendu
                                   optimal.
@@ -1118,9 +1145,9 @@ export default function ProductsPage() {
                       className="space-y-6"
                     >
                       {/* Long Description */}
-                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                          <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <FileText className="text-ylang-rose h-4 w-4" />
                           </div>
                           Description détaillée
@@ -1144,10 +1171,10 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Features */}
-                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
                           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100">
-                            <Check className="text-green-600 h-4 w-4" />
+                            <Check className="h-4 w-4 text-green-600" />
                           </div>
                           Caractéristiques
                         </h3>
@@ -1244,9 +1271,9 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Sizes */}
-                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                          <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <Layers className="text-ylang-rose h-4 w-4" />
                           </div>
                           Tailles disponibles
@@ -1419,9 +1446,9 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Tags */}
-                      <div className="rounded-2xl border border-ylang-terracotta/20 bg-linear-to-br from-white to-ylang-cream/30 p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ylang-rose/10">
+                          <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <Tags className="text-ylang-rose h-4 w-4" />
                           </div>
                           Tags
@@ -1460,11 +1487,11 @@ export default function ProductsPage() {
 
                       {/* Preview Link */}
                       {editingProduct && (
-                        <div className="rounded-2xl border border-ylang-rose/20 bg-linear-to-br from-ylang-cream/50 to-white p-6 shadow-sm">
+                        <div className="border-ylang-rose/20 from-ylang-cream/50 rounded-2xl border bg-linear-to-br to-white p-6 shadow-sm">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ylang-rose/10">
-                                <Eye className="h-5 w-5 text-ylang-rose" />
+                              <div className="bg-ylang-rose/10 flex h-10 w-10 items-center justify-center rounded-xl">
+                                <Eye className="text-ylang-rose h-5 w-5" />
                               </div>
                               <div>
                                 <h3 className="text-ylang-charcoal font-semibold">
@@ -1479,7 +1506,7 @@ export default function ProductsPage() {
                               href={`/produits/${editingProduct.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-2 rounded-xl bg-ylang-rose px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-ylang-rose/25 transition-all hover:bg-ylang-rose/90 hover:shadow-lg"
+                              className="bg-ylang-rose shadow-ylang-rose/25 hover:bg-ylang-rose/90 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
                             >
                               Voir la page
                               <ArrowUpRight className="h-4 w-4" />
@@ -1493,16 +1520,16 @@ export default function ProductsPage() {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-between border-t border-ylang-beige bg-linear-to-r from-ylang-cream/50 to-white px-8 py-5">
+              <div className="border-ylang-beige from-ylang-cream/50 flex items-center justify-between border-t bg-linear-to-r to-white px-8 py-5">
                 <div className="text-ylang-charcoal/50 text-sm">
                   {editingProduct && (
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-ylang-terracotta/40" />
+                      <div className="bg-ylang-terracotta/40 h-2 w-2 rounded-full" />
                       <span>
                         Dernière modification:{" "}
                         {new Date(editingProduct.createdAt).toLocaleDateString(
                           "fr-FR",
-                          { day: "numeric", month: "short", year: "numeric" }
+                          { day: "numeric", month: "short", year: "numeric" },
                         )}
                       </span>
                     </div>
@@ -1543,6 +1570,46 @@ export default function ProductsPage() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {deleteConfirmation.isOpen && (
+          <Dialog
+            open={deleteConfirmation.isOpen}
+            onOpenChange={(open) =>
+              setDeleteConfirmation((prev) => ({ ...prev, isOpen: open }))
+            }
+          >
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-red-600">
+                  <Trash2 className="h-5 w-5" />
+                  Supprimer le produit ?
+                </DialogTitle>
+                <DialogDescription className="py-2">
+                  Êtes-vous sûr de vouloir supprimer ce produit ? Cette action
+                  est irréversible et supprimera toutes les données associées.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    setDeleteConfirmation({ isOpen: false, productId: null })
+                  }
+                >
+                  Annuler
+                </Button>
+                <Button
+                  variant="primary"
+                  className="bg-red-600 text-white hover:bg-red-700 hover:shadow-red-200"
+                  onClick={confirmDelete}
+                >
+                  Supprimer définitivement
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
       </AnimatePresence>
     </div>

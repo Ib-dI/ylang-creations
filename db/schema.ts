@@ -1,4 +1,10 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -123,4 +129,18 @@ export const settings = pgTable("settings", {
   aboutImage: text("about_image"),
   testimonials: text("testimonials"), // JSON string
   updatedAt: timestamp("updated_at").notNull(),
+});
+
+// Reviews table
+export const review = pgTable("review", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  productId: text("product_id")
+    .notNull()
+    .references(() => product.id),
+  rating: integer("rating").notNull(),
+  comment: text("comment"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });

@@ -1,7 +1,9 @@
 import ProductDetails from "@/components/product/product-details";
 import { CatalogProduct } from "@/data/products";
 import { product as productTable } from "@/db/schema";
+import { getReviews } from "@/lib/actions/reviews";
 import { db } from "@/lib/db";
+import { createClient } from "@/utils/supabase/server";
 import { and, eq, ne } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
@@ -82,6 +84,33 @@ export default async function Page({ params }: PageProps) {
 
   const similarProducts = similarDbProducts.map(formatProduct);
 
-  // 3. Render client component
-  return <ProductDetails product={product} similarProducts={similarProducts} />;
+  // 3. Fetch reviews
+  const { reviews, averageRating, totalReviews } = await getReviews(product.id);
+
+  // 4. Get current user
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // 5. Render client component
+  return (
+    <ProductDetails
+      product={product}
+      similarProducts={similarProducts}
+      reviews={reviews}
+      averageRating={averageRating}
+      totalReviews={totalReviews}
+      currentUser={
+        user
+          ? {
+              id: user.id,
+              name: user.user_metadata.name || "",
+              email: user.email || "",
+              image: user.user_metadata.avatar_url || null,
+            }
+          : null
+      }
+    />
+  );
 }

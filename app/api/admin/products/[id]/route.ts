@@ -1,4 +1,4 @@
-import { product } from "@/db/schema";
+import { product, review } from "@/db/schema";
 import { db } from "@/lib/db";
 import { formatZodErrors, updateProductSchema } from "@/lib/validations";
 import { createClient, supabaseAdmin } from "@/utils/supabase/server";
@@ -232,7 +232,10 @@ export async function DELETE(
       }
     }
 
-    // 3. Supprimer le produit
+    // 3. Supprimer les avis associés au produit (FK Constraint)
+    await db.delete(review).where(eq(review.productId, id));
+
+    // 4. Supprimer le produit
     await db.delete(product).where(eq(product.id, id));
 
     return NextResponse.json({ success: true });

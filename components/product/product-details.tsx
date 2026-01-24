@@ -14,7 +14,6 @@ import {
   Heart,
   Package,
   Palette,
-  Share2,
   Shield,
   ShoppingBag,
   Star,
@@ -25,14 +24,30 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
+import { ProductReviews } from "@/components/product/product-reviews";
+import type { ReviewWithUser } from "@/lib/actions/reviews";
+
 interface ProductDetailsProps {
   product: CatalogProduct;
   similarProducts: CatalogProduct[];
+  reviews: ReviewWithUser[];
+  averageRating: number;
+  totalReviews: number;
+  currentUser: {
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+  } | null;
 }
 
 export default function ProductDetails({
   product,
   similarProducts,
+  reviews,
+  averageRating,
+  totalReviews,
+  currentUser,
 }: ProductDetailsProps) {
   // États locaux
   const [selectedImage, setSelectedImage] = useState(0);
@@ -177,12 +192,16 @@ export default function ProductDetails({
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className="h-5 w-5 fill-yellow-400 text-yellow-400"
+                        className={`h-5 w-5 ${
+                          i < Math.round(averageRating)
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-gray-300"
+                        }`}
                       />
                     ))}
                   </div>
                   <span className="font-body text-ylang-charcoal/60 text-sm">
-                    (24 avis)
+                    ({totalReviews} avis)
                   </span>
                 </div>
               </div>
@@ -259,19 +278,17 @@ export default function ProductDetails({
                     customizable: product.customizable,
                   })
                 }
-                className={`font-body group flex flex-1 bg-ylang-beige items-center justify-center gap-2 rounded-xl border-2 py-3 transition-all ${
+                className={`font-body group bg-ylang-beige flex flex-1 items-center justify-center gap-2 rounded-xl border-2 py-3 transition-all ${
                   isWishlisted
                     ? "border-ylang-rose bg-ylang-rose/10 text-ylang-rose"
                     : "border-ylang-beige/10 hover:border-ylang-rose hover:text-ylang-rose text-ylang-charcoal"
                 }`}
               >
                 <Heart
-                  className={`h-5 w-5 group-hover:text-ylang-rose transition-colors ${isWishlisted ? "fill-current" : ""}`}
+                  className={`group-hover:text-ylang-rose h-5 w-5 transition-colors ${isWishlisted ? "fill-current" : ""}`}
                 />
                 {isWishlisted ? "Ajouté aux favoris" : "Ajouter aux favoris"}
               </button>
-
-            
             </div>
 
             {/* Points forts */}
@@ -337,7 +354,7 @@ export default function ProductDetails({
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-16 rounded-2xl bg-white p-8 border border-ylang-rose"
+          className="border-ylang-rose mb-16 rounded-2xl border bg-white p-8"
         >
           <h2 className="font-display text-ylang-charcoal mb-6 text-2xl">
             Description détaillée
@@ -364,6 +381,17 @@ export default function ProductDetails({
             </ul>
           </div>
         </motion.div>
+
+        {/* Section Avis */}
+        <div className="mb-16">
+          <ProductReviews
+            productId={product.id}
+            reviews={reviews}
+            averageRating={averageRating}
+            totalReviews={totalReviews}
+            currentUser={currentUser}
+          />
+        </div>
 
         {/* Produits similaires */}
         <div>
