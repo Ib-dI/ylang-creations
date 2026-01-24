@@ -17,6 +17,7 @@ export interface CatalogProduct {
   customizable?: boolean;
   sizes?: string[];
   defaultSize?: string;
+  compareAtPrice?: number | null;
 }
 
 // Produits du catalogue principal

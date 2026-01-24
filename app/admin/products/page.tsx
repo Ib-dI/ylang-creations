@@ -542,13 +542,13 @@ export default function ProductsPage() {
                     </span>
                   )}
                   {product.isFeatured && (
-                    <span className="flex items-center gap-1 rounded-full bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
+                    <span className="flex items-center gap-1 rounded-full bg-yellow-500 border border-yellow-600 px-2 py-1 text-xs font-medium text-white">
                       <Star className="h-3 w-3" />
                       Vedette
                     </span>
                   )}
                   {product.options?.customizable && (
-                    <span className="flex items-center gap-1 rounded-full bg-purple-500 px-2 py-1 text-xs font-medium text-white">
+                    <span className="flex items-center gap-1 rounded-full bg-purple-500 border border-purple-600 px-2 py-1 text-xs font-medium text-white">
                       <Palette className="h-3 w-3" />
                       Personnalisable
                     </span>
@@ -558,12 +558,12 @@ export default function ProductsPage() {
                 {/* Stock badge */}
                 <div className="absolute top-3 right-3">
                   <span
-                    className={`rounded-full px-2 py-1 text-xs font-medium ${
+                    className={`rounded-full px-2 py-1 text-xs font-medium border ${
                       product.stock === 0
-                        ? "bg-red-100 text-red-600"
+                        ? "bg-red-100 text-red-600 border-red-600"
                         : product.stock < 5
-                          ? "bg-orange-100 text-orange-600"
-                          : "bg-green-100 text-green-600"
+                          ? "bg-orange-100 text-orange-600 border-orange-600"
+                          : "bg-green-100 text-green-600 border-green-600"
                     }`}
                   >
                     Stock: {product.stock}

@@ -21,6 +21,7 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
 
   interface ParsedOptions {
     sizes?: string[];
+    customizable?: boolean;
   }
 
   let parsedOptions: ParsedOptions = {};
@@ -42,10 +43,11 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
     features: [],
     new: new Date(p.createdAt) > thirtyDaysAgo,
     featured: p.isFeatured,
-    customizable: true,
+    customizable: parsedOptions.customizable ?? true,
     sizes: parsedOptions.sizes || [],
     defaultSize: parsedOptions.sizes?.[0] || undefined,
     slug: p.slug,
+    compareAtPrice: p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
   };
 }
 
@@ -54,7 +56,9 @@ async function FeaturedProductsData() {
   const products = await db
     .select()
     .from(productTable)
-    .where(and(eq(productTable.isActive, true), eq(productTable.isFeatured, true)))
+    .where(
+      and(eq(productTable.isActive, true), eq(productTable.isFeatured, true)),
+    )
     .orderBy(desc(productTable.createdAt))
     .limit(4);
 
@@ -62,7 +66,7 @@ async function FeaturedProductsData() {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   const formattedProducts: CatalogProduct[] = products.map((p) =>
-    formatProduct(p, thirtyDaysAgo)
+    formatProduct(p, thirtyDaysAgo),
   );
 
   if (formattedProducts.length === 0) {
@@ -89,12 +93,12 @@ function ProductsLoadingFallback() {
       {[1, 2, 3, 4].map((i) => (
         <div
           key={i}
-          className="bg-white rounded-lg overflow-hidden shadow-sm animate-pulse"
+          className="animate-pulse overflow-hidden rounded-lg bg-white shadow-sm"
         >
           <div className="aspect-square bg-gray-200" />
-          <div className="p-4 space-y-3">
-            <div className="h-4 bg-gray-200 rounded w-3/4" />
-            <div className="h-4 bg-gray-200 rounded w-1/2" />
+          <div className="space-y-3 p-4">
+            <div className="h-4 w-3/4 rounded bg-gray-200" />
+            <div className="h-4 w-1/2 rounded bg-gray-200" />
           </div>
         </div>
       ))}
@@ -133,7 +137,7 @@ export default function Home() {
       {/* Sections avec lazy loading via Suspense */}
       <Suspense
         fallback={
-          <div className="h-96 bg-ylang-cream flex items-center justify-center">
+          <div className="bg-ylang-cream flex h-96 items-center justify-center">
             <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
           </div>
         }
@@ -143,7 +147,7 @@ export default function Home() {
 
       <Suspense
         fallback={
-          <div className="h-96 bg-white flex items-center justify-center">
+          <div className="flex h-96 items-center justify-center bg-white">
             <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
           </div>
         }
@@ -153,7 +157,7 @@ export default function Home() {
 
       <Suspense
         fallback={
-          <div className="h-96 bg-ylang-cream flex items-center justify-center">
+          <div className="bg-ylang-cream flex h-96 items-center justify-center">
             <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
           </div>
         }

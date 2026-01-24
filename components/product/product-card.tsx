@@ -26,11 +26,11 @@ interface ProductCardProps {
   index?: number; // Pour les animations échelonnées
 }
 
-export function ProductCard({ 
-  product, 
+export function ProductCard({
+  product,
   className,
   priority = false,
-  index = 0
+  index = 0,
 }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
   const [isHovered, setIsHovered] = React.useState(false);
@@ -43,7 +43,11 @@ export function ProductCard({
 
   // Optimisation: Précharger seulement l'image suivante au hover
   React.useEffect(() => {
-    if (isHovered && images.length > 1 && currentImageIndex < images.length - 1) {
+    if (
+      isHovered &&
+      images.length > 1 &&
+      currentImageIndex < images.length - 1
+    ) {
       const nextImage = new window.Image();
       nextImage.src = images[currentImageIndex + 1];
     }
@@ -54,7 +58,7 @@ export function ProductCard({
       className={cn("group", className)}
       style={{
         // Animation CSS pure au lieu de framer-motion
-        animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`
+        animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -80,7 +84,6 @@ export function ProductCard({
             {/* Overlay élégant au hover */}
             <div className="absolute inset-0 bg-linear-to-t from-white/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-
             {/* Thumbnails si plusieurs images */}
             {images.length > 1 && (
               <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -96,7 +99,7 @@ export function ProductCard({
                       "h-2 w-2 rounded-full transition-all duration-300",
                       currentImageIndex === imgIndex
                         ? "w-6 bg-white"
-                        : "bg-white/50 hover:bg-white/80"
+                        : "bg-white/50 hover:bg-white/80",
                     )}
                   />
                 ))}
@@ -111,14 +114,15 @@ export function ProductCard({
             <div
               className="bg-ylang-terracotta rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-white uppercase shadow-lg"
               style={{
-                animation: "scaleRotate 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s both"
+                animation:
+                  "scaleRotate 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s both",
               }}
             >
               Nouveauté
             </div>
           )}
           {product.customizable && (
-            <div className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider uppercase bg-ylang-yellow text-white">
+            <div className="bg-ylang-yellow flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-white uppercase">
               <Wand2 className="h-3 w-3" />
               Sur mesure
             </div>
@@ -139,7 +143,9 @@ export function ProductCard({
               customizable: product.customizable,
             });
           }}
-          aria-label={isWishlisted ? "Retirer des favoris" : "Ajouter aux favoris"}
+          aria-label={
+            isWishlisted ? "Retirer des favoris" : "Ajouter aux favoris"
+          }
           className="group/heart absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur-sm transition-transform duration-300 hover:scale-110"
         >
           <Heart
@@ -147,13 +153,13 @@ export function ProductCard({
               "h-5 w-5 transition-all duration-300",
               isWishlisted
                 ? "fill-ylang-rose text-ylang-rose scale-110"
-                : "text-ylang-charcoal/60 group-hover/heart:text-ylang-rose group-hover/heart:scale-110"
+                : "text-ylang-charcoal/60 group-hover/heart:text-ylang-rose group-hover/heart:scale-110",
             )}
           />
         </button>
 
         {/* Infos produit */}
-        <div className="space-y-1.5 p-3 bg-ylang-beige">
+        <div className="bg-ylang-beige space-y-1.5 p-3">
           <div>
             <p className="font-body text-ylang-charcoal/50 mb-0.5 text-xs tracking-widest uppercase">
               {product.category}
@@ -165,15 +171,23 @@ export function ProductCard({
             </Link>
           </div>
 
-          <div className="flex items-center justify-between gap-2 w-full">
-            <Button variant="secondary" size="sm" className="group" asChild>
-              <Link href={`/produits/${product.id}`}>
-                Découvrir
-              </Link>
+          <div className="flex w-full items-center justify-between gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="group flex-1"
+              asChild
+            >
+              <Link href={`/produits/${product.id}`}>Découvrir</Link>
             </Button>
-            
+
             {product.customizable && (
-              <Button variant="primary" size="sm" className="group" asChild>
+              <Button
+                variant="primary"
+                size="sm"
+                className="group flex-1"
+                asChild
+              >
                 <Link href={`/produits/${product.id}`}>
                   <Wand2 className="mr-1.5 h-3.5 w-3.5" />
                   Personnaliser

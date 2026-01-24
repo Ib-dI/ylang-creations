@@ -55,6 +55,9 @@ export default function ProductDetails({
 
   // Wishlist
   const { isInWishlist, toggleItem } = useWishlistStore();
+  const freeShippingThreshold = useCartStore(
+    (state) => state.freeShippingThreshold,
+  );
   const isWishlisted = isInWishlist(product.id);
 
   // Images du produit (utiliser l'image principale si pas d'images supplémentaires)
@@ -111,7 +114,7 @@ export default function ProductDetails({
 
               {/* Badges */}
               {product.customizable && (
-                <div className="bg-ylang-sage/90 text-ylang-charcoal bg-ylang-yellow font-body absolute top-4 left-4 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
+                <div className="text-ylang-charcoal bg-ylang-yellow font-body absolute top-4 left-4 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
                   <Wand2 className="h-4 w-4" />
                   Sur mesure
                 </div>
@@ -183,9 +186,17 @@ export default function ProductDetails({
                   <p className="text-ylang-charcoal/60 font-body mb-1 text-sm">
                     À partir de
                   </p>
-                  <p className="font-display text-ylang-rose text-4xl font-semibold">
-                    {product.price}€
-                  </p>
+                  <div className="flex items-baseline gap-3">
+                    <p className="font-display text-ylang-rose text-4xl font-semibold">
+                      {product.price}€
+                    </p>
+                    {product.compareAtPrice &&
+                      product.compareAtPrice > product.price && (
+                        <p className="font-body text-ylang-charcoal/40 text-xl font-medium line-through">
+                          {product.compareAtPrice}€
+                        </p>
+                      )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex">
@@ -302,7 +313,7 @@ export default function ProductDetails({
                     Livraison offerte
                   </p>
                   <p className="font-body text-ylang-charcoal/60 text-xs">
-                    Dès 100€ d'achat
+                    Dès {freeShippingThreshold}€ d'achat
                   </p>
                 </div>
               </div>
@@ -332,19 +343,21 @@ export default function ProductDetails({
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="bg-ylang-sage/30 rounded-lg p-2">
-                  <Wand2 className="text-ylang-charcoal h-5 w-5" />
+              {product.customizable && (
+                <div className="flex items-start gap-3">
+                  <div className="bg-ylang-sage/30 rounded-lg p-2">
+                    <Wand2 className="text-ylang-charcoal h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-display text-ylang-charcoal text-sm">
+                      Sur mesure
+                    </p>
+                    <p className="font-body text-ylang-charcoal/60 text-xs">
+                      100% personnalisable
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-display text-ylang-charcoal text-sm">
-                    Sur mesure
-                  </p>
-                  <p className="font-body text-ylang-charcoal/60 text-xs">
-                    100% personnalisable
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -394,30 +407,35 @@ export default function ProductDetails({
         </div>
 
         {/* Produits similaires */}
-        <div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-8 text-center"
-          >
-            <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
-              Inspirations
-            </p>
-            <h2 className="font-display text-ylang-charcoal mb-2 text-3xl lg:text-4xl">
-              Vous aimerez aussi
-            </h2>
-            <p className="font-body text-ylang-charcoal/60">
-              Découvrez nos autres créations personnalisables
-            </p>
-          </motion.div>
+        {similarProducts.length > 0 && (
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-8 text-center"
+            >
+              <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
+                Inspirations
+              </p>
+              <h2 className="font-display text-ylang-charcoal mb-2 text-3xl lg:text-4xl">
+                Vous aimerez aussi
+              </h2>
+              <p className="font-body text-ylang-charcoal/60">
+                Découvrez nos autres créations
+                {similarProducts.some((p) => p.customizable)
+                  ? " personnalisables"
+                  : ""}
+              </p>
+            </motion.div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {similarProducts.map((prod) => (
-              <ProductCard key={prod.id} product={prod} />
-            ))}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {similarProducts.map((prod) => (
+                <ProductCard key={prod.id} product={prod} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Modal Zoom */}

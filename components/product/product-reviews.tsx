@@ -69,7 +69,7 @@ export function ProductReviews({
   };
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-ylang-charcoal mb-2 text-2xl">
@@ -99,7 +99,7 @@ export function ProductReviews({
       </div>
 
       {/* Formulaire d'avis */}
-      <div className="bg-ylang-beige/10 border-ylang-beige rounded-2xl border p-6">
+      <div className="bg-[#fdfdfd] border-ylang-beige rounded-2xl border p-6">
         <h3 className="font-display text-ylang-charcoal mb-4 text-lg">
           Donnez votre avis
         </h3>
@@ -140,7 +140,8 @@ export function ProductReviews({
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Partagez votre expérience avec ce produit..."
-                className="bg-white"
+                className="bg-white focus:outline-none focus:ring-0 focus:border-none focus-visible:ring-ylang-rose
+                "
               />
             </div>
 
@@ -162,7 +163,7 @@ export function ProductReviews({
       </div>
 
       {/* Liste des avis */}
-      <div className="space-y-6">
+      <div className="space-y-6 rounded-2xl bg-[#fdfdfd] p-6">
         {reviews.length === 0 ? (
           <p className="font-body text-ylang-charcoal/60 text-center italic">
             Aucun avis pour le moment. Soyez le premier à donner votre avis !

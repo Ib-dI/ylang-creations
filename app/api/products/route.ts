@@ -73,6 +73,7 @@ export async function GET(request: Request) {
 
       interface ParsedOptions {
         sizes?: string[];
+        customizable?: boolean;
       }
 
       let parsedOptions: ParsedOptions = {};
@@ -96,10 +97,11 @@ export async function GET(request: Request) {
           new Date(p.createdAt) >
           new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // New if < 30 days
         featured: p.isFeatured,
-        customizable: true, // Assuming all Ylang creations are customizable
+        customizable: parsedOptions.customizable ?? true, // Assuming all Ylang creations are customizable
         sizes: parsedOptions.sizes || [],
         defaultSize: parsedOptions.sizes?.[0] || null,
         slug: p.slug,
+        compareAtPrice: p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
       };
     });
 

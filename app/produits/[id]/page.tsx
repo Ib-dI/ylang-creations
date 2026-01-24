@@ -51,6 +51,7 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
     sizes: parsedOptions.sizes || [],
     defaultSize:
       parsedOptions.defaultSize || parsedOptions.sizes?.[0] || undefined,
+    compareAtPrice: p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
   };
 }
 
