@@ -11,6 +11,7 @@ interface ImageUploadProps {
   onChange: (value: (string | File)[]) => void;
   onRemove: (value: string | File) => void;
   disabled?: boolean;
+  showPreview?: boolean;
 }
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -21,6 +22,7 @@ export function ImageUpload({
   onChange,
   onRemove,
   disabled,
+  showPreview = true,
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +67,7 @@ export function ImageUpload({
   return (
     <div className="space-y-4">
       {/* Preview */}
-      {value.length > 0 && (
+      {showPreview && value.length > 0 && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
           {value.map((item, index) => {
             const url =
@@ -103,8 +105,8 @@ export function ImageUpload({
       <div
         {...getRootProps()}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 transition",
-          isDragActive && "border-ylang-rose bg-ylang-rose/5",
+          "border-ylang-rose flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 transition",
+          isDragActive && "bg-ylang-rose/5",
           disabled && "cursor-not-allowed opacity-50",
         )}
       >

@@ -585,7 +585,7 @@ function CollectionsContent() {
         )}
 
         {/* Message si aucun résultat */}
-        {filteredProducts.length === 0 && (
+        {!isLoading && filteredProducts.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

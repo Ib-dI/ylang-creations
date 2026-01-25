@@ -1,5 +1,6 @@
 "use client";
 
+import { ImageReorderGrid } from "@/components/admin/image-reorder-grid";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { TrashBin } from "@gravity-ui/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -34,7 +36,6 @@ import {
   Sparkles,
   Star,
   Tags,
-  Trash2,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -398,7 +399,7 @@ export default function ProductsPage() {
             </p>
           </div>
         </div>
-        <div className="text-ylang-charcoal/40 flex items-center gap-2 text-sm">
+        <div className="text-ylang-charcoal/40 flex items-center gap-2 text-sm *:border *:border-ylang-cream/80">
           <span className="bg-ylang-beige rounded-full px-3 py-1">
             {products.length} produits au total
           </span>
@@ -542,13 +543,13 @@ export default function ProductsPage() {
                     </span>
                   )}
                   {product.isFeatured && (
-                    <span className="flex items-center gap-1 rounded-full bg-yellow-500 border border-yellow-600 px-2 py-1 text-xs font-medium text-white">
+                    <span className="flex items-center gap-1 rounded-full border border-yellow-600 bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
                       <Star className="h-3 w-3" />
                       Vedette
                     </span>
                   )}
                   {product.options?.customizable && (
-                    <span className="flex items-center gap-1 rounded-full bg-purple-500 border border-purple-600 px-2 py-1 text-xs font-medium text-white">
+                    <span className="flex items-center gap-1 rounded-full border border-purple-600 bg-purple-500 px-2 py-1 text-xs font-medium text-white">
                       <Palette className="h-3 w-3" />
                       Personnalisable
                     </span>
@@ -558,12 +559,12 @@ export default function ProductsPage() {
                 {/* Stock badge */}
                 <div className="absolute top-3 right-3">
                   <span
-                    className={`rounded-full px-2 py-1 text-xs font-medium border ${
+                    className={`rounded-full border px-2 py-1 text-xs font-medium ${
                       product.stock === 0
-                        ? "bg-red-100 text-red-600 border-red-600"
+                        ? "border-red-600 bg-red-100 text-red-600"
                         : product.stock < 5
-                          ? "bg-orange-100 text-orange-600 border-orange-600"
-                          : "bg-green-100 text-green-600 border-green-600"
+                          ? "border-orange-600 bg-orange-100 text-orange-600"
+                          : "border-green-600 bg-green-100 text-green-600"
                     }`}
                   >
                     Stock: {product.stock}
@@ -573,38 +574,42 @@ export default function ProductsPage() {
 
               {/* Content */}
               <div className="p-4">
-                <p className="text-ylang-rose mb-1 text-xs font-medium">
-                  {product.category}
-                </p>
-                <h3 className="text-ylang-charcoal mb-2 line-clamp-1 font-semibold">
-                  {product.name}
-                </h3>
-                <div className="mb-4 flex items-center gap-2">
-                  <span className="text-ylang-rose text-lg font-bold">
-                    {product.price.toFixed(2)}€
-                  </span>
-                  {product.compareAtPrice && (
-                    <span className="text-ylang-charcoal/40 text-sm line-through">
-                      {product.compareAtPrice.toFixed(2)}€
+                <div className="flex justify-between">
+                  <div className="">
+                    <p className="text-ylang-rose mb-1 text-xs font-medium">
+                      {product.category}
+                    </p>
+                    <h3 className="text-ylang-charcoal mb-2 line-clamp-1 font-semibold">
+                      {product.name}
+                    </h3>
+                  </div>
+                  <div className="mb-4 flex items-center gap-2">
+                    <span className="text-ylang-rose text-lg font-bold">
+                      {product.price.toFixed(2)}€
                     </span>
-                  )}
+                    {product.compareAtPrice && (
+                      <span className="text-ylang-charcoal/40 text-sm line-through">
+                        {product.compareAtPrice.toFixed(2)}€
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleOpenModal(product)}
-                    className="bg-ylang-beige text-ylang-charcoal flex flex-1 items-center justify-center gap-1 rounded-lg py-2 text-sm transition-colors hover:bg-[#e8dcc8]"
+                    className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-blue-300 bg-blue-100 py-2 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-200"
                   >
                     <Edit className="h-4 w-4" />
                     Modifier
                   </button>
                   <button
                     onClick={() => handleToggleActive(product)}
-                    className={`rounded-lg p-2 transition-colors ${
+                    className={`cursor-pointer rounded-lg border p-2 transition-colors ${
                       product.isActive
-                        ? "bg-green-100 text-green-600 hover:bg-green-200"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        ? "border-green-300 bg-green-100 text-green-600 hover:bg-green-200"
+                        : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                     title={product.isActive ? "Désactiver" : "Activer"}
                   >
@@ -616,10 +621,10 @@ export default function ProductsPage() {
                   </button>
                   <button
                     onClick={() => handleToggleFeatured(product)}
-                    className={`rounded-lg p-2 transition-colors ${
+                    className={`cursor-pointer rounded-lg border p-2 transition-colors ${
                       product.isFeatured
-                        ? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        ? "border-yellow-300 bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
+                        : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                     title={
                       product.isFeatured
@@ -631,10 +636,10 @@ export default function ProductsPage() {
                   </button>
                   <button
                     onClick={() => handleDelete(product.id)}
-                    className="rounded-lg bg-red-100 p-2 text-red-600 transition-colors hover:bg-red-200"
+                    className="cursor-pointer rounded-lg border border-red-300 bg-red-100 p-2 text-red-500 transition-colors hover:bg-red-200"
                     title="Supprimer"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <TrashBin strokeWidth="0.5" className="h-4 w-4" />
                   </button>
                 </div>
               </div>
@@ -748,17 +753,17 @@ export default function ProductsPage() {
                 <div className="flex items-center justify-end gap-2">
                   <button
                     onClick={() => handleOpenModal(product)}
-                    className="hover:bg-ylang-beige text-ylang-charcoal rounded-lg bg-gray-50 p-2 transition-colors"
+                    className="cursor-pointer rounded-lg border border-blue-300 bg-blue-100 p-2 text-blue-500 transition-colors hover:bg-blue-200"
                     title="Modifier"
                   >
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleToggleActive(product)}
-                    className={`rounded-lg p-2 transition-colors ${
+                    className={`cursor-pointer rounded-lg border p-2 transition-colors ${
                       product.isActive
-                        ? "bg-green-50 text-green-600 hover:bg-green-100"
-                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                        ? "border-green-300 bg-green-50 text-green-600 hover:bg-green-100"
+                        : "border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100"
                     }`}
                     title={product.isActive ? "Désactiver" : "Activer"}
                   >
@@ -770,10 +775,10 @@ export default function ProductsPage() {
                   </button>
                   <button
                     onClick={() => handleToggleFeatured(product)}
-                    className={`rounded-lg p-2 transition-colors ${
+                    className={`cursor-pointer rounded-lg border p-2 transition-colors ${
                       product.isFeatured
-                        ? "bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
-                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                        ? "border-yellow-300 bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
+                        : "border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100"
                     }`}
                     title={
                       product.isFeatured
@@ -785,10 +790,10 @@ export default function ProductsPage() {
                   </button>
                   <button
                     onClick={() => handleDelete(product.id)}
-                    className="rounded-lg bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+                    className="cursor-pointer rounded-lg border border-red-300 bg-red-50 p-2 text-red-500 transition-colors hover:bg-red-100"
                     title="Supprimer"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <TrashBin strokeWidth="2" className="h-4 w-4" />
                   </button>
                 </div>
               </motion.div>
@@ -816,10 +821,10 @@ export default function ProductsPage() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col bg-white shadow-2xl md:w-[800px] lg:w-[900px]"
+              className="bg-ylang-terracotta fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col shadow-2xl md:w-[800px] lg:w-[900px]"
             >
               {/* Modal Header */}
-              <div className="border-ylang-beige/50 from-ylang-cream to-ylang-beige/30 relative overflow-hidden border-b bg-linear-to-r via-white px-8 py-6">
+              <div className="border-ylang-beige/50 bg-white relative overflow-hidden border-b px-8 py-6">
                 {/* Decorative background */}
                 <div className="absolute inset-0 opacity-30">
                   <div className="bg-ylang-rose/20 absolute -top-12 -right-12 h-32 w-32 rounded-full blur-2xl" />
@@ -858,7 +863,7 @@ export default function ProductsPage() {
               </div>
 
               {/* Tabs Navigation */}
-              <div className="border-ylang-beige from-ylang-cream/50 flex gap-1 border-b bg-linear-to-r to-white px-8 py-3">
+              <div className="border-ylang-beige/50 bg-ylang-cream/80 flex gap-1 border-b bg-linear-to-r px-8 py-3">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -866,10 +871,10 @@ export default function ProductsPage() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`relative flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
+                      className={`relative flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all cursor-pointer border border-transparent ${
                         isActive
                           ? "bg-ylang-rose shadow-ylang-rose/25 text-white shadow-md"
-                          : "text-ylang-charcoal/60 hover:text-ylang-charcoal hover:bg-ylang-beige/50"
+                          : "text-ylang-charcoal/70 hover:text-ylang-charcoal hover:bg-ylang-cream/90 hover:border-ylang-cream"
                       }`}
                     >
                       <Icon
@@ -894,7 +899,7 @@ export default function ProductsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-6"
                     >
-                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 rounded-2xl border bg-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-4 flex items-center gap-2 text-lg font-semibold">
                           <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <Info className="text-ylang-rose h-4 w-4" />
@@ -987,7 +992,7 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Pricing */}
-                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 rounded-2xl border bg-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-4 flex items-center gap-2 text-lg font-semibold">
                           <div className="bg-ylang-terracotta/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <Box className="text-ylang-terracotta h-4 w-4" />
@@ -1089,7 +1094,7 @@ export default function ProductsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-6"
                     >
-                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 rounded-2xl border bg-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
                           <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <ImageIcon className="text-ylang-rose h-4 w-4" />
@@ -1101,20 +1106,34 @@ export default function ProductsPage() {
                           l'image principale.
                         </p>
 
-                        <ImageUpload
-                          value={formData.images}
-                          onChange={(urls) =>
-                            setFormData({ ...formData, images: urls })
+                        <ImageReorderGrid
+                          images={formData.images}
+                          onReorder={(newImages) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              images: newImages,
+                            }))
                           }
-                          onRemove={(url) =>
-                            setFormData({
-                              ...formData,
-                              images: formData.images.filter(
-                                (current) => current !== url,
-                              ),
-                            })
+                          onRemove={(img) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              images: prev.images.filter((i) => i !== img),
+                            }))
                           }
-                        />
+                        >
+                          {/* Upload Button */}
+                          <ImageUpload
+                            value={formData.images}
+                            onChange={(urls) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                images: [...prev.images, ...urls],
+                              }))
+                            }
+                            onRemove={() => {}}
+                            showPreview={false}
+                          />
+                        </ImageReorderGrid>
 
                         {formData.images.length > 0 && (
                           <div className="border-ylang-terracotta/20 bg-ylang-cream/50 mt-6 rounded-xl border p-4">
@@ -1145,7 +1164,7 @@ export default function ProductsPage() {
                       className="space-y-6"
                     >
                       {/* Long Description */}
-                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 rounded-2xl border bg-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
                           <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <FileText className="text-ylang-rose h-4 w-4" />
@@ -1171,7 +1190,7 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Features */}
-                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 rounded-2xl border bg-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
                           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100">
                             <Check className="h-4 w-4 text-green-600" />
@@ -1271,7 +1290,7 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Sizes */}
-                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 rounded-2xl border bg-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
                           <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <Layers className="text-ylang-rose h-4 w-4" />
@@ -1446,7 +1465,7 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Tags */}
-                      <div className="border-ylang-terracotta/20 to-ylang-cream/30 rounded-2xl border bg-linear-to-br from-white p-6 shadow-sm">
+                      <div className="border-ylang-terracotta/20 rounded-2xl border bg-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
                           <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
                             <Tags className="text-ylang-rose h-4 w-4" />
@@ -1580,29 +1599,34 @@ export default function ProductsPage() {
               setDeleteConfirmation((prev) => ({ ...prev, isOpen: open }))
             }
           >
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-red-600">
-                  <Trash2 className="h-5 w-5" />
-                  Supprimer le produit ?
-                </DialogTitle>
-                <DialogDescription className="py-2">
+            <DialogContent className="overflow-hidden p-0 sm:max-w-[485px]">
+              <div className="flex flex-col p-4">
+                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-500">
+                  <TrashBin className="h-6 w-6" />
+                </div>
+                <DialogHeader className="mb-2">
+                  <DialogTitle className="text-xl font-semibold text-gray-900">
+                    Supprimer le produit ?
+                  </DialogTitle>
+                </DialogHeader>
+                <DialogDescription className="text-sm text-gray-500">
                   Êtes-vous sûr de vouloir supprimer ce produit ? Cette action
                   est irréversible et supprimera toutes les données associées.
                 </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
+              </div>
+              <DialogFooter className="flex flex-col gap-2 bg-gray-50/50 p-4 sm:flex-row sm:justify-end sm:gap-0">
                 <Button
-                  variant="secondary"
+                  variant="ghost"
                   onClick={() =>
                     setDeleteConfirmation({ isOpen: false, productId: null })
                   }
+                  className="w-full cursor-pointer font-medium hover:bg-gray-100 sm:w-auto"
                 >
                   Annuler
                 </Button>
                 <Button
                   variant="primary"
-                  className="bg-red-600 text-white hover:bg-red-700 hover:shadow-red-200"
+                  className="w-full cursor-pointer bg-red-600 px-2 font-medium text-white shadow-sm hover:bg-red-700 sm:ml-2 sm:w-auto"
                   onClick={confirmDelete}
                 >
                   Supprimer définitivement
