@@ -239,7 +239,9 @@ export default function ProductDetails({
                     </p>
                   </div>
                 </div>
-                <Link href={`/configurateur?product=${product.id}`}>
+                <Link
+                  href={`/configurateur?product=${encodeURIComponent(product.name)}`}
+                >
                   <Button variant="luxury" size="lg" className="w-full">
                     <Wand2 className="mr-2 h-5 w-5" />
                     Personnaliser ce produit

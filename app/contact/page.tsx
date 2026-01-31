@@ -82,7 +82,7 @@ const faqItems = [
   {
     question: "Puis-je personnaliser n'importe quel produit ?",
     answer:
-      "Absolument ! Tous nos produits sont personnalisables. Vous pouvez choisir les tissus, les couleurs, ajouter une broderie avec le prénom de votre enfant, etc.",
+      "Tous produits personnalisables est indiqué sur la page du produit. Vous pouvez choisir les tissus, les couleurs, ajouter une broderie avec le prénom de votre enfant, etc.",
   },
   {
     question: "Livrez-vous hors de la Réunion ?",
@@ -134,7 +134,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-ylang-cream min-h-screen">
+    <div className="bg-ylang-terracotta/30 min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-28">
         {/* Background decorative elements */}
@@ -456,7 +456,7 @@ export default function ContactPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="bg-white py-20 lg:py-28">
+      <section className="bg-ylang-terracotta/20 py-20 lg:py-28">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

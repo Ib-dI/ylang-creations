@@ -51,61 +51,97 @@ const megaMenuCategories = [
     items: [
       {
         name: "Coussin musical",
-        href: "/collections?category=coussin-musical",
-      },
-      { name: "Couverture", href: "/collections?category=couverture" },
-      { name: "Draps de lit bébé", href: "/collections?category=draps-lit" },
-      {
-        name: "Gigoteuse légère 0/3",
-        href: "/collections?category=gigoteuse-legere-0-3",
+        href: "/collections?category=chambre&search=Coussin musical",
       },
       {
-        name: "Gigoteuse légère 3/6",
-        href: "/collections?category=gigoteuse-legere-3-6",
+        name: "Couverture",
+        href: "/collections?category=chambre&search=Couverture",
       },
       {
-        name: "Gigoteuse légère 6/12",
-        href: "/collections?category=gigoteuse-legere-6-12",
-      },
-      {
-        name: "Gigoteuse légère 12/24",
-        href: "/collections?category=gigoteuse-legere-12-24",
-      },
-      {
-        name: "Gigoteuse molletonnée 0/3",
-        href: "/collections?category=gigoteuse-molletonnee-0-3",
-      },
-      {
-        name: "Gigoteuse molletonnée 3/6",
-        href: "/collections?category=gigoteuse-molletonnee-3-6",
-      },
-      {
-        name: "Gigoteuse molletonnée 6/12",
-        href: "/collections?category=gigoteuse-molletonnee-6-12",
-      },
-      {
-        name: "Gigoteuse molletonnée 12/24",
-        href: "/collections?category=gigoteuse-molletonnee-12-24",
+        name: "Draps de lit bébé",
+        href: "/collections?category=chambre&search=Draps de lit",
       },
       {
         name: "Housse matelas à langer",
-        href: "/collections?category=housse-matelas",
+        href: "/collections?category=chambre&search=Housse matelas",
       },
-      { name: "Lange carré blanc", href: "/collections?category=lange-carre" },
-      { name: "Mobile de lit", href: "/collections?category=mobile-lit" },
-      { name: "Tour de lit", href: "/collections?category=tour-de-lit" },
+      {
+        name: "Lange carré blanc",
+        href: "/collections?category=chambre&search=Lange carré",
+      },
+      {
+        name: "Mobile de lit",
+        href: "/collections?category=chambre&search=Mobile de lit",
+      },
+      {
+        name: "Tour de lit",
+        href: "/collections?category=chambre&search=Tour de lit",
+      },
+    ],
+    sections: [
+      {
+        title: "Gigoteuses Légères",
+        items: [
+          {
+            name: "0/3 mois",
+            href: "/collections?category=chambre&search=Gigoteuse légère 0/3",
+          },
+          {
+            name: "3/6 mois",
+            href: "/collections?category=chambre&search=Gigoteuse légère 3/6",
+          },
+          {
+            name: "6/12 mois",
+            href: "/collections?category=chambre&search=Gigoteuse légère 6/12",
+          },
+          {
+            name: "12/24 mois",
+            href: "/collections?category=chambre&search=Gigoteuse légère 12/24",
+          },
+        ],
+      },
+      {
+        title: "Gigoteuses Molletonnées",
+        items: [
+          {
+            name: "0/3 mois",
+            href: "/collections?category=chambre&search=Gigoteuse molletonnée 0/3",
+          },
+          {
+            name: "3/6 mois",
+            href: "/collections?category=chambre&search=Gigoteuse molletonnée 3/6",
+          },
+          {
+            name: "6/12 mois",
+            href: "/collections?category=chambre&search=Gigoteuse molletonnée 6/12",
+          },
+          {
+            name: "12/24 mois",
+            href: "/collections?category=chambre&search=Gigoteuse molletonnée 12/24",
+          },
+        ],
+      },
     ],
   },
   {
     title: "LA TOILETTE",
     href: "/collections?category=toilette",
     items: [
-      { name: "Bavoir", href: "/collections?category=bavoir" },
-      { name: "Cape de bain", href: "/collections?category=cape-de-bain" },
-      { name: "Gant de toilette", href: "/collections?category=gant-toilette" },
+      {
+        name: "Bavoir",
+        href: "/collections?category=toilette&search=Bavoir",
+      },
+      {
+        name: "Cape de bain",
+        href: "/collections?category=toilette&search=Cape de bain",
+      },
+      {
+        name: "Gant de toilette",
+        href: "/collections?category=toilette&search=Gant de toilette",
+      },
       {
         name: "Serviette de toilette",
-        href: "/collections?category=serviette-toilette",
+        href: "/collections?category=toilette&search=Serviette de toilette",
       },
     ],
   },
@@ -113,17 +149,71 @@ const megaMenuCategories = [
     title: "LINGE DE NAISSANCE",
     href: "/collections?category=linge-naissance",
     items: [
-      { name: "Pyjama", href: "/collections?category=pyjama" },
-      { name: "Chaussons", href: "/collections?category=chaussons" },
-      { name: "Pantalon", href: "/collections?category=pantalon" },
+      {
+        name: "Pyjama",
+        href: "/collections?category=linge-naissance&search=Pyjama",
+      },
+      {
+        name: "Chaussons",
+        href: "/collections?category=linge-naissance&search=Chaussons",
+      },
+      {
+        name: "Pantalon",
+        href: "/collections?category=linge-naissance&search=Pantalon",
+      },
       {
         name: "Gilet cache-cœur",
-        href: "/collections?category=gilet-cache-coeur",
+        href: "/collections?category=linge-naissance&search=Gilet cache-cœur",
       },
-      { name: "Bloomer", href: "/collections?category=bloomer" },
+      {
+        name: "Bloomer",
+        href: "/collections?category=linge-naissance&search=Bloomer",
+      },
       {
         name: "Robe chasuble 12 mois",
-        href: "/collections?category=robe-chasuble",
+        href: "/collections?category=linge-naissance&search=Robe chasuble",
+      },
+    ],
+  },
+  {
+    title: "BAGAGERIES/PROMENADE",
+    href: "/collections?category=bagageries",
+    items: [
+      {
+        name: "Valisette",
+        href: "/collections?category=bagageries&search=Valisette",
+      },
+      {
+        name: "Vanity",
+        href: "/collections?category=bagageries&search=Vanity",
+      },
+      {
+        name: "Sac à langer",
+        href: "/collections?category=bagageries&search=Sac à langer",
+      },
+      {
+        name: "Sac à dos maternelle",
+        href: "/collections?category=bagageries&search=Sac à dos maternelle",
+      },
+      {
+        name: "Matelas à langer nomade",
+        href: "/collections?category=bagageries&search=Matelas à langer nomade",
+      },
+      {
+        name: "Protège carnet de santé",
+        href: "/collections?category=bagageries&search=Protège carnet de santé",
+      },
+      {
+        name: "Protège livret de famille",
+        href: "/collections?category=bagageries&search=Protège livret de famille",
+      },
+      {
+        name: "Protège passeport",
+        href: "/collections?category=bagageries&search=Protège passeport",
+      },
+      {
+        name: "Trousse de toilette",
+        href: "/collections?category=bagageries&search=Trousse de toilette",
       },
     ],
   },
@@ -133,45 +223,15 @@ const megaMenuCategories = [
     items: [
       {
         name: "Anneaux de dentition",
-        href: "/collections?category=anneaux-dentition",
+        href: "/collections?category=accessoires&search=Anneaux de dentition",
       },
-      { name: "Attache tétine", href: "/collections?category=attache-tetine" },
+      {
+        name: "Attache tétine",
+        href: "/collections?category=accessoires&search=Attache tétine",
+      },
       {
         name: "Brosse à cheveux",
-        href: "/collections?category=brosse-cheveux",
-      },
-    ],
-  },
-  {
-    title: "BAGAGERIES/PROMENADE",
-    href: "/collections?category=bagageries",
-    items: [
-      { name: "Valisette", href: "/collections?category=valisette" },
-      { name: "Vanity", href: "/collections?category=vanity" },
-      { name: "Sac à langer", href: "/collections?category=sac-a-langer" },
-      {
-        name: "Sac à dos maternelle",
-        href: "/collections?category=sac-dos-maternelle",
-      },
-      {
-        name: "Matelas à langer nomade",
-        href: "/collections?category=matelas-langer-nomade",
-      },
-      {
-        name: "Protège carnet de santé",
-        href: "/collections?category=protege-carnet-sante",
-      },
-      {
-        name: "Protège livret de famille",
-        href: "/collections?category=protege-livret-famille",
-      },
-      {
-        name: "Protège passeport",
-        href: "/collections?category=protege-passeport",
-      },
-      {
-        name: "Trousse de toilette",
-        href: "/collections?category=trousse-toilette",
+        href: "/collections?category=accessoires&search=Brosse à cheveux",
       },
     ],
   },
@@ -180,9 +240,18 @@ const megaMenuCategories = [
     href: "/collections?category=jeux",
     subtitle: "PARTENARIAT EXCLUSIF URBIDOLLS",
     items: [
-      { name: "Poupées", href: "/collections?category=poupees" },
-      { name: "Bébés", href: "/collections?category=bebes" },
-      { name: "Accessoires", href: "/collections?category=accessoires-jeux" },
+      {
+        name: "Poupées",
+        href: "/collections?category=jeux&search=Poupée",
+      },
+      {
+        name: "Bébés",
+        href: "/collections?category=jeux&search=Bébé",
+      },
+      {
+        name: "Accessoires",
+        href: "/collections?category=jeux&search=Accessoire",
+      },
     ],
   },
 ];
@@ -612,41 +681,108 @@ export function Header() {
 
               {/* Grille Catégories */}
               <div className="grow">
-                <h3 className="text-ylang-charcoal/50 font-body mb-6 text-xs font-semibold tracking-widest uppercase">
-                  Nos Univers
-                </h3>
-                <div className="grid grid-cols-5 gap-x-6 gap-y-8">
-                  {megaMenuCategories.map((category) => (
-                    <div key={category.title} className="space-y-4">
-                      <Link
-                        href={category.href}
-                        onClick={closeMegaMenu}
-                        className="group block"
-                      >
-                        <h3 className="text-ylang-rose font-heading text-sm font-bold tracking-wider transition-colors">
-                          {category.title}
-                        </h3>
-                        {category.subtitle && (
-                          <span className="text-ylang-rose mt-1 block text-[10px] font-medium italic">
-                            {category.subtitle}
-                          </span>
+                <div className="grid grid-cols-5 gap-12">
+                  <div className="col-span-4 grid grid-cols-4 gap-x-8 gap-y-10">
+                    {megaMenuCategories.map((category) => (
+                      <div key={category.title} className="space-y-4">
+                        <Link
+                          href={category.href}
+                          onClick={closeMegaMenu}
+                          className="group block"
+                        >
+                          <h3 className="text-ylang-rose font-heading text-sm font-bold tracking-wider transition-colors">
+                            {category.title}
+                          </h3>
+                          {category.subtitle && (
+                            <span className="text-ylang-rose mt-1 block text-[10px] font-medium italic">
+                              {category.subtitle}
+                            </span>
+                          )}
+                        </Link>
+                        <ul className="space-y-2">
+                          {category.items.map((item) => (
+                            <li key={item.name}>
+                              <Link
+                                href={item.href}
+                                onClick={closeMegaMenu}
+                                className="text-ylang-charcoal/70 hover:text-ylang-rose hover:bg-ylang-terracotta/10 font-body block text-xs transition-colors duration-200"
+                              >
+                                {item.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+
+                        {/* @ts-ignore - sections added in data */}
+                        {category.sections && (
+                          <div className="space-y-4 pt-2">
+                            {/* @ts-ignore */}
+                            {category.sections.map((section) => (
+                              <div key={section.title} className="space-y-2">
+                                <h4 className="border-ylang-beige font-body border-b pb-1 text-[9px] font-bold tracking-wider text-gray-400 uppercase">
+                                  {section.title}
+                                </h4>
+                                <ul className="grid grid-cols-2 gap-1">
+                                  {section.items.map((item: any) => (
+                                    <li key={item.name}>
+                                      <Link
+                                        href={item.href}
+                                        onClick={closeMegaMenu}
+                                        className="text-ylang-charcoal/60 hover:text-ylang-rose hover:bg-ylang-beige font-body block rounded-sm px-1 py-0.5 text-[10px] transition-colors"
+                                      >
+                                        {item.name}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
                         )}
-                      </Link>
-                      <ul className="space-y-2">
-                        {category.items.map((item) => (
-                          <li key={item.name}>
-                            <Link
-                              href={item.href}
-                              onClick={closeMegaMenu}
-                              className="text-ylang-charcoal/70 hover:text-ylang-rose hover:bg-ylang-terracotta/10 font-body block text-xs transition-colors duration-200"
-                            >
-                              {item.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Produit Vedette - Touche Premium */}
+                  {/* <div className="border-ylang-beige/50 col-span-1 border-l pl-8">
+                    <div className="group relative overflow-hidden rounded-2xl">
+                      <div className="aspect-3/4overflow-hidden">
+                        <Image
+                          src="/images/products/gigoteuse.jpg"
+                          alt="Nouveauté ylang"
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="from-ylang-charcoal/60 absolute inset-0 bg-linear-to-t to-transparent" />
+                      </div>
+                      <div className="absolute right-4 bottom-4 left-4 text-white">
+                        <p className="font-body text-[10px] font-medium tracking-widest uppercase">
+                          Must-have
+                        </p>
+                        <h4 className="font-heading mt-1 text-lg leading-tight font-bold">
+                          Gigoteuse <br />
+                          sur-mesure
+                        </h4>
+                        <Link
+                          href="/configurateur"
+                          onClick={closeMegaMenu}
+                          className="hover:text-ylang-rose mt-3 inline-flex items-center text-xs font-semibold underline underline-offset-4 transition-colors"
+                        >
+                          Configurer la mienne
+                        </Link>
+                      </div>
                     </div>
-                  ))}
+
+                    <div className="bg-ylang-beige/50 mt-8 rounded-xl p-4">
+                      <h4 className="text-ylang-charcoal font-heading text-xs font-bold tracking-wider uppercase">
+                        Atelier Ylang
+                      </h4>
+                      <p className="text-ylang-charcoal/60 mt-1 text-[10px] leading-relaxed">
+                        Chaque pièce est imaginée et confectionnée avec amour à
+                        Lyon.
+                      </p>
+                    </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -762,6 +898,32 @@ export function Header() {
                             {item.name}
                           </Link>
                         ))}
+
+                        {/* @ts-ignore */}
+                        {category.sections &&
+                          /* @ts-ignore */
+                          category.sections.map((section) => (
+                            <div
+                              key={section.title}
+                              className="mt-4 first:mt-2"
+                            >
+                              <h5 className="text-ylang-charcoal/40 font-body px-2 pb-1 text-[10px] font-bold tracking-wider uppercase">
+                                {section.title}
+                              </h5>
+                              <div className="grid grid-cols-2 gap-1">
+                                {section.items.map((item: any) => (
+                                  <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    onClick={closeMegaMenu}
+                                    className="text-ylang-charcoal/70 hover:text-ylang-rose font-body rounded-md px-2 py-2 text-xs transition-colors hover:bg-white"
+                                  >
+                                    {item.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )}

@@ -85,6 +85,7 @@ function CollectionsContent() {
     () => ({
       // La Chambre
       chambre: "La chambre",
+      "la-chambre": "La chambre",
       "coussin-musical": "La chambre",
       couverture: "La chambre",
       "draps-lit": "La chambre",
@@ -103,6 +104,7 @@ function CollectionsContent() {
 
       // La Toilette
       toilette: "La Toilette",
+      "la-toilette": "La Toilette",
       bavoir: "La Toilette",
       "cape-de-bain": "La Toilette",
       "gant-toilette": "La Toilette",
@@ -110,6 +112,7 @@ function CollectionsContent() {
 
       // Linge de naissance
       "linge-naissance": "Linge de naissance",
+      "linge-de-naissance": "Linge de naissance",
       pyjama: "Linge de naissance",
       chaussons: "Linge de naissance",
       pantalon: "Linge de naissance",
@@ -125,6 +128,8 @@ function CollectionsContent() {
 
       // Bagageries
       bagageries: "Bagageries/promenade",
+      "bagageries-promenade": "Bagageries/promenade",
+      bagageriespromenade: "Bagageries/promenade",
       valisette: "Bagageries/promenade",
       vanity: "Bagageries/promenade",
       "sac-a-langer": "Bagageries/promenade",
@@ -137,6 +142,7 @@ function CollectionsContent() {
 
       // Jeux
       jeux: "Les jeux",
+      "les-jeux": "Les jeux",
       poupees: "Les jeux",
       bebes: "Les jeux",
       "accessoires-jeux": "Les jeux",
@@ -148,6 +154,12 @@ function CollectionsContent() {
   useEffect(() => {
     const searchQuery = searchParams.get("search");
     const categoryQuery = searchParams.get("category");
+    const filterQuery = searchParams.get("filter");
+    const customizableQuery = searchParams.get("customizable");
+
+    // 0. Gérer les flags (Nouveautés, Personnalisables)
+    setOnlyNew(filterQuery === "new");
+    setOnlyCustomizable(customizableQuery === "true");
 
     // Helper pour formater le nom de la catégorie (ex: "coussin-musical" -> "Coussin musical")
     const formatCategoryName = (slug: string) => {
@@ -164,38 +176,49 @@ function CollectionsContent() {
         .join(" ");
     };
 
-    if (searchQuery) {
-      setSearchTerm(searchQuery);
-    } else if (categoryQuery) {
-      // Trouver la catégorie parente correspondante
+    // 1. Gérer la catégorie parente
+    if (categoryQuery) {
       const mappedCategory = categoryMapping[categoryQuery];
-
       if (mappedCategory) {
         setSelectedCategory(mappedCategory);
-
-        // Si c'est une sous-catégorie (pas la catégorie principale elle-même), on met le nom dans la recherche
-        const isMainCategorySlug = [
-          "chambre",
-          "toilette",
-          "linge-naissance",
-          "accessoires",
-          "bagageries",
-          "jeux",
-        ].includes(categoryQuery);
-
-        if (!isMainCategorySlug) {
-          setSearchTerm(formatCategoryName(categoryQuery));
-        } else {
-          setSearchTerm("");
-        }
       } else {
-        // Fallback: essai de correspondance directe
         const foundCategory = categories.find(
           (cat) => slugify(cat) === slugify(categoryQuery),
         );
-        setSelectedCategory(foundCategory || categoryQuery);
+        setSelectedCategory(foundCategory || "Tout");
+      }
+    } else {
+      setSelectedCategory("Tout");
+    }
+
+    // 2. Gérer le terme de recherche
+    // IMPORTANT: On vérifie !== null pour accepter la chaîne vide "" (recherche réinitialisée)
+    if (searchQuery !== null) {
+      setSearchTerm(searchQuery);
+    } else if (categoryQuery) {
+      // Si on a une catégorie mais pas de recherche, on regarde si c'est une sous-catégorie
+      const isMainCategorySlug = [
+        "chambre",
+        "la-chambre",
+        "toilette",
+        "la-toilette",
+        "linge-naissance",
+        "linge-de-naissance",
+        "accessoires",
+        "bagageries",
+        "bagageries-promenade",
+        "bagageriespromenade",
+        "jeux",
+        "les-jeux",
+      ].includes(categoryQuery);
+
+      if (!isMainCategorySlug) {
+        setSearchTerm(formatCategoryName(categoryQuery));
+      } else {
         setSearchTerm("");
       }
+    } else {
+      setSearchTerm("");
     }
   }, [searchParams, categoryMapping]);
 
@@ -206,7 +229,9 @@ function CollectionsContent() {
     if (term) {
       params.set("search", term);
     } else {
-      params.delete("search");
+      // On garde le paramètre vide pour signaler une volonté de recherche vide
+      // et éviter que l'effet category n'écrase ce choix
+      params.set("search", "");
     }
     router.replace(`/collections?${params.toString()}`, { scroll: false });
   };
@@ -228,15 +253,22 @@ function CollectionsContent() {
 
     if (category === "Tout") {
       params.delete("category");
-      // Si on réinitialise la catégorie, on garde la recherche si elle est pertinente,
-      // ou on peut décider de nettoyer aussi si c'était une recherche liée à une sous-catégorie.
-      // Pour l'instant, simplifions en gardant la recherche si elle existe.
     } else {
-      // Pour les catégories principales, on utilise le slug simple
       const slug = slugify(category);
       params.set("category", slug);
     }
 
+    router.replace(`/collections?${params.toString()}`, { scroll: false });
+  };
+
+  // Mettre à jour les flags dans l'URL
+  const updateFlag = (key: string, value: boolean) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set(key, key === "filter" ? "new" : "true");
+    } else {
+      params.delete(key);
+    }
     router.replace(`/collections?${params.toString()}`, { scroll: false });
   };
 
@@ -518,7 +550,9 @@ function CollectionsContent() {
                         <input
                           type="checkbox"
                           checked={onlyNew}
-                          onChange={(e) => setOnlyNew(e.target.checked)}
+                          onChange={(e) =>
+                            updateFlag("filter", e.target.checked)
+                          }
                           className="accent-ylang-rose focus:ring-ylang-rose h-5 w-5 rounded border-gray-300 transition-all"
                         />
                         <span className="font-body text-ylang-charcoal text-sm font-medium">
@@ -530,7 +564,7 @@ function CollectionsContent() {
                           type="checkbox"
                           checked={onlyCustomizable}
                           onChange={(e) =>
-                            setOnlyCustomizable(e.target.checked)
+                            updateFlag("customizable", e.target.checked)
                           }
                           className="accent-ylang-rose focus:ring-ylang-rose h-5 w-5 rounded border-gray-300 transition-all"
                         />
