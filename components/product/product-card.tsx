@@ -188,7 +188,9 @@ export function ProductCard({
                 className="group flex-1"
                 asChild
               >
-                <Link href={`/produits/${product.id}`}>
+                <Link
+                  href={`/configurateur?product=${encodeURIComponent(product.name)}`}
+                >
                   <Wand2 className="mr-1.5 h-3.5 w-3.5" />
                   Personnaliser
                 </Link>

@@ -19,7 +19,8 @@ import {
   Sparkles,
   Type,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 interface EmbroideryZone {
   x: number; // Position X en pourcentage (0-100)
@@ -27,7 +28,7 @@ interface EmbroideryZone {
   maxWidth: number; // Largeur max en pourcentage (0-1)
   rotation: number; // Rotation en degrés
   fontSize: number; // Taille de police
-  alignment: 'center' | 'left' | 'right'; // Alignement du texte
+  alignment: "center" | "left" | "right"; // Alignement du texte
 }
 
 interface Product {
@@ -70,93 +71,93 @@ const ProductConfigurator = () => {
   // --- Data Definitions ---
 
   const products: Product[] = [
-  {
-    id: "bib",
-    name: "Bavoir",
-    description: "Bavoir naissance ergonomique",
-    basePrice: 13,
-    icon: "👶",
-    baseImage: "/images/produits/bavoir-base.png",
-    maskImage: "/images/produits/bavoir-mask.png",
-    embroideryZone: {
-      x: 0.55,           // Centre horizontal
-      y: 0.55,           // Légèrement en bas du centre
-      maxWidth: 0.5,
-      rotation: -35,
-      fontSize: 80,
-      alignment: 'center'
-    }
-  },
-  {
-    id: "pacifier",
-    name: "Attache-tétine",
-    description: "Attache-tétine sécurisée en tissu",
-    basePrice: 18,
-    icon: "🍼",
-    baseImage: "/images/produits/attache-tetine-base.png",
-    maskImage: "/images/produits/attache-tetine-mask.png",
-    embroideryZone: {
-      x: 0.47,
-      y: 0.48,
-      maxWidth: 0.6,
-      rotation: 59,
-      fontSize: 70,
-      alignment: 'center'
-    }
-  },
-  {
-    id: "bag",
-    name: "Sac",
-    description: "Sac écolier",
-    basePrice: 25,
-    icon: "👜",
-    baseImage: "/images/produits/sac-base.png",
-    maskImage: "/images/produits/sac-mask.png",
-    embroideryZone: {
-      x: 0.48,
-      y: 0.35,
-      maxWidth: 0.5,
-      rotation: 0,
-      fontSize: 65,
-      alignment: 'center'
-    }
-  },
-  {
-    id: "bag2",
-    name: "Sac à langer",
-    description: "Grand sac voyage",
-    basePrice: 40,
-    icon: "👜",
-    baseImage: "/images/produits/sac-a-langer-base.png",
-    maskImage: "/images/produits/sac-a-langer-mask.png",
-    embroideryZone: {
-      x: 0.7,
-      y: 0.4,
-      maxWidth: 0.5,
-      rotation: -11,
-      fontSize: 98,
-      alignment: 'center'
-    }
-  },
-  {
-    id: "gigo",
-    name: "Gigoteuse",
-    description: "Gigoteuse raffinée",
-    basePrice: 19,
-    icon: "👗",
-    baseImage: "/images/produits/gigoteuse-base.png",
-    maskImage: "/images/produits/gigoteuse-mask.png",
-    colorMaskImage: "/images/produits/gigoteuse-color-mask.png",
-    embroideryZone: {
-      x: 0.6,
-      y: 0.33,
-      maxWidth: 0.5,
-      rotation: 25,
-      fontSize: 52,
-      alignment: 'center'
-    }
-  }
-];
+    {
+      id: "bib",
+      name: "Bavoir",
+      description: "Bavoir naissance ergonomique",
+      basePrice: 13,
+      icon: "👶",
+      baseImage: "/images/produits/bavoir-base.png",
+      maskImage: "/images/produits/bavoir-mask.png",
+      embroideryZone: {
+        x: 0.55, // Centre horizontal
+        y: 0.55, // Légèrement en bas du centre
+        maxWidth: 0.5,
+        rotation: -35,
+        fontSize: 80,
+        alignment: "center",
+      },
+    },
+    {
+      id: "pacifier",
+      name: "Attache-tétine",
+      description: "Attache-tétine sécurisée en tissu",
+      basePrice: 18,
+      icon: "🍼",
+      baseImage: "/images/produits/attache-tetine-base.png",
+      maskImage: "/images/produits/attache-tetine-mask.png",
+      embroideryZone: {
+        x: 0.47,
+        y: 0.48,
+        maxWidth: 0.6,
+        rotation: 59,
+        fontSize: 70,
+        alignment: "center",
+      },
+    },
+    {
+      id: "bag",
+      name: "Sac",
+      description: "Sac écolier",
+      basePrice: 25,
+      icon: "👜",
+      baseImage: "/images/produits/sac-base.png",
+      maskImage: "/images/produits/sac-mask.png",
+      embroideryZone: {
+        x: 0.48,
+        y: 0.35,
+        maxWidth: 0.5,
+        rotation: 0,
+        fontSize: 65,
+        alignment: "center",
+      },
+    },
+    {
+      id: "bag2",
+      name: "Sac à langer",
+      description: "Grand sac voyage",
+      basePrice: 40,
+      icon: "👜",
+      baseImage: "/images/produits/sac-a-langer-base.png",
+      maskImage: "/images/produits/sac-a-langer-mask.png",
+      embroideryZone: {
+        x: 0.7,
+        y: 0.4,
+        maxWidth: 0.5,
+        rotation: -11,
+        fontSize: 98,
+        alignment: "center",
+      },
+    },
+    {
+      id: "gigo",
+      name: "Gigoteuse",
+      description: "Gigoteuse raffinée",
+      basePrice: 19,
+      icon: "👗",
+      baseImage: "/images/produits/gigoteuse-base.png",
+      maskImage: "/images/produits/gigoteuse-mask.png",
+      colorMaskImage: "/images/produits/gigoteuse-color-mask.png",
+      embroideryZone: {
+        x: 0.6,
+        y: 0.33,
+        maxWidth: 0.5,
+        rotation: 25,
+        fontSize: 52,
+        alignment: "center",
+      },
+    },
+  ];
 
   // Dynamically populated from previous step findings + prices added
   const fabrics: Fabric[] = [
@@ -374,9 +375,30 @@ const ProductConfigurator = () => {
   // Cart store
   const { addItem, openCart } = useCartStore();
 
+  // Search params for initial product selection
+  const searchParams = useSearchParams();
+  const initialProductId = searchParams.get("product");
+
   // Canvas Refs
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageCache = useRef<Record<string, HTMLImageElement>>({});
+
+  // Effect to handle initial product selection from URL
+  useEffect(() => {
+    if (initialProductId) {
+      const product = products.find(
+        (p) =>
+          p.id.toLowerCase() === initialProductId.toLowerCase() ||
+          p.name.toLowerCase().includes(initialProductId.toLowerCase()),
+      );
+      if (product) {
+        setConfiguration((prev) => ({
+          ...prev,
+          product,
+        }));
+      }
+    }
+  }, [initialProductId]);
 
   // --- Logic ---
 
@@ -719,7 +741,7 @@ const ProductConfigurator = () => {
         // ÉTAPE 4: Ajouter un léger overlay pour plus de profondeur (optionnel)
         if (configuration.embroidery && configuration.product.embroideryZone) {
           const zone = configuration.product.embroideryZone;
-          
+
           ctx.save();
 
           const embX = canvas.width * zone.x;
@@ -768,11 +790,11 @@ const ProductConfigurator = () => {
             textWidth / 2,
             fontSize / 2,
           );
-          
+
           const r = parseInt(configuration.embroideryColor.slice(1, 3), 16);
           const g = parseInt(configuration.embroideryColor.slice(3, 5), 16);
           const b = parseInt(configuration.embroideryColor.slice(5, 7), 16);
-          
+
           const lighterColor = `rgb(${Math.min(255, r + 40)}, ${Math.min(255, g + 40)}, ${Math.min(255, b + 40)})`;
           const normalColor = configuration.embroideryColor;
           const darkerColor = `rgb(${Math.max(0, r - 30)}, ${Math.max(0, g - 30)}, ${Math.max(0, b - 30)})`;
@@ -797,7 +819,7 @@ const ProductConfigurator = () => {
           ctx.globalAlpha = 0.15;
           ctx.shadowColor = "rgba(0, 0, 0, 0)";
           ctx.shadowBlur = 0;
-          
+
           const metrics = ctx.measureText(configuration.embroidery);
           const textHeight = fontSize;
           const stepX = 3;
@@ -805,12 +827,7 @@ const ProductConfigurator = () => {
 
           for (let x = -metrics.width / 2; x < metrics.width / 2; x += stepX) {
             for (let y = -textHeight / 2; y < textHeight / 2; y += stepY) {
-              const imgData = ctx.getImageData(
-                embX + x, 
-                embY + y, 
-                1, 
-                1
-              );
+              const imgData = ctx.getImageData(embX + x, embY + y, 1, 1);
               if (imgData.data[3] > 100) {
                 ctx.fillStyle = darkerColor;
                 ctx.fillRect(x, y, 1, 1);
@@ -880,8 +897,10 @@ const ProductConfigurator = () => {
           {/* Info produit */}
           {configuration.product && configuration.fabric && (
             <div className="absolute top-6 left-6 rounded-2xl bg-white/95 px-5 py-3 shadow-lg backdrop-blur-md">
-              <p className="mb-1 text-xs text-ylang-charcoal/60">Votre création</p>
-              <p className="text-sm font-bold text-ylang-charcoal">
+              <p className="text-ylang-charcoal/60 mb-1 text-xs">
+                Votre création
+              </p>
+              <p className="text-ylang-charcoal text-sm font-bold">
                 {configuration.product.name}
               </p>
               <p className="text-ylang-rose text-xs font-medium">
@@ -892,7 +911,7 @@ const ProductConfigurator = () => {
 
           {/* Prix en mobile */}
           <div className="absolute top-6 right-6 rounded-2xl bg-white/95 px-5 py-3 shadow-lg backdrop-blur-md lg:hidden">
-            <p className="text-xs text-ylang-charcoal/60">Total</p>
+            <p className="text-ylang-charcoal/60 text-xs">Total</p>
             <p className="text-ylang-rose text-2xl font-bold">
               {totalPrice()}€
             </p>
@@ -906,10 +925,10 @@ const ProductConfigurator = () => {
             <div className="mb-8">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex flex-col">
-                  <span className="mb-0.5 text-[10px] font-black tracking-widest text-ylang-charcoal/30 uppercase">
+                  <span className="text-ylang-charcoal/30 mb-0.5 text-[10px] font-black tracking-widest uppercase">
                     Étape {currentTabIndex + 1} / {tabs.length}
                   </span>
-                  <h3 className="text-sm font-bold text-ylang-charcoal">
+                  <h3 className="text-ylang-charcoal text-sm font-bold">
                     {tabs[currentTabIndex].label}
                   </h3>
                 </div>
@@ -930,12 +949,14 @@ const ProductConfigurator = () => {
             </div>
 
             {/* Tabs navigation */}
-            <div className="scrollbar-hide -mx-4 mb-8  flex gap-2 overflow-x-auto px-4 py-2">
+            <div className="scrollbar-hide -mx-4 mb-8 flex gap-2 overflow-x-auto px-4 py-2">
               {tabs.map((tab, index) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
                 const isPast = index < currentTabIndex;
-                const isLocked = index > currentTabIndex + 1 || (index === currentTabIndex + 1 && !canGoNext);
+                const isLocked =
+                  index > currentTabIndex + 1 ||
+                  (index === currentTabIndex + 1 && !canGoNext);
 
                 return (
                   <button
@@ -947,19 +968,21 @@ const ProductConfigurator = () => {
                     }}
                     className={`group relative flex shrink-0 items-center gap-2.5 rounded-2xl px-5 py-3 text-sm font-bold transition-all duration-500 ${
                       isActive
-                        ? "from-ylang-rose to-ylang-terracotta bg-linear-to-r text-white shadow-[0_5px_5px_-5px_rgba(232,180,184,0.5)] scale-105"
+                        ? "from-ylang-rose to-ylang-terracotta scale-105 bg-linear-to-r text-white shadow-[0_5px_5px_-5px_rgba(232,180,184,0.5)]"
                         : isPast
-                        ? "border-ylang-rose/20 bg-ylang-rose/5 text-ylang-rose hover:bg-ylang-rose/10"
-                        : isLocked
-                        ? "border-[#f5f1e8] bg-white text-ylang-charcoal/20 cursor-not-allowed"
-                        : "border-[#f5f1e8] bg-white text-ylang-charcoal/60 hover:border-ylang-rose/30 hover:text-ylang-charcoal"
+                          ? "border-ylang-rose/20 bg-ylang-rose/5 text-ylang-rose hover:bg-ylang-rose/10"
+                          : isLocked
+                            ? "text-ylang-charcoal/20 cursor-not-allowed border-[#f5f1e8] bg-white"
+                            : "text-ylang-charcoal/60 hover:border-ylang-rose/30 hover:text-ylang-charcoal border-[#f5f1e8] bg-white"
                     } border-2`}
                   >
-                    <Icon className={`h-4 w-4 transition-transform duration-500 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                    <Icon
+                      className={`h-4 w-4 transition-transform duration-500 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
+                    />
                     <span>{tab.label}</span>
                     {isPast && (
                       <div className="bg-ylang-rose absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full shadow-sm">
-                        <Check className="h-2.5 w-2.5 text-white  stroke-[3px]" />
+                        <Check className="h-2.5 w-2.5 stroke-[3px] text-white" />
                       </div>
                     )}
                   </button>
@@ -973,10 +996,10 @@ const ProductConfigurator = () => {
               {activeTab === "product" && (
                 <>
                   <div>
-                    <h2 className="mb-2 text-2xl font-bold text-ylang-charcoal">
+                    <h2 className="text-ylang-charcoal mb-2 text-2xl font-bold">
                       Choisissez votre produit
                     </h2>
-                    <p className="text-sm text-ylang-charcoal/60">
+                    <p className="text-ylang-charcoal/60 text-sm">
                       Sélectionnez le produit à personnaliser
                     </p>
                   </div>
@@ -998,10 +1021,10 @@ const ProductConfigurator = () => {
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h3 className="mb-1 text-lg font-bold text-ylang-charcoal">
+                              <h3 className="text-ylang-charcoal mb-1 text-lg font-bold">
                                 {product.name}
                               </h3>
-                              <p className="line-clamp-2 text-sm font-medium text-ylang-charcoal/60">
+                              <p className="text-ylang-charcoal/60 line-clamp-2 text-sm font-medium">
                                 {product.description}
                               </p>
                             </div>
@@ -1012,7 +1035,7 @@ const ProductConfigurator = () => {
 
                           <div className="mt-6 flex items-center justify-between">
                             <div className="flex flex-col">
-                              <span className="text-[10px] font-bold tracking-wider text-ylang-charcoal/40 uppercase">
+                              <span className="text-ylang-charcoal/40 text-[10px] font-bold tracking-wider uppercase">
                                 À partir de
                               </span>
                               <p className="text-ylang-rose text-2xl font-black">
@@ -1044,11 +1067,11 @@ const ProductConfigurator = () => {
                     <div className="mt-6 rounded-2xl border-2 border-dashed border-[#e8dcc8] bg-[#faf9f6] p-4">
                       <div className="mb-3 flex items-center gap-2">
                         <Palette className="text-ylang-rose h-5 w-5" />
-                        <h3 className="text-lg font-bold text-ylang-charcoal">
+                        <h3 className="text-ylang-charcoal text-lg font-bold">
                           Personnalisez la couleur
                         </h3>
                       </div>
-                      <p className="mb-4 text-sm text-ylang-charcoal/60">
+                      <p className="text-ylang-charcoal/60 mb-4 text-sm">
                         Ce produit dispose d'éléments personnalisables en
                         couleur
                       </p>
@@ -1089,7 +1112,7 @@ const ProductConfigurator = () => {
                               backgroundColor: configuration.selectedColor,
                             }}
                           />
-                          <span className="text-sm font-medium text-ylang-charcoal/70">
+                          <span className="text-ylang-charcoal/70 text-sm font-medium">
                             {productColors.find(
                               (c) => c.hex === configuration.selectedColor,
                             )?.name || "Couleur sélectionnée"}
@@ -1116,10 +1139,10 @@ const ProductConfigurator = () => {
               {activeTab === "fabric" && (
                 <>
                   <div className="mb-6">
-                    <h2 className="mb-2 text-3xl font-bold text-ylang-charcoal">
+                    <h2 className="text-ylang-charcoal mb-2 text-3xl font-bold">
                       Choisissez votre tissu
                     </h2>
-                    <p className="text-base text-ylang-charcoal/70">
+                    <p className="text-ylang-charcoal/70 text-base">
                       Visible en temps réel sur le modèle • Collection premium
                     </p>
                   </div>
@@ -1130,10 +1153,10 @@ const ProductConfigurator = () => {
                     <div className="rounded-2xl bg-linear-to-br from-[#faf9f6] to-white p-6 shadow-sm">
                       <div className="mb-6 flex items-center justify-between">
                         <div>
-                          <h3 className="text-xl font-bold text-ylang-charcoal">
+                          <h3 className="text-ylang-charcoal text-xl font-bold">
                             Cotons Unis
                           </h3>
-                          <p className="text-sm font-medium text-ylang-charcoal/60">
+                          <p className="text-ylang-charcoal/60 text-sm font-medium">
                             Douceur et respirabilité premium
                           </p>
                         </div>
@@ -1152,10 +1175,10 @@ const ProductConfigurator = () => {
                             >
                               <div className="sticky top-0 z-20 border-b border-[#e8dcc8]/50 bg-white/80 px-8 py-6 backdrop-blur-xl">
                                 <DialogHeader>
-                                  <DialogTitle className="text-3xl font-black text-ylang-charcoal">
+                                  <DialogTitle className="text-ylang-charcoal text-3xl font-black">
                                     Cotons Unis
                                   </DialogTitle>
-                                  <DialogDescription className="text-lg font-medium text-ylang-charcoal/60">
+                                  <DialogDescription className="text-ylang-charcoal/60 text-lg font-medium">
                                     Une sélection de nos plus beaux cotons de
                                     qualité supérieure •{" "}
                                     <span className="text-ylang-rose">
@@ -1201,7 +1224,7 @@ const ProductConfigurator = () => {
                                             }}
                                           />
                                           <div className="p-3 text-center">
-                                            <h4 className="truncate text-xs font-bold text-ylang-charcoal">
+                                            <h4 className="text-ylang-charcoal truncate text-xs font-bold">
                                               {fabric.name}
                                             </h4>
                                           </div>
@@ -1248,7 +1271,7 @@ const ProductConfigurator = () => {
                                   }}
                                 />
                                 <div className="p-2.5 text-center">
-                                  <h4 className="truncate text-[13px] font-bold text-ylang-charcoal">
+                                  <h4 className="text-ylang-charcoal truncate text-[13px] font-bold">
                                     {fabric.name}
                                   </h4>
                                 </div>
@@ -1267,10 +1290,10 @@ const ProductConfigurator = () => {
                     <div className="bg-linaer-to-br rounded-2xl from-[#faf9f6] to-white p-6 shadow-sm">
                       <div className="mb-6 flex items-center justify-between">
                         <div>
-                          <h3 className="text-xl font-bold text-ylang-charcoal">
+                          <h3 className="text-ylang-charcoal text-xl font-bold">
                             Jersey Coton
                           </h3>
-                          <p className="text-sm font-medium text-ylang-charcoal/60">
+                          <p className="text-ylang-charcoal/60 text-sm font-medium">
                             Extensible, doux et confortable
                           </p>
                         </div>
@@ -1289,10 +1312,10 @@ const ProductConfigurator = () => {
                             >
                               <div className="sticky top-0 z-20 border-b border-[#e8dcc8]/50 bg-white/80 px-8 py-6 backdrop-blur-xl">
                                 <DialogHeader>
-                                  <DialogTitle className="text-3xl font-black text-ylang-charcoal">
+                                  <DialogTitle className="text-ylang-charcoal text-3xl font-black">
                                     Jersey Coton
                                   </DialogTitle>
-                                  <DialogDescription className="text-lg font-medium text-ylang-charcoal/60">
+                                  <DialogDescription className="text-ylang-charcoal/60 text-lg font-medium">
                                     Tissus extensibles ultra-doux pour un
                                     confort optimal •{" "}
                                     <span className="text-ylang-rose">
@@ -1338,7 +1361,7 @@ const ProductConfigurator = () => {
                                             }}
                                           />
                                           <div className="p-3 text-center">
-                                            <h4 className="truncate text-xs font-bold text-ylang-charcoal">
+                                            <h4 className="text-ylang-charcoal truncate text-xs font-bold">
                                               {fabric.name}
                                             </h4>
                                           </div>
@@ -1385,7 +1408,7 @@ const ProductConfigurator = () => {
                                   }}
                                 />
                                 <div className="p-2.5 text-center">
-                                  <h4 className="truncate text-[13px] font-bold text-ylang-charcoal">
+                                  <h4 className="text-ylang-charcoal truncate text-[13px] font-bold">
                                     {fabric.name}
                                   </h4>
                                 </div>
@@ -1404,10 +1427,10 @@ const ProductConfigurator = () => {
                     <div className="rounded-2xl bg-linear-to-br from-[#faf9f6] to-white p-6 shadow-sm">
                       <div className="mb-6 flex items-center justify-between">
                         <div>
-                          <h3 className="text-xl font-bold text-ylang-charcoal">
+                          <h3 className="text-ylang-charcoal text-xl font-bold">
                             Toile de Jouy
                           </h3>
-                          <p className="text-sm font-medium text-ylang-charcoal/60">
+                          <p className="text-ylang-charcoal/60 text-sm font-medium">
                             Motifs classiques et élégance intemporelle
                           </p>
                         </div>
@@ -1426,10 +1449,10 @@ const ProductConfigurator = () => {
                             >
                               <div className="sticky top-0 z-20 border-b border-[#e8dcc8]/50 bg-white/80 px-8 py-6 backdrop-blur-xl">
                                 <DialogHeader>
-                                  <DialogTitle className="text-3xl font-black text-ylang-charcoal">
+                                  <DialogTitle className="text-ylang-charcoal text-3xl font-black">
                                     Toile de Jouy
                                   </DialogTitle>
-                                  <DialogDescription className="text-lg font-medium text-ylang-charcoal/60">
+                                  <DialogDescription className="text-ylang-charcoal/60 text-lg font-medium">
                                     L'élégance à la française pour vos créations
                                     personnalisées •{" "}
                                     <span className="text-ylang-rose">
@@ -1475,7 +1498,7 @@ const ProductConfigurator = () => {
                                             }}
                                           />
                                           <div className="p-3 text-center">
-                                            <h4 className="truncate text-xs font-bold text-ylang-charcoal">
+                                            <h4 className="text-ylang-charcoal truncate text-xs font-bold">
                                               {fabric.name}
                                             </h4>
                                           </div>
@@ -1522,7 +1545,7 @@ const ProductConfigurator = () => {
                                   }}
                                 />
                                 <div className="p-2.5 text-center">
-                                  <h4 className="truncate text-[13px] font-bold text-ylang-charcoal">
+                                  <h4 className="text-ylang-charcoal truncate text-[13px] font-bold">
                                     {fabric.name}
                                   </h4>
                                 </div>
@@ -1541,10 +1564,10 @@ const ProductConfigurator = () => {
                     <div className="rounded-2xl bg-linear-to-br from-[#faf9f6] to-white p-6 shadow-sm">
                       <div className="mb-6 flex items-center justify-between">
                         <div>
-                          <h3 className="text-xl font-bold text-ylang-charcoal">
+                          <h3 className="text-ylang-charcoal text-xl font-bold">
                             Vichy
                           </h3>
-                          <p className="text-sm font-medium text-ylang-charcoal/60">
+                          <p className="text-ylang-charcoal/60 text-sm font-medium">
                             Carreaux iconiques et charme rétro
                           </p>
                         </div>
@@ -1563,10 +1586,10 @@ const ProductConfigurator = () => {
                             >
                               <div className="sticky top-0 z-20 border-b border-[#e8dcc8]/50 bg-white/80 px-8 py-6 backdrop-blur-xl">
                                 <DialogHeader>
-                                  <DialogTitle className="text-3xl font-black text-ylang-charcoal">
+                                  <DialogTitle className="text-ylang-charcoal text-3xl font-black">
                                     Vichy
                                   </DialogTitle>
-                                  <DialogDescription className="text-lg font-medium text-ylang-charcoal/60">
+                                  <DialogDescription className="text-ylang-charcoal/60 text-lg font-medium">
                                     Le style Vichy pour une touche de poésie et
                                     de tradition •{" "}
                                     <span className="text-ylang-rose">
@@ -1612,7 +1635,7 @@ const ProductConfigurator = () => {
                                             }}
                                           />
                                           <div className="p-3 text-center">
-                                            <h4 className="truncate text-xs font-bold text-ylang-charcoal">
+                                            <h4 className="text-ylang-charcoal truncate text-xs font-bold">
                                               {fabric.name}
                                             </h4>
                                           </div>
@@ -1659,7 +1682,7 @@ const ProductConfigurator = () => {
                                   }}
                                 />
                                 <div className="p-2.5 text-center">
-                                  <h4 className="truncate text-[13px] font-bold text-ylang-charcoal">
+                                  <h4 className="text-ylang-charcoal truncate text-[13px] font-bold">
                                     {fabric.name}
                                   </h4>
                                 </div>
@@ -1681,16 +1704,16 @@ const ProductConfigurator = () => {
               {activeTab === "embroidery" && (
                 <>
                   <div>
-                    <h2 className="mb-2 text-2xl font-bold text-ylang-charcoal">
+                    <h2 className="text-ylang-charcoal mb-2 text-2xl font-bold">
                       Broderie personnalisée
                     </h2>
-                    <p className="text-sm text-ylang-charcoal/60">
+                    <p className="text-ylang-charcoal/60 text-sm">
                       +15€ • Aperçu immédiat sur le produit
                     </p>
                   </div>
                   <div className="space-y-4">
                     <div className="rounded-2xl border border-[#f5f1e8] bg-[#faf9f6]/50 p-6 shadow-sm">
-                      <label className="mb-3 block text-base font-bold text-ylang-charcoal">
+                      <label className="text-ylang-charcoal mb-3 block text-base font-bold">
                         Texte à broder
                       </label>
                       <div className="relative">
@@ -1704,7 +1727,7 @@ const ProductConfigurator = () => {
                             }))
                           }
                           placeholder="Ex: Zoé, Mon Bébé..."
-                          className="focus:border-ylang-rose focus:ring-ylang-rose/10 w-full rounded-2xl border-2 border-[#e8dcc8] bg-white px-5 py-4 text-lg font-medium transition-all placeholder:text-ylang-charcoal/20 focus:ring-4 focus:outline-none"
+                          className="focus:border-ylang-rose focus:ring-ylang-rose/10 placeholder:text-ylang-charcoal/20 w-full rounded-2xl border-2 border-[#e8dcc8] bg-white px-5 py-4 text-lg font-medium transition-all focus:ring-4 focus:outline-none"
                           maxLength={15}
                         />
                         <div className="absolute top-1/2 right-5 -translate-y-1/2">
@@ -1712,12 +1735,14 @@ const ProductConfigurator = () => {
                             className={`text-sm font-bold ${configuration.embroidery.length >= 12 ? "text-ylang-rose" : "text-ylang-charcoal/30"}`}
                           >
                             {configuration.embroidery.length}
-                            <span className="mx-0.5 text-ylang-charcoal/10">/</span>
+                            <span className="text-ylang-charcoal/10 mx-0.5">
+                              /
+                            </span>
                             15
                           </span>
                         </div>
                       </div>
-                      <p className="mt-3 flex items-center gap-2 text-sm font-medium text-ylang-charcoal/50">
+                      <p className="text-ylang-charcoal/50 mt-3 flex items-center gap-2 text-sm font-medium">
                         <span className="bg-ylang-rose/10 text-ylang-rose flex h-5 w-5 items-center justify-center rounded-full text-[10px]">
                           i
                         </span>
@@ -1727,7 +1752,7 @@ const ProductConfigurator = () => {
 
                     <div className="rounded-2xl border border-[#f5f1e8] bg-white p-6 shadow-sm transition-all">
                       <div className="mb-4 flex items-center justify-between">
-                        <label className="text-base font-bold text-ylang-charcoal">
+                        <label className="text-ylang-charcoal text-base font-bold">
                           Couleur du fil
                         </label>
                         {configuration.embroideryColor && (
@@ -1779,10 +1804,10 @@ const ProductConfigurator = () => {
               {activeTab === "accessories" && (
                 <>
                   <div className="mb-6">
-                    <h2 className="mb-2 text-3xl font-black text-ylang-charcoal">
+                    <h2 className="text-ylang-charcoal mb-2 text-3xl font-black">
                       Accessoires décoratifs
                     </h2>
-                    <p className="text-base font-medium text-ylang-charcoal/60">
+                    <p className="text-ylang-charcoal/60 text-base font-medium">
                       Personnalisez votre création avec une touche finale unique
                     </p>
                   </div>
@@ -1814,7 +1839,7 @@ const ProductConfigurator = () => {
                           </div>
 
                           <div className="flex-1 text-left">
-                            <h4 className="mb-0.5 text-lg font-black text-ylang-charcoal">
+                            <h4 className="text-ylang-charcoal mb-0.5 text-lg font-black">
                               {acc.name}
                             </h4>
                             <div className="flex items-center gap-2">
@@ -1822,7 +1847,7 @@ const ProductConfigurator = () => {
                                 +{acc.price}€
                               </span>
                               {!acc.id.includes("none") && (
-                                <span className="rounded-full bg-ylang-charcoal/5 px-2 py-0.5 text-[10px] font-black tracking-wider text-ylang-charcoal/20 uppercase">
+                                <span className="bg-ylang-charcoal/5 text-ylang-charcoal/20 rounded-full px-2 py-0.5 text-[10px] font-black tracking-wider uppercase">
                                   Option
                                 </span>
                               )}
@@ -1856,7 +1881,7 @@ const ProductConfigurator = () => {
                     <h2 className="mb-2 text-2xl font-bold">
                       Création terminée !
                     </h2>
-                    <p className="text-sm text-ylang-charcoal/60">
+                    <p className="text-ylang-charcoal/60 text-sm">
                       Vérifiez votre configuration
                     </p>
                   </div>
@@ -1897,7 +1922,9 @@ const ProductConfigurator = () => {
                           key={accId}
                           className="flex justify-between text-sm"
                         >
-                          <span className="text-ylang-charcoal/70">{acc.name}</span>
+                          <span className="text-ylang-charcoal/70">
+                            {acc.name}
+                          </span>
                           <span className="font-bold">+{acc.price}€</span>
                         </div>
                       ) : null;
@@ -1916,24 +1943,28 @@ const ProductConfigurator = () => {
           </div>
 
           {/* Footer Navigation - Sticky */}
-          <div className="sticky bottom-0 border-t border-[#f5f1e8] bg-white/80 p-6 backdrop-blur-xl shadow-[0_-10px_30px_rgba(0,0,0,0.05)] lg:px-8">
+          <div className="sticky bottom-0 border-t border-[#f5f1e8] bg-white/80 p-6 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] backdrop-blur-xl lg:px-8">
             <div className="mx-auto flex max-w-4xl items-center justify-between gap-6">
               <button
                 onClick={goPrevious}
                 disabled={!canGoPrevious}
                 className={`group flex items-center gap-2 rounded-2xl px-6 py-4 font-bold transition-all duration-300 ${
                   canGoPrevious
-                    ? "bg-[#faf9f6] text-ylang-charcoal hover:bg-[#f5f1e8] hover:scale-105"
-                    : "cursor-not-allowed opacity-30 bg-[#faf9f6] text-ylang-charcoal"
+                    ? "text-ylang-charcoal bg-[#faf9f6] hover:scale-105 hover:bg-[#f5f1e8]"
+                    : "text-ylang-charcoal cursor-not-allowed bg-[#faf9f6] opacity-30"
                 }`}
               >
-                <ChevronLeft className={`h-5 w-5 transition-transform duration-300 ${canGoPrevious ? 'group-hover:-translate-x-1' : ''}`} />
+                <ChevronLeft
+                  className={`h-5 w-5 transition-transform duration-300 ${canGoPrevious ? "group-hover:-translate-x-1" : ""}`}
+                />
                 <span className="hidden sm:inline">Précédent</span>
               </button>
 
               <div className="flex flex-col items-center lg:items-start">
-                <span className="text-[10px] items-center uppercase tracking-widest font-black text-ylang-charcoal/30">Prix Total</span>
-                <span className="text-xl sm:text-2xl font-black text-ylang-charcoal">
+                <span className="text-ylang-charcoal/30 items-center text-[10px] font-black tracking-widest uppercase">
+                  Prix Total
+                </span>
+                <span className="text-ylang-charcoal text-xl font-black sm:text-2xl">
                   {totalPrice()}€
                 </span>
               </div>
@@ -1945,7 +1976,7 @@ const ProductConfigurator = () => {
                   className={`group flex items-center gap-3 rounded-2xl px-8 py-4 font-black text-white shadow-[0_10px_20px_-5px_rgba(232,180,184,0.5)] transition-all duration-500 ${
                     configuration.product && configuration.fabric
                       ? "from-ylang-rose to-ylang-terracotta bg-linear-to-r hover:scale-105 hover:shadow-[0_15px_30px_-5px_rgba(232,180,184,0.6)]"
-                      : "cursor-not-allowed bg-[#f5f1e8] text-ylang-charcoal/20"
+                      : "text-ylang-charcoal/20 cursor-not-allowed bg-[#f5f1e8]"
                   }`}
                 >
                   <ShoppingBag className="h-5 w-5 transition-transform group-hover:rotate-12" />
@@ -1958,11 +1989,13 @@ const ProductConfigurator = () => {
                   className={`group flex items-center gap-3 rounded-2xl px-10 py-4 font-black transition-all duration-500 ${
                     canGoNext
                       ? "from-ylang-rose to-ylang-terracotta bg-linear-to-r text-white shadow-[0_10px_20px_-5px_rgba(232,180,184,0.5)] hover:scale-[1.05] hover:shadow-[0_15px_30px_-5px_rgba(232,180,184,0.6)] active:scale-95"
-                      : "cursor-not-allowed bg-[#f5f1e8] text-ylang-charcoal/20"
+                      : "text-ylang-charcoal/20 cursor-not-allowed bg-[#f5f1e8]"
                   }`}
                 >
                   <span>Suivant</span>
-                  <ChevronRight className={`h-5 w-5 transition-transform duration-300 ${canGoNext ? 'group-hover:translate-x-1' : ''}`} />
+                  <ChevronRight
+                    className={`h-5 w-5 transition-transform duration-300 ${canGoNext ? "group-hover:translate-x-1" : ""}`}
+                  />
                 </button>
               )}
             </div>
@@ -1978,8 +2011,10 @@ const ProductConfigurator = () => {
               <Check className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="font-bold text-ylang-charcoal">Ajouté au panier !</p>
-              <p className="text-sm text-ylang-charcoal/60">
+              <p className="text-ylang-charcoal font-bold">
+                Ajouté au panier !
+              </p>
+              <p className="text-ylang-charcoal/60 text-sm">
                 {configuration.product?.name} - {configuration.fabric?.name}
               </p>
             </div>
@@ -1990,4 +2025,18 @@ const ProductConfigurator = () => {
   );
 };
 
-export default ProductConfigurator;
+const ConfiguratorPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-white">
+          <Package className="text-ylang-rose h-8 w-8 animate-pulse" />
+        </div>
+      }
+    >
+      <ProductConfigurator />
+    </Suspense>
+  );
+};
+
+export default ConfiguratorPage;
