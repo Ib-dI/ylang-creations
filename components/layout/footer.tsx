@@ -149,18 +149,18 @@ export function Footer() {
             >
               <div className="flex-1">
                 <Input
+                
                   type="email"
                   placeholder="votre@email.fr"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full"
+                  className="w-full bg-ylang-beige/60 border-gray-300 py-6"
                 />
               </div>
               <Button
                 type="submit"
                 variant={isSubscribed ? "secondary" : "primary"}
-                size="sm"
                 className="whitespace-nowrap sm:w-auto"
               >
                 {isSubscribed ? "✓ Inscrit !" : "S'inscrire"}
