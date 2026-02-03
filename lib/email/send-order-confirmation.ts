@@ -74,6 +74,7 @@ export async function sendOrderConfirmationEmail(
 
 // Fonction utilitaire pour envoyer un email de notification admin
 export async function sendAdminNotificationEmail(
+  adminEmail: string,
   orderNumber: string,
   customerName: string,
   total: number,
@@ -81,7 +82,7 @@ export async function sendAdminNotificationEmail(
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL_NOTIFICATIONS,
-      to: ["admin@ylang-creations.fr"], // Votre email admin
+      to: [adminEmail],
       subject: `🎉 Nouvelle commande ${orderNumber}`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">

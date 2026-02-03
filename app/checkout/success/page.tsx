@@ -117,7 +117,7 @@ function SuccessContent() {
           transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
           className="mb-8 text-center"
         >
-          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-500 shadow-2xl">
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-500 shadow-sm">
             <CheckCircle2 className="h-14 w-14 text-white" />
           </div>
           <motion.h1

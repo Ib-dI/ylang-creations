@@ -1,6 +1,14 @@
-import { customer as customerTable, order, product } from "@/db/schema";
+import {
+  customer as customerTable,
+  order,
+  product,
+  settings,
+} from "@/db/schema";
 import { db } from "@/lib/db";
-import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation";
+import {
+  sendAdminNotificationEmail,
+  sendOrderConfirmationEmail,
+} from "@/lib/email/send-order-confirmation";
 import { eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -197,6 +205,60 @@ export async function POST(req: Request) {
               email: !!customerEmail,
               shippingDetails: !!shippingDetails,
             });
+          }
+
+          // ============================================
+          // ENVOI NOTIFICATION ADMIN
+          // ============================================
+          try {
+            // Récupérer les paramètres pour vérifier si les notifications sont activées
+            const settingsResult = await db
+              .select()
+              .from(settings)
+              .where(eq(settings.id, "main-settings"))
+              .limit(1);
+
+            if (settingsResult.length > 0) {
+              const siteSettings = settingsResult[0];
+              const notificationsConfig = siteSettings.notifications
+                ? JSON.parse(siteSettings.notifications)
+                : {};
+              const emailTemplatesConfig = siteSettings.emailTemplates
+                ? JSON.parse(siteSettings.emailTemplates)
+                : {};
+
+              // Vérifier si les notifications de nouvelles commandes sont activées
+              const shouldNotify =
+                notificationsConfig.newOrder === true &&
+                emailTemplatesConfig.adminNotification !== false;
+
+              if (shouldNotify && siteSettings.adminEmail) {
+                console.log(
+                  "📧 Envoi notification admin à:",
+                  siteSettings.adminEmail,
+                );
+
+                const total = (session.amount_total ?? 0) / 100;
+                await sendAdminNotificationEmail(
+                  siteSettings.adminEmail,
+                  orderId.slice(0, 8).toUpperCase(),
+                  customerName,
+                  total,
+                );
+
+                console.log("✅ Notification admin envoyée");
+              } else {
+                console.log(
+                  "ℹ️ Notifications admin désactivées ou email non configuré",
+                );
+              }
+            }
+          } catch (adminEmailError) {
+            // Ne pas bloquer le webhook si la notification admin échoue
+            console.error(
+              "❌ Failed to send admin notification:",
+              adminEmailError,
+            );
           }
         } catch (emailError) {
           // Ne pas bloquer le webhook si l'email échoue
