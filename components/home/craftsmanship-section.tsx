@@ -55,10 +55,10 @@ export function CraftsmanshipSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16 text-center animate-fade-in-up">
-          <p className="font-body text-ylang-rose mb-3 text-sm tracking-widest uppercase">
+          <p className="font-abramo font-semibold text-ylang-rose mb-3 text-sm tracking-widest uppercase">
             Excellence artisanale
           </p>
-          <h2 className="font-display text-ylang-charcoal mb-6 text-4xl lg:text-5xl">
+          <h2 className="font-abramo-script text-ylang-charcoal mb-6 text-4xl lg:text-5xl">
             Un savoir-faire d'exception
           </h2>
           <p className="font-body text-ylang-charcoal/60 mx-auto max-w-3xl text-lg leading-relaxed">
@@ -124,7 +124,7 @@ export function CraftsmanshipSection() {
             style={{ animationDelay: '0.3s' }}
           >
             <div>
-              <h3 className="font-display text-ylang-charcoal mb-4 text-3xl">
+              <h3 className="font-abramo font-semibold text-ylang-charcoal mb-4 text-3xl">
                 L'excellence au service de vos émotions
               </h3>
               <p className="font-body text-ylang-charcoal/70 mb-4 leading-relaxed">

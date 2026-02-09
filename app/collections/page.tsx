@@ -362,10 +362,10 @@ function CollectionsContent() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12 text-center"
         >
-          <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
+          <p className="text-ylang-rose font-abramo mb-3 text-sm tracking-widest uppercase font-semibold">
             Nos Collections
           </p>
-          <h1 className="text-ylang-charcoal font-display mb-4 text-4xl font-bold lg:text-5xl">
+          <h1 className="text-ylang-charcoal font-abramo-script mb-4 text-4xl lg:text-5xl">
             {searchTerm
               ? searchTerm.charAt(0).toUpperCase() + searchTerm.slice(1)
               : selectedCategory === "Tout"

@@ -53,10 +53,10 @@ export function HowItWorksSection() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16 text-center animate-fade-in-up">
-          <p className="font-body text-ylang-rose mb-3 text-sm uppercase tracking-widest">
+          <p className="font-abramo font-semibold text-ylang-rose mb-3 text-sm uppercase tracking-widest">
             Simple et intuitif
           </p>
-          <h2 className="font-display text-ylang-charcoal mb-6 text-3xl lg:text-5xl">
+          <h2 className="font-abramo-script text-ylang-charcoal mb-6 text-3xl lg:text-5xl">
             Comment ça marche ?
           </h2>
           <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl text-lg">

@@ -116,10 +116,10 @@ export default function Home() {
       <section className="section-padding bg-ylang-terracotta/30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <p className="font-body text-ylang-rose mb-3 text-sm tracking-widest uppercase">
+            <p className="font-abramo font-semibold text-ylang-rose mb-3 text-sm tracking-widest uppercase">
               Collections printemps
             </p>
-            <h2 className="font-display text-ylang-charcoal mb-4 text-4xl lg:text-5xl">
+            <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-4xl lg:text-5xl">
               Nos créations phares
             </h2>
             <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl text-lg">

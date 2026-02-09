@@ -181,13 +181,13 @@ export function ContactClient({ settings }: { settings: any }) {
           >
             <motion.p
               variants={fadeInUp}
-              className="text-ylang-rose font-body mb-4 text-sm tracking-widest uppercase"
+              className="text-ylang-rose font-abramo font-semibold mb-4 text-sm tracking-widest uppercase"
             >
               Contactez-nous
             </motion.p>
             <motion.h1
               variants={fadeInUp}
-              className="font-display text-ylang-charcoal mb-6 text-4xl font-bold lg:text-5xl"
+              className="font-abramo-script text-ylang-charcoal mb-6 text-4xl lg:text-5xl"
             >
               Parlons de votre projet
             </motion.h1>
@@ -214,7 +214,7 @@ export function ContactClient({ settings }: { settings: any }) {
               viewport={{ once: true }}
               className="lg:col-span-3"
             >
-              <div className="rounded-3xl bg-white p-8 shadow-xl lg:p-10">
+              <div className="rounded-3xl bg-white p-8 shadow-xs lg:p-10">
                 <div className="mb-8">
                   <h2 className="font-display text-ylang-charcoal mb-2 text-2xl font-bold">
                     Envoyez-nous un message
@@ -249,7 +249,7 @@ export function ContactClient({ settings }: { settings: any }) {
                       <div>
                         <label
                           htmlFor="name"
-                          className="font-body text-ylang-charcoal mb-2 block text-sm font-medium"
+                          className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
                         >
                           Nom complet *
                         </label>
@@ -269,7 +269,7 @@ export function ContactClient({ settings }: { settings: any }) {
                       <div>
                         <label
                           htmlFor="email"
-                          className="font-body text-ylang-charcoal mb-2 block text-sm font-medium"
+                          className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
                         >
                           Email *
                         </label>
@@ -291,7 +291,7 @@ export function ContactClient({ settings }: { settings: any }) {
                       <div>
                         <label
                           htmlFor="phone"
-                          className="font-body text-ylang-charcoal mb-2 block text-sm font-medium"
+                          className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
                         >
                           Téléphone
                         </label>
@@ -310,7 +310,7 @@ export function ContactClient({ settings }: { settings: any }) {
                       <div>
                         <label
                           htmlFor="subject"
-                          className="font-body text-ylang-charcoal mb-2 block text-sm font-medium"
+                          className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
                         >
                           Sujet *
                         </label>
@@ -338,7 +338,7 @@ export function ContactClient({ settings }: { settings: any }) {
                     <div>
                       <label
                         htmlFor="message"
-                        className="font-body text-ylang-charcoal mb-2 block text-sm font-medium"
+                        className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
                       >
                         Message *
                       </label>
@@ -399,7 +399,7 @@ export function ContactClient({ settings }: { settings: any }) {
                     {info.href ? (
                       <a
                         href={info.href}
-                        className="group flex items-start gap-4 rounded-2xl bg-white p-6 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
+                        className="group flex items-start gap-4 rounded-2xl bg-white p-6 shadow-xs transition-all hover:-translate-y-1 hover:shadow-sm"
                       >
                         <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors">
                           <info.icon className="text-ylang-rose h-6 w-6 transition-colors group-hover:text-white" />
@@ -408,7 +408,7 @@ export function ContactClient({ settings }: { settings: any }) {
                           <p className="font-body text-ylang-charcoal/60 text-sm">
                             {info.label}
                           </p>
-                          <p className="font-display text-ylang-charcoal font-medium">
+                          <p className="font-display text-ylang-charcoal font-semibold">
                             {info.value}
                           </p>
                           <p className="font-body text-ylang-charcoal/50 mt-1 text-xs">
@@ -417,7 +417,7 @@ export function ContactClient({ settings }: { settings: any }) {
                         </div>
                       </a>
                     ) : (
-                      <div className="flex items-start gap-4 rounded-2xl bg-white p-6 shadow-lg">
+                      <div className="flex items-start gap-4 rounded-2xl bg-white p-6 shadow-xs">
                         <div className="bg-ylang-yellow/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
                           <info.icon className="text-ylang-yellow h-6 w-6" />
                         </div>
@@ -425,7 +425,7 @@ export function ContactClient({ settings }: { settings: any }) {
                           <p className="font-body text-ylang-charcoal/60 text-sm">
                             {info.label}
                           </p>
-                          <p className="font-display text-ylang-charcoal font-medium">
+                          <p className="font-display text-ylang-charcoal font-semibold">
                             {info.value}
                           </p>
                           <p className="font-body text-ylang-charcoal/50 mt-1 text-xs">
@@ -439,8 +439,8 @@ export function ContactClient({ settings }: { settings: any }) {
               </div>
 
               {/* Social Links */}
-              <div className="rounded-2xl bg-white p-6 shadow-lg">
-                <h3 className="font-display text-ylang-charcoal mb-4 text-lg font-medium">
+              <div className="rounded-2xl bg-white p-6 shadow-xs">
+                <h3 className="font-display text-ylang-charcoal mb-4 text-lg font-semibold">
                   Suivez-nous
                 </h3>
                 <div className="flex gap-3">
@@ -466,7 +466,7 @@ export function ContactClient({ settings }: { settings: any }) {
               <div className="from-ylang-rose/10 to-ylang-terracotta/10 rounded-2xl bg-linear-to-br p-6">
                 <div className="mb-3 flex items-center gap-3">
                   <Clock className="text-ylang-rose h-5 w-5" />
-                  <h3 className="font-display text-ylang-charcoal font-medium">
+                  <h3 className="font-display text-ylang-charcoal font-semibold">
                     Temps de réponse
                   </h3>
                 </div>
@@ -493,10 +493,10 @@ export function ContactClient({ settings }: { settings: any }) {
             viewport={{ once: true }}
             className="mb-12 text-center"
           >
-            <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
+            <p className="text-ylang-rose font-abramo font-semibold mb-3 text-sm tracking-widest uppercase">
               FAQ
             </p>
-            <h2 className="font-display text-ylang-charcoal mb-4 text-3xl font-bold">
+            <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-3xl">
               Questions fréquentes
             </h2>
             <p className="font-body text-ylang-charcoal/60">
@@ -518,7 +518,7 @@ export function ContactClient({ settings }: { settings: any }) {
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
                   className="flex w-full items-center justify-between p-6 text-left"
                 >
-                  <span className="font-display text-ylang-charcoal pr-4 font-medium">
+                  <span className="font-display text-ylang-charcoal pr-4 font-semibold">
                     {item.question}
                   </span>
                   <span
@@ -555,8 +555,10 @@ export function ContactClient({ settings }: { settings: any }) {
             viewport={{ once: true }}
             className="from-ylang-rose/10 to-ylang-terracotta/10 rounded-3xl bg-linear-to-br p-12 text-center text-ylang-charcoal lg:p-16"
           >
-            <Sparkles className="mx-auto mb-6 h-10 w-10 opacity-80" />
-            <h2 className="font-display mb-4 text-2xl font-bold lg:text-3xl">
+            <Sparkles
+            strokeWidth={1.5}
+            className="mx-auto mb-6 h-10 w-10 text-ylang-rose opacity-80" />
+            <h2 className="font-abramo-script mb-4 text-2xl lg:text-3xl">
               Prêt à créer quelque chose d'unique ?
             </h2>
             <p className="font-body mx-auto mb-8 max-w-xl opacity-90 text-ylang-charcoal/70">

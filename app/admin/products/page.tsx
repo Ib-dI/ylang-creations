@@ -399,7 +399,7 @@ export default function ProductsPage() {
             </p>
           </div>
         </div>
-        <div className="text-ylang-charcoal/40 flex items-center gap-2 text-sm *:border *:border-ylang-cream/80">
+        <div className="text-ylang-charcoal/40 *:border-ylang-cream/80 flex items-center gap-2 text-sm *:border">
           <span className="bg-ylang-beige rounded-full px-3 py-1">
             {products.length} produits au total
           </span>
@@ -662,10 +662,10 @@ export default function ProductsPage() {
                 key={product.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="grid grid-cols-1 items-center gap-4 px-6 py-4 transition-colors hover:bg-gray-50/50 lg:grid-cols-[80px_1fr_150px_120px_100px_180px]"
+                className="grid grid-cols-[64px_1fr] items-start gap-x-4 gap-y-3 px-4 py-4 transition-colors hover:bg-gray-50/50 sm:px-6 lg:grid-cols-[80px_1fr_150px_120px_100px_180px] lg:items-center"
               >
                 {/* Image */}
-                <div className="bg-ylang-beige h-16 w-16 overflow-hidden rounded-xl">
+                <div className="bg-ylang-beige h-16 w-16 overflow-hidden rounded-xl lg:h-16 lg:w-16">
                   {product.images[0] ? (
                     <img
                       src={product.images[0]}
@@ -680,19 +680,28 @@ export default function ProductsPage() {
                 </div>
 
                 {/* Info */}
-                <div>
-                  <h3 className="text-ylang-charcoal font-semibold">
+                <div className="min-w-0">
+                  <h3 className="text-ylang-charcoal truncate font-semibold">
                     {product.name}
                   </h3>
-                  <div className="mt-1 flex flex-wrap gap-2 lg:hidden">
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 lg:hidden">
                     <span className="text-ylang-rose text-xs font-medium">
                       {product.category}
                     </span>
-                    <span className="text-ylang-charcoal/40 text-sm">
+                    <span className="text-ylang-charcoal/40 text-xs">
                       {product.price.toFixed(2)}€
                     </span>
+                    {product.stock > 0 ? (
+                      <span className="text-[10px] font-medium text-green-600">
+                        {product.stock} en stock
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-medium text-red-600">
+                        Rupture
+                      </span>
+                    )}
                   </div>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2 flex flex-wrap gap-1.5">
                     {!product.isActive && (
                       <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-600">
                         Inactif
@@ -750,7 +759,7 @@ export default function ProductsPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center justify-end gap-2">
+                <div className="col-start-2 flex items-center justify-end gap-2 lg:col-start-auto">
                   <button
                     onClick={() => handleOpenModal(product)}
                     className="cursor-pointer rounded-lg border border-blue-300 bg-blue-100 p-2 text-blue-500 transition-colors hover:bg-blue-200"
@@ -777,7 +786,7 @@ export default function ProductsPage() {
                     onClick={() => handleToggleFeatured(product)}
                     className={`cursor-pointer rounded-lg border p-2 transition-colors ${
                       product.isFeatured
-                        ? "border-yellow-300 bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
+                        ? "border-yellow-300 bg-yellow-100 text-yellow-600 hover:bg-yellow-100"
                         : "border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100"
                     }`}
                     title={
@@ -824,7 +833,7 @@ export default function ProductsPage() {
               className="bg-ylang-terracotta fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col shadow-2xl md:w-[800px] lg:w-[900px]"
             >
               {/* Modal Header */}
-              <div className="border-ylang-beige/50 bg-white relative overflow-hidden border-b px-8 py-6">
+              <div className="border-ylang-beige/50 relative overflow-hidden border-b bg-white px-8 py-6">
                 {/* Decorative background */}
                 <div className="absolute inset-0 opacity-30">
                   <div className="bg-ylang-rose/20 absolute -top-12 -right-12 h-32 w-32 rounded-full blur-2xl" />
@@ -871,7 +880,7 @@ export default function ProductsPage() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`relative flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all cursor-pointer border border-transparent ${
+                      className={`relative flex cursor-pointer items-center gap-2 rounded-xl border border-transparent px-4 py-2.5 text-sm font-medium transition-all ${
                         isActive
                           ? "bg-ylang-rose shadow-ylang-rose/25 text-white shadow-md"
                           : "text-ylang-charcoal/70 hover:text-ylang-charcoal hover:bg-ylang-cream/90 hover:border-ylang-cream"

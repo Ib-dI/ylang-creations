@@ -3,8 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { type ReviewWithUser, submitReview } from "@/lib/actions/reviews";
-import { Star, User } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { MessageSquare, Send, Star, User } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -69,161 +71,225 @@ export function ProductReviews({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-12">
+      {/* Header & Stats */}
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2 className="font-display text-ylang-charcoal mb-2 text-2xl">
-            Avis clients
+          <div className="text-ylang-rose font-body mb-1 flex items-center gap-2 text-xs font-semibold tracking-widest uppercase">
+            <MessageSquare className="h-3 w-3" />
+            <span>Témoignages</span>
+          </div>
+          <h2 className="font-display text-ylang-charcoal text-3xl lg:text-4xl">
+            L'avis de nos clients
           </h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
+        </div>
+
+        <div className="border-ylang-beige/50 flex items-center gap-6 rounded-2xl border bg-white/50 p-4 shadow-sm backdrop-blur-sm">
+          <div className="text-center">
+            <span className="font-display text-ylang-charcoal block text-3xl font-bold">
+              {averageRating.toFixed(1)}
+            </span>
+            <span className="font-body text-ylang-charcoal/40 text-[10px] font-medium tracking-tighter uppercase">
+              Note moyenne
+            </span>
+          </div>
+          <div className="bg-ylang-beige/50 h-10 w-px" />
+          <div className="space-y-1">
+            <div className="flex items-center gap-0.5">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
-                  className={`h-6 w-6 ${
+                  className={`h-4 w-4 ${
                     star <= Math.round(averageRating)
                       ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-300"
+                      : "text-gray-200"
                   }`}
                 />
               ))}
             </div>
-            <p className="font-body text-ylang-charcoal/80 text-lg">
-              {averageRating.toFixed(1)}{" "}
-              <span className="text-sm text-gray-500">
-                ({totalReviews} avis)
-              </span>
+            <p className="font-body text-ylang-charcoal/60 text-xs">
+              Basé sur {totalReviews} avis authentiques
             </p>
           </div>
         </div>
       </div>
 
-      {/* Formulaire d'avis */}
-      <div className="bg-[#fdfdfd] border-ylang-beige rounded-2xl border p-6">
-        <h3 className="font-display text-ylang-charcoal mb-4 text-lg">
-          Donnez votre avis
-        </h3>
+      <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr]">
+        {/* Formulaire d'avis */}
+        <div className="h-fit space-y-6">
+          <div className="border-ylang-beige/50 relative overflow-hidden rounded-3xl border bg-white p-8 shadow-sm">
+            <div className="bg-ylang-rose/5 absolute -top-10 -left-10 h-32 w-32 rounded-full blur-2xl" />
 
-        {currentUser ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="font-body text-ylang-charcoal/80 mb-2 block text-sm">
-                Votre note
-              </label>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    onClick={() => setRating(star)}
-                    className="transition-transform hover:scale-110 focus:outline-hidden"
+            <h3 className="font-display text-ylang-charcoal relative mb-6 text-xl">
+              Partagez votre expérience
+            </h3>
+
+            {currentUser ? (
+              <form onSubmit={handleSubmit} className="relative space-y-6">
+                <div>
+                  <label className="font-body text-ylang-charcoal/60 mb-3 block text-xs font-medium tracking-wide uppercase">
+                    Quelle est votre note ?
+                  </label>
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        onClick={() => setRating(star)}
+                        className="group relative transition-transform hover:scale-110 focus:outline-hidden"
+                      >
+                        <Star
+                          className={`h-10 w-10 transition-colors duration-300 ${
+                            star <= (hoverRating || rating)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-200"
+                          } ${star <= hoverRating ? "drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]" : ""}`}
+                        />
+                        {star === rating && (
+                          <motion.div
+                            layoutId="selected-star"
+                            className="absolute -inset-1 rounded-full bg-yellow-400/10 blur-sm"
+                          />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-body text-ylang-charcoal/60 mb-2 block text-xs font-medium tracking-wide uppercase">
+                    Votre témoignage
+                  </label>
+                  <Textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Qu'avez-vous particulièrement aimé ?"
+                    className="border-ylang-beige/50 bg-ylang-beige/5 font-body ring-ylang-rose/20 focus:border-ylang-rose/30 min-h-[120px] resize-none p-4 transition-all focus:bg-white focus:ring-4"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className="w-full"
+                  disabled={isPending || rating === 0}
+                >
+                  {isPending ? (
+                    "Publication en cours..."
+                  ) : (
+                    <>
+                      Publier mon avis
+                      <Send className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </form>
+            ) : (
+              <div className="bg-ylang-beige/10 rounded-2xl p-8 text-center">
+                <p className="font-body text-ylang-charcoal/80 mb-4">
+                  Votre avis compte pour nous. Connectez-vous pour rejoindre la
+                  communauté.
+                </p>
+                <Link href="/login">
+                  <Button
+                    variant="secondary"
+                    className="border-ylang-rose/30 text-ylang-rose hover:bg-ylang-rose/5"
                   >
-                    <Star
-                      className={`h-8 w-8 ${
-                        star <= (hoverRating || rating)
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  </button>
-                ))}
+                    Se connecter
+                  </Button>
+                </Link>
               </div>
-            </div>
-
-            <div>
-              <label className="font-body text-ylang-charcoal/80 mb-2 block text-sm">
-                Votre commentaire (optionnel)
-              </label>
-              <Textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Partagez votre expérience avec ce produit..."
-                className="bg-white focus:outline-none focus:ring-0 focus:border-none focus-visible:ring-ylang-rose
-                "
-              />
-            </div>
-
-            <Button type="submit" disabled={isPending || rating === 0}>
-              {isPending ? "Publication..." : "Publier mon avis"}
-            </Button>
-          </form>
-        ) : (
-          <div className="rounded-lg bg-white/50 p-4 text-center">
-            <p className="font-body text-ylang-charcoal/80">
-              Veuillez vous{" "}
-              <a href="/login" className="text-ylang-rose hover:underline">
-                connecter
-              </a>{" "}
-              pour laisser un avis.
-            </p>
+            )}
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Liste des avis */}
-      <div className="space-y-6 rounded-2xl bg-[#fdfdfd] p-6">
-        {reviews.length === 0 ? (
-          <p className="font-body text-ylang-charcoal/60 text-center italic">
-            Aucun avis pour le moment. Soyez le premier à donner votre avis !
-          </p>
-        ) : (
-          reviews.map((review) => (
-            <div
-              key={review.id}
-              className="border-ylang-beige/50 border-b pb-6 last:border-0"
-            >
-              <div className="mb-2 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="bg-ylang-sage/20 relative h-10 w-10 overflow-hidden rounded-full">
-                    {review.user?.image ? (
-                      <Image
-                        src={review.user.image}
-                        alt={review.user.name || "Utilisateur"}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <User className="text-ylang-sage h-5 w-5" />
+        {/* Liste des avis */}
+        <div className="space-y-8">
+          <AnimatePresence mode="popLayout">
+            {reviews.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="border-ylang-beige/50 rounded-3xl border border-dashed bg-white/30 p-12 text-center"
+              >
+                <div className="bg-ylang-beige/20 text-ylang-charcoal/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                  <Star className="h-8 w-8" />
+                </div>
+                <p className="font-display text-ylang-charcoal/40 text-lg">
+                  Soyez la première personne à sublimer ce produit avec votre
+                  avis
+                </p>
+              </motion.div>
+            ) : (
+              <div className="grid gap-6">
+                {reviews.map((review, idx) => (
+                  <motion.div
+                    key={review.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="group border-ylang-beige/30 relative overflow-hidden rounded-3xl border bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="ring-ylang-rose/10 relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl ring-4">
+                          {review.user?.image ? (
+                            <Image
+                              src={review.user.image}
+                              alt={review.user.name || "Utilisateur"}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="bg-ylang-beige/20 flex h-full w-full items-center justify-center">
+                              <User className="text-ylang-rose/40 h-6 w-6" />
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-display text-ylang-charcoal font-medium">
+                            {review.user?.name || "Client Anonyme"}
+                          </p>
+                          <p className="font-body text-ylang-charcoal/30 text-[10px] font-medium tracking-tight uppercase">
+                            {new Date(review.createdAt).toLocaleDateString(
+                              "fr-FR",
+                              {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              },
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-ylang-beige/10 flex items-center gap-1 rounded-full px-3 py-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-3 w-3 ${
+                              i < review.rating
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-gray-200"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    {review.comment && (
+                      <div className="mt-4">
+                        <p className="font-body text-ylang-charcoal/80 leading-relaxed">
+                          {review.comment}
+                        </p>
                       </div>
                     )}
-                  </div>
-                  <div>
-                    <p className="font-display text-ylang-charcoal text-sm">
-                      {review.user?.name || "Utilisateur inconnu"}
-                    </p>
-                    <p className="font-body text-ylang-charcoal/40 text-xs">
-                      {new Date(review.createdAt).toLocaleDateString("fr-FR", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-4 w-4 ${
-                        i < review.rating
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
+                  </motion.div>
+                ))}
               </div>
-              {review.comment && (
-                <p className="font-body text-ylang-charcoal/80 leading-relaxed">
-                  {review.comment}
-                </p>
-              )}
-            </div>
-          ))
-        )}
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

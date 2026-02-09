@@ -63,7 +63,7 @@ export function ProductCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card className="relative overflow-hidden border-0 bg-white transition-all duration-500 hover:shadow-lg">
+      <Card className="relative overflow-hidden border-0 bg-white transition-all duration-500">
         {/* Image Container */}
         <Link href={`/produits/${product.id}`}>
           <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden">
@@ -161,11 +161,11 @@ export function ProductCard({
         {/* Infos produit */}
         <div className="bg-ylang-beige space-y-1.5 p-3">
           <div>
-            <p className="font-body text-ylang-charcoal/50 mb-0.5 text-xs tracking-widest uppercase">
+            <p className="font-abramo text-ylang-terracotta mb-0.5 text-xs tracking-widest uppercase font-semibold">
               {product.category}
             </p>
             <Link href={`/produits/${product.id}`}>
-              <h3 className="font-display text-ylang-charcoal hover:text-ylang-rose line-clamp-2 text-base tracking-tight transition-colors duration-300">
+              <h3 className="font-display text-ylang-charcoal hover:text-ylang-rose line-clamp-2 text-lg tracking-tight transition-colors duration-300">
                 {product.name}
               </h3>
             </Link>

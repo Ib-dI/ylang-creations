@@ -125,13 +125,13 @@ export default function AProposPage() {
           >
             <motion.p
               variants={fadeInUp}
-              className="text-ylang-rose font-body mb-4 text-sm tracking-widest uppercase"
+              className="text-ylang-rose font-abramo font-semibold mb-4 text-sm tracking-widest uppercase"
             >
               Notre Histoire
             </motion.p>
             <motion.h1
               variants={fadeInUp}
-              className="font-display text-ylang-charcoal mb-6 text-4xl font-bold lg:text-6xl"
+              className="font-abramo-script text-ylang-charcoal mb-6 text-4xl  lg:text-6xl"
             >
               Élégance, raffinement
               <br />
@@ -148,7 +148,7 @@ export default function AProposPage() {
             </motion.p>
             <motion.p
               variants={fadeInUp}
-              className="font-display text-ylang-rose mt-6 text-xl italic"
+              className="font-abramo-script text-ylang-rose mt-6 text-xl"
             >
               Avec amour, Mélissa
             </motion.p>
@@ -178,7 +178,7 @@ export default function AProposPage() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="bg-ylang-beige relative aspect-4/5 overflow-hidden rounded-3xl shadow-md">
+              <div className="bg-ylang-beige relative aspect-4/5 overflow-hidden rounded-3xl shadow-xs">
                 <Image
                   src={aboutImage}
                   alt="Mélissa, fondatrice de Ylang Créations"
@@ -205,7 +205,7 @@ export default function AProposPage() {
                 </div>
               </div>
               {/* Decorative badge */}
-              <div className="absolute -right-6 -bottom-6 rounded-2xl bg-white p-6 shadow-sm">
+              <div className="absolute -right-6 -bottom-6 rounded-2xl bg-white p-6 shadow-xs">
                 <p className="font-display text-ylang-rose text-3xl font-bold">
                   2019
                 </p>
@@ -224,10 +224,10 @@ export default function AProposPage() {
               className="space-y-6"
             >
               <div>
-                <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
+                <p className="text-ylang-rose font-abramo font-semibold mb-3 text-sm tracking-widest uppercase">
                   L'histoire d'Ylang
                 </p>
-                <h2 className="font-display text-ylang-charcoal mb-6 text-3xl font-bold lg:text-4xl">
+                <h2 className="font-abramo-script text-ylang-charcoal mb-6 text-3xl lg:text-4xl">
                   Une passion née du quotidien maternel
                 </h2>
               </div>
@@ -284,7 +284,7 @@ export default function AProposPage() {
       </section>
 
       {/* Timeline Section */}
-      <section className="bg-white py-20 lg:py-28">
+      <section className="bg-ylang-terracotta/20 py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -292,10 +292,10 @@ export default function AProposPage() {
             viewport={{ once: true }}
             className="mb-16 text-center"
           >
-            <p className="text-ylang-yellow font-body mb-3 text-sm tracking-widest uppercase">
+            <p className="text-ylang-rose font-abramo font-semibold mb-3 text-sm tracking-widest uppercase">
               Notre parcours
             </p>
-            <h2 className="font-display text-ylang-charcoal text-3xl font-bold lg:text-4xl">
+            <h2 className="font-abramo-script text-ylang-charcoal text-3xl lg:text-4xl">
               Une aventure humaine
             </h2>
           </motion.div>
@@ -319,7 +319,7 @@ export default function AProposPage() {
                   {/* Content */}
                   <div className="flex-1 lg:text-right">
                     <div
-                      className={`bg-ylang-cream rounded-2xl p-8 shadow-lg ${
+                      className={`bg-ylang-cream rounded-2xl p-8 shadow-xs ${
                         index % 2 === 1 ? "lg:text-left" : "lg:text-right"
                       }`}
                     >
@@ -336,7 +336,7 @@ export default function AProposPage() {
                   </div>
 
                   {/* Icon */}
-                  <div className="bg-ylang-yellow relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-lg">
+                  <div className="bg-ylang-yellow relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xs">
                     <item.icon className="h-7 w-7 text-white" />
                   </div>
 
@@ -358,10 +358,10 @@ export default function AProposPage() {
             viewport={{ once: true }}
             className="mb-16 text-center"
           >
-            <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
+            <p className="text-ylang-rose font-abramo font-semibold mb-3 text-sm tracking-widest uppercase">
               Nos engagements
             </p>
-            <h2 className="font-display text-ylang-charcoal mb-4 text-3xl font-bold lg:text-4xl">
+            <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-3xl lg:text-4xl">
               Nos valeurs
             </h2>
             <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl">
@@ -379,12 +379,12 @@ export default function AProposPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="group rounded-2xl bg-white p-8 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                className="group rounded-2xl bg-white p-8 transition-all duration-300 hover:-translate-y-2 "
               >
                 <div className="bg-ylang-rose/10 group-hover:bg-ylang-terracotta mb-6 flex h-14 w-14 items-center justify-center rounded-xl transition-colors">
                   <value.icon className="text-ylang-terracotta h-7 w-7 transition-colors group-hover:text-white" />
                 </div>
-                <h3 className="font-display text-ylang-charcoal mb-3 text-lg">
+                <h3 className="font-abramo font-semibold text-ylang-charcoal mb-3 text-lg">
                   {value.title}
                 </h3>
                 <p className="font-body text-ylang-charcoal/60 text-sm leading-relaxed">
@@ -406,7 +406,7 @@ export default function AProposPage() {
               viewport={{ once: true }}
               className="space-y-6"
             >
-              <div className="bg-ylang-yellow/30 inline-flex items-center gap-2 rounded-full px-4 py-2">
+              <div className="bg-ylang-green inline-flex items-center gap-2 rounded-full px-4 py-2">
                 <Leaf className="text-ylang-charcoal h-5 w-5" />
                 <span className="font-body text-ylang-charcoal text-sm font-medium">
                   Démarche éco-responsable
@@ -458,7 +458,7 @@ export default function AProposPage() {
                   key={stat.label}
                   className="rounded-2xl bg-white p-6 text-center shadow-xs"
                 >
-                  <p className="font-display text-ylang-yellow text-3xl font-bold lg:text-4xl">
+                  <p className="font-display text-ylang-rose text-3xl font-bold lg:text-4xl">
                     {stat.value}
                   </p>
                   <p className="font-body text-ylang-charcoal/60 mt-2 text-sm">
@@ -478,9 +478,9 @@ export default function AProposPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="from-ylang-yellow to-ylang-yellow/50 rounded-3xl bg-linear-to-br p-12 text-center text-white lg:p-20"
+            className="bg-ylang-terracotta/40 rounded-3xl bg-linear-to-br p-12 text-center text-charcoal/90 lg:p-20"
           >
-            <h2 className="font-display mb-6 text-3xl font-bold lg:text-4xl">
+            <h2 className="font-abramo-script mb-6 text-3xl lg:text-4xl">
               Notre concept
             </h2>
             <p className="font-body mx-auto max-w-3xl text-lg leading-relaxed opacity-90 lg:text-xl">
@@ -496,7 +496,7 @@ export default function AProposPage() {
                 <Button
                   variant="secondary"
                   size="lg"
-                  className="text-ylang-terracotta hover:bg-ylang-cream bg-white"
+                  className="text-ylang-terracotta hover:text-charcoal bg-white"
                 >
                   Découvrir nos créations
                 </Button>

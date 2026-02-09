@@ -51,6 +51,7 @@ export default function ProductDetails({
 }: ProductDetailsProps) {
   // États locaux
   const [selectedImage, setSelectedImage] = useState(0);
+  const [direction, setDirection] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
 
   // Wishlist
@@ -67,21 +68,40 @@ export default function ProductDetails({
       : [product.image];
 
   const nextImage = () => {
+    setDirection(1);
     setSelectedImage((prev: number) => (prev + 1) % productImages.length);
   };
 
   const prevImage = () => {
+    setDirection(-1);
     setSelectedImage(
       (prev: number) =>
         (prev - 1 + productImages.length) % productImages.length,
     );
   };
 
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+  };
+
   return (
     <div className="bg-ylang-terracotta/30 section-padding min-h-screen">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <nav className="font-body text-ylang-charcoal/60 mb-8 flex items-center text-sm">
+        <nav className="font-body text-ylang-charcoal/60 mb-4 flex items-center text-sm lg:mb-8">
           <Link href="/" className="hover:text-ylang-rose transition-colors">
             Accueil
           </Link>
@@ -97,102 +117,132 @@ export default function ProductDetails({
         </nav>
 
         {/* Contenu principal */}
-        <div className="mb-16 grid gap-12 lg:grid-cols-2">
+        <div className="mb-8 grid gap-8 lg:mb-16 lg:grid-cols-2 lg:gap-12">
           {/* Galerie d'images */}
-          <div className="space-y-4">
+          <div className="space-y-3 lg:space-y-4">
             {/* Image principale */}
-            <motion.div
-              className="bg-ylang-beige/30 relative aspect-square overflow-hidden rounded-2xl shadow-(--shadow-card)"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-            >
-              <img
-                src={productImages[selectedImage]}
-                alt={product.name}
-                className="h-full w-full object-cover"
-              />
+            <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden rounded-2xl shadow-(--shadow-card)">
+              <AnimatePresence initial={false} custom={direction}>
+                <motion.img
+                  key={selectedImage}
+                  src={productImages[selectedImage]}
+                  custom={direction}
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: "spring", stiffness: 300, damping: 30 },
+                    opacity: { duration: 0.2 },
+                  }}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              </AnimatePresence>
 
               {/* Badges */}
               {product.customizable && (
-                <div className="text-ylang-charcoal bg-ylang-yellow font-body absolute top-4 left-4 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="text-ylang-charcoal bg-ylang-yellow font-body absolute top-4 left-4 z-10 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium shadow-md"
+                >
                   <Wand2 className="h-4 w-4" />
                   Sur mesure
-                </div>
+                </motion.div>
               )}
 
               {/* Boutons navigation */}
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1, backgroundColor: "white" }}
+                whileTap={{ scale: 0.9 }}
                 onClick={prevImage}
-                className="absolute top-1/2 left-4 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg transition-all hover:bg-white"
+                className="absolute top-1/2 left-4 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5"
               >
                 <ChevronLeft className="text-ylang-charcoal h-6 w-6" />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1, backgroundColor: "white" }}
+                whileTap={{ scale: 0.9 }}
                 onClick={nextImage}
-                className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg transition-all hover:bg-white"
+                className="absolute top-1/2 right-4 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5"
               >
                 <ChevronRight className="text-ylang-charcoal h-6 w-6" />
-              </button>
+              </motion.button>
 
               {/* Bouton zoom */}
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1, backgroundColor: "white" }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => setShowZoom(true)}
-                className="absolute right-4 bottom-4 rounded-full bg-white/90 p-2 shadow-lg transition-all hover:bg-white"
+                className="absolute right-4 bottom-4 z-10 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5"
               >
                 <ZoomIn className="text-ylang-charcoal h-5 w-5" />
-              </button>
-            </motion.div>
+              </motion.button>
+            </div>
 
             {/* Thumbnails */}
-            <div className="flex gap-4">
+            <div className="flex gap-3 lg:gap-4">
               {productImages.map((img, idx) => (
-                <button
+                <motion.button
                   key={idx}
-                  onClick={() => setSelectedImage(idx)}
+                  whileHover={{ y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setDirection(idx > selectedImage ? 1 : -1);
+                    setSelectedImage(idx);
+                  }}
                   style={{
                     width: `calc((100% - ${(productImages.length - 1) * 16}px) / ${productImages.length})`,
                     maxWidth: productImages.length === 1 ? "150px" : undefined,
                   }}
-                  className={`aspect-square shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
+                  className={`relative aspect-square shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
                     selectedImage === idx
-                      ? "border-ylang-rose ring-ylang-rose/20 ring-2"
-                      : "hover:border-ylang-beige border-transparent"
+                      ? "border-ylang-rose"
+                      : "hover:border-ylang-rose/40 border-transparent"
                   }`}
                 >
                   <img
                     src={img}
                     alt={`Vue ${idx + 1}`}
-                    className="h-full w-full object-cover"
+                    className={`h-full w-full object-cover transition-transform duration-500 ${
+                      selectedImage === idx ? "scale-110" : "scale-100"
+                    }`}
                   />
-                </button>
+                  {selectedImage === idx && (
+                    <motion.div
+                      layoutId="active-thumb"
+                      className="ring-ylang-rose/20 absolute inset-0 ring-2 ring-inset"
+                    />
+                  )}
+                </motion.button>
               ))}
             </div>
           </div>
 
           {/* Informations produit */}
-          <div className="space-y-6">
+          <div className="space-y-5 lg:space-y-6">
             {/* En-tête */}
             <div>
-              <p className="text-ylang-rose font-body mb-2 text-sm tracking-widest uppercase">
+              <p className="text-ylang-rose font-abramo text-md mb-2 font-semibold tracking-widest uppercase">
                 {product.category}
               </p>
-              <h1 className="font-display text-ylang-charcoal mb-4 text-3xl lg:text-4xl">
+              <h1 className="font-display text-ylang-charcoal mb-3 text-2xl lg:mb-4 lg:text-4xl">
                 {product.name}
               </h1>
 
               {/* Prix et évaluation */}
-              <div className="mb-6 flex items-center justify-between">
+              <div className="mb-5 flex items-center justify-between lg:mb-6">
                 <div>
                   <p className="text-ylang-charcoal/60 font-body mb-1 text-sm">
                     À partir de
                   </p>
                   <div className="flex items-baseline gap-3">
-                    <p className="font-display text-ylang-rose text-4xl font-semibold">
+                    <p className="font-display text-ylang-rose text-3xl font-semibold lg:text-4xl">
                       {product.price}€
                     </p>
                     {product.compareAtPrice &&
                       product.compareAtPrice > product.price && (
-                        <p className="font-body text-ylang-charcoal/40 text-xl font-medium line-through">
+                        <p className="font-body text-ylang-charcoal/40 text-lg font-medium line-through lg:text-xl">
                           {product.compareAtPrice}€
                         </p>
                       )}
@@ -224,8 +274,8 @@ export default function ProductDetails({
 
             {/* CTA Personnaliser */}
             {product.customizable && (
-              <div className="from-ylang-rose/10 to-ylang-terracotta/10 border-ylang-rose/20 rounded-2xl border bg-linear-to-r p-6">
-                <div className="mb-4 flex items-start gap-4">
+              <div className="from-ylang-rose/10 to-ylang-terracotta/10 border-ylang-rose/20 rounded-2xl border bg-linear-to-r p-5 lg:p-6">
+                <div className="mb-3 flex items-start gap-4 lg:mb-4">
                   <div className="bg-ylang-rose/20 rounded-xl p-3">
                     <Palette className="text-ylang-rose h-6 w-6" />
                   </div>
@@ -274,7 +324,7 @@ export default function ProductDetails({
               }}
             >
               <ShoppingBag className="mr-2 h-5 w-5" />
-              Ajouter au panier — {product.price}€
+              Ajouter au panier - {product.price}€
             </Button>
 
             {/* Actions secondaires */}
@@ -291,7 +341,7 @@ export default function ProductDetails({
                     customizable: product.customizable,
                   })
                 }
-                className={`font-body group bg-ylang-beige flex flex-1 items-center justify-center gap-2 rounded-xl border-2 py-3 transition-all ${
+                className={`font-body group bg-ylang-beige flex flex-1 items-center justify-center gap-2 border-2 py-3 transition-all ${
                   isWishlisted
                     ? "border-ylang-rose bg-ylang-rose/10 text-ylang-rose"
                     : "border-ylang-beige/10 hover:border-ylang-rose hover:text-ylang-rose text-ylang-charcoal"
@@ -305,7 +355,7 @@ export default function ProductDetails({
             </div>
 
             {/* Points forts */}
-            <div className="border-ylang-beige grid grid-cols-2 gap-4 border-t pt-6">
+            <div className="border-ylang-beige bg-ylang-terracotta/30 grid grid-cols-2 gap-3 border p-4 pt-6 lg:gap-4">
               <div className="flex items-start gap-3">
                 <div className="bg-ylang-sage/30 rounded-lg p-2">
                   <Truck className="text-ylang-charcoal h-5 w-5" />
@@ -369,36 +419,50 @@ export default function ProductDetails({
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="border-ylang-rose mb-16 rounded-2xl border bg-white p-8"
+          className="border-ylang-rose/10 to-ylang-beige/10 relative mb-8 overflow-hidden rounded-3xl border bg-linear-to-b from-white p-6 shadow-sm lg:mb-16 lg:p-10"
         >
-          <h2 className="font-display text-ylang-charcoal mb-6 text-2xl">
-            Description détaillée
-          </h2>
-          <div className="prose max-w-none">
-            <p className="font-body text-ylang-charcoal/80 mb-6 leading-relaxed">
-              {product.longDescription}
-            </p>
-            <h3 className="font-display text-ylang-charcoal mb-4 text-lg">
-              Caractéristiques
-            </h3>
-            <ul className="space-y-3">
-              {product.features?.map((feature, idx) => (
-                <li
-                  key={idx}
-                  className="font-body text-ylang-charcoal/80 flex items-start gap-3"
-                >
-                  <div className="bg-ylang-sage/50 mt-0.5 rounded-full p-1">
-                    <Check className="text-ylang-charcoal h-4 w-4" />
-                  </div>
-                  {feature}
-                </li>
-              ))}
-            </ul>
+          {/* Decorative element */}
+          <div className="bg-ylang-rose/5 absolute -top-10 -right-10 h-40 w-40 rounded-full blur-3xl" />
+
+          <div className="relative grid gap-10 lg:grid-cols-[1fr_350px]">
+            <div>
+              <h2 className="font-display text-ylang-charcoal mb-6 text-2xl tracking-tight lg:text-3xl">
+                Description détaillée
+              </h2>
+              <div className="prose prose-ylang max-w-none">
+                <p className="font-body text-ylang-charcoal/80 leading-relaxed">
+                  {product.longDescription}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-ylang-beige/20 rounded-2xl p-6 lg:p-8">
+              <h3 className="font-display text-ylang-charcoal mb-6 text-xl">
+                Caractéristiques
+              </h3>
+              <ul className="space-y-4">
+                {product.features?.map((feature, idx) => (
+                  <motion.li
+                    key={idx}
+                    initial={{ opacity: 0, x: 10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    viewport={{ once: true }}
+                    className="font-body text-ylang-charcoal/80 flex items-start gap-4 text-sm"
+                  >
+                    <div className="bg-ylang-rose/10 text-ylang-rose mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
+                      <Check className="h-3 w-3" />
+                    </div>
+                    <span>{feature}</span>
+                  </motion.li>
+                ))}
+              </ul>
+            </div>
           </div>
         </motion.div>
 
         {/* Section Avis */}
-        <div className="mb-16">
+        <div className="mb-8 lg:mb-16">
           <ProductReviews
             productId={product.id}
             reviews={reviews}
@@ -415,7 +479,7 @@ export default function ProductDetails({
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mb-8 text-center"
+              className="mb-6 text-center lg:mb-8"
             >
               <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
                 Inspirations
