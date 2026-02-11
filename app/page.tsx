@@ -22,6 +22,7 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
   interface ParsedOptions {
     sizes?: string[];
     customizable?: boolean;
+    isNew?: boolean;
   }
 
   let parsedOptions: ParsedOptions = {};
@@ -41,7 +42,7 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
     description: p.description || "",
     longDescription: p.description || "",
     features: [],
-    new: new Date(p.createdAt) > thirtyDaysAgo,
+    new: parsedOptions.isNew ?? new Date(p.createdAt) > thirtyDaysAgo,
     featured: p.isFeatured,
     customizable: parsedOptions.customizable ?? true,
     sizes: parsedOptions.sizes || [],
@@ -113,10 +114,10 @@ export default function Home() {
       <HeroSection />
 
       {/* Featured Products avec Suspense pour streaming */}
-      <section className="section-padding bg-ylang-terracotta/30">
+      <section className="section-padding bg-ylang-terracotta/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <p className="font-abramo font-semibold text-ylang-rose mb-3 text-sm tracking-widest uppercase">
+            <p className="font-abramo text-ylang-rose mb-3 text-sm font-semibold tracking-widest uppercase">
               Collections printemps
             </p>
             <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-4xl lg:text-5xl">

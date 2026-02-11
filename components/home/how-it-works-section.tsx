@@ -45,7 +45,7 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section className="section-padding relative overflow-hidden bg-ylang-terracotta/20">
+    <section className="section-padding relative overflow-hidden bg-ylang-terracotta/40">
       {/* Décorations d'arrière-plan */}
       <div className="absolute top-20 right-0 h-96 w-96 rounded-full bg-ylang-sage/10 blur-3xl" />
       <div className="absolute bottom-20 left-0 h-96 w-96 rounded-full bg-ylang-rose/10 blur-3xl" />

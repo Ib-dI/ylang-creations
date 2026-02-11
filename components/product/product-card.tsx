@@ -175,7 +175,7 @@ export function ProductCard({
             <Button
               variant="secondary"
               size="sm"
-              className="group flex-1"
+              className="group border flex-1"
               asChild
             >
               <Link href={`/produits/${product.id}`}>Découvrir</Link>

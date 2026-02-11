@@ -188,26 +188,34 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed top-0 right-0 left-0 z-50 mx-auto max-w-3xl p-4 pt-4 sm:pt-20 lg:pt-24"
+            className="fixed inset-0 z-60 flex items-start justify-center p-0 pt-0 sm:p-4 sm:pt-20 lg:pt-24"
           >
-            <div className="bg-ylang-cream border-ylang-beige overflow-hidden rounded-2xl border shadow-2xl">
-              {/* Search Input */}
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <div className="border-ylang-beige flex items-center border-b px-6 py-4">
-                  <Search className="text-ylang-charcoal/40 h-5 w-5 shrink-0" />
+            <div className="bg-ylang-cream flex h-full w-full flex-col overflow-hidden border-ylang-beige shadow-2xl sm:h-auto sm:max-w-3xl sm:rounded-2xl sm:border">
+              {/* Search Input Area */}
+              <div className="border-ylang-beige sticky top-0 z-10 flex items-center border-b bg-white/50 px-4 py-3 backdrop-blur-md sm:px-6 sm:py-4">
+                <Search className="text-ylang-charcoal/40 h-5 w-5 shrink-0" />
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="flex flex-1 items-center"
+                >
                   <input
                     ref={inputRef}
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Rechercher un produit, une catégorie..."
-                    className="text-ylang-charcoal font-body placeholder:text-ylang-charcoal/40 flex-1 bg-transparent px-4 py-2 text-lg focus:outline-none"
+                    placeholder="Rechercher..."
+                    className="text-ylang-charcoal font-body placeholder:text-ylang-charcoal/40 flex-1 bg-transparent px-3 py-2 text-base focus:outline-none sm:px-4 sm:text-lg"
+                    style={{ WebkitAppearance: "none" }}
                   />
+                </form>
+
+                <div className="flex items-center gap-1 sm:gap-2">
                   {query && (
                     <button
                       type="button"
                       onClick={() => setQuery("")}
-                      className="hover:bg-ylang-beige rounded-full p-1 transition-colors"
+                      className="hover:bg-ylang-beige rounded-full p-2 transition-colors"
+                      aria-label="Effacer la recherche"
                     >
                       <X className="text-ylang-charcoal/60 h-4 w-4" />
                     </button>
@@ -215,17 +223,16 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   <button
                     type="button"
                     onClick={onClose}
-                    className="hover:bg-ylang-beige ml-2 rounded-lg p-2 transition-colors"
+                    className="bg-ylang-rose/10 hover:bg-ylang-rose/20 flex h-9 w-9 items-center justify-center rounded-full transition-colors sm:h-10 sm:w-10"
+                    aria-label="Fermer la recherche"
                   >
-                    <span className="text-ylang-charcoal/60 font-body text-sm">
-                      Esc
-                    </span>
+                    <X className="text-ylang-rose h-5 w-5" strokeWidth={2.5} />
                   </button>
                 </div>
-              </form>
+              </div>
 
               {/* Content */}
-              <div className="max-h-[60vh] overflow-y-auto">
+              <div className="flex-1 overflow-y-auto pb-safe">
                 {isLoading ? (
                   <div className="flex h-40 items-center justify-center">
                     <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />

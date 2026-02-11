@@ -423,8 +423,8 @@ export function Header() {
         {/* Barre principale */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between lg:h-20">
-            {/* Bouton Menu */}
-            <div className="flex items-center" ref={megaMenuRef}>
+            {/* Bouton Menu et Recherche Mobile */}
+            <div className="flex items-center gap-2" ref={megaMenuRef}>
               <button
                 onClick={toggleMegaMenu}
                 aria-label={
@@ -446,6 +446,15 @@ export function Header() {
                 <span className="font-body hidden text-sm font-medium tracking-wide uppercase lg:inline">
                   Menu
                 </span>
+              </button>
+
+              {/* Nouveau bouton recherche mobile */}
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                aria-label="Rechercher"
+                className="text-ylang-charcoal hover:text-ylang-rose flex h-10 w-10 transform items-center justify-center rounded-full bg-white/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 lg:hidden"
+              >
+                <Search className="h-5 w-5" strokeWidth={1.5} />
               </button>
             </div>
 
@@ -641,11 +650,11 @@ export function Header() {
           <div className="mx-auto max-w-7xl px-8 py-10">
             <div className="flex gap-12">
               {/* Navigation Principale */}
-              <div className="border-ylang-beige/50 w-64 shrink-0 border-r pr-8">
+              <div className="border-ylang-terracotta shrink-0 border-r pr-8">
                 <h3 className="text-ylang-charcoal/50 font-body mb-6 text-xs font-semibold tracking-widest uppercase">
                   Menu
                 </h3>
-                <ul className="space-y-6">
+                <ul className="space-y-2">
                   {mainNavigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -654,10 +663,10 @@ export function Header() {
                           href={item.href}
                           onClick={closeMegaMenu}
                           className={cn(
-                            "group flex items-center justify-between text-lg font-light tracking-wide transition-all duration-300",
+                            "group flex items-center justify-between rounded-lg p-2 text-lg font-light tracking-wide transition-all duration-300",
                             isActive
-                              ? "text-ylang-rose font-medium"
-                              : "text-ylang-charcoal hover:text-ylang-rose hover:translate-x-2",
+                              ? "text-ylang-rose bg-ylang-terracotta/10 font-medium"
+                              : "text-ylang-charcoal hover:text-ylang-rose hover:bg-ylang-terracotta/10 hover:translate-x-2",
                           )}
                         >
                           <span>
@@ -690,7 +699,7 @@ export function Header() {
                           onClick={closeMegaMenu}
                           className="group block"
                         >
-                          <h3 className="text-ylang-rose font-heading text-sm font-bold tracking-wider transition-colors">
+                          <h3 className="text-ylang-rose font-abramo text-sm font-bold tracking-wider transition-colors">
                             {category.title}
                           </h3>
                           {category.subtitle && (

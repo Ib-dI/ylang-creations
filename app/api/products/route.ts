@@ -74,6 +74,7 @@ export async function GET(request: Request) {
       interface ParsedOptions {
         sizes?: string[];
         customizable?: boolean;
+        isNew?: boolean;
       }
 
       let parsedOptions: ParsedOptions = {};
@@ -94,8 +95,10 @@ export async function GET(request: Request) {
         longDescription: p.description, // using description as both for now
         features: [], // db doesn't have features column yet, maybe tags?
         new:
-          new Date(p.createdAt) >
-          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // New if < 30 days
+          parsedOptions.isNew !== undefined
+            ? parsedOptions.isNew
+            : new Date(p.createdAt) >
+              new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Fallback to 30 days
         featured: p.isFeatured,
         customizable: parsedOptions.customizable ?? true, // Assuming all Ylang creations are customizable
         sizes: parsedOptions.sizes || [],

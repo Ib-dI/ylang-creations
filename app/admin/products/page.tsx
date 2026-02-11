@@ -61,6 +61,7 @@ interface Product {
     features?: string[];
     longDescription?: string;
     customizable?: boolean;
+    isNew?: boolean;
   };
   createdAt: Date;
 }
@@ -129,6 +130,7 @@ export default function ProductsPage() {
     features: [] as string[],
     sizes: [] as string[],
     defaultSize: "",
+    isNew: true,
   });
 
   const [newFeature, setNewFeature] = useState("");
@@ -183,6 +185,7 @@ export default function ProductsPage() {
         features: product.options?.features || [],
         sizes: product.options?.sizes || [],
         defaultSize: product.options?.defaultSize || "",
+        isNew: product.options?.isNew ?? true,
       });
     } else {
       setEditingProduct(null);
@@ -204,6 +207,7 @@ export default function ProductsPage() {
         features: [],
         sizes: [],
         defaultSize: "",
+        isNew: true,
       });
     }
     setActiveTab("general");
@@ -273,6 +277,7 @@ export default function ProductsPage() {
           features: formData.features,
           longDescription: formData.longDescription,
           customizable: formData.customizable,
+          isNew: formData.isNew,
         },
       };
 
@@ -830,7 +835,7 @@ export default function ProductsPage() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="bg-ylang-terracotta fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col shadow-2xl md:w-[800px] lg:w-[900px]"
+              className="bg-ylang-terracotta/90 fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col shadow-2xl md:w-[800px] lg:w-[900px]"
             >
               {/* Modal Header */}
               <div className="border-ylang-beige/50 relative overflow-hidden border-b bg-white px-8 py-6">
@@ -1401,7 +1406,7 @@ export default function ProductsPage() {
                       className="space-y-6"
                     >
                       {/* Status Cards */}
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         {/* Active */}
                         <div
                           className={`cursor-pointer rounded-2xl border-2 p-6 transition-all ${
@@ -1428,10 +1433,10 @@ export default function ProductsPage() {
                             </div>
                             <div>
                               <h4 className="text-ylang-charcoal font-semibold">
-                                Produit actif
+                                Actif
                               </h4>
-                              <p className="text-ylang-charcoal/60 text-sm">
-                                Visible dans la boutique
+                              <p className="text-ylang-charcoal/60 text-xs">
+                                Visible boutique
                               </p>
                             </div>
                           </div>
@@ -1463,10 +1468,45 @@ export default function ProductsPage() {
                             </div>
                             <div>
                               <h4 className="text-ylang-charcoal font-semibold">
-                                En vedette
+                                Vedette
                               </h4>
-                              <p className="text-ylang-charcoal/60 text-sm">
-                                Affiché sur la page d'accueil
+                              <p className="text-ylang-charcoal/60 text-xs">
+                                Accueil
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* New */}
+                        <div
+                          className={`cursor-pointer rounded-2xl border-2 p-6 transition-all ${
+                            formData.isNew
+                              ? "border-white bg-ylang-terracotta"
+                              : "border-ylang-beige bg-white hover:border-gray-300"
+                          }`}
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              isNew: !formData.isNew,
+                            })
+                          }
+                        >
+                          <div className="flex items-start gap-4">
+                            <div
+                              className={`flex h-12 w-12 items-center justify-center rounded-xl ${
+                                formData.isNew
+                                  ? "bg-ylang-rose/30 text-white"
+                                  : "bg-gray-100 text-gray-400"
+                              }`}
+                            >
+                              <Sparkles className="h-6 w-6" />
+                            </div>
+                            <div>
+                              <h4 className="text-ylang-charcoal font-semibold">
+                                Nouveauté
+                              </h4>
+                              <p className="text-ylang-charcoal/60 text-xs">
+                                Badge "Nouveau"
                               </p>
                             </div>
                           </div>
@@ -1515,7 +1555,7 @@ export default function ProductsPage() {
 
                       {/* Preview Link */}
                       {editingProduct && (
-                        <div className="border-ylang-rose/20 from-ylang-cream/50 rounded-2xl border bg-linear-to-br to-white p-6 shadow-sm">
+                        <div className="border-ylang-rose/20 rounded-2xl border bg-white p-6 shadow-sm">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                               <div className="bg-ylang-rose/10 flex h-10 w-10 items-center justify-center rounded-xl">
@@ -1548,11 +1588,11 @@ export default function ProductsPage() {
               </div>
 
               {/* Modal Footer */}
-              <div className="border-ylang-beige from-ylang-cream/50 flex items-center justify-between border-t bg-linear-to-r to-white px-8 py-5">
+              <div className="border-ylang-beige flex items-center justify-between border-t bg-white px-8 py-5">
                 <div className="text-ylang-charcoal/50 text-sm">
                   {editingProduct && (
                     <div className="flex items-center gap-2">
-                      <div className="bg-ylang-terracotta/40 h-2 w-2 rounded-full" />
+                      <div className="bg-ylang-terracotta/70 h-2 w-2 rounded-full" />
                       <span>
                         Dernière modification:{" "}
                         {new Date(editingProduct.createdAt).toLocaleDateString(

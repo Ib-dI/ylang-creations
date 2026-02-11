@@ -51,7 +51,7 @@ export function CraftsmanshipSection() {
   }, []);
 
   return (
-    <section className="section-padding overflow-hidden bg-linear-to-b from-ylang-terracotta/30 to-ylang-terracotta/20">
+    <section className="section-padding overflow-hidden bg-linear-to-b from-ylang-terracotta/50 to-ylang-terracotta/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16 text-center animate-fade-in-up">
