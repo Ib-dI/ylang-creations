@@ -513,7 +513,7 @@ export default function ProductsPage() {
               key={product.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="group border-ylang-beige overflow-hidden rounded-2xl border bg-white transition-all hover:shadow-lg"
+              className="group border-ylang-beige overflow-hidden border bg-white transition-all hover:shadow-sm"
             >
               {/* Image */}
               <div className="bg-ylang-beige relative aspect-square overflow-hidden">
@@ -869,9 +869,9 @@ export default function ProductsPage() {
                   </div>
                   <button
                     onClick={() => setShowModal(false)}
-                    className="text-ylang-charcoal/60 hover:bg-ylang-beige hover:text-ylang-charcoal rounded-xl p-3 transition-all"
+                    className="bg-ylang-rose/10 hover:bg-ylang-rose/20  rounded-full p-2 transition-all"
                   >
-                    <X className="h-6 w-6" />
+                    <X className="text-ylang-rose h-6 w-6" />
                   </button>
                 </div>
               </div>

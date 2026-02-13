@@ -5,6 +5,7 @@ import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { ProductCard } from "@/components/product/product-card";
 import type { CatalogProduct } from "@/data/products";
 import { product as productTable } from "@/db/schema";
+import { getCachedSettings } from "@/lib/actions/settings";
 import { db } from "@/lib/db";
 import { and, desc, eq } from "drizzle-orm";
 import { Loader2 } from "lucide-react";
@@ -107,11 +108,23 @@ function ProductsLoadingFallback() {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const result = await getCachedSettings();
+  const settings = result[0];
+
+  let heroSlides: any[] = [];
+  try {
+    if (settings?.heroSlides) {
+      heroSlides = JSON.parse(settings.heroSlides as string);
+    }
+  } catch (err) {
+    console.error("Error parsing heroSlides:", err);
+  }
+
   return (
     <>
       {/* Hero Section - Critical, pas de Suspense */}
-      <HeroSection />
+      <HeroSection initialSlides={heroSlides} />
 
       {/* Featured Products avec Suspense pour streaming */}
       <section className="section-padding bg-ylang-terracotta/50">

@@ -78,12 +78,12 @@ export function Footer() {
   };
 
   return (
-    <footer className="from-ylang-cream to-ylang-beige border-ylang-beige/50 border-t bg-linear-to-b">
+    <footer className="from-ylang-beige to-ylang-beige border-ylang-beige/50 border-t bg-linear-to-b">
       {/* Certifications / Trust badges */}
       <div className="border-ylang-beige/50 mt-4 border-t pt-8">
         <div className="grid grid-cols-2 items-center justify-items-center gap-6 md:grid-cols-4">
           <div className="text-center">
-            <div className="bg-ylang-beige/60 border-ylang-white border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
               <span className="text-2xl">🇫🇷</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -94,7 +94,7 @@ export function Footer() {
           </div>
 
           <div className="text-center">
-            <div className="bg-ylang-beige/60 border-ylang-white border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
               <span className="text-2xl">🌿</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -105,7 +105,7 @@ export function Footer() {
           </div>
 
           <div className="text-center">
-            <div className="bg-ylang-beige/60 border-ylang-white border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
               <span className="text-2xl">✂️</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -116,7 +116,7 @@ export function Footer() {
           </div>
 
           <div className="text-center">
-            <div className="bg-ylang-beige/60 border-ylang-white border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
               <span className="text-2xl">💫</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -133,7 +133,7 @@ export function Footer() {
           <div className="grid items-center gap-8 lg:grid-cols-2">
             {/* Texte */}
             <div className="text-center lg:text-left">
-              <h3 className="font-display text-ylang-charcoal mb-3 text-3xl lg:text-4xl">
+              <h3 className="font-abramo-script text-ylang-charcoal mb-3 text-3xl lg:text-5xl">
                 Rejoignez notre univers
               </h3>
               <p className="font-body text-ylang-charcoal/60 mx-auto max-w-xl text-lg lg:mx-0">
@@ -155,7 +155,7 @@ export function Footer() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-ylang-beige/60 border-gray-300 py-6"
+                  className="w-full rounded-md bg-ylang-cream border-gray-300 py-6"
                 />
               </div>
               <Button
@@ -198,7 +198,7 @@ export function Footer() {
 
           {/* Colonne 2 : Boutique */}
           <div>
-            <h4 className="font-display text-ylang-charcoal mb-4 text-lg font-semibold tracking-tight">
+            <h4 className="font-abramo text-ylang-rose/90 mb-4 text-lg font-semibold tracking-tight">
               Boutique
             </h4>
             <ul className="space-y-3">
@@ -206,7 +206,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose inline-block text-sm transition-colors duration-300 hover:translate-x-1"
+                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose inline-block text-sm transition-all duration-300 hover:translate-x-1"
                   >
                     {link.name}
                   </Link>
@@ -217,7 +217,7 @@ export function Footer() {
 
           {/* Colonne 3 : À propos */}
           <div>
-            <h4 className="font-display text-ylang-charcoal mb-4 text-lg font-semibold tracking-tight">
+            <h4 className="font-abramo text-ylang-rose/90 mb-4 text-lg font-semibold tracking-tight">
               À propos
             </h4>
             <ul className="space-y-3">
@@ -225,7 +225,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose inline-block text-sm transition-colors duration-300 hover:translate-x-1"
+                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose inline-block text-sm transition-all duration-300 hover:translate-x-1"
                   >
                     {link.name}
                   </Link>
@@ -236,7 +236,7 @@ export function Footer() {
 
           {/* Colonne 4 : Aide */}
           <div>
-            <h4 className="font-display text-ylang-charcoal mb-4 text-lg font-semibold tracking-tight">
+            <h4 className="font-abramo text-ylang-rose/90 mb-4 text-lg font-semibold tracking-tight">
               Aide & Infos
             </h4>
             <ul className="space-y-3">
@@ -244,7 +244,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose inline-block text-sm transition-colors duration-300 hover:translate-x-1"
+                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose inline-block text-sm transition-all duration-300 hover:translate-x-1"
                   >
                     {link.name}
                   </Link>

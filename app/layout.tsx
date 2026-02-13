@@ -25,32 +25,13 @@ const bricolageGrotesque = Bricolage_Grotesque({
   preload: false, // Pas critique, charge en différé
 });
 
-import { settings } from "@/db/schema";
-import { db } from "@/lib/db";
-import { eq } from "drizzle-orm";
-
-const SETTINGS_ID = "main-settings";
-
-import { unstable_cache } from "next/cache";
-
-const getCachedSettings = unstable_cache(
-  async () => {
-    return await db
-      .select()
-      .from(settings)
-      .where(eq(settings.id, SETTINGS_ID))
-      .limit(1);
-  },
-  ["main-settings"],
-  {
-    revalidate: 3600, // 1 hour
-    tags: ["settings"],
-  },
-);
+import { getCachedSettings } from "@/lib/actions/settings";
 
 export async function generateMetadata(): Promise<Metadata> {
   const result = await getCachedSettings();
   const s = result[0];
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://ylang-creations.com";
 
   return {
     title: {
@@ -58,22 +39,54 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${s?.storeName || "Ylang Creations"}`,
     },
     description:
-      s?.storeDescription || "Créations artisanales pour bébés et enfants",
-    metadataBase: new URL(
-      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
-    ),
+      s?.storeDescription ||
+      "Créations artisanales pour bébés et enfants, faites main avec amour. Découvrez nos collections uniques et personnalisables.",
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: "/",
+    },
+    applicationName: "Ylang Creations",
+    authors: [{ name: "Ylang Creations" }],
+    generator: "Next.js",
+    keywords: [
+      "bébé",
+      "enfant",
+      "artisanat",
+      "fait main",
+      "création française",
+      "cadeau naissance",
+      "personnalisation",
+    ],
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
     openGraph: {
       title: s?.storeName || "Ylang Creations",
       description:
-        s?.storeDescription || "Créations artisanales pour bébés et enfants",
-      type: "website",
+        s?.storeDescription ||
+        "Créations artisanales pour bébés et enfants, faites main avec amour.",
+      url: baseUrl,
+      siteName: "Ylang Creations",
       locale: "fr_FR",
+      type: "website",
     },
     twitter: {
       card: "summary_large_image",
       title: s?.storeName || "Ylang Creations",
       description:
-        s?.storeDescription || "Créations artisanales pour bébés et enfants",
+        s?.storeDescription ||
+        "Créations artisanales pour bébés et enfants, faites main avec amour.",
+    },
+    verification: {
+      google: "google-site-verification-placeholder", // À remplacer via env ou settings plus tard
     },
   };
 }

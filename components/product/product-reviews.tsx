@@ -49,14 +49,8 @@ export function ProductReviews({
     startTransition(async () => {
       const result = await submitReview({
         productId,
-        userId: currentUser.id,
         rating,
         comment,
-        userInfo: {
-          name: currentUser.name,
-          email: currentUser.email,
-          image: currentUser.image,
-        },
       });
 
       if (result.success) {
@@ -75,11 +69,11 @@ export function ProductReviews({
       {/* Header & Stats */}
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <div className="text-ylang-rose font-body mb-1 flex items-center gap-2 text-xs font-semibold tracking-widest uppercase">
+          <div className="text-ylang-rose font-abramo mb-1 flex items-center gap-2 text-xs font-semibold tracking-widest uppercase">
             <MessageSquare className="h-3 w-3" />
             <span>Témoignages</span>
           </div>
-          <h2 className="font-display text-ylang-charcoal text-3xl lg:text-4xl">
+          <h2 className="font-abramo-script text-ylang-charcoal text-3xl lg:text-5xl">
             L'avis de nos clients
           </h2>
         </div>

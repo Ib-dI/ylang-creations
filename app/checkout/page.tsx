@@ -85,7 +85,7 @@ export default function CheckoutPage() {
   if (isCheckingAuth) {
     return (
       <div className="from-ylang-cream to-ylang-beige flex min-h-screen items-center justify-center bg-linear-to-br pt-24 pb-12">
-        <Loader2 className="h-12 w-12 animate-spin text-[#b76e79]" />
+        <Loader2 className="h-12 w-12 animate-spin text-ylang-rose" />
       </div>
     );
   }

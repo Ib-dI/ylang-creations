@@ -187,7 +187,13 @@ export function OrderConfirmationEmail({
                     </h3>
                     <p style={{ color: '#1a1a1a', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>
                       {shippingAddress.address}<br />
-                      {shippingAddress.addressComplement && <>{shippingAddress.addressComplement}<br /></>}
+                      {shippingAddress.addressComplement ? (
+                        <>
+                          {shippingAddress.addressComplement}
+                          <br />
+                        </>
+                      ) : null}
+
                       {shippingAddress.postalCode} {shippingAddress.city}<br />
                       {shippingAddress.country}
                     </p>

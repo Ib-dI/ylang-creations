@@ -452,9 +452,9 @@ export function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Rechercher"
-                className="text-ylang-charcoal hover:text-ylang-rose flex h-10 w-10 transform items-center justify-center rounded-full bg-white/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 lg:hidden"
+                className="text-ylang-charcoal hover:text-ylang-rose flex p-2 transform items-center justify-center rounded-full bg-white/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:hidden"
               >
-                <Search className="h-5 w-5" strokeWidth={1.5} />
+                <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.5} />
               </button>
             </div>
 
@@ -671,9 +671,9 @@ export function Header() {
                         >
                           <span>
                             {item.name}
-                            {item.featured && (
+                            {item.featured ? (
                               <span className="ml-2 text-sm">✨</span>
-                            )}
+                            ) : null}
                           </span>
                           <ChevronRight
                             className={cn(
@@ -844,7 +844,9 @@ export function Header() {
                     )}
                   >
                     {item.name}
-                    {item.featured && <span className="ml-2 text-xs">✨</span>}
+                    {item.featured ? (
+                      <span className="ml-2 text-xs">✨</span>
+                    ) : null}
                   </Link>
                 </div>
               ))}

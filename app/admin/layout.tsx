@@ -199,7 +199,10 @@ export default function AdminLayout({
               }`}
             >
               <LogOut className="h-5 w-5 shrink-0" />
-              {sidebarOpen && <span className="font-medium">Déconnexion</span>}
+              {sidebarOpen ? (
+                <span className="font-medium">Déconnexion</span>
+              ) : null}
+
             </button>
           </div>
         </div>

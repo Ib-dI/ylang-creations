@@ -409,7 +409,7 @@ function CollectionsContent() {
                 onClick={() => setShowFilters(!showFilters)}
                 className={`font-body border-ylang-rose flex items-center justify-center gap-2.5 rounded-2xl border bg-white px-6 py-3.5 text-sm font-medium transition-all ${
                   showFilters
-                    ? "border-ylang-rose bg-ylang-rose/5 text-ylang-rose"
+                    ? "border-ylang-rose bg-ylang-rose/60 text-ylang-white"
                     : "text-ylang-charcoal"
                 }`}
               >
@@ -454,7 +454,7 @@ function CollectionsContent() {
                 animate={{ opacity: 1, height: "auto", y: 0 }}
                 exit={{ opacity: 0, height: 0, y: -10 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="border-ylang-rose overflow-hidden rounded-2xl border bg-white p-6 shadow-sm"
+                className="border-ylang-rose overflow-hidden rounded-2xl border bg-ylang-beige p-6 shadow-sm"
               >
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                   {/* Catégories */}
@@ -480,7 +480,7 @@ function CollectionsContent() {
                           className={`font-body relative rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
                             selectedCategory === cat
                               ? "bg-ylang-rose shadow-ylang-rose/20 text-white shadow-md"
-                              : "bg-ylang-beige/40 text-ylang-charcoal/70 hover:bg-ylang-beige hover:text-ylang-charcoal"
+                              : "bg-ylang-cream text-ylang-charcoal/70 hover:bg-ylang-rose/10 hover:text-ylang-charcoal"
                           }`}
                         >
                           {cat}

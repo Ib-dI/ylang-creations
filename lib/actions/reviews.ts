@@ -2,6 +2,7 @@
 
 import { review, user } from "@/db/schema";
 import { db } from "@/lib/db";
+import { createClient } from "@/utils/supabase/server";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -59,42 +60,50 @@ export async function getReviews(productId: string) {
 
 export async function submitReview({
   productId,
-  userId,
   rating,
   comment,
-  userInfo,
 }: {
   productId: string;
-  userId: string;
   rating: number;
   comment: string;
-  userInfo?: {
-    name: string;
-    email: string;
-    image: string | null;
-  };
 }) {
   try {
-    // 1. Ensure user exists in local DB
+    // 1. Authenticate server-side — do NOT trust client-provided userId
+    const supabase = await createClient();
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+
+    if (!authUser) {
+      return {
+        success: false,
+        error: "Vous devez être connecté pour laisser un avis",
+      };
+    }
+
+    const userId = authUser.id;
+
+    // 2. Ensure user exists in local DB
     const existingUser = await db
       .select()
       .from(user)
       .where(eq(user.id, userId))
       .limit(1);
 
-    if (existingUser.length === 0 && userInfo) {
+    if (existingUser.length === 0) {
       await db.insert(user).values({
         id: userId,
-        name: userInfo.name,
-        email: userInfo.email,
-        emailVerified: true, // Assuming trusted from Supabase
-        image: userInfo.image,
+        name:
+          authUser.user_metadata?.full_name || authUser.email || "Utilisateur",
+        email: authUser.email!,
+        emailVerified: true,
+        image: authUser.user_metadata?.avatar_url || null,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
     }
 
-    // 2. Check if review exists
+    // 3. Check if review exists
     const existingReview = await db
       .select()
       .from(review)
@@ -108,7 +117,7 @@ export async function submitReview({
         .set({
           rating,
           comment,
-          createdAt: new Date(), // Update timestamp? Or maybe add updatedAt
+          createdAt: new Date(),
         })
         .where(eq(review.id, existingReview[0].id));
     } else {

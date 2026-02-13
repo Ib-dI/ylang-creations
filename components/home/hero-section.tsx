@@ -1,7 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const DEFAULT_SLIDES = [
@@ -44,29 +46,26 @@ interface Slide {
   image: string;
 }
 
-export function HeroSection() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [slides, setSlides] = useState<Slide[]>(DEFAULT_SLIDES);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+interface HeroSectionProps {
+  initialSlides?: Slide[];
+}
 
-  // Fetch settings
-  useEffect(() => {
-    fetch("/api/settings", { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.heroSlides && data.heroSlides.length > 0) {
-          setSlides(data.heroSlides);
-        }
-      })
-      .catch(console.error);
-  }, []);
+export function HeroSection({ initialSlides }: HeroSectionProps) {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [slides, setSlides] = useState<Slide[]>(
+    initialSlides && initialSlides.length > 0 ? initialSlides : DEFAULT_SLIDES,
+  );
+
+  // Use a ref for transitioning state to avoid re-creating callbacks (Best Practice 5.1)
+  const isTransitioningRef = useRef(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-advance slider avec cleanup
   useEffect(() => {
     if (slides.length <= 1) return;
 
     timerRef.current = setInterval(() => {
+      // Use functional state update to avoid dependency on currentSlide (Best Practice 5.1)
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
 
@@ -88,27 +87,33 @@ export function HeroSection() {
   }, [currentSlide, slides]);
 
   const nextSlide = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
     setCurrentSlide((prev) => (prev + 1) % slides.length);
-    setTimeout(() => setIsTransitioning(false), 1000);
-  }, [isTransitioning, slides.length]);
+    setTimeout(() => {
+      isTransitioningRef.current = false;
+    }, 1000);
+  }, [slides.length]);
 
   const prevSlide = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-    setTimeout(() => setIsTransitioning(false), 1000);
-  }, [isTransitioning, slides.length]);
+    setTimeout(() => {
+      isTransitioningRef.current = false;
+    }, 1000);
+  }, [slides.length]);
 
   const goToSlide = useCallback(
     (index: number) => {
-      if (isTransitioning || index === currentSlide) return;
-      setIsTransitioning(true);
+      if (isTransitioningRef.current || index === currentSlide) return;
+      isTransitioningRef.current = true;
       setCurrentSlide(index);
-      setTimeout(() => setIsTransitioning(false), 1000);
+      setTimeout(() => {
+        isTransitioningRef.current = false;
+      }, 1000);
     },
-    [isTransitioning, currentSlide],
+    [currentSlide],
   );
 
   const currentSlideData = slides[currentSlide];
@@ -156,19 +161,19 @@ export function HeroSection() {
       </div>
 
       {/* Content avec animations CSS */}
-      {/* <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
         <h1
           key={`title-${currentSlide}`}
-          className="font-display mb-6 max-w-5xl text-4xl font-bold leading-tight text-white drop-shadow-lg md:text-6xl lg:text-7xl animate-fade-in-up"
-          style={{ animationDelay: '0.3s' }}
+          className="font-abramo-script animate-fade-in-up mb-6 max-w-5xl text-4xl leading-tight text-white drop-shadow-lg md:text-6xl lg:text-7xl"
+          style={{ animationDelay: "0.3s" }}
         >
           {currentSlideData.title}
         </h1>
 
         <p
           key={`subtitle-${currentSlide}`}
-          className="font-body mb-10 max-w-2xl text-lg font-light tracking-wide text-white/95 drop-shadow-md md:text-xl animate-fade-in-up"
-          style={{ animationDelay: '0.5s' }}
+          className="font-body animate-fade-in-up mb-10 max-w-2xl text-lg font-light tracking-wide text-white/95 drop-shadow-md md:text-xl"
+          style={{ animationDelay: "0.5s" }}
         >
           {currentSlideData.subtitle}
         </p>
@@ -176,27 +181,26 @@ export function HeroSection() {
         <div
           key={`cta-${currentSlide}`}
           className="animate-fade-in-up"
-          style={{ animationDelay: '0.7s' }}
+          style={{ animationDelay: "0.7s" }}
         >
           <Link href={currentSlideData.link || "/"}>
             <Button
               variant="luxury"
               size="lg"
-              className="px-10 py-6 text-lg uppercase tracking-widest transition-transform duration-300 hover:scale-105"
+              className="px-10 py-6 text-lg tracking-widest uppercase transition-transform duration-300 hover:scale-105"
             >
               {currentSlideData.cta || "Découvrir"}
             </Button>
           </Link>
         </div>
-      </div> */}
+      </div>
 
       {/* Navigation Arrows - Visible seulement si plusieurs slides */}
       {slides.length > 1 && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-4 lg:px-8">
           <button
             onClick={prevSlide}
-            disabled={isTransitioning}
-            className="pointer-events-auto -translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="pointer-events-auto -translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white"
             aria-label="Diapositive précédente"
           >
             <ChevronLeft
@@ -207,8 +211,7 @@ export function HeroSection() {
 
           <button
             onClick={nextSlide}
-            disabled={isTransitioning}
-            className="pointer-events-auto translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="pointer-events-auto translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white"
             aria-label="Diapositive suivante"
           >
             <ChevronRight
@@ -230,11 +233,10 @@ export function HeroSection() {
             <button
               key={slide.id}
               onClick={() => goToSlide(index)}
-              disabled={isTransitioning}
               role="tab"
               aria-selected={index === currentSlide}
               aria-label={`Aller à la diapositive ${index + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-500 ease-out disabled:cursor-not-allowed ${
+              className={`h-1.5 rounded-full transition-all duration-500 ease-out ${
                 index === currentSlide
                   ? "w-12 bg-white"
                   : "w-4 bg-white/40 hover:w-6 hover:bg-white/60"
