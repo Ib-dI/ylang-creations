@@ -81,21 +81,21 @@ export function HowItWorksSection() {
                 )}
 
                 {/* Card */}
-                <div className="relative h-full rounded-2xl bg-ylang-yellow p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+                <div className="relative h-full aspect-4/5 rounded-2xl bg-ylang-beige p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-xs">
                   {/* Number Badge */}
-                  <div className="absolute -top-4 -right-4 flex h-16 w-16 items-center justify-center rounded-full bg-ylang-terracotta shadow-lg">
+                  <div className="absolute -top-4 -right-4 flex h-16 w-16 items-center justify-center rounded-full bg-ylang-rose shadow-xs">
                     <span className="font-display text-2xl font-bold text-white">
                       {step.number}
                     </span>
                   </div>
 
                   {/* Icon */}
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-ylang-white transition-transform duration-300 group-hover:scale-110">
-                    <Icon className="text-ylang-terracotta h-8 w-8" />
+                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-ylang-terracotta/20 transition-transform duration-300 group-hover:scale-110">
+                    <Icon className="text-ylang-rose h-8 w-8" />
                   </div>
 
                   {/* Content */}
-                  <h3 className="font-display text-ylang-charcoal mb-4 text-2xl">
+                  <h3 className="font-abramo-script text-ylang-charcoal mb-4 text-5xl">
                     {step.title}
                   </h3>
                   <p className="font-body text-ylang-charcoal/70 mb-6 leading-relaxed">
@@ -106,7 +106,7 @@ export function HowItWorksSection() {
                   <ul className="space-y-2">
                     {step.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <Check className="text-white mt-0.5 h-5 w-5 shrink-0" />
+                        <Check className="text-ylang-rose mt-0.5 h-5 w-5 shrink-0" />
                         <span className="font-body text-ylang-charcoal/60 text-sm">
                           {feature}
                         </span>

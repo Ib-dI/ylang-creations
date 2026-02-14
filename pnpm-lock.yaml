@@ -153,6 +153,9 @@ importers:
       '@types/three':
         specifier: ^0.181.0
         version: 0.181.0
+      css-aspect-ratio:
+        specifier: ^1.0.5
+        version: 1.0.5
       drizzle-kit:
         specifier: ^0.31.8
         version: 0.31.8
@@ -2558,6 +2561,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  css-aspect-ratio@1.0.5:
+    resolution: {integrity: sha512-ASq5K/BQqJI99XqGvexJLr/ksyO5U1357cmpU+I2bAWnztJLQ4JPBU2r7B00HPI5kJ6Ux+z944k78l20vqgA+Q==}
 
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
@@ -7119,6 +7125,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  css-aspect-ratio@1.0.5: {}
 
   csstype@3.2.3: {}
 

@@ -153,7 +153,7 @@ export function CraftsmanshipSection() {
                     <value.icon className="text-ylang-rose h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="font-display text-ylang-charcoal mb-1 text-lg">
+                    <h4 className="font-abramo-script text-ylang-charcoal mb-1 text-3xl">
                       {value.title}
                     </h4>
                     <p className="font-body text-ylang-charcoal/60 text-sm">
@@ -169,7 +169,7 @@ export function CraftsmanshipSection() {
               className="animate-fade-in-up"
               style={{ animationDelay: '1s' }}
             >
-              <Button variant="secondary" size="lg" className="group" asChild>
+              <Button variant="secondary" size="lg" className="group " asChild>
                 <Link href="/a-propos">
                   Découvrir notre histoire
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />

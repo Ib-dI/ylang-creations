@@ -130,7 +130,7 @@ export function WishlistDrawer() {
 
                         {/* Info */}
                         <div className="min-w-0 flex-1">
-                          <p className="mb-1 text-xs tracking-wider text-ylang-charcoal/50 uppercase">
+                          <p className="mb-1 text-xs tracking-wider text-ylang-charcoal/50 font-abramo font-semibold uppercase">
                             {item.category}
                           </p>
                           <Link
@@ -168,7 +168,7 @@ export function WishlistDrawer() {
                         </Button>
                         {item.customizable && (
                           <Button
-                            variant="ghost"
+                            variant="secondary"
                             size="sm"
                             asChild
                             onClick={closeWishlist}

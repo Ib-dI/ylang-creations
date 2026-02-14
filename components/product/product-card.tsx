@@ -66,7 +66,7 @@ export function ProductCard({
       <Card className="relative overflow-hidden border-0 bg-white transition-all duration-500">
         {/* Image Container */}
         <Link href={`/produits/${product.id}`}>
-          <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden">
+          <div className="bg-ylang-beige/30 relative aspect-4/5 overflow-hidden">
             {/* Image principale */}
             <div className="relative h-full w-full">
               <Image
@@ -75,9 +75,10 @@ export function ProductCard({
                 fill
                 priority={priority}
                 loading={priority ? "eager" : "lazy"}
-                quality={85}
+                decoding="async"
+                quality={80}
                 className="origin-center object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
               />
             </div>
 
@@ -112,7 +113,7 @@ export function ProductCard({
         <div className="absolute top-4 left-4 flex flex-col gap-2 transition-all duration-300 group-hover:opacity-0">
           {product.new && (
             <div
-              className="bg-ylang-terracotta rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-charcoal/80 uppercase shadow-lg"
+              className="bg-ylang-terracotta text-charcoal/80 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider uppercase shadow-lg"
               style={{
                 animation:
                   "scaleRotate 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s both",
@@ -122,7 +123,7 @@ export function ProductCard({
             </div>
           )}
           {product.customizable && (
-            <div className="bg-ylang-yellow flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-charcoal/80 uppercase">
+            <div className="bg-ylang-yellow text-charcoal/80 flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider uppercase">
               <Wand2 className="h-3 w-3" />
               Sur mesure
             </div>
@@ -146,7 +147,7 @@ export function ProductCard({
           aria-label={
             isWishlisted ? "Retirer des favoris" : "Ajouter aux favoris"
           }
-          className="group/heart absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur-sm transition-transform duration-300 hover:scale-110"
+          className={cn(isWishlisted ? "bg-ylang-terracotta/50 border-ylang-terracotta": "bg-white/90 border-white/90", "group/heart absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full border shadow-lg transition-transform duration-300 hover:scale-110")}
         >
           <Heart
             className={cn(
@@ -161,7 +162,7 @@ export function ProductCard({
         {/* Infos produit */}
         <div className="bg-ylang-beige space-y-1.5 p-3">
           <div>
-            <p className="font-abramo text-ylang-rose mb-0.5 text-xs tracking-widest uppercase font-semibold">
+            <p className="font-abramo text-ylang-rose mb-0.5 text-xs font-semibold tracking-widest uppercase">
               {product.category}
             </p>
             <Link href={`/produits/${product.id}`}>
@@ -175,7 +176,7 @@ export function ProductCard({
             <Button
               variant="secondary"
               size="sm"
-              className="group border flex-1"
+              className="group flex-1 border"
               asChild
             >
               <Link href={`/produits/${product.id}`}>Découvrir</Link>

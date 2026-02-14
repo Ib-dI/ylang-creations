@@ -37,7 +37,7 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
     id: p.id,
     name: p.name,
     category: p.category,
-    price: parseFloat(p.price),
+    price: p.price / 100,
     image: parsedImages[0] || "/images/placeholder.jpg",
     images: parsedImages,
     description: p.description || "",
@@ -49,7 +49,7 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
     sizes: parsedOptions.sizes || [],
     defaultSize: parsedOptions.sizes?.[0] || undefined,
     slug: p.slug,
-    compareAtPrice: p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
+    compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
   };
 }
 
@@ -80,7 +80,7 @@ async function FeaturedProductsData() {
   }
 
   return (
-    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 sm:gap-8 lg:grid-cols-4">
       {formattedProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
@@ -91,13 +91,13 @@ async function FeaturedProductsData() {
 // Composant de fallback optimisé
 function ProductsLoadingFallback() {
   return (
-    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 sm:gap-8 lg:grid-cols-4">
       {[1, 2, 3, 4].map((i) => (
         <div
           key={i}
-          className="animate-pulse overflow-hidden rounded-lg bg-white shadow-sm"
+          className="animate-pulse overflow-hidden bg-white shadow-sm"
         >
-          <div className="aspect-square bg-gray-200" />
+          <div className="aspect-4/5 bg-gray-200" />
           <div className="space-y-3 p-4">
             <div className="h-4 w-3/4 rounded bg-gray-200" />
             <div className="h-4 w-1/2 rounded bg-gray-200" />
