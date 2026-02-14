@@ -47,8 +47,8 @@ export async function GET(
         name: p.name,
         slug: p.slug,
         description: p.description,
-        price: parseFloat(p.price),
-        compareAtPrice: p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
+        price: p.price / 100,
+        compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
         category: p.category,
         subcategory: p.subcategory,
         images: p.images ? JSON.parse(p.images) : [],
@@ -121,11 +121,11 @@ export async function PATCH(
 
     // Handle numeric fields
     if (validatedData.price !== undefined) {
-      updateData.price = String(validatedData.price);
+      updateData.price = Math.round(validatedData.price * 100);
     }
     if (validatedData.compareAtPrice !== undefined) {
       updateData.compareAtPrice = validatedData.compareAtPrice
-        ? String(validatedData.compareAtPrice)
+        ? Math.round(validatedData.compareAtPrice * 100)
         : null;
     }
     if (validatedData.stock !== undefined) {

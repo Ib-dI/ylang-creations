@@ -13,7 +13,9 @@ export async function GET(request: Request) {
     const search = searchParams.get("search");
     const sort = searchParams.get("sort");
     const featured = searchParams.get("featured");
-    const limit = searchParams.get("limit");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limitParam = parseInt(searchParams.get("limit") || "50");
+    const offset = (page - 1) * limitParam;
 
     // Base query: Only active products for public view
     const conditions = [eq(product.isActive, true)];
@@ -40,24 +42,28 @@ export async function GET(request: Request) {
 
     let orderBy = desc(product.createdAt);
     if (sort === "price-asc") {
-      // Cast to float for sorting because price is string in DB
-      orderBy = sql`CAST(${product.price} AS FLOAT)`; // Default asc
+      orderBy = asc(product.price);
     } else if (sort === "price-desc") {
-      orderBy = sql`CAST(${product.price} AS FLOAT) DESC`;
+      orderBy = desc(product.price);
     } else if (sort === "name") {
       orderBy = asc(product.name);
     }
 
-    let query = db
+    const query = db
       .select()
       .from(product)
       .where(and(...conditions))
-      .orderBy(orderBy);
+      .orderBy(orderBy)
+      .limit(limitParam)
+      .offset(offset);
 
-    if (limit) {
-      // @ts-expect-error - Drizzle limit method typing issue
-      query = query.limit(parseInt(limit));
-    }
+    // Get total count for pagination
+    const [totalResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(product)
+      .where(and(...conditions));
+
+    const total = Number(totalResult?.count || 0);
 
     const products = await query;
 
@@ -88,7 +94,7 @@ export async function GET(request: Request) {
         id: p.id,
         name: p.name,
         category: p.category,
-        price: parseFloat(p.price),
+        price: p.price / 100,
         image: parsedImages[0] || "/images/placeholder.jpg",
         images: parsedImages,
         description: p.description,
@@ -104,11 +110,19 @@ export async function GET(request: Request) {
         sizes: parsedOptions.sizes || [],
         defaultSize: parsedOptions.sizes?.[0] || null,
         slug: p.slug,
-        compareAtPrice: p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
+        compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
       };
     });
 
-    return NextResponse.json({ products: formattedProducts });
+    return NextResponse.json({
+      products: formattedProducts,
+      pagination: {
+        page,
+        limit: limitParam,
+        total,
+        totalPages: Math.ceil(total / limitParam),
+      },
+    });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(

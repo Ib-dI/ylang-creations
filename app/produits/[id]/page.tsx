@@ -38,7 +38,7 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
     slug: p.slug,
     name: p.name,
     category: p.category,
-    price: parseFloat(p.price),
+    price: p.price / 100,
     image: parsedImages[0] || "/images/placeholder.jpg",
     images: parsedImages,
     description: p.description || "",
@@ -51,7 +51,7 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
     sizes: parsedOptions.sizes || [],
     defaultSize:
       parsedOptions.defaultSize || parsedOptions.sizes?.[0] || undefined,
-    compareAtPrice: p.compareAtPrice ? parseFloat(p.compareAtPrice) : null,
+    compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
   };
 }
 

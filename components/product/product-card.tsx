@@ -112,7 +112,7 @@ export function ProductCard({
         <div className="absolute top-4 left-4 flex flex-col gap-2 transition-all duration-300 group-hover:opacity-0">
           {product.new && (
             <div
-              className="bg-ylang-terracotta rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-white uppercase shadow-lg"
+              className="bg-ylang-terracotta rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-charcoal/80 uppercase shadow-lg"
               style={{
                 animation:
                   "scaleRotate 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s both",
@@ -122,7 +122,7 @@ export function ProductCard({
             </div>
           )}
           {product.customizable && (
-            <div className="bg-ylang-yellow flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-white uppercase">
+            <div className="bg-ylang-yellow flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider text-charcoal/80 uppercase">
               <Wand2 className="h-3 w-3" />
               Sur mesure
             </div>
@@ -161,7 +161,7 @@ export function ProductCard({
         {/* Infos produit */}
         <div className="bg-ylang-beige space-y-1.5 p-3">
           <div>
-            <p className="font-abramo text-ylang-terracotta mb-0.5 text-xs tracking-widest uppercase font-semibold">
+            <p className="font-abramo text-ylang-rose mb-0.5 text-xs tracking-widest uppercase font-semibold">
               {product.category}
             </p>
             <Link href={`/produits/${product.id}`}>

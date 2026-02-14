@@ -17,8 +17,14 @@ export type ReviewWithUser = {
   } | null;
 };
 
-export async function getReviews(productId: string) {
+export async function getReviews(
+  productId: string,
+  page: number = 1,
+  limit: number = 10,
+) {
   try {
+    const offset = (page - 1) * limit;
+
     const reviews = await db
       .select({
         id: review.id,
@@ -33,7 +39,9 @@ export async function getReviews(productId: string) {
       .from(review)
       .leftJoin(user, eq(review.userId, user.id))
       .where(eq(review.productId, productId))
-      .orderBy(desc(review.createdAt));
+      .orderBy(desc(review.createdAt))
+      .limit(limit)
+      .offset(offset);
 
     const [agg] = await db
       .select({
@@ -43,10 +51,15 @@ export async function getReviews(productId: string) {
       .from(review)
       .where(eq(review.productId, productId));
 
+    const totalReviews = agg?.count ? Number(agg.count) : 0;
+    const totalPages = Math.ceil(totalReviews / limit);
+
     return {
       reviews,
       averageRating: agg?.avgRating ? Number(agg.avgRating) : 0,
-      totalReviews: agg?.count ? Number(agg.count) : 0,
+      totalReviews,
+      totalPages,
+      currentPage: page,
     };
   } catch (error) {
     console.error("Error fetching reviews:", error);
@@ -54,6 +67,8 @@ export async function getReviews(productId: string) {
       reviews: [],
       averageRating: 0,
       totalReviews: 0,
+      totalPages: 0,
+      currentPage: 1,
     };
   }
 }
