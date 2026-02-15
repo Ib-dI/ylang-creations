@@ -38,7 +38,7 @@ const footerLinks = {
   help: [
     { name: "Guide des tailles", href: "/aide/tailles" },
     { name: "Comment personnaliser", href: "/aide/personnalisation" },
-    // { name: "Livraison & Retours", href: "/aide/livraison" },
+    { name: "Livraison & Retours", href: "/aide/livraison" },
     { name: "Entretien des produits", href: "/aide/entretien" },
     { name: "FAQ", href: "/aide/faq" },
   ],
@@ -83,7 +83,7 @@ export function Footer() {
       <div className="border-ylang-beige/50 mt-4 border-t pt-8">
         <div className="grid grid-cols-2 items-center justify-items-center gap-6 md:grid-cols-4">
           <div className="text-center">
-            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full border">
               <span className="text-2xl">🇫🇷</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -94,7 +94,7 @@ export function Footer() {
           </div>
 
           <div className="text-center">
-            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full border">
               <span className="text-2xl">🌿</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -105,7 +105,7 @@ export function Footer() {
           </div>
 
           <div className="text-center">
-            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full border">
               <span className="text-2xl">✂️</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -116,7 +116,7 @@ export function Footer() {
           </div>
 
           <div className="text-center">
-            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 border mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full border">
               <span className="text-2xl">💫</span>
             </div>
             <p className="font-body text-ylang-charcoal/60 text-xs">
@@ -149,13 +149,12 @@ export function Footer() {
             >
               <div className="flex-1">
                 <Input
-                
                   type="email"
                   placeholder="votre@email.fr"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full rounded-md bg-ylang-cream border-gray-300 py-6"
+                  className="bg-ylang-cream w-full rounded-md border-gray-300 py-6"
                 />
               </div>
               <Button
