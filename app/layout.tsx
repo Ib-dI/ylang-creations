@@ -1,4 +1,5 @@
 import { ClientLayoutWrapper } from "@/components/layout/client-layout-wrapper";
+import FontPreloader from "@/components/layout/font-preloader";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
@@ -99,6 +100,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="fr">
       <head>
+        <FontPreloader />
         <link rel="icon" href="/logo/logo-1.png" type="image/png" sizes="any" />
         <link rel="apple-touch-icon" href="/logo/logo-1.png" />
         {/* Preconnect pour les domaines externes si vous en utilisez */}

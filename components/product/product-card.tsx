@@ -76,9 +76,9 @@ export function ProductCard({
                 priority={priority}
                 loading={priority ? "eager" : "lazy"}
                 decoding="async"
-                quality={80}
+                quality={75}
                 className="origin-center object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-                sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
+                sizes="(max-width: 1024px) 48vw, 24vw"
               />
             </div>
 
@@ -147,7 +147,12 @@ export function ProductCard({
           aria-label={
             isWishlisted ? "Retirer des favoris" : "Ajouter aux favoris"
           }
-          className={cn(isWishlisted ? "bg-ylang-terracotta/50 border-ylang-terracotta": "bg-white/90 border-white/90", "group/heart absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full border shadow-lg transition-transform duration-300 hover:scale-110")}
+          className={cn(
+            isWishlisted
+              ? "bg-ylang-terracotta/50 border-ylang-terracotta"
+              : "border-white/90 bg-white/90",
+            "group/heart absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full border shadow-lg transition-transform duration-300 hover:scale-110",
+          )}
         >
           <Heart
             className={cn(
