@@ -1,10 +1,10 @@
 "use client";
 
 import { PremiumLoader } from "@/components/admin/premium-loader";
+import { SidebarToggle } from "@/components/admin/sidebar-toggle";
 import { createClient } from "@/utils/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import {
-  ChevronLeft,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -38,11 +38,6 @@ const navItems = [
     name: "Clients",
     href: "/admin/users",
     icon: Users,
-  },
-  {
-    name: "Paramètres",
-    href: "/admin/settings",
-    icon: Settings,
   },
 ];
 
@@ -123,8 +118,8 @@ export default function AdminLayout({
         <div className="border-ylang-beige flex h-full flex-col border-r bg-white">
           {/* Logo */}
           <div
-            className={`border-ylang-beige flex items-center border-b ${
-              sidebarOpen ? "p-6" : "justify-center p-4"
+            className={`border-ylang-beige flex items-center border-b transition-all duration-300 ${
+              sidebarOpen ? "p-6" : "flex-col gap-4 p-4"
             }`}
           >
             <Link
@@ -140,11 +135,17 @@ export default function AdminLayout({
                 height={40}
               />
               {sidebarOpen && (
-                <span className="font-display text-ylang-charcoal font-bold">
+                <span className="font-display text-ylang-charcoal font-bold whitespace-nowrap">
                   Ylang Admin
                 </span>
               )}
             </Link>
+            <div className={sidebarOpen ? "ml-auto" : ""}>
+              <SidebarToggle
+                isOpen={sidebarOpen}
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+              />
+            </div>
           </div>
 
           {/* Navigation */}
@@ -163,8 +164,8 @@ export default function AdminLayout({
                     sidebarOpen ? "justify-start" : "justify-center"
                   } ${
                     isActive
-                      ? "bg-ylang-rose text-white shadow-lg"
-                      : "text-ylang-charcoal/70 hover:bg-ylang-beige hover:text-ylang-charcoal"
+                      ? "text-ylang-rose bg-ylang-terracotta/20"
+                      : "text-ylang-charcoal hover:text-ylang-rose hover:bg-ylang-terracotta/20"
                   }`}
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
@@ -178,19 +179,19 @@ export default function AdminLayout({
 
           {/* Toggle & Logout */}
           <div className="border-ylang-beige space-y-2 border-t p-4">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className={`text-ylang-charcoal/70 hover:bg-ylang-beige hidden w-full items-center gap-3 rounded-xl px-4 py-3 transition-colors lg:flex ${
+            <Link
+              href="/admin/settings"
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-all ${
                 sidebarOpen ? "justify-start" : "justify-center"
+              } ${
+                pathname === "/admin/settings"
+                  ? "text-ylang-rose bg-ylang-terracotta/20"
+                  : "text-ylang-charcoal hover:bg-ylang-terracotta/20 hover:text-ylang-rose"
               }`}
             >
-              <ChevronLeft
-                className={`h-5 w-5 transition-transform ${
-                  !sidebarOpen && "rotate-180"
-                }`}
-              />
-              {sidebarOpen && <span className="font-medium">Réduire</span>}
-            </button>
+              <Settings className="h-5 w-5 shrink-0" />
+              {sidebarOpen && <span className="font-medium">Paramètres</span>}
+            </Link>
 
             <button
               onClick={handleLogout}
@@ -202,7 +203,6 @@ export default function AdminLayout({
               {sidebarOpen ? (
                 <span className="font-medium">Déconnexion</span>
               ) : null}
-
             </button>
           </div>
         </div>

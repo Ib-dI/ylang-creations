@@ -625,7 +625,7 @@ export function SettingsClient({
           <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">
             Paramètres
           </h1>
-          <p className="text-ylang-terracotta">
+          <p className="text-ylang-rose">
             Configurez les paramètres de votre boutique
           </p>
         </div>
@@ -714,14 +714,14 @@ export function SettingsClient({
                         handleSettingsChange("contactEmail", e.target.value)
                       }
                     />
-                    <Input
+                    {/* <Input
                       label="Téléphone"
                       type="tel"
                       value={settings.contactPhone ?? ""}
                       onChange={(e) =>
                         handleSettingsChange("contactPhone", e.target.value)
                       }
-                    />
+                    /> */}
                   </div>
                 </div>
               </div>

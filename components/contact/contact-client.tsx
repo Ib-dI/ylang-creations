@@ -32,13 +32,13 @@ const staggerContainer = {
 
 // Fallback Contact info data
 const fallbackContactInfo = [
-  {
-    icon: Phone,
-    label: "Téléphone",
-    value: "*********",
-    href: "tel:#",
-    description: "Du lundi au vendredi, 9h-18h",
-  },
+  // {
+  //   icon: Phone,
+  //   label: "Téléphone",
+  //   value: "*********",
+  //   href: "tel:#",
+  //   description: "Du lundi au vendredi, 9h-18h",
+  // },
   {
     icon: Mail,
     label: "Email",
@@ -110,30 +110,30 @@ export function ContactClient({ settings }: { settings: any }) {
 
   // Compute dynamic contact info
   const contactInfo = [
+    // {
+    //   icon: Phone,
+    //   label: "Téléphone",
+    //   value: settings?.contactPhone || fallbackContactInfo[0].value,
+    //   href: settings?.contactPhone
+    //     ? `tel:${settings.contactPhone.replace(/\s/g, "")}`
+    //     : fallbackContactInfo[0].href,
+    //   description: fallbackContactInfo[0].description,
+    // },
     {
-      icon: Phone,
-      label: "Téléphone",
-      value: settings?.contactPhone || fallbackContactInfo[0].value,
-      href: settings?.contactPhone
-        ? `tel:${settings.contactPhone.replace(/\s/g, "")}`
+      icon: Mail,
+      label: "Email",
+      value: settings?.contactEmail || fallbackContactInfo[0].value,
+      href: settings?.contactEmail
+        ? `mailto:${settings.contactEmail}`
         : fallbackContactInfo[0].href,
       description: fallbackContactInfo[0].description,
     },
     {
-      icon: Mail,
-      label: "Email",
-      value: settings?.contactEmail || fallbackContactInfo[1].value,
-      href: settings?.contactEmail
-        ? `mailto:${settings.contactEmail}`
-        : fallbackContactInfo[1].href,
-      description: fallbackContactInfo[1].description,
-    },
-    {
       icon: MapPin,
       label: "Localisation",
-      value: fallbackContactInfo[2].value,
-      href: fallbackContactInfo[2].href,
-      description: fallbackContactInfo[2].description,
+      value: fallbackContactInfo[1].value,
+      href: fallbackContactInfo[1].href,
+      description: fallbackContactInfo[1].description,
     },
   ];
 
@@ -476,7 +476,6 @@ export function ContactClient({ settings }: { settings: any }) {
                     {" "}
                     24 à 48 heures
                   </strong>
-                  . Pour les demandes urgentes, n'hésitez pas à nous appeler.
                 </p>
               </div>
             </motion.div>
