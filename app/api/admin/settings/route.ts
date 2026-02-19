@@ -49,10 +49,10 @@ export async function GET() {
     const s = result[0];
     return NextResponse.json({
       ...s,
-      emailTemplates: s.emailTemplates ? JSON.parse(s.emailTemplates) : {},
-      notifications: s.notifications ? JSON.parse(s.notifications) : {},
-      heroSlides: s.heroSlides ? JSON.parse(s.heroSlides) : [],
-      testimonials: s.testimonials ? JSON.parse(s.testimonials) : [],
+      emailTemplates: s.emailTemplates ?? {},
+      notifications: s.notifications ?? {},
+      heroSlides: s.heroSlides ?? [],
+      testimonials: s.testimonials ?? [],
     });
   } catch (error) {
     console.error("Error fetching settings:", error);
@@ -120,15 +120,15 @@ export async function POST(request: Request) {
       contactPhone,
       shippingEmail,
       adminEmail,
-      emailTemplates: JSON.stringify(emailTemplates ?? {}),
+      emailTemplates: emailTemplates ?? {},
       currency,
-      shippingFee: String(shippingFee),
-      freeShippingThreshold: String(freeShippingThreshold),
-      notifications: JSON.stringify(notifications ?? {}),
-      heroSlides: JSON.stringify(heroSlides ?? []),
+      shippingFee: shippingFee,
+      freeShippingThreshold: freeShippingThreshold,
+      notifications: notifications ?? {},
+      heroSlides: heroSlides ?? [],
       craftsmanshipImage,
       aboutImage,
-      testimonials: JSON.stringify(testimonials ?? []),
+      testimonials: testimonials ?? [],
       updatedAt: now,
     };
 

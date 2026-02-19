@@ -13,12 +13,7 @@ interface PageProps {
 
 // Helper to format DB product to frontend format
 function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
-  let parsedImages: string[] = [];
-  try {
-    parsedImages = p.images ? JSON.parse(p.images) : [];
-  } catch (e) {
-    parsedImages = [];
-  }
+  const parsedImages = (p.images as string[] | null) ?? [];
 
   let parsedOptions: {
     sizes?: string[];
@@ -26,12 +21,7 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
     features?: string[];
     longDescription?: string;
     customizable?: boolean;
-  } = {};
-  try {
-    parsedOptions = p.options ? JSON.parse(p.options) : {};
-  } catch (e) {
-    parsedOptions = {};
-  }
+  } = (p.options as typeof parsedOptions | null) ?? {};
 
   return {
     id: p.id,

@@ -57,13 +57,13 @@ export async function GET(
     let parsedAddress = null;
 
     try {
-      parsedItems = JSON.parse(o.items || "[]");
+      parsedItems = (o.items as any[]) ?? [];
     } catch {
       parsedItems = [];
     }
 
     try {
-      const rawAddress = JSON.parse(o.shippingAddress || "{}");
+      const rawAddress = (o.shippingAddress as Record<string, any>) ?? {};
       // Handle Stripe structure where address is nested in 'address' property
       const addr = rawAddress.address || rawAddress;
 
@@ -89,7 +89,7 @@ export async function GET(
         customerName: o.customerName || "Client",
         customerEmail: o.customerEmail || "",
         items: parsedItems,
-        total: parseFloat(o.totalAmount) / 100,
+        total: o.totalAmount / 100,
         status: o.status,
         paymentStatus: o.status === "pending" ? "pending" : "paid",
         shippingAddress: parsedAddress,

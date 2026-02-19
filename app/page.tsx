@@ -13,12 +13,7 @@ import { Suspense } from "react";
 
 // Fonction de formatage réutilisable
 function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
-  let parsedImages: string[] = [];
-  try {
-    parsedImages = p.images ? JSON.parse(p.images) : [];
-  } catch {
-    parsedImages = [];
-  }
+  const parsedImages = (p.images as string[] | null) ?? [];
 
   interface ParsedOptions {
     sizes?: string[];
@@ -26,12 +21,8 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
     isNew?: boolean;
   }
 
-  let parsedOptions: ParsedOptions = {};
-  try {
-    parsedOptions = p.options ? JSON.parse(p.options) : {};
-  } catch {
-    parsedOptions = {};
-  }
+  const parsedOptions: ParsedOptions =
+    (p.options as ParsedOptions | null) ?? {};
 
   return {
     id: p.id,
@@ -115,10 +106,10 @@ export default async function Home() {
   let heroSlides: any[] = [];
   try {
     if (settings?.heroSlides) {
-      heroSlides = JSON.parse(settings.heroSlides as string);
+      heroSlides = (settings.heroSlides as any[]) ?? [];
     }
   } catch (err) {
-    console.error("Error parsing heroSlides:", err);
+    console.error("Error reading heroSlides:", err);
   }
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import * as React from "react";
 
 export function TestimonialsSection() {
@@ -59,11 +60,16 @@ export function TestimonialsSection() {
               transition={{ delay: index * 0.1 }}
               className="group relative aspect-5/4 overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
             >
-              <img
-                src={testimonial.image}
-                alt={`Témoignage client ${index + 1}`}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
+              <div className="relative h-full w-full">
+                <Image
+                  src={testimonial.image}
+                  alt={`Témoignage client ${index + 1}`}
+                  fill
+                  loading="lazy"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                />
+              </div>
               <div className="absolute inset-0 bg-black/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </motion.div>
           ))}

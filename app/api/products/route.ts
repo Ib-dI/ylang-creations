@@ -69,13 +69,7 @@ export async function GET(request: Request) {
 
     // Format for frontend
     const formattedProducts = products.map((p) => {
-      let parsedImages: string[] = [];
-      try {
-        parsedImages = p.images ? JSON.parse(p.images) : [];
-      } catch {
-        // Fallback if not valid JSON
-        parsedImages = []; // or [p.images] if it was a plain string? assuming array format
-      }
+      const parsedImages = (p.images as string[] | null) ?? [];
 
       interface ParsedOptions {
         sizes?: string[];
@@ -83,12 +77,8 @@ export async function GET(request: Request) {
         isNew?: boolean;
       }
 
-      let parsedOptions: ParsedOptions = {};
-      try {
-        parsedOptions = p.options ? JSON.parse(p.options) : {};
-      } catch {
-        parsedOptions = {};
-      }
+      const parsedOptions: ParsedOptions =
+        (p.options as ParsedOptions | null) ?? {};
 
       return {
         id: p.id,

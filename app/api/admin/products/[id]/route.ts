@@ -51,13 +51,13 @@ export async function GET(
         compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
         category: p.category,
         subcategory: p.subcategory,
-        images: p.images ? JSON.parse(p.images) : [],
-        stock: parseInt(p.stock),
+        images: (p.images as string[] | null) ?? [],
+        stock: p.stock,
         sku: p.sku,
         isActive: p.isActive,
         isFeatured: p.isFeatured,
-        tags: p.tags ? JSON.parse(p.tags) : [],
-        options: p.options ? JSON.parse(p.options) : {},
+        tags: (p.tags as string[] | null) ?? [],
+        options: (p.options as Record<string, unknown> | null) ?? {},
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,
       },
@@ -129,24 +129,18 @@ export async function PATCH(
         : null;
     }
     if (validatedData.stock !== undefined) {
-      updateData.stock = String(validatedData.stock);
+      updateData.stock = validatedData.stock;
     }
 
-    // Handle JSON fields
+    // Handle JSONB fields (no need for JSON.stringify, Drizzle handles jsonb natively)
     if (validatedData.images !== undefined) {
-      updateData.images = validatedData.images
-        ? JSON.stringify(validatedData.images)
-        : null;
+      updateData.images = validatedData.images ?? null;
     }
     if (validatedData.tags !== undefined) {
-      updateData.tags = validatedData.tags
-        ? JSON.stringify(validatedData.tags)
-        : null;
+      updateData.tags = validatedData.tags ?? null;
     }
     if (validatedData.options !== undefined) {
-      updateData.options = validatedData.options
-        ? JSON.stringify(validatedData.options)
-        : null;
+      updateData.options = validatedData.options ?? null;
     }
 
     await db.update(product).set(updateData).where(eq(product.id, id));
@@ -188,9 +182,9 @@ export async function DELETE(
       let images: string[] = [];
 
       try {
-        images = p.images ? JSON.parse(p.images) : [];
+        images = (p.images as string[] | null) ?? [];
       } catch (e) {
-        console.error("Error parsing images JSON:", e);
+        console.error("Error reading images:", e);
       }
 
       // 2. Supprimer les images du stockage Supabase

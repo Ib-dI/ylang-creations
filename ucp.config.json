@@ -1,0 +1,43 @@
+{
+  "ucp_version": "2026-01-11",
+  "roles": ["business"],
+  "runtime": "nodejs",
+  "capabilities": {
+    "core": ["dev.ucp.shopping.checkout"],
+    "extensions": [
+      "dev.ucp.shopping.fulfillment",
+      "dev.ucp.shopping.discount",
+      "dev.ucp.shopping.order"
+    ]
+  },
+  "transports": ["rest"],
+  "transport_priority": ["rest"],
+  "payment_handlers": ["stripe"],
+  "features": {
+    "ap2_mandates": false,
+    "identity_linking": false,
+    "multi_destination_fulfillment": false
+  },
+  "domain": "ylang-creations.com",
+  "existing_apis": {
+    "checkout": "/checkout",
+    "webhook": "/api/webhooks/stripe"
+  },
+  "policy_urls": {
+    "privacy": "/legal/confidentialite",
+    "terms": "/legal/cgv",
+    "refunds": "/legal/retours",
+    "shipping": "/legal/livraison"
+  },
+  "scaffold_depth": "full",
+  "generated_files": [],
+  "answers": {},
+  "deployment": {
+    "platform": "vercel",
+    "region": "iad1",
+    "mcp": {
+      "enabled": false,
+      "max_duration": 60
+    }
+  }
+}

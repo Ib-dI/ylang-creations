@@ -63,7 +63,7 @@ export function ProductCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card className="relative overflow-hidden border-0 bg-white transition-all duration-500">
+      <Card className="relative overflow-hidden border-0 bg-white transition-[transform,box-shadow] duration-500">
         {/* Image Container */}
         <Link href={`/produits/${product.id}`}>
           <div className="bg-ylang-beige/30 relative aspect-4/5 overflow-hidden">

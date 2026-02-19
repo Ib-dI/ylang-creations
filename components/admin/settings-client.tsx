@@ -542,13 +542,13 @@ export function SettingsClient({
           console.log("Real-time update received:", payload);
           const newData = payload.new as Record<string, any>;
 
-          // Parse JSON fields if they are strings in the payload
+          // Parse JSON fields - JSONB columns are already objects, but keep string fallback for safety
           const parsedData = {
             ...newData,
             emailTemplates:
               typeof newData.email_templates === "string"
                 ? JSON.parse(newData.email_templates)
-                : newData.emailTemplates,
+                : (newData.email_templates ?? newData.emailTemplates),
             notifications:
               typeof newData.notifications === "string"
                 ? JSON.parse(newData.notifications)
@@ -556,7 +556,7 @@ export function SettingsClient({
             heroSlides:
               typeof newData.hero_slides === "string"
                 ? JSON.parse(newData.hero_slides)
-                : newData.heroSlides,
+                : (newData.hero_slides ?? newData.heroSlides),
             testimonials:
               typeof newData.testimonials === "string"
                 ? JSON.parse(newData.testimonials)

@@ -53,7 +53,7 @@ export async function GET(request: Request) {
       let parsedAddress = null;
 
       try {
-        const rawItems = JSON.parse(o.items || "[]");
+        const rawItems = (o.items as any[]) ?? [];
         parsedItems = rawItems.map((item: any) => ({
           productId: item.productId,
           productName: item.productName || item.name || "Produit",
@@ -67,7 +67,7 @@ export async function GET(request: Request) {
       }
 
       try {
-        const rawAddress = JSON.parse(o.shippingAddress || "{}");
+        const rawAddress = (o.shippingAddress as Record<string, any>) ?? {};
         // Normalize Stripe address structure
         const stripeAddress = rawAddress.address || rawAddress;
         parsedAddress = {
@@ -93,7 +93,7 @@ export async function GET(request: Request) {
         customerName: o.customerName || "Client",
         customerEmail: o.customerEmail || "",
         items: parsedItems,
-        total: parseFloat(o.totalAmount) / 100, // Convert from cents
+        total: o.totalAmount / 100, // Convert from cents
         status: o.status,
         paymentStatus: o.status === "pending" ? "pending" : "paid",
         shippingAddress: parsedAddress,

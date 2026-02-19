@@ -1,9 +1,4 @@
-import {
-  customer as customerTable,
-  order,
-  product,
-  settings,
-} from "@/db/schema";
+import { order, product, settings } from "@/db/schema";
 import { db } from "@/lib/db";
 import {
   sendAdminNotificationEmail,
@@ -68,81 +63,75 @@ export async function POST(req: Request) {
       // Get metadata
       const metadata = session.metadata;
 
-      if (!metadata?.customerId || !metadata?.items) {
-        console.error("❌ Missing or incomplete metadata in session:", {
-          customerId: !!metadata?.customerId,
-          items: !!metadata?.items,
-        });
+      if (!metadata?.orderId) {
+        console.error("❌ Missing orderId in session metadata:", session.id);
         break;
       }
 
-      // Parse items
+      const orderId = metadata.orderId;
       let items: any[] = [];
-      try {
-        items = JSON.parse(metadata.items);
-      } catch {
-        console.error("❌ Failed to parse items from metadata");
-        break;
-      }
-
-      // Create order in database
-      const orderId = crypto.randomUUID();
-      const now = new Date();
 
       try {
-        // Start a transaction to ensure order creation and stock update happen together
+        // Start a transaction to ensure order update and stock update happen together
         await db.transaction(async (tx) => {
-          console.log("📝 Creating order and updating stock in database...");
+          console.log(`📝 Updating order ${orderId} and stock in database...`);
 
-          // Verify customer exists
-          const existingCustomer = await tx
+          // 1. Find the existing pending order
+          const existingOrder = await tx
             .select()
-            .from(customerTable) // Use imported alias to avoid conflicts
-            .where(eq(customerTable.id, metadata.customerId))
+            .from(order)
+            .where(eq(order.id, orderId))
             .limit(1);
 
-          if (existingCustomer.length === 0) {
-            throw new Error(
-              `Customer not found with ID: ${metadata.customerId}`,
-            );
+          if (existingOrder.length === 0) {
+            throw new Error(`Order not found with ID: ${orderId}`);
           }
 
-          // 1. Create order
-          await tx.insert(order).values({
-            id: orderId,
-            customerId: metadata.customerId,
-            stripeSessionId: session.id,
-            stripePaymentIntentId:
-              typeof session.payment_intent === "string"
-                ? session.payment_intent
-                : (session.payment_intent?.id ?? null),
-            status: "paid",
-            totalAmount: String(session.amount_total ?? 0),
-            currency: session.currency ?? "eur",
-            shippingAddress: (session as any).shipping_details
-              ? JSON.stringify((session as any).shipping_details)
-              : session.customer_details
-                ? JSON.stringify(session.customer_details)
-                : null,
-            items: JSON.stringify(items),
-            createdAt: now,
-            updatedAt: now,
-          });
+          const orderData = existingOrder[0];
 
-          // 2. Decrement stock for each item
+          // Parse items from the locally stored order
+          try {
+            items = (orderData.items as any[]) ?? [];
+          } catch {
+            throw new Error(`Failed to read items for order: ${orderId}`);
+          }
+
+          // 2. Update order status and details
+          await tx
+            .update(order)
+            .set({
+              stripeSessionId: session.id, // Ensure it's set
+              stripePaymentIntentId:
+                typeof session.payment_intent === "string"
+                  ? session.payment_intent
+                  : (session.payment_intent?.id ?? null),
+              status: "paid",
+              shippingAddress: (session as any).shipping_details
+                ? (session as any).shipping_details
+                : session.customer_details
+                  ? session.customer_details
+                  : orderData.shippingAddress,
+              updatedAt: new Date(),
+            })
+            .where(eq(order.id, orderId));
+
+          // 3. Decrement stock for each item
           for (const item of items) {
-            if (item.productId && item.quantity) {
+            const productId = item.productId;
+            const quantity = item.quantity;
+
+            if (productId && quantity) {
               console.log(
-                `📉 Decrementing stock for product ${item.productId} by ${item.quantity}`,
+                `📉 Decrementing stock for product ${productId} by ${quantity}`,
               );
 
               await tx
                 .update(product)
                 .set({
-                  stock: sql`GREATEST(0, CAST(${product.stock} AS INTEGER) - ${item.quantity})::text`,
-                  updatedAt: now,
+                  stock: sql`GREATEST(0, ${product.stock} - ${quantity})`,
+                  updatedAt: new Date(),
                 })
-                .where(eq(product.id, item.productId));
+                .where(eq(product.id, productId));
             }
           }
         });
@@ -220,12 +209,10 @@ export async function POST(req: Request) {
 
             if (settingsResult.length > 0) {
               const siteSettings = settingsResult[0];
-              const notificationsConfig = siteSettings.notifications
-                ? JSON.parse(siteSettings.notifications)
-                : {};
-              const emailTemplatesConfig = siteSettings.emailTemplates
-                ? JSON.parse(siteSettings.emailTemplates)
-                : {};
+              const notificationsConfig =
+                (siteSettings.notifications as Record<string, any>) ?? {};
+              const emailTemplatesConfig =
+                (siteSettings.emailTemplates as Record<string, any>) ?? {};
 
               // Vérifier si les notifications de nouvelles commandes sont activées
               const shouldNotify =

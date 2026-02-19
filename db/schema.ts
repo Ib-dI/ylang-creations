@@ -2,6 +2,7 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
@@ -93,10 +94,10 @@ export const order = pgTable(
     stripeSessionId: text("stripe_session_id").unique(),
     stripePaymentIntentId: text("stripe_payment_intent_id"),
     status: text("status").notNull().default("pending"), // pending, paid, shipped, delivered, cancelled
-    totalAmount: text("total_amount").notNull(),
+    totalAmount: integer("total_amount").notNull(),
     currency: text("currency").notNull().default("eur"),
-    shippingAddress: text("shipping_address"), // JSON string
-    items: text("items").notNull(), // JSON string of cart items
+    shippingAddress: jsonb("shipping_address"), // JSONB object
+    items: jsonb("items").notNull(), // JSONB array of cart items
     trackingNumber: text("tracking_number"),
     notes: text("notes"),
     createdAt: timestamp("created_at").notNull(),
@@ -118,13 +119,13 @@ export const product = pgTable(
     compareAtPrice: integer("compare_at_price"),
     category: text("category").notNull(),
     subcategory: text("subcategory"),
-    images: text("images"), // JSON array of image URLs
-    stock: text("stock").notNull().default("0"),
+    images: jsonb("images"), // JSONB array of image URLs
+    stock: integer("stock").notNull().default(0),
     sku: text("sku").unique(),
     isActive: boolean("is_active").notNull().default(true),
     isFeatured: boolean("is_featured").notNull().default(false),
-    tags: text("tags"), // JSON array of tags
-    options: text("options"), // JSON object for product options (colors, sizes, etc.)
+    tags: jsonb("tags"), // JSONB array of tags
+    options: jsonb("options"), // JSONB object for product options
     createdAt: timestamp("created_at").notNull(),
     updatedAt: timestamp("updated_at").notNull(),
   },
@@ -143,16 +144,16 @@ export const settings = pgTable("settings", {
   contactPhone: text("contact_phone"),
   shippingEmail: text("shipping_email"),
   adminEmail: text("admin_email"),
-  emailTemplates: text("email_templates"), // JSON string
+  emailTemplates: jsonb("email_templates"), // JSONB object
   currency: text("currency").default("eur"),
-  shippingFee: text("shipping_fee").default("9.90"),
-  freeShippingThreshold: text("free_shipping_threshold").default("150"),
-  notifications: text("notifications"), // JSON string
+  shippingFee: integer("shipping_fee").default(0),
+  freeShippingThreshold: integer("free_shipping_threshold").default(0),
+  notifications: jsonb("notifications"), // JSONB object
   // Media settings
-  heroSlides: text("hero_slides"), // JSON string
+  heroSlides: jsonb("hero_slides"), // JSONB array
   craftsmanshipImage: text("craftsmanship_image"),
   aboutImage: text("about_image"),
-  testimonials: text("testimonials"), // JSON string
+  testimonials: jsonb("testimonials"), // JSONB array
   updatedAt: timestamp("updated_at").notNull(),
 });
 

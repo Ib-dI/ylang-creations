@@ -47,10 +47,10 @@ export async function GET() {
       currency: s.currency,
       shippingFee: s.shippingFee,
       freeShippingThreshold: s.freeShippingThreshold,
-      heroSlides: s.heroSlides ? JSON.parse(s.heroSlides) : [],
+      heroSlides: s.heroSlides ?? [],
       craftsmanshipImage: s.craftsmanshipImage,
       aboutImage: s.aboutImage,
-      testimonials: s.testimonials ? JSON.parse(s.testimonials) : [],
+      testimonials: s.testimonials ?? [],
     });
   } catch (error) {
     console.error("Error fetching public settings:", error);

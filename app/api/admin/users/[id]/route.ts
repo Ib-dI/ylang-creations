@@ -53,7 +53,7 @@ export async function GET(
       : [];
 
     const totalSpent = orders.reduce((sum, o) => {
-      return sum + parseFloat(o.totalAmount || "0") / 100;
+      return sum + o.totalAmount / 100;
     }, 0);
 
     const formattedUser = {
@@ -74,9 +74,9 @@ export async function GET(
       orders: orders.map((o) => ({
         id: o.id,
         status: o.status,
-        totalAmount: parseFloat(o.totalAmount) / 100,
+        totalAmount: o.totalAmount / 100,
         createdAt: o.createdAt,
-        items: JSON.parse(o.items || "[]"),
+        items: (o.items as any[]) ?? [],
       })),
     };
 

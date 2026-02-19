@@ -869,7 +869,7 @@ export default function ProductsPage() {
                   </div>
                   <button
                     onClick={() => setShowModal(false)}
-                    className="bg-ylang-rose/10 hover:bg-ylang-rose/20  rounded-full p-2 transition-all"
+                    className="bg-ylang-rose/10 hover:bg-ylang-rose/20 rounded-full p-2 transition-all"
                   >
                     <X className="text-ylang-rose h-6 w-6" />
                   </button>
@@ -1481,7 +1481,7 @@ export default function ProductsPage() {
                         <div
                           className={`cursor-pointer rounded-2xl border-2 p-6 transition-all ${
                             formData.isNew
-                              ? "border-white bg-ylang-terracotta"
+                              ? "bg-ylang-terracotta border-white"
                               : "border-ylang-beige bg-white hover:border-gray-300"
                           }`}
                           onClick={() =>

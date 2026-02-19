@@ -261,7 +261,10 @@ const AnimatedBadge = React.memo(({ count }: { count: number }) => {
   if (count === 0) return null;
 
   return (
-    <span className="bg-ylang-rose animate-scale-in absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium text-white lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px]">
+    <span
+      className="bg-ylang-rose animate-scale-in absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium text-white lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px]"
+      aria-hidden="true"
+    >
       {count}
     </span>
   );
@@ -452,7 +455,7 @@ export function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Rechercher"
-                className="text-ylang-charcoal hover:text-ylang-rose flex p-2 transform items-center justify-center rounded-full bg-white/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:hidden"
+                className="text-ylang-charcoal hover:text-ylang-rose flex transform items-center justify-center rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:hidden"
               >
                 <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.5} />
               </button>
@@ -504,11 +507,16 @@ export function Header() {
                       className="text-ylang-charcoal hover:border-ylang-rose focus:ring-ylang-rose/20 h-9 w-9 transform overflow-hidden rounded-full border border-transparent bg-white/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 focus:ring-2 focus:outline-none"
                     >
                       {session.user.user_metadata?.avatar_url ? (
-                        <img
-                          src={session.user.user_metadata.avatar_url}
-                          alt={session.user.user_metadata?.full_name ?? "User"}
-                          className="h-full w-full object-cover"
-                        />
+                        <div className="relative h-full w-full">
+                          <Image
+                            src={session.user.user_metadata.avatar_url}
+                            alt={
+                              session.user.user_metadata?.full_name ?? "User"
+                            }
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                       ) : (
                         <div className="bg-ylang-rose/10 text-ylang-rose group-hover:bg-ylang-rose/20 flex h-full w-full items-center justify-center text-xs font-bold uppercase transition-colors">
                           {session.user.email?.charAt(0) || "U"}
@@ -523,13 +531,16 @@ export function Header() {
                     <div className="flex items-center gap-3 px-2 py-3">
                       <div className="border-ylang-beige bg-ylang-cream flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border">
                         {session.user.user_metadata?.avatar_url ? (
-                          <img
-                            src={session.user.user_metadata.avatar_url}
-                            alt={
-                              session.user.user_metadata?.full_name ?? "User"
-                            }
-                            className="h-full w-full object-cover"
-                          />
+                          <div className="relative h-full w-full">
+                            <Image
+                              src={session.user.user_metadata.avatar_url}
+                              alt={
+                                session.user.user_metadata?.full_name ?? "User"
+                              }
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
                         ) : (
                           <span className="text-ylang-rose text-sm font-bold uppercase">
                             {session.user.email?.charAt(0) || "U"}

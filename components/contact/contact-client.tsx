@@ -1,6 +1,6 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import {
   CheckCircle,
@@ -9,7 +9,6 @@ import {
   Instagram,
   Mail,
   MapPin,
-  Phone,
   Send,
   Sparkles,
 } from "lucide-react";
@@ -44,7 +43,7 @@ const fallbackContactInfo = [
     label: "Email",
     value: "ylang.creations@gmail.com",
     href: "mailto:ylang.creations@gmail.com",
-    description: "Réponse sous 24-48h",
+    description: "Réponse sous 24–48 h",
   },
   {
     icon: MapPin,
@@ -181,7 +180,7 @@ export function ContactClient({ settings }: { settings: any }) {
           >
             <motion.p
               variants={fadeInUp}
-              className="text-ylang-rose font-abramo font-semibold mb-4 text-sm tracking-widest uppercase"
+              className="text-ylang-rose font-abramo mb-4 text-sm font-semibold tracking-widest uppercase"
             >
               Contactez-nous
             </motion.p>
@@ -196,7 +195,7 @@ export function ContactClient({ settings }: { settings: any }) {
               className="font-body text-ylang-charcoal/70 mx-auto max-w-2xl text-lg"
             >
               Une question, un projet personnalisé ou simplement envie d'en
-              savoir plus ? Nous sommes là pour vous accompagner dans la
+              savoir plus ? Nous sommes là pour vous accompagner dans la
               création de pièces uniques.
             </motion.p>
           </motion.div>
@@ -239,72 +238,48 @@ export function ContactClient({ settings }: { settings: any }) {
                     </h3>
                     <p className="font-body text-ylang-charcoal/60">
                       Merci pour votre message. Nous vous répondrons sous
-                      24-48h.
+                      24–48 h.
                     </p>
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid gap-6 sm:grid-cols-2">
                       {/* Name */}
-                      <div>
-                        <label
-                          htmlFor="name"
-                          className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
-                        >
-                          Nom complet *
-                        </label>
-                        <input
-                          type="text"
-                          id="name"
-                          name="name"
-                          required
-                          value={formData.name}
-                          onChange={handleChange}
-                          className="font-body border-ylang-beige bg-ylang-cream/50 text-ylang-charcoal placeholder:text-ylang-charcoal/40 focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 transition-all focus:ring-2 focus:outline-none"
-                          placeholder="Votre nom"
-                        />
-                      </div>
+                      <Input
+                        id="name"
+                        name="name"
+                        label="Nom complet *"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Votre nom…"
+                      />
 
                       {/* Email */}
-                      <div>
-                        <label
-                          htmlFor="email"
-                          className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
-                        >
-                          Email *
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          required
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="font-body border-ylang-beige bg-ylang-cream/50 text-ylang-charcoal placeholder:text-ylang-charcoal/40 focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 transition-all focus:ring-2 focus:outline-none"
-                          placeholder="votre@email.com"
-                        />
-                      </div>
+                      <Input
+                        type="email"
+                        id="email"
+                        name="email"
+                        label="Email *"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        spellCheck={false}
+                        placeholder="votre@email.com…"
+                      />
                     </div>
 
                     <div className="grid gap-6 sm:grid-cols-2">
                       {/* Phone */}
-                      <div>
-                        <label
-                          htmlFor="phone"
-                          className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
-                        >
-                          Téléphone
-                        </label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          className="font-body border-ylang-beige bg-ylang-cream/50 text-ylang-charcoal placeholder:text-ylang-charcoal/40 focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 transition-all focus:ring-2 focus:outline-none"
-                          placeholder="+262 6XX XX XX XX"
-                        />
-                      </div>
+                      <Input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        label="Téléphone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="+262 6XX XX XX XX…"
+                      />
 
                       {/* Subject */}
                       <div>
@@ -320,7 +295,7 @@ export function ContactClient({ settings }: { settings: any }) {
                           required
                           value={formData.subject}
                           onChange={handleChange}
-                          className="font-body border-ylang-beige bg-ylang-cream/50 text-ylang-charcoal focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                          className="font-body border-ylang-beige bg-ylang-cream/50 text-ylang-charcoal focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 transition-[border-color,box-shadow,transform] focus:ring-2 focus:outline-none"
                         >
                           <option value="">Choisir un sujet</option>
                           <option value="devis">Demande de devis</option>
@@ -349,8 +324,8 @@ export function ContactClient({ settings }: { settings: any }) {
                         rows={5}
                         value={formData.message}
                         onChange={handleChange}
-                        className="font-body border-ylang-beige bg-ylang-cream/50 text-ylang-charcoal placeholder:text-ylang-charcoal/40 focus:border-ylang-rose focus:ring-ylang-rose/20 w-full resize-none rounded-xl border px-4 py-3 transition-all focus:ring-2 focus:outline-none"
-                        placeholder="Décrivez votre projet, vos envies..."
+                        className="font-body border-ylang-beige bg-ylang-cream/50 text-ylang-charcoal placeholder:text-ylang-charcoal/40 focus:border-ylang-rose focus:ring-ylang-rose/20 w-full resize-none rounded-xl border px-4 py-3 transition-[border-color,box-shadow,transform] focus:ring-2 focus:outline-none"
+                        placeholder="Décrivez votre projet, vos envies…"
                       />
                     </div>
 
@@ -364,8 +339,8 @@ export function ContactClient({ settings }: { settings: any }) {
                     >
                       {isSubmitting ? (
                         <>
-                          <span className="mr-2 animate-spin">⏳</span>
-                          Envoi en cours...
+                          <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          Envoi en cours…
                         </>
                       ) : (
                         <>
@@ -472,10 +447,7 @@ export function ContactClient({ settings }: { settings: any }) {
                 </div>
                 <p className="font-body text-ylang-charcoal/70 text-sm">
                   Nous nous efforçons de répondre à toutes les demandes sous
-                  <strong className="text-ylang-charcoal">
-                    {" "}
-                    24 à 48 heures
-                  </strong>
+                  <strong className="text-ylang-charcoal"> 24/48 h</strong>
                 </p>
               </div>
             </motion.div>
@@ -492,7 +464,7 @@ export function ContactClient({ settings }: { settings: any }) {
             viewport={{ once: true }}
             className="mb-12 text-center"
           >
-            <p className="text-ylang-rose font-abramo font-semibold mb-3 text-sm tracking-widest uppercase">
+            <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
               FAQ
             </p>
             <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-3xl">
@@ -552,15 +524,16 @@ export function ContactClient({ settings }: { settings: any }) {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="from-ylang-rose/10 to-ylang-terracotta/10 rounded-3xl bg-linear-to-br p-12 text-center text-ylang-charcoal lg:p-16"
+            className="from-ylang-rose/10 to-ylang-terracotta/10 text-ylang-charcoal rounded-3xl bg-linear-to-br p-12 text-center lg:p-16"
           >
             <Sparkles
-            strokeWidth={1.5}
-            className="mx-auto mb-6 h-10 w-10 text-ylang-rose opacity-80" />
+              strokeWidth={1.5}
+              className="text-ylang-rose mx-auto mb-6 h-10 w-10 opacity-80"
+            />
             <h2 className="font-abramo-script mb-4 text-2xl lg:text-3xl">
               Prêt à créer quelque chose d'unique ?
             </h2>
-            <p className="font-body mx-auto mb-8 max-w-xl opacity-90 text-ylang-charcoal/70">
+            <p className="font-body text-ylang-charcoal/70 mx-auto mb-8 max-w-xl opacity-90">
               Découvrez notre configurateur pour imaginer votre création sur
               mesure ou explorez nos collections pour trouver l'inspiration.
             </p>

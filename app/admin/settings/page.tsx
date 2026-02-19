@@ -21,10 +21,10 @@ async function getSettings(): Promise<Partial<SettingsState> | null> {
     const s = result[0];
     return {
       ...s,
-      emailTemplates: s.emailTemplates ? JSON.parse(s.emailTemplates) : {},
-      notifications: s.notifications ? JSON.parse(s.notifications) : {},
-      heroSlides: s.heroSlides ? JSON.parse(s.heroSlides) : [],
-      testimonials: s.testimonials ? JSON.parse(s.testimonials) : [],
+      emailTemplates: s.emailTemplates ?? {},
+      notifications: s.notifications ?? {},
+      heroSlides: s.heroSlides ?? [],
+      testimonials: s.testimonials ?? [],
     } as any; // Cast as any temporarily to avoid deep object parsing issues if any
   } catch (error) {
     console.error("Error fetching settings server-side:", error);

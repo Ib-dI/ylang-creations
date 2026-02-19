@@ -3,6 +3,7 @@
 import {
   account,
   customer,
+  order,
   session,
   settings,
   user as userTable,
@@ -21,6 +22,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-11-17.clover",
 });
 
+const UCP_METADATA = {
+  version: "2026-01-11",
+  capabilities: [
+    "dev.ucp.shopping.checkout",
+    "dev.ucp.shopping.fulfillment",
+    "dev.ucp.shopping.discount",
+    "dev.ucp.shopping.order",
+  ],
+};
+
 // Types
 interface CartItem {
   productId: string;
@@ -35,6 +46,7 @@ interface CheckoutResult {
   success: boolean;
   url?: string;
   error?: string;
+  ucp?: typeof UCP_METADATA;
 }
 
 /**
@@ -279,22 +291,33 @@ export async function createCheckoutSession(
       user.user_metadata.full_name || user.email!,
     );
 
-    // 5. Prepare metadata for webhook
-    const itemsJson = JSON.stringify(items);
-    if (itemsJson.length > 500) {
-      console.warn(
-        "⚠️ Stripe metadata limit exceeded (500 chars). Items list might be truncated.",
-      );
-    }
+    // 5. Create pending order in database before Stripe redirect
+    // This avoids Stripe's 500-character metadata limit for large carts
+    const orderId = crypto.randomUUID();
+    const now = new Date();
 
+    await db.insert(order).values({
+      id: orderId,
+      customerId: customerId,
+      status: "pending",
+      totalAmount: String(
+        Math.round(subtotal + (isFreeShipping ? 0 : shippingFeeValue)),
+      ),
+      currency: "eur",
+      items: JSON.stringify(items),
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // 6. Prepare metadata for Stripe (minimal IDs only)
     const metadata = {
       userId: user.id,
       userEmail: user.email!,
       customerId,
-      items: itemsJson,
+      orderId, // This allows the webhook to reconcile with ease
     };
 
-    // 6. Create Stripe Checkout Session
+    // 7. Create Stripe Checkout Session
     const headersList = await headers();
     const origin = headersList.get("origin");
     const baseUrl =
@@ -310,19 +333,19 @@ export async function createCheckoutSession(
       customer: stripeCustomerId,
       shipping_address_collection: {
         allowed_countries: [
-          "FR", // France
-          "BE", // Belgium
-          "CH", // Switzerland
-          "LU", // Luxembourg
-          "MC", // Monaco
-          "DE", // Germany
-          "IT", // Italy
-          "ES", // Spain
-          "PT", // Portugal
-          "NL", // Netherlands
-          "GB", // United Kingdom
-          "US", // United States
-          "CA", // Canada
+          "FR",
+          "BE",
+          "CH",
+          "LU",
+          "MC",
+          "DE",
+          "IT",
+          "ES",
+          "PT",
+          "NL",
+          "GB",
+          "US",
+          "CA",
         ],
       },
       shipping_options: shippingOptions,
@@ -331,7 +354,17 @@ export async function createCheckoutSession(
       cancel_url: `${baseUrl}/checkout`,
     });
 
-    return { success: true, url: checkoutSession.url ?? undefined };
+    // 8. Update order with Stripe Session ID
+    await db
+      .update(order)
+      .set({ stripeSessionId: checkoutSession.id, updatedAt: new Date() })
+      .where(eq(order.id, orderId));
+
+    return {
+      success: true,
+      url: checkoutSession.url ?? undefined,
+      ucp: UCP_METADATA,
+    };
   } catch (error) {
     console.error("Checkout error:", error);
     return {

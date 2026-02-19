@@ -21,6 +21,7 @@ import {
   Wand2,
   ZoomIn,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -123,9 +124,8 @@ export default function ProductDetails({
             {/* Image principale */}
             <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden rounded-2xl shadow-(--shadow-card)">
               <AnimatePresence initial={false} custom={direction}>
-                <motion.img
+                <motion.div
                   key={selectedImage}
-                  src={productImages[selectedImage]}
                   custom={direction}
                   variants={variants}
                   initial="enter"
@@ -135,8 +135,17 @@ export default function ProductDetails({
                     x: { type: "spring", stiffness: 300, damping: 30 },
                     opacity: { duration: 0.2 },
                   }}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                  className="absolute inset-0 h-full w-full"
+                >
+                  <Image
+                    src={productImages[selectedImage]}
+                    alt={product.name}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
+                  />
+                </motion.div>
               </AnimatePresence>
 
               {/* Badges */}
@@ -201,10 +210,12 @@ export default function ProductDetails({
                       : "hover:border-ylang-rose/40 border-transparent"
                   }`}
                 >
-                  <img
+                  <Image
                     src={img}
                     alt={`Vue ${idx + 1}`}
-                    className={`h-full w-full object-cover transition-transform duration-500 ${
+                    fill
+                    sizes="(max-width: 1024px) 25vw, 10vw"
+                    className={`object-cover transition-transform duration-500 ${
                       selectedImage === idx ? "scale-110" : "scale-100"
                     }`}
                   />
@@ -514,14 +525,20 @@ export default function ProductDetails({
             onClick={() => setShowZoom(false)}
             className="bg-ylang-charcoal/95 fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center p-4"
           >
-            <motion.img
+            <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
-              src={productImages[selectedImage]}
-              alt={product.name}
-              className="max-h-full max-w-full rounded-lg object-contain"
-            />
+              className="relative h-full max-h-[90vh] w-full max-w-[90vw]"
+            >
+              <Image
+                src={productImages[selectedImage]}
+                alt={product.name}
+                fill
+                className="rounded-lg object-contain"
+                sizes="90vw"
+              />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

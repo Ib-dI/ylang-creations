@@ -99,7 +99,7 @@ export default async function OrdersPage() {
         ) : (
           <div className="space-y-6">
             {orders.map((order) => {
-              const items = JSON.parse(order.items) as OrderItem[];
+              const items = (order.items as unknown as OrderItem[]) ?? [];
               const date = new Date(order.createdAt).toLocaleDateString(
                 "fr-FR",
                 {
@@ -130,7 +130,7 @@ export default async function OrdersPage() {
                           Montant total
                         </p>
                         <p className="text-ylang-rose font-bold">
-                          {(parseFloat(order.totalAmount) / 100).toFixed(2)}€
+                          {(order.totalAmount / 100).toFixed(2)}€
                         </p>
                       </div>
                       <div>
@@ -140,14 +140,14 @@ export default async function OrdersPage() {
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
                             order.status === "paid"
-                              ? "bg-green-100 text-green-600 border border-green-200"
+                              ? "border border-green-200 bg-green-100 text-green-600"
                               : order.status === "shipped"
-                                ? "bg-blue-100 text-blue-600 border border-blue-200"
+                                ? "border border-blue-200 bg-blue-100 text-blue-600"
                                 : order.status === "delivered"
-                                  ? "bg-purple-100 text-purple-600 border border-purple-200"
+                                  ? "border border-purple-200 bg-purple-100 text-purple-600"
                                   : order.status === "in_production"
-                                    ? "bg-orange-100 text-orange-600 border border-orange-200"
-                                    : "bg-gray-100 text-gray-600 border border-gray-200"
+                                    ? "border border-orange-200 bg-orange-100 text-orange-600"
+                                    : "border border-gray-200 bg-gray-100 text-gray-600"
                           }`}
                         >
                           {order.status === "paid"

@@ -5,7 +5,7 @@ import * as React from "react";
 
 const buttonVariants = cva(
   // Base styles LUXE - transitions ultra-fluides
-  "inline-flex items-center justify-center font-body text-sm tracking-wide transition-all duration-500 disabled:opacity-50 disabled:pointer-events-none group relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose focus-visible:ring-offset-2",
+  "inline-flex items-center justify-center font-body text-sm tracking-wide transition-[background-color,border-color,color,fill,stroke,opacity,box-shadow,transform] duration-500 disabled:opacity-50 disabled:pointer-events-none group relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose focus-visible:ring-offset-2",
   {
     variants: {
       variant: {

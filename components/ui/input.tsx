@@ -23,11 +23,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className={cn(
             "bg-ylang-cream border-ylang-beige flex h-11 w-full rounded-lg border px-4",
             "font-body text-ylang-charcoal placeholder:text-ylang-charcoal/40 text-sm",
-            "transition-all duration-300",
-            "focus:border-ylang-rose focus:shadow-[0_0_0_4px_rgba(183,110,121,0.1)] focus:outline-none",
+            "transition-[border-color,box-shadow] duration-300",
+            "focus-visible:border-ylang-rose focus-visible:shadow-[0_0_0_4px_rgba(183,110,121,0.1)] focus-visible:outline-none",
             "hover:border-ylang-terracotta/50",
             "disabled:cursor-not-allowed disabled:opacity-50",
-            error && "border-red-400 focus:border-red-500",
+            error && "border-red-400 focus-visible:border-red-500",
             className,
           )}
           ref={ref}
