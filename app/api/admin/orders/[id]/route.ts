@@ -53,8 +53,8 @@ export async function GET(
     }
 
     const o = orders[0];
-    let parsedItems = [];
-    let parsedAddress = null;
+    let parsedItems: any[] = [];
+    let parsedAddress: any = null;
 
     try {
       parsedItems = (o.items as any[]) ?? [];

@@ -49,8 +49,8 @@ export async function GET(request: Request) {
 
     // Format orders for frontend
     const formattedOrders = orders.map((o) => {
-      let parsedItems = [];
-      let parsedAddress = null;
+      let parsedItems: any[] = [];
+      let parsedAddress: any = null;
 
       try {
         const rawItems = (o.items as any[]) ?? [];
