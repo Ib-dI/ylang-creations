@@ -145,12 +145,12 @@ export const settingsSchema = z
     currency: z.string().optional().default("eur"),
     shippingFee: z
       .union([z.string(), z.number()])
-      .transform((val) => String(val))
+      .transform((val) => (val === "" || val === null ? 0 : Number(val)))
       .optional()
       .nullable(),
     freeShippingThreshold: z
       .union([z.string(), z.number()])
-      .transform((val) => String(val))
+      .transform((val) => (val === "" || val === null ? 0 : Number(val)))
       .optional()
       .nullable(),
     notifications: z

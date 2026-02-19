@@ -567,8 +567,14 @@ export function SettingsClient({
             contactPhone: newData.contact_phone,
             shippingEmail: newData.shipping_email,
             adminEmail: newData.admin_email,
-            shippingFee: newData.shipping_fee,
-            freeShippingThreshold: newData.free_shipping_threshold,
+            shippingFee:
+              typeof newData.shipping_fee === "number"
+                ? String(newData.shipping_fee / 100)
+                : newData.shipping_fee,
+            freeShippingThreshold:
+              typeof newData.free_shipping_threshold === "number"
+                ? String(newData.free_shipping_threshold / 100)
+                : newData.free_shipping_threshold,
             craftsmanshipImage: newData.craftsmanship_image,
             aboutImage: newData.about_image,
           };

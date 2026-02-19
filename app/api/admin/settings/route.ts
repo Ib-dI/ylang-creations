@@ -31,8 +31,8 @@ export async function GET() {
           adminNotification: true,
         },
         currency: "eur",
-        shippingFee: "9.90",
-        freeShippingThreshold: "150",
+        shippingFee: 9.9,
+        freeShippingThreshold: 150,
         notifications: {
           newOrder: true,
           lowStock: true,
@@ -49,6 +49,8 @@ export async function GET() {
     const s = result[0];
     return NextResponse.json({
       ...s,
+      shippingFee: (s.shippingFee ?? 0) / 100,
+      freeShippingThreshold: (s.freeShippingThreshold ?? 0) / 100,
       emailTemplates: s.emailTemplates ?? {},
       notifications: s.notifications ?? {},
       heroSlides: s.heroSlides ?? [],
@@ -122,8 +124,8 @@ export async function POST(request: Request) {
       adminEmail,
       emailTemplates: emailTemplates ?? {},
       currency,
-      shippingFee: shippingFee,
-      freeShippingThreshold: freeShippingThreshold,
+      shippingFee: Math.round((shippingFee || 0) * 100),
+      freeShippingThreshold: Math.round((freeShippingThreshold || 0) * 100),
       notifications: notifications ?? {},
       heroSlides: heroSlides ?? [],
       craftsmanshipImage,

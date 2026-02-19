@@ -21,11 +21,13 @@ async function getSettings(): Promise<Partial<SettingsState> | null> {
     const s = result[0];
     return {
       ...s,
-      emailTemplates: s.emailTemplates ?? {},
-      notifications: s.notifications ?? {},
-      heroSlides: s.heroSlides ?? [],
-      testimonials: s.testimonials ?? [],
-    } as any; // Cast as any temporarily to avoid deep object parsing issues if any
+      shippingFee: ((s.shippingFee ?? 0) / 100).toString(),
+      freeShippingThreshold: ((s.freeShippingThreshold ?? 0) / 100).toString(),
+      emailTemplates: (s.emailTemplates ?? {}) as any,
+      notifications: (s.notifications ?? {}) as any,
+      heroSlides: (s.heroSlides ?? []) as any,
+      testimonials: (s.testimonials ?? []) as any,
+    }; // Cast as any temporarily to avoid deep object parsing issues if any
   } catch (error) {
     console.error("Error fetching settings server-side:", error);
     return null;
