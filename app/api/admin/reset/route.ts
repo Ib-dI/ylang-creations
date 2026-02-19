@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       // Optionnel : Remettre les stocks à zéro
       if (resetProducts === true) {
         await tx.update(product).set({
-          stock: "0",
+          stock: 0,
           updatedAt: new Date(),
         });
       }
