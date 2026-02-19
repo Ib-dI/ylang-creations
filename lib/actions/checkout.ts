@@ -234,10 +234,9 @@ export async function createCheckoutSession(
       .limit(1);
 
     const s = settingsResult[0];
-    const shippingFeeValue = parseFloat(s?.shippingFee || "9.90");
-    const freeShippingThresholdValue = parseFloat(
-      s?.freeShippingThreshold || "150",
-    );
+    const shippingFeeValue = (s?.shippingFee ?? 990) / 100;
+    const freeShippingThresholdValue =
+      (s?.freeShippingThreshold ?? 15000) / 100;
 
     const subtotal = items.reduce(
       (acc, item) => acc + item.price * item.quantity,
@@ -300,8 +299,8 @@ export async function createCheckoutSession(
       id: orderId,
       customerId: customerId,
       status: "pending",
-      totalAmount: String(
-        Math.round(subtotal + (isFreeShipping ? 0 : shippingFeeValue)),
+      totalAmount: Math.round(
+        (subtotal + (isFreeShipping ? 0 : shippingFeeValue)) * 100,
       ),
       currency: "eur",
       items: JSON.stringify(items),
