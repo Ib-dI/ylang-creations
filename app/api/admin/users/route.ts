@@ -53,7 +53,7 @@ export async function GET(request: Request) {
           ? orders.filter((o) => o.customerId === customerRecord.id)
           : [];
         const totalSpent = userOrders.reduce((sum, o) => {
-          return sum + parseFloat(o.totalAmount || "0") / 100;
+          return sum + o.totalAmount / 100;
         }, 0);
 
         const fullName =

@@ -303,7 +303,7 @@ export async function createCheckoutSession(
         (subtotal + (isFreeShipping ? 0 : shippingFeeValue)) * 100,
       ),
       currency: "eur",
-      items: JSON.stringify(items),
+      items: items,
       createdAt: now,
       updatedAt: now,
     });
