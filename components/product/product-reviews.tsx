@@ -186,10 +186,10 @@ export function ProductReviews({
                   Votre avis compte pour nous. Connectez-vous pour rejoindre la
                   communauté.
                 </p>
-                <Link href="/login">
+                <Link href="/sign-in">
                   <Button
                     variant="secondary"
-                    className="border-ylang-rose/30 text-ylang-rose hover:bg-ylang-rose/5"
+                    className=""
                   >
                     Se connecter
                   </Button>

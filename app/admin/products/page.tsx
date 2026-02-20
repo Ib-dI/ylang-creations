@@ -2,6 +2,7 @@
 
 import { ImageReorderGrid } from "@/components/admin/image-reorder-grid";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -422,7 +423,7 @@ export default function ProductsPage() {
         {/* Search */}
         <div className="relative flex-1">
           <Search className="text-ylang-charcoal/40 absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
-          <input
+          <Input
             type="text"
             placeholder="Rechercher un produit..."
             value={searchQuery}
@@ -927,13 +928,13 @@ export default function ProductsPage() {
                             Nom du produit{" "}
                             <span className="text-ylang-rose">*</span>
                           </label>
-                          <input
+                          <Input
                             type="text"
                             value={formData.name}
                             onChange={(e) =>
                               setFormData({ ...formData, name: e.target.value })
                             }
-                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 text-lg transition-all focus:ring-2 focus:outline-none"
+                            className=""
                             placeholder="Ex: Gigoteuse 4 saisons personnalisée"
                           />
                         </div>
@@ -952,7 +953,7 @@ export default function ProductsPage() {
                               })
                             }
                             rows={3}
-                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full resize-none rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full resize-none rounded-xl border bg-ylang-beige/30 px-4 py-3 transition-all focus:ring-2 focus:outline-none"
                             placeholder="Une brève description pour les listes et aperçus..."
                           />
                         </div>
@@ -973,7 +974,7 @@ export default function ProductsPage() {
                                     category: e.target.value,
                                   })
                                 }
-                                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal w-full cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
+                                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal w-full cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-ylang-beige/30 py-2.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
                               >
                                 <option value="">Sélectionner...</option>
                                 {categories.map((cat) => (
@@ -989,7 +990,7 @@ export default function ProductsPage() {
                             <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
                               Sous-catégorie
                             </label>
-                            <input
+                            <Input
                               type="text"
                               value={formData.subcategory}
                               onChange={(e) =>
@@ -998,7 +999,7 @@ export default function ProductsPage() {
                                   subcategory: e.target.value,
                                 })
                               }
-                              className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 transition-all focus:ring-2 focus:outline-none"
+                              className=""
                               placeholder="Ex: Gigoteuses"
                             />
                           </div>
@@ -1021,7 +1022,7 @@ export default function ProductsPage() {
                               <span className="text-ylang-rose">*</span>
                             </label>
                             <div className="relative">
-                              <input
+                              <Input
                                 type="number"
                                 step="0.01"
                                 value={formData.price}
@@ -1031,7 +1032,7 @@ export default function ProductsPage() {
                                     price: e.target.value,
                                   })
                                 }
-                                className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 pr-8 transition-all focus:ring-2 focus:outline-none"
+                                className="pr-8"
                                 placeholder="0.00"
                               />
                               <span className="text-ylang-charcoal/40 absolute top-1/2 right-4 -translate-y-1/2">
@@ -1044,7 +1045,7 @@ export default function ProductsPage() {
                               Prix barré (€)
                             </label>
                             <div className="relative">
-                              <input
+                              <Input
                                 type="number"
                                 step="0.01"
                                 value={formData.compareAtPrice}
@@ -1054,7 +1055,7 @@ export default function ProductsPage() {
                                     compareAtPrice: e.target.value,
                                   })
                                 }
-                                className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 pr-8 transition-all focus:ring-2 focus:outline-none"
+                                className="pr-8"
                                 placeholder="0.00"
                               />
                               <span className="text-ylang-charcoal/40 absolute top-1/2 right-4 -translate-y-1/2">
@@ -1066,7 +1067,7 @@ export default function ProductsPage() {
                             <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
                               Stock
                             </label>
-                            <input
+                            <Input
                               type="number"
                               value={formData.stock}
                               onChange={(e) =>
@@ -1075,7 +1076,7 @@ export default function ProductsPage() {
                                   stock: e.target.value,
                                 })
                               }
-                              className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 transition-all focus:ring-2 focus:outline-none"
+                              className=""
                               placeholder="0"
                             />
                           </div>
@@ -1083,7 +1084,7 @@ export default function ProductsPage() {
                             <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
                               SKU
                             </label>
-                            <input
+                            <Input
                               type="text"
                               value={formData.sku}
                               onChange={(e) =>
@@ -1092,7 +1093,7 @@ export default function ProductsPage() {
                                   sku: e.target.value,
                                 })
                               }
-                              className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3.5 transition-all focus:ring-2 focus:outline-none"
+                              className=""
                               placeholder="GIG-4S-001"
                             />
                           </div>
@@ -1150,7 +1151,7 @@ export default function ProductsPage() {
                         </ImageReorderGrid>
 
                         {formData.images.length > 0 && (
-                          <div className="border-ylang-terracotta/20 bg-ylang-cream/50 mt-6 rounded-xl border p-4">
+                          <div className="border-ylang-terracotta/20 bg-ylang-beige/50 mt-6 rounded-xl border p-4">
                             <div className="flex items-start gap-3">
                               <Info className="text-ylang-terracotta mt-0.5 h-5 w-5 shrink-0" />
                               <div>
@@ -1198,7 +1199,7 @@ export default function ProductsPage() {
                             })
                           }
                           rows={6}
-                          className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full resize-none rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                          className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full resize-none rounded-xl border bg-ylang-beige/30 px-4 py-3 transition-all focus:ring-2 focus:outline-none"
                           placeholder="Décrivez les matériaux, le processus de fabrication, les avantages du produit..."
                         />
                       </div>
@@ -1221,7 +1222,7 @@ export default function ProductsPage() {
                             {formData.features.map((feature, index) => (
                               <div
                                 key={index}
-                                className="border-ylang-beige flex items-center gap-3 rounded-lg border bg-white px-4 py-3"
+                                className="border-ylang-beige flex items-center gap-3 rounded-lg border bg-ylang-beige/30 px-4 py-3"
                               >
                                 <Check className="text-ylang-rose h-4 w-4 shrink-0" />
                                 <span className="flex-1">{feature}</span>
@@ -1238,7 +1239,7 @@ export default function ProductsPage() {
 
                         {/* Add new feature */}
                         <div className="flex gap-2">
-                          <input
+                          <Input
                             type="text"
                             value={newFeature}
                             onChange={(e) => setNewFeature(e.target.value)}
@@ -1246,7 +1247,7 @@ export default function ProductsPage() {
                               e.key === "Enter" &&
                               (e.preventDefault(), addFeature())
                             }
-                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose flex-1 rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                            className=""
                             placeholder="Ex: 100% coton certifié Oeko-Tex"
                           />
                           <Button
@@ -1348,7 +1349,7 @@ export default function ProductsPage() {
 
                         {/* Add new size */}
                         <div className="flex gap-2">
-                          <input
+                          <Input
                             type="text"
                             value={newSize}
                             onChange={(e) => setNewSize(e.target.value)}
@@ -1356,7 +1357,7 @@ export default function ProductsPage() {
                               e.key === "Enter" &&
                               (e.preventDefault(), addSize())
                             }
-                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose flex-1 rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                            className=""
                             placeholder="Ex: 0-6 mois, S, M, L..."
                           />
                           <Button
@@ -1526,13 +1527,13 @@ export default function ProductsPage() {
                           filtrage (séparés par des virgules).
                         </p>
 
-                        <input
+                        <Input
                           type="text"
                           value={formData.tags}
                           onChange={(e) =>
                             setFormData({ ...formData, tags: e.target.value })
                           }
-                          className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                          className=""
                           placeholder="Ex: nouveau, promo, best-seller, coton-bio"
                         />
 
