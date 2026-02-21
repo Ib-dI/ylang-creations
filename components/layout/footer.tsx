@@ -260,8 +260,11 @@ export function Footer() {
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             {/* Copyright */}
             <p className="font-body text-ylang-charcoal/60 text-center text-sm md:text-left">
-              © {new Date().getFullYear()} Ylang Créations. Tous droits
-              réservés.
+              ©{" "}
+              <React.Suspense fallback={<span>2026</span>}>
+                {new Date().getFullYear()}
+              </React.Suspense>{" "}
+              Ylang Créations. Tous droits réservés.
             </p>
 
             {/* Legal Links */}

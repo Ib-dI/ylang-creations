@@ -3,9 +3,6 @@ import { db } from "@/lib/db";
 import { createClient, supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
-// Force Node.js runtime for database connections
-export const runtime = "nodejs";
-
 // GET all users
 export async function GET(request: Request) {
   try {

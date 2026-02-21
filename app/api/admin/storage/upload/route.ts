@@ -2,9 +2,6 @@
 import { createClient, supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
-// Force Node.js runtime for database connections
-export const runtime = "nodejs";
-
 // Types de fichiers autorisés
 const ALLOWED_MIME_TYPES = [
   "image/png",

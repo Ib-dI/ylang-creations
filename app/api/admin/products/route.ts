@@ -3,10 +3,8 @@ import { db } from "@/lib/db";
 import { createProductSchema, formatZodErrors } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/server";
 import { desc } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-
-// Force Node.js runtime for database connections
-export const runtime = "nodejs";
 
 // GET all products
 export async function GET(request: Request) {
@@ -156,6 +154,8 @@ export async function POST(request: Request) {
       createdAt: now,
       updatedAt: now,
     });
+
+    revalidateTag("products", "max");
 
     return NextResponse.json({ success: true, id });
   } catch (error) {

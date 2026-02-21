@@ -3,10 +3,6 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-export const revalidate = 60; // Cache 60 secondes max
-
 const SETTINGS_ID = "main-settings";
 
 export async function GET() {

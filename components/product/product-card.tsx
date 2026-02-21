@@ -110,10 +110,10 @@ export function ProductCard({
         </Link>
 
         {/* Badges - Animation CSS pure */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2 transition-all duration-300 group-hover:opacity-0">
+        <div className="absolute top-2 left-2 flex flex-col gap-1.5 transition-all duration-300 group-hover:opacity-0 sm:top-4 sm:left-4 sm:gap-2">
           {product.new && (
             <div
-              className="bg-ylang-terracotta text-charcoal/80 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider uppercase shadow-lg"
+              className="bg-ylang-terracotta text-charcoal/80 rounded-full px-2 py-1 text-[10px] font-medium tracking-wider uppercase shadow-lg sm:px-3 sm:py-1.5 sm:text-xs"
               style={{
                 animation:
                   "scaleRotate 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s both",
@@ -123,8 +123,8 @@ export function ProductCard({
             </div>
           )}
           {product.customizable && (
-            <div className="bg-ylang-yellow text-charcoal/80 flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium tracking-wider uppercase">
-              <Wand2 className="h-3 w-3" />
+            <div className="bg-ylang-yellow text-charcoal/80 flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-medium tracking-wider uppercase shadow-md sm:px-3 sm:py-1.5 sm:text-xs">
+              <Wand2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
               Sur mesure
             </div>
           )}
@@ -151,12 +151,12 @@ export function ProductCard({
             isWishlisted
               ? "bg-ylang-terracotta/50 border-ylang-terracotta"
               : "border-white/90 bg-white/90",
-            "group/heart absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full border shadow-lg transition-transform duration-300 hover:scale-110",
+            "group/heart absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border shadow-lg transition-transform duration-300 hover:scale-110 sm:top-4 sm:right-4 sm:h-10 sm:w-10",
           )}
         >
           <Heart
             className={cn(
-              "h-5 w-5 transition-all duration-300",
+              "h-4 w-4 transition-all duration-300 sm:h-5 sm:w-5",
               isWishlisted
                 ? "fill-ylang-rose text-ylang-rose scale-110"
                 : "text-ylang-charcoal/60 group-hover/heart:text-ylang-rose group-hover/heart:scale-110",
@@ -165,7 +165,7 @@ export function ProductCard({
         </button>
 
         {/* Infos produit */}
-        <div className="bg-ylang-beige space-y-1.5 p-3">
+        <div className="bg-ylang-beige space-y-1.5 p-2.5 sm:p-3">
           <div>
             <p className="font-abramo text-ylang-rose mb-0.5 text-xs font-semibold tracking-widest uppercase">
               {product.category}
@@ -177,28 +177,32 @@ export function ProductCard({
             </Link>
           </div>
 
-          <div className="flex w-full items-center justify-between gap-2">
+          <div className="flex w-full items-center justify-between gap-1.5 sm:gap-2">
             <Button
               variant="secondary"
               size="sm"
-              className="group flex-1 border"
+              className="group flex-1 border px-2 sm:px-4"
               asChild
             >
-              <Link href={`/produits/${product.id}`}>Découvrir</Link>
+              <Link href={`/produits/${product.id}`}>
+                <span className="hidden sm:inline">Découvrir</span>
+                <span className="sm:hidden">Voir</span>
+              </Link>
             </Button>
 
             {product.customizable && (
               <Button
                 variant="primary"
                 size="sm"
-                className="group flex-1"
+                className="group flex-1 px-2 sm:px-4"
                 asChild
               >
                 <Link
                   href={`/configurateur?product=${encodeURIComponent(product.name)}`}
                 >
-                  <Wand2 className="mr-1.5 h-3.5 w-3.5" />
-                  Personnaliser
+                  <Wand2 className="mr-1 h-3 w-3 sm:mr-1.5 sm:h-3.5 sm:w-3.5" />
+                  <span className="hidden sm:inline">Personnaliser</span>
+                  <span className="sm:hidden">Perso.</span>
                 </Link>
               </Button>
             )}

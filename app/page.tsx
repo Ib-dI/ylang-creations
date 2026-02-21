@@ -9,6 +9,7 @@ import { getCachedSettings } from "@/lib/actions/settings";
 import { db } from "@/lib/db";
 import { and, desc, eq } from "drizzle-orm";
 import { Loader2 } from "lucide-react";
+import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
 
 // Fonction de formatage réutilisable
@@ -45,6 +46,10 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
 }
 
 async function FeaturedProductsData() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("products");
+
   // Fetch featured products
   const products = await db
     .select()
@@ -71,7 +76,7 @@ async function FeaturedProductsData() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:gap-8 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4">
       {formattedProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
@@ -82,11 +87,11 @@ async function FeaturedProductsData() {
 // Composant de fallback optimisé
 function ProductsLoadingFallback() {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:gap-8 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4">
       {[1, 2, 3, 4].map((i) => (
         <div
           key={i}
-          className="animate-pulse overflow-hidden bg-white shadow-sm"
+          className="bg-ylang-beige animate-pulse overflow-hidden shadow-sm"
         >
           <div className="aspect-4/5 bg-gray-200" />
           <div className="space-y-3 p-4">
@@ -118,9 +123,9 @@ export default async function Home() {
       <HeroSection initialSlides={heroSlides} />
 
       {/* Featured Products avec Suspense pour streaming */}
-      <section className="section-padding bg-ylang-terracotta/50">
+      <section className="bg-ylang-terracotta/50 py-12 sm:py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
+          <div className="mb-8 text-center lg:mb-12">
             <p className="font-abramo text-ylang-rose mb-3 text-sm font-semibold tracking-widest uppercase">
               Collections printemps
             </p>

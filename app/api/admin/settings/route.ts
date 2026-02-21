@@ -3,9 +3,8 @@ import { db } from "@/lib/db";
 import { formatZodErrors, settingsSchema } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-
-export const runtime = "nodejs";
 
 const SETTINGS_ID = "main-settings";
 
@@ -148,6 +147,8 @@ export async function POST(request: Request) {
     } else {
       await db.update(settings).set(values).where(eq(settings.id, SETTINGS_ID));
     }
+
+    revalidateTag("settings", "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -3,8 +3,6 @@ import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 export async function POST(request: Request) {
   try {
     // 1. Authentification & Autorisation

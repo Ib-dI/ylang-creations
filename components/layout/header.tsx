@@ -467,22 +467,14 @@ export function Header() {
               className="group absolute left-1/2 -translate-x-1/2 transform"
               aria-label="Ylang Créations - Accueil"
             >
-              <div className="relative">
+              <div className="relative h-20 w-20 sm:h-[100px] sm:w-[100px]">
                 <Image
                   src="/logo/ylang créations_6.png"
                   alt="Ylang Créations"
-                  width={80}
-                  height={80}
+                  fill
                   priority
-                  className="block transition-transform duration-300 group-hover:scale-105 sm:hidden"
-                />
-                <Image
-                  src="/logo/ylang créations_6.png"
-                  alt="Ylang Créations"
-                  width={100}
-                  height={100}
-                  priority
-                  className="hidden transition-transform duration-300 group-hover:scale-105 sm:block"
+                  className="object-contain transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 640px) 80px, 100px"
                 />
               </div>
             </Link>

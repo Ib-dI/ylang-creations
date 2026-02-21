@@ -2,6 +2,7 @@ import { ClientLayoutWrapper } from "@/components/layout/client-layout-wrapper";
 import FontPreloader from "@/components/layout/font-preloader";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter, Playfair_Display } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 
 // Optimisation: display='swap' pour éviter FOUT, preload pour fonts critiques
@@ -120,7 +121,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfairDisplay.variable} ${bricolageGrotesque.variable} font-body bg-ylang-cream antialiased`}
       >
-        <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
+        <Suspense>
+          <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
+        </Suspense>
       </body>
     </html>
   );

@@ -1,8 +1,6 @@
 import { createClient, supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 export async function POST() {
   try {
     // Vérification authentification ET rôle admin

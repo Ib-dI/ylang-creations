@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { and, eq, ne } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -78,13 +79,33 @@ export default async function Page({ params }: PageProps) {
   // 3. Fetch reviews
   const { reviews, averageRating, totalReviews } = await getReviews(product.id);
 
-  // 4. Get current user
+  // 5. Render client component
+  return (
+    <Suspense>
+      <ProductDetailsWrapper
+        product={product}
+        similarProducts={similarProducts}
+        reviews={reviews}
+        averageRating={averageRating}
+        totalReviews={totalReviews}
+      />
+    </Suspense>
+  );
+}
+
+async function ProductDetailsWrapper({
+  product,
+  similarProducts,
+  reviews,
+  averageRating,
+  totalReviews,
+}: any) {
+  // dynamic getUser() inside Suspense
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 5. Render client component
   return (
     <ProductDetails
       product={product}

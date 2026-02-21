@@ -3,10 +3,8 @@ import { db } from "@/lib/db";
 import { formatZodErrors, updateProductSchema } from "@/lib/validations";
 import { createClient, supabaseAdmin } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-
-// Force Node.js runtime for database connections
-export const runtime = "nodejs";
 
 // GET single product
 export async function GET(
@@ -145,6 +143,8 @@ export async function PATCH(
 
     await db.update(product).set(updateData).where(eq(product.id, id));
 
+    revalidateTag("products", "max");
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating product:", error);
@@ -231,6 +231,8 @@ export async function DELETE(
 
     // 4. Supprimer le produit
     await db.delete(product).where(eq(product.id, id));
+
+    revalidateTag("products", "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -23,9 +23,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-// Force Node.js runtime for database connections
-export const runtime = "nodejs";
-
 export async function POST(req: Request) {
   const body = await req.text();
   const headersList = await headers();

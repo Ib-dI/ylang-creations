@@ -354,15 +354,15 @@ function CollectionsContent() {
   ]);
 
   return (
-    <div className="bg-ylang-terracotta/50 section-padding min-h-screen">
+    <div className="bg-ylang-terracotta/50 min-h-screen py-12 sm:py-16 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12 text-center"
+          className="mb-8 text-center lg:mb-12"
         >
-          <p className="text-ylang-rose font-abramo mb-3 text-sm tracking-widest uppercase font-semibold">
+          <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
             Nos Collections
           </p>
           <h1 className="text-ylang-charcoal font-abramo-script mb-4 text-4xl lg:text-5xl">
@@ -454,7 +454,7 @@ function CollectionsContent() {
                 animate={{ opacity: 1, height: "auto", y: 0 }}
                 exit={{ opacity: 0, height: 0, y: -10 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="border-ylang-rose overflow-hidden rounded-2xl border bg-ylang-beige p-6 shadow-sm"
+                className="border-ylang-rose bg-ylang-beige overflow-hidden rounded-2xl border p-6 shadow-sm"
               >
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                   {/* Catégories */}
@@ -599,7 +599,7 @@ function CollectionsContent() {
         ) : (
           <motion.div
             layout
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4"
           >
             <AnimatePresence mode="popLayout">
               {filteredProducts.map((product) => (

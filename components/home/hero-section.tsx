@@ -1,6 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  Variants,
+} from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +15,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const DEFAULT_SLIDES = [
   {
     id: "1",
-    bgClass: "bg-gradient-to-br from-ylang-rose to-ylang-terracotta",
+    bgClass: "from-ylang-rose to-ylang-terracotta",
     title: "Chaque création naît de vos désirs",
     subtitle: "Personnalisez chaque détail pour un univers unique",
     cta: "Créer maintenant",
@@ -18,7 +24,7 @@ const DEFAULT_SLIDES = [
   },
   {
     id: "2",
-    bgClass: "bg-gradient-to-br from-ylang-terracotta to-ylang-sage",
+    bgClass: "from-ylang-terracotta to-ylang-sage",
     title: "Savoir-faire artisanal français",
     subtitle: "Une confection soignée pour le confort et la sécurité de bébé",
     cta: "Découvrir l'atelier",
@@ -27,7 +33,7 @@ const DEFAULT_SLIDES = [
   },
   {
     id: "3",
-    bgClass: "bg-gradient-to-br from-ylang-sage to-ylang-rose",
+    bgClass: "from-ylang-sage to-ylang-rose",
     title: "Nouvelle Collection Printemps",
     subtitle: "Des couleurs douces et des matières naturelles",
     cta: "Voir la collection",
@@ -50,33 +56,72 @@ interface HeroSectionProps {
   initialSlides?: Slide[];
 }
 
+const slideVariants: Variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? "100%" : "-100%",
+    opacity: 0,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? "100%" : "-100%",
+    opacity: 0,
+  }),
+};
+
+const contentVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: 0.2 + i * 0.1,
+      type: "spring",
+      stiffness: 200,
+      damping: 25,
+      mass: 0.4,
+    },
+  }),
+};
+
 export function HeroSection({ initialSlides }: HeroSectionProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [slides, setSlides] = useState<Slide[]>(
+  const [[page, direction], setPage] = useState([0, 0]);
+  const [slides] = useState<Slide[]>(
     initialSlides && initialSlides.length > 0 ? initialSlides : DEFAULT_SLIDES,
   );
+  const shouldReduceMotion = useReducedMotion();
 
-  // Use a ref for transitioning state to avoid re-creating callbacks (Best Practice 5.1)
-  const isTransitioningRef = useRef(false);
+  const currentSlide = Math.abs(page % slides.length);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-advance slider avec cleanup
+  const paginate = useCallback(
+    (newDirection: number) => {
+      setPage([page + newDirection, newDirection]);
+    },
+    [page],
+  );
+
+  // Auto-advance slider
   useEffect(() => {
     if (slides.length <= 1) return;
 
     timerRef.current = setInterval(() => {
-      // Use functional state update to avoid dependency on currentSlide (Best Practice 5.1)
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
+      paginate(1);
+    }, 8000);
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [slides.length]);
+  }, [paginate, slides.length]);
 
-  // Préchargement de l'image suivante
+  // Preload next image
   useEffect(() => {
     if (slides.length <= 1) return;
     const nextIndex = (currentSlide + 1) % slides.length;
@@ -86,36 +131,6 @@ export function HeroSection({ initialSlides }: HeroSectionProps) {
     }
   }, [currentSlide, slides]);
 
-  const nextSlide = useCallback(() => {
-    if (isTransitioningRef.current) return;
-    isTransitioningRef.current = true;
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-    setTimeout(() => {
-      isTransitioningRef.current = false;
-    }, 1000);
-  }, [slides.length]);
-
-  const prevSlide = useCallback(() => {
-    if (isTransitioningRef.current) return;
-    isTransitioningRef.current = true;
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-    setTimeout(() => {
-      isTransitioningRef.current = false;
-    }, 1000);
-  }, [slides.length]);
-
-  const goToSlide = useCallback(
-    (index: number) => {
-      if (isTransitioningRef.current || index === currentSlide) return;
-      isTransitioningRef.current = true;
-      setCurrentSlide(index);
-      setTimeout(() => {
-        isTransitioningRef.current = false;
-      }, 1000);
-    },
-    [currentSlide],
-  );
-
   const currentSlideData = slides[currentSlide];
 
   return (
@@ -123,84 +138,92 @@ export function HeroSection({ initialSlides }: HeroSectionProps) {
       className="group bg-ylang-beige/10 relative h-[600px] w-full overflow-hidden lg:h-[700px]"
       aria-label="Hero carousel"
     >
-      {/* Background avec transition CSS pure */}
-      <div className="absolute inset-0">
-        {slides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            } ${slide.image ? "" : slide.bgClass || "from-ylang-rose to-ylang-terracotta bg-linear-to-br"}`}
-            style={
-              slide.image
-                ? {
-                    backgroundImage: `url(${slide.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }
-                : {}
-            }
-          >
-            {/* Optimisation: Image avec Next/Image si disponible */}
-            {slide.image && (
-              <Image
-                src={slide.image}
-                alt={slide.title}
-                fill
-                priority={index === 0}
-                quality={90}
-                sizes="100vw"
-                className="object-cover"
-              />
-            )}
-
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/20" />
-          </div>
-        ))}
-      </div>
-
-      {/* Content avec animations CSS */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
-        <h1
-          key={`title-${currentSlide}`}
-          className="font-abramo-script animate-fade-in-up mb-6 max-w-5xl text-4xl leading-tight text-white drop-shadow-lg md:text-6xl lg:text-7xl"
-          style={{ animationDelay: "0.3s" }}
+      <AnimatePresence initial={false} custom={direction} mode="popLayout">
+        <motion.div
+          key={page}
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={
+            shouldReduceMotion
+              ? { opacity: { duration: 0.5 } }
+              : {
+                  x: {
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 25,
+                    mass: 0.4,
+                  },
+                  opacity: { duration: 0.2 },
+                }
+          }
+          className={`absolute inset-0 ${currentSlideData.image ? "" : `bg-linear-to-br ${currentSlideData.bgClass || "from-ylang-rose to-ylang-terracotta"}`}`}
         >
-          {currentSlideData.title}
-        </h1>
+          {currentSlideData.image ? (
+            <Image
+              src={currentSlideData.image}
+              alt={currentSlideData.title}
+              fill
+              priority
+              quality={90}
+              sizes="100vw"
+              className="object-cover"
+            />
+          ) : null}
 
-        <p
-          key={`subtitle-${currentSlide}`}
-          className="font-body animate-fade-in-up mb-10 max-w-2xl text-lg font-light tracking-wide text-white/95 drop-shadow-md md:text-xl"
-          style={{ animationDelay: "0.5s" }}
-        >
-          {currentSlideData.subtitle}
-        </p>
+          {/* Overlay for better legibility */}
+          <div className="absolute inset-0 bg-black/20" />
 
-        <div
-          key={`cta-${currentSlide}`}
-          className="animate-fade-in-up"
-          style={{ animationDelay: "0.7s" }}
-        >
-          <Link href={currentSlideData.link || "/"}>
-            <Button
-              variant="luxury"
-              size="lg"
-              className="px-10 py-6 text-lg tracking-widest uppercase transition-transform duration-300 hover:scale-105"
+          {/* Content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+            <motion.h1
+              custom={0}
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              className="font-abramo-script mb-6 max-w-5xl text-4xl leading-tight text-balance text-white drop-shadow-2xl md:text-6xl lg:text-7xl"
             >
-              {currentSlideData.cta || "Découvrir"}
-            </Button>
-          </Link>
-        </div>
-      </div>
+              {currentSlideData.title}
+            </motion.h1>
 
-      {/* Navigation Arrows - Visible seulement si plusieurs slides */}
+            <motion.p
+              custom={1}
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              className="font-body mb-10 max-w-2xl text-lg font-light tracking-wide text-pretty text-white/95 drop-shadow-lg md:text-xl"
+            >
+              {currentSlideData.subtitle}
+            </motion.p>
+
+            <motion.div
+              custom={2}
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <Link href={currentSlideData.link || "/"}>
+                <Button
+                  variant="luxury"
+                  size="lg"
+                  className="px-10 py-6 text-lg tracking-widest uppercase transition-all duration-300 hover:scale-105 active:scale-95"
+                >
+                  {currentSlideData.cta || "Découvrir"}
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Navigation Arrows */}
       {slides.length > 1 && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-4 lg:px-8">
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-between px-4 lg:px-8">
           <button
-            onClick={prevSlide}
-            className="pointer-events-auto -translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white"
+            onClick={() => paginate(-1)}
+            className="pointer-events-auto -translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-hidden"
             aria-label="Diapositive précédente"
           >
             <ChevronLeft
@@ -210,8 +233,8 @@ export function HeroSection({ initialSlides }: HeroSectionProps) {
           </button>
 
           <button
-            onClick={nextSlide}
-            className="pointer-events-auto translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white"
+            onClick={() => paginate(1)}
+            className="pointer-events-auto translate-x-4 rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 hover:bg-white/20 hover:text-white focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:outline-hidden"
             aria-label="Diapositive suivante"
           >
             <ChevronRight
@@ -222,21 +245,24 @@ export function HeroSection({ initialSlides }: HeroSectionProps) {
         </div>
       )}
 
-      {/* Indicators - Visible seulement si plusieurs slides */}
+      {/* Indicators */}
       {slides.length > 1 && (
         <div
-          className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 gap-4"
+          className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-4"
           role="tablist"
           aria-label="Navigation du carrousel"
         >
-          {slides.map((slide, index) => (
+          {slides.map((_, index) => (
             <button
-              key={slide.id}
-              onClick={() => goToSlide(index)}
+              key={index}
+              onClick={() => {
+                const diff = index - currentSlide;
+                if (diff !== 0) paginate(diff);
+              }}
               role="tab"
               aria-selected={index === currentSlide}
               aria-label={`Aller à la diapositive ${index + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-500 ease-out ${
+              className={`h-1.5 rounded-full transition-all duration-500 ease-out focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-hidden ${
                 index === currentSlide
                   ? "w-12 bg-white"
                   : "w-4 bg-white/40 hover:w-6 hover:bg-white/60"
@@ -245,24 +271,6 @@ export function HeroSection({ initialSlides }: HeroSectionProps) {
           ))}
         </div>
       )}
-
-      {/* Animations CSS */}
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in-up {
-          animation: fadeInUp 0.8s ease-out both;
-        }
-      `}</style>
     </section>
   );
 }
