@@ -170,41 +170,52 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">
-            Commandes
-          </h1>
-          <p className="text-ylang-charcoal/60">
-            {filteredOrders.length} commande(s) trouvée(s)
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="secondary" size="sm" onClick={fetchOrders}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Actualiser
-          </Button>
-          <Button variant="secondary" size="sm" onClick={handleExportCSV}>
-            <Download className="mr-2 h-4 w-4" />
-            Exporter CSV
-          </Button>
+    <div className="">
+      <div className="mb-6 lg:mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-ylang-charcoal mb-1 text-2xl font-bold sm:text-3xl">
+              Commandes
+            </h1>
+            <p className="text-ylang-charcoal/60 text-xs sm:text-sm">
+              {filteredOrders.length} commande(s)
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={fetchOrders}
+              className="flex-1 lg:flex-none"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              <span className="lg:inline">Actualiser</span>
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleExportCSV}
+              className="flex-1 lg:flex-none"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              <span className="sm:inline">Exporter</span>
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="border-ylang-beige mb-6 rounded-2xl border bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-4 sm:flex-row">
+      <div className="border-ylang-beige mb-6 rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="text-ylang-charcoal/40 absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
+              <Search className="text-ylang-charcoal/40 absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 lg:left-4 lg:h-5 lg:w-5" />
               <input
                 type="text"
-                placeholder="Rechercher par n° commande, client..."
+                placeholder="N° commande, client..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border py-3 pr-4 pl-12 focus:ring-2 focus:outline-none"
+                className="border-ylang-beige focus:ring-ylang-rose/20 h-10 w-full rounded-xl border pr-4 pl-9 text-sm focus:ring-2 focus:outline-none lg:h-12 lg:pl-12"
               />
             </div>
           </div>
@@ -228,24 +239,78 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* Orders Table */}
+      {/* Orders View */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
         </div>
+      ) : filteredOrders.length === 0 ? (
+        <div className="border-ylang-beige rounded-2xl border bg-white py-20 text-center">
+          <Package className="text-ylang-charcoal/20 mx-auto mb-4 h-12 w-12" />
+          <h3 className="text-ylang-charcoal mb-2 text-xl font-semibold">
+            Aucune commande
+          </h3>
+          <p className="text-ylang-charcoal/60 text-sm">
+            Les commandes apparaîtront ici après les achats
+          </p>
+        </div>
       ) : (
-        <div className="border-ylang-beige overflow-hidden rounded-2xl border bg-white shadow-sm">
-          {filteredOrders.length === 0 ? (
-            <div className="py-20 text-center">
-              <Package className="text-ylang-charcoal/20 mx-auto mb-4 h-16 w-16" />
-              <h3 className="text-ylang-charcoal mb-2 text-xl font-semibold">
-                Aucune commande
-              </h3>
-              <p className="text-ylang-charcoal/60">
-                Les commandes apparaîtront ici après les achats
-              </p>
-            </div>
-          ) : (
+        <>
+          {/* Mobile Card View */}
+          <div className="space-y-4 lg:hidden">
+            {filteredOrders.map((order) => (
+              <div
+                key={order.id}
+                className="border-ylang-beige rounded-2xl border bg-white p-4 shadow-sm"
+              >
+                <div className="mb-3 flex items-start justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-ylang-rose font-mono text-sm font-bold">
+                      {order.orderNumber}
+                    </span>
+                    <span className="text-ylang-charcoal/40 text-[10px] uppercase">
+                      {new Date(order.createdAt).toLocaleDateString("fr-FR")}
+                    </span>
+                  </div>
+                  <StatusBadge status={order.status} />
+                </div>
+
+                <div className="mb-4 border-t pt-3">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-ylang-charcoal text-sm font-semibold">
+                        {order.customerName}
+                      </p>
+                      <p className="text-ylang-charcoal/60 text-xs">
+                        {order.items && order.items.length > 0
+                          ? order.items[0].productName
+                          : "Produit"}
+                        {order.items && order.items.length > 1
+                          ? ` (+${order.items.length - 1})`
+                          : ""}
+                      </p>
+                    </div>
+                    <p className="text-ylang-charcoal text-base font-bold">
+                      {order.total?.toFixed(2)}€
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="bg-ylang-beige text-ylang-charcoal flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-medium transition-colors"
+                  >
+                    <Eye className="h-4 w-4" />
+                    Voir détails
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="border-ylang-beige hidden overflow-hidden rounded-2xl border bg-white shadow-sm lg:block">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-ylang-cream">
@@ -360,8 +425,8 @@ export default function OrdersPage() {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

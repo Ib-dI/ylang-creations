@@ -96,12 +96,15 @@ export default function AdminLayout({
   return (
     <div className="bg-ylang-terracotta/30 min-h-screen">
       {/* Mobile menu button */}
-      <div className="fixed top-4 left-4 z-50 lg:hidden">
+      <div className="fixed top-4 right-4 z-50 lg:hidden">
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="border-ylang-beige rounded-xl border bg-white p-2 shadow-lg"
+          className="border-ylang-beige flex h-10 items-center gap-2 rounded-xl border bg-white px-3 shadow-lg"
         >
-          <Menu className="text-ylang-charcoal h-6 w-6" />
+          <Menu className="text-ylang-charcoal h-5 w-5" />
+          <span className="text-ylang-charcoal font-body text-xs font-semibold uppercase">
+            Menu
+          </span>
         </button>
       </div>
 
@@ -218,11 +221,13 @@ export default function AdminLayout({
 
       {/* Main content */}
       <main
-        className={`transition-all duration-300 ${
+        className={`pb-12 transition-all duration-300 ${
           sidebarOpen ? "lg:ml-64" : "lg:ml-20"
         }`}
       >
-        {children}
+        <div className="px-4 pt-20 sm:p-6 lg:p-8">
+          <div className="safe-area-bottom">{children}</div>
+        </div>
       </main>
     </div>
   );

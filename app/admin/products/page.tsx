@@ -2,7 +2,6 @@
 
 import { ImageReorderGrid } from "@/components/admin/image-reorder-grid";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { Input } from "@/components/ui/input";
 import { TrashBin } from "@gravity-ui/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -391,101 +391,105 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6 lg:mb-8">
         <div className="mb-2 flex items-center gap-3">
-          <div className="from-ylang-rose/20 to-ylang-gold/20 flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br">
-            <Package className="text-ylang-rose h-6 w-6" />
+          <div className="from-ylang-rose/20 to-ylang-gold/20 flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br lg:h-12 lg:w-12">
+            <Package className="text-ylang-rose h-5 w-5 lg:h-6 lg:w-6" />
           </div>
           <div>
-            <h1 className="text-ylang-charcoal text-3xl font-bold">Produits</h1>
-            <p className="text-ylang-charcoal/60 text-sm">
-              Gérez votre catalogue de produits
+            <h1 className="text-ylang-charcoal text-2xl font-bold lg:text-3xl">
+              Produits
+            </h1>
+            <p className="text-ylang-charcoal/60 text-xs sm:text-sm">
+              Gérez votre catalogue
             </p>
           </div>
         </div>
-        <div className="text-ylang-charcoal/40 *:border-ylang-cream/80 flex items-center gap-2 text-sm *:border">
-          <span className="bg-ylang-beige rounded-full px-3 py-1">
-            {products.length} produits au total
+        <div className="text-ylang-charcoal/40 *:border-ylang-cream/80 flex flex-wrap items-center gap-2 text-[10px] *:border sm:text-sm">
+          <span className="bg-ylang-beige rounded-full px-2 py-0.5 sm:px-3 sm:py-1">
+            {products.length} produits
           </span>
-          <span className="bg-ylang-beige rounded-full px-3 py-1">
+          <span className="bg-ylang-beige rounded-full border-green-100 px-2 py-0.5 sm:px-3 sm:py-1">
             {products.filter((p) => p.isActive).length} actifs
           </span>
-          <span className="bg-ylang-beige rounded-full px-3 py-1">
-            {products.filter((p) => p.isFeatured).length} en vedette
+          <span className="bg-ylang-beige rounded-full border-yellow-100 px-2 py-0.5 sm:px-3 sm:py-1">
+            <Star className="mr-1 inline h-2.5 w-2.5 text-yellow-600 sm:h-3.5 sm:w-3.5" />
+            {products.filter((p) => p.isFeatured).length} vedettes
           </span>
         </div>
       </div>
 
       {/* Actions bar */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row">
-        {/* Search */}
-        <div className="relative flex-1">
-          <Search className="text-ylang-charcoal/40 absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
-          <Input
-            type="text"
-            placeholder="Rechercher un produit..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border bg-white py-3 pr-4 pl-12 focus:ring-2 focus:outline-none"
-          />
+      <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center">
+        {/* Row 1: Search & View Toggle */}
+        <div className="flex gap-2 lg:flex-1">
+          <div className="relative flex-1">
+            <Search className="text-ylang-charcoal/40 absolute top-1/2 left-3 z-20 h-4 w-4 -translate-y-1/2 lg:left-4 lg:h-5 lg:w-5" />
+            <Input
+              type="text"
+              placeholder="Rechercher..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border-ylang-beige focus:ring-ylang-rose/20 h-10 w-full rounded-xl border bg-white pr-4 pl-9 text-sm focus:ring-2 focus:outline-none lg:h-12 lg:pl-12"
+            />
+          </div>
+
+          <div className="flex items-center rounded-xl border border-gray-200 bg-white p-0.5 lg:rounded-2xl lg:p-1">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`rounded-lg p-1.5 transition-all lg:p-2.5 ${
+                viewMode === "grid"
+                  ? "bg-ylang-rose text-white shadow-sm"
+                  : "text-ylang-charcoal/40 hover:text-ylang-charcoal"
+              }`}
+            >
+              <LayoutGrid className="h-4 w-4 sm:h-5 sm:w-5" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`rounded-lg p-1.5 transition-all lg:p-2.5 ${
+                viewMode === "list"
+                  ? "bg-ylang-rose text-white shadow-sm"
+                  : "text-ylang-charcoal/40 hover:text-ylang-charcoal"
+              }`}
+            >
+              <List className="h-4 w-4 sm:h-5 sm:w-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 lg:justify-end">
           {/* Category filter */}
-          <div className="relative">
+          <div className="relative flex-1 lg:flex-none">
             <select
               value={selectedCategory || ""}
               onChange={(e) => setSelectedCategory(e.target.value || null)}
-              className="focus:ring-ylang-rose/20 font-body text-ylang-charcoal cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
+              className="focus:ring-ylang-rose/20 font-body text-ylang-charcoal h-10 cursor-pointer appearance-none rounded-xl border border-gray-200 bg-white pr-9 pl-4 text-xs font-medium transition-all outline-none focus:ring-2 lg:h-12 lg:pr-10 lg:pl-6 lg:text-sm"
             >
-              <option value="">Toutes les catégories</option>
+              <option value="">Toutes catégories</option>
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
                 </option>
               ))}
             </select>
-            <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2" />
+            <ChevronDown className="text-ylang-charcoal/40 pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
           </div>
 
-          {/* View Toggle */}
-          <div className="flex items-center rounded-2xl border border-gray-200 bg-white p-1">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`rounded-xl p-2.5 transition-all ${
-                viewMode === "grid"
-                  ? "bg-ylang-rose text-white shadow-md"
-                  : "text-ylang-charcoal/40 hover:text-ylang-charcoal hover:bg-gray-50"
-              }`}
-              title="Vue grille"
-            >
-              <LayoutGrid className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`rounded-xl p-2.5 transition-all ${
-                viewMode === "list"
-                  ? "bg-ylang-rose text-white shadow-md"
-                  : "text-ylang-charcoal/40 hover:text-ylang-charcoal hover:bg-gray-50"
-              }`}
-              title="Vue liste"
-            >
-              <List className="h-5 w-5" />
-            </button>
-          </div>
+          <Button
+            variant="luxury"
+            onClick={() => handleOpenModal()}
+            className="flex h-10 items-center justify-center gap-2 rounded-xl px-4 lg:h-12 lg:px-6"
+          >
+            <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
+            <span className="whitespace-nowrap truncate text-sm font-medium lg:font-semibold">
+              {/* <span className="lg:hidden">Ajouter</span> */}
+              Ajouter un produit
+            </span>
+          </Button>
         </div>
-
-        {/* Add button */}
-        <Button
-          variant="luxury"
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-2"
-        >
-          <Plus className="h-5 w-5" />
-          Ajouter un produit
-        </Button>
       </div>
 
       {/* Products grid */}
@@ -508,7 +512,7 @@ export default function ProductsPage() {
           </Button>
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4">
           {filteredProducts.map((product) => (
             <motion.div
               key={product.id}
@@ -526,12 +530,12 @@ export default function ProductsPage() {
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center">
-                    <Package className="text-ylang-charcoal/20 h-12 w-12" />
+                    <Package className="text-ylang-charcoal/20 h-8 w-8 lg:h-12 lg:w-12" />
                   </div>
                 )}
 
-                {/* Overlay on hover */}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/20 group-hover:opacity-100">
+                {/* Overlay on hover (Desktop only) */}
+                <div className="absolute inset-0 hidden items-center justify-center bg-black/20 opacity-0 transition-all group-hover:opacity-100 lg:flex">
                   <button
                     onClick={() => handleOpenModal(product)}
                     className="flex items-center gap-2 rounded-full bg-white px-4 py-2 font-medium shadow-lg transition-transform hover:scale-105"
@@ -541,31 +545,32 @@ export default function ProductsPage() {
                   </button>
                 </div>
 
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex flex-col gap-2">
+                {/* Badges - Scaled down for mobile */}
+                <div className="absolute top-1 left-1 flex flex-col gap-1 lg:top-3 lg:left-3 lg:gap-2">
                   {!product.isActive && (
-                    <span className="rounded-full bg-red-500 px-2 py-1 text-xs font-medium text-white">
+                    <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[8px] font-medium text-white lg:px-2 lg:py-1 lg:text-xs">
                       Inactif
                     </span>
                   )}
                   {product.isFeatured && (
-                    <span className="flex items-center gap-1 rounded-full border border-yellow-600 bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
-                      <Star className="h-3 w-3" />
+                    <span className="flex items-center gap-1 rounded-full border border-yellow-600 bg-yellow-500 px-1.5 py-0.5 text-[8px] font-medium text-white lg:px-2 lg:py-1 lg:text-xs">
+                      <Star className="h-2 w-2 lg:h-3 lg:w-3" />
                       Vedette
                     </span>
                   )}
                   {product.options?.customizable && (
-                    <span className="flex items-center gap-1 rounded-full border border-purple-600 bg-purple-500 px-2 py-1 text-xs font-medium text-white">
-                      <Palette className="h-3 w-3" />
-                      Personnalisable
+                    <span className="flex items-center gap-1 rounded-full border border-purple-600 bg-purple-500 px-1.5 py-0.5 text-[8px] font-medium text-white lg:px-2 lg:py-1 lg:text-xs">
+                      <Palette className="h-2 w-2 lg:h-3 lg:w-3" />
+                      Perso.
+                      
                     </span>
                   )}
                 </div>
 
-                {/* Stock badge */}
-                <div className="absolute top-3 right-3">
+                {/* Stock badge - More compact on mobile */}
+                <div className="absolute top-1 right-1 lg:top-3 lg:right-3">
                   <span
-                    className={`rounded-full border px-2 py-1 text-xs font-medium ${
+                    className={`rounded-full border px-1.5 py-0.5 text-[8px] font-medium lg:px-2 lg:py-1 lg:text-xs ${
                       product.stock === 0
                         ? "border-red-600 bg-red-100 text-red-600"
                         : product.stock < 5
@@ -573,46 +578,49 @@ export default function ProductsPage() {
                           : "border-green-600 bg-green-100 text-green-600"
                     }`}
                   >
-                    Stock: {product.stock}
+                    <span className="">Stock: </span>
+                    {product.stock}
                   </span>
                 </div>
               </div>
 
-              {/* Content */}
-              <div className="p-4">
-                <div className="flex justify-between">
+              {/* Content - Reduced padding on mobile */}
+              <div className="p-2 lg:p-4">
+                <div className="flex justify-between mb-2 sm:mb-4">
                   <div className="">
-                    <p className="text-ylang-rose mb-1 text-xs font-medium">
+                    <p className="text-ylang-rose mb-0.5 text-[10px] font-medium lg:mb-1 lg:text-xs">
                       {product.category}
                     </p>
-                    <h3 className="text-ylang-charcoal mb-2 line-clamp-1 font-semibold">
+                    <h3 className="text-ylang-charcoal line-clamp-1 text-xs font-semibold lg:text-sm">
                       {product.name}
                     </h3>
                   </div>
-                  <div className="mb-4 flex items-center gap-2">
-                    <span className="text-ylang-rose text-lg font-bold">
+                  <div className="-mb-0.5 flex items-end gap-1 lg:gap-2">
+                    <span className="text-ylang-rose text-sm font-bold lg:text-lg">
                       {product.price.toFixed(2)}€
                     </span>
                     {product.compareAtPrice && (
-                      <span className="text-ylang-charcoal/40 text-sm line-through">
+                      <span className="text-ylang-charcoal/40 text-[10px] line-through lg:text-sm">
                         {product.compareAtPrice.toFixed(2)}€
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2">
+                {/* Actions - Icon only on mobile for better fit */}
+                <div className="flex items-center gap-1 lg:gap-2">
                   <button
                     onClick={() => handleOpenModal(product)}
-                    className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-blue-300 bg-blue-100 py-2 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-200"
+                    className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-blue-300 bg-blue-100 py-1.5 text-blue-600 transition-colors hover:bg-blue-200 lg:py-2"
                   >
-                    <Edit className="h-4 w-4" />
-                    Modifier
+                    <Edit className="h-3 w-3 lg:h-4 lg:w-4" />
+                    <span className="hidden lg:inline lg:text-sm lg:font-semibold">
+                      Modifier
+                    </span>
                   </button>
                   <button
                     onClick={() => handleToggleActive(product)}
-                    className={`cursor-pointer rounded-lg border p-2 transition-colors ${
+                    className={`cursor-pointer rounded-lg border p-1.5 transition-colors lg:p-2 ${
                       product.isActive
                         ? "border-green-300 bg-green-100 text-green-600 hover:bg-green-200"
                         : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -620,14 +628,14 @@ export default function ProductsPage() {
                     title={product.isActive ? "Désactiver" : "Activer"}
                   >
                     {product.isActive ? (
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-3 w-3 lg:h-4 lg:w-4" />
                     ) : (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeOff className="h-3 w-3 lg:h-4 lg:w-4" />
                     )}
                   </button>
                   <button
                     onClick={() => handleToggleFeatured(product)}
-                    className={`cursor-pointer rounded-lg border p-2 transition-colors ${
+                    className={`cursor-pointer rounded-lg border p-1.5 transition-colors lg:p-2 ${
                       product.isFeatured
                         ? "border-yellow-300 bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
                         : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -638,14 +646,17 @@ export default function ProductsPage() {
                         : "Mettre en vedette"
                     }
                   >
-                    <Star className="h-4 w-4" />
+                    <Star className="h-3 w-3 lg:h-4 lg:w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(product.id)}
-                    className="cursor-pointer rounded-lg border border-red-300 bg-red-100 p-2 text-red-500 transition-colors hover:bg-red-200"
+                    className="cursor-pointer rounded-lg border border-red-300 bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200 lg:p-2"
                     title="Supprimer"
                   >
-                    <TrashBin strokeWidth="0.5" className="h-4 w-4" />
+                    <TrashBin
+                      strokeWidth="0.5"
+                      className="h-3 w-3 lg:h-4 lg:w-4"
+                    />
                   </button>
                 </div>
               </div>
@@ -953,7 +964,7 @@ export default function ProductsPage() {
                               })
                             }
                             rows={3}
-                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full resize-none rounded-xl border bg-ylang-beige/30 px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                            className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose bg-ylang-beige/30 w-full resize-none rounded-xl border px-4 py-3 transition-all focus:ring-2 focus:outline-none"
                             placeholder="Une brève description pour les listes et aperçus..."
                           />
                         </div>
@@ -974,7 +985,7 @@ export default function ProductsPage() {
                                     category: e.target.value,
                                   })
                                 }
-                                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal w-full cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-ylang-beige/30 py-2.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
+                                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal bg-ylang-beige/30 w-full cursor-pointer appearance-none rounded-2xl border border-gray-200 py-2.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-2"
                               >
                                 <option value="">Sélectionner...</option>
                                 {categories.map((cat) => (
@@ -1199,7 +1210,7 @@ export default function ProductsPage() {
                             })
                           }
                           rows={6}
-                          className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full resize-none rounded-xl border bg-ylang-beige/30 px-4 py-3 transition-all focus:ring-2 focus:outline-none"
+                          className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose bg-ylang-beige/30 w-full resize-none rounded-xl border px-4 py-3 transition-all focus:ring-2 focus:outline-none"
                           placeholder="Décrivez les matériaux, le processus de fabrication, les avantages du produit..."
                         />
                       </div>
@@ -1222,7 +1233,7 @@ export default function ProductsPage() {
                             {formData.features.map((feature, index) => (
                               <div
                                 key={index}
-                                className="border-ylang-beige flex items-center gap-3 rounded-lg border bg-ylang-beige/30 px-4 py-3"
+                                className="border-ylang-beige bg-ylang-beige/30 flex items-center gap-3 rounded-lg border px-4 py-3"
                               >
                                 <Check className="text-ylang-rose h-4 w-4 shrink-0" />
                                 <span className="flex-1">{feature}</span>

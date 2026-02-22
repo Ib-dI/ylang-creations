@@ -64,7 +64,7 @@ export default function UsersPage() {
   const totalRevenue = users.reduce((sum, u) => sum + u.totalSpent, 0);
 
   return (
-    <div className="p-8">
+    <div className="">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">Clients</h1>
@@ -217,12 +217,12 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {user.emailVerified ? (
-                        <span className="inline-flex items-center gap-1 border-green-200 border rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
                           <CheckCircle className="h-3 w-3" />
                           Vérifié
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 border-orange-200 border rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-700">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-100 px-2 py-1 text-xs font-medium text-orange-700">
                           <XCircle className="h-3 w-3" />
                           Non vérifié
                         </span>

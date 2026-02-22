@@ -67,35 +67,37 @@ function StatCard({
     : "bg-red-50 hover:bg-red-100";
 
   return (
-    <div className="group border-ylang-terracotta relative overflow-hidden rounded-2xl border bg-white p-6 transition-all">
-      <div className="mb-4 flex items-start justify-between">
+    <div className="group border-ylang-terracotta relative overflow-hidden rounded-2xl border bg-white p-4 transition-all sm:p-6">
+      <div className="mb-3 flex items-start justify-between sm:mb-4">
         <div
-          className={`h-12 w-12 ${colorClasses[color as keyof typeof colorClasses]} flex items-center justify-center rounded-xl`}
+          className={`h-10 w-10 sm:h-12 sm:w-12 ${colorClasses[color as keyof typeof colorClasses]} flex items-center justify-center rounded-xl`}
         >
-          <Icon className="h-6 w-6 text-white" />
+          <Icon className="h-5 w-5 text-white sm:h-6 sm:w-6" />
         </div>
         {trend && (
           <button
             onClick={onTrendClick}
             className={cn(
-              "flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium transition-colors",
+              "flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium transition-colors sm:text-sm",
               onTrendClick
                 ? `${trendBgClass} ${trendColorClass} cursor-pointer`
                 : trendColorClass,
             )}
           >
             {isPositive ? (
-              <TrendingUp className="h-4 w-4" />
+              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
             ) : (
-              <TrendingDown className="h-4 w-4" />
+              <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4" />
             )}
             {trend}
           </button>
         )}
       </div>
-      <p className="text-ylang-charcoal mb-1 text-2xl font-bold">{value}</p>
+      <p className="text-ylang-charcoal mb-1 text-xl font-bold sm:text-2xl">
+        {value}
+      </p>
       <div className="flex items-center justify-between">
-        <p className="text-ylang-charcoal/60 text-sm">{title}</p>
+        <p className="text-ylang-charcoal/60 text-xs sm:text-sm">{title}</p>
       </div>
     </div>
   );
@@ -237,13 +239,13 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="p-8">
+    <div className="">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">
+      <div className="mb-6 lg:mb-8">
+        <h1 className="text-ylang-charcoal mb-2 text-2xl font-bold sm:text-3xl">
           Dashboard
         </h1>
-        <p className="text-ylang-charcoal/60">
+        <p className="text-ylang-charcoal/60 text-sm">
           Bienvenue ! Voici un aperçu de votre activité.
         </p>
       </div>
@@ -253,7 +255,7 @@ export default function AdminDashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6"
       >
         <StatCard
           title="CA (Mois en cours)"
@@ -284,7 +286,7 @@ export default function AdminDashboard() {
       </motion.div>
 
       {/* Quick Actions */}
-      <div className="mb-8 grid gap-6 sm:grid-cols-3">
+      <div className="mb-8 grid gap-4 sm:grid-cols-3 sm:gap-6">
         <Link
           href="/admin/orders"
           className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-md"
@@ -344,14 +346,14 @@ export default function AdminDashboard() {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="border-ylang-terracotta rounded-2xl border bg-white shadow-xs"
       >
-        <div className="border-ylang-beige border-b p-6">
+        <div className="border-ylang-beige border-b p-4 sm:p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-ylang-charcoal text-xl font-bold">
+            <h2 className="text-ylang-charcoal text-lg font-bold sm:text-xl">
               Commandes récentes
             </h2>
             <Link
               href="/admin/orders"
-              className="text-ylang-rose text-sm font-medium hover:underline"
+              className="text-ylang-rose text-xs font-medium hover:underline sm:text-sm"
             >
               Voir tout →
             </Link>
