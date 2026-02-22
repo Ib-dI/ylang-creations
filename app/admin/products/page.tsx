@@ -484,7 +484,7 @@ export default function ProductsPage() {
             className="flex h-10 items-center justify-center gap-2 rounded-xl px-4 lg:h-12 lg:px-6"
           >
             <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
-            <span className="whitespace-nowrap truncate text-sm font-medium lg:font-semibold">
+            <span className="truncate text-sm font-medium whitespace-nowrap lg:font-semibold">
               {/* <span className="lg:hidden">Ajouter</span> */}
               Ajouter un produit
             </span>
@@ -562,7 +562,6 @@ export default function ProductsPage() {
                     <span className="flex items-center gap-1 rounded-full border border-purple-600 bg-purple-500 px-1.5 py-0.5 text-[8px] font-medium text-white lg:px-2 lg:py-1 lg:text-xs">
                       <Palette className="h-2 w-2 lg:h-3 lg:w-3" />
                       Perso.
-                      
                     </span>
                   )}
                 </div>
@@ -586,7 +585,7 @@ export default function ProductsPage() {
 
               {/* Content - Reduced padding on mobile */}
               <div className="p-2 lg:p-4">
-                <div className="flex justify-between mb-2 sm:mb-4">
+                <div className="mb-2 flex justify-between sm:mb-4">
                   <div className="">
                     <p className="text-ylang-rose mb-0.5 text-[10px] font-medium lg:mb-1 lg:text-xs">
                       {product.category}
@@ -889,7 +888,7 @@ export default function ProductsPage() {
               </div>
 
               {/* Tabs Navigation */}
-              <div className="border-ylang-beige/50 bg-ylang-cream/80 flex gap-1 border-b bg-linear-to-r px-8 py-3">
+              <div className="border-ylang-beige/50 bg-ylang-cream/80 scrollbar-hide touch-action-manipulation flex flex-nowrap items-center gap-1 overflow-x-auto border-b bg-linear-to-r px-4 py-3 md:px-8">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -897,7 +896,7 @@ export default function ProductsPage() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`relative flex cursor-pointer items-center gap-2 rounded-xl border border-transparent px-4 py-2.5 text-sm font-medium transition-all ${
+                      className={`relative flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-transparent px-4 py-2.5 text-sm font-medium transition-all ${
                         isActive
                           ? "bg-ylang-rose shadow-ylang-rose/25 text-white shadow-md"
                           : "text-ylang-charcoal/70 hover:text-ylang-charcoal hover:bg-ylang-cream/90 hover:border-ylang-cream"

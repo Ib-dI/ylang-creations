@@ -659,21 +659,21 @@ export function SettingsClient({
       </div>
 
       <div className="grid gap-8 lg:grid-cols-5">
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
-          <nav className="w-56 space-y-1">
+        {/* Sidebar / Navigation */}
+        <div className="min-w-0 lg:col-span-1">
+          <nav className="touch-action-manipulation -mx-4 flex flex-nowrap items-center gap-2 overflow-x-auto px-4 pb-4 lg:-mx-0 lg:w-56 lg:flex-col lg:overflow-x-visible lg:px-0 lg:pb-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors ${
+                className={`flex shrink-0 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm transition-all lg:w-full lg:justify-start lg:py-3 lg:text-base ${
                   activeTab === tab.id
-                    ? "bg-ylang-rose text-white"
-                    : "text-ylang-charcoal/70 hover:bg-ylang-beige"
+                    ? "bg-ylang-rose text-white shadow-md lg:shadow-none"
+                    : "text-ylang-charcoal/70 hover:bg-ylang-beige border border-transparent bg-white lg:bg-transparent"
                 }`}
               >
-                <tab.icon className="h-5 w-5" />
-                {tab.label}
+                <tab.icon className="h-4 w-4 lg:h-5 lg:w-5" />
+                <span className="font-medium">{tab.label}</span>
               </button>
             ))}
           </nav>

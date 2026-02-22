@@ -74,61 +74,67 @@ export default function UsersPage() {
       </div>
 
       {/* Stats */}
-      <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500">
-              <Users className="h-6 w-6 text-white" />
+      <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+        <div className="border-ylang-terracotta rounded-2xl border bg-white p-4 transition-all sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500 shadow-sm shadow-blue-200 sm:h-12 sm:w-12">
+              <Users className="h-5 w-5 text-white sm:h-6 sm:w-6" />
             </div>
             <div>
-              <p className="text-ylang-charcoal text-2xl font-bold">
+              <p className="text-ylang-charcoal text-xl font-bold sm:text-2xl">
                 {totalUsers}
               </p>
-              <p className="text-ylang-charcoal/60 text-sm">
-                Total utilisateurs
+              <p className="text-ylang-charcoal/60 text-[10px] sm:text-sm">
+                Utilisateurs
               </p>
             </div>
           </div>
         </div>
 
-        <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-500">
-              <CheckCircle className="h-6 w-6 text-white" />
+        <div className="border-ylang-terracotta rounded-2xl border bg-white p-4 transition-all sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500 shadow-sm shadow-green-200 sm:h-12 sm:w-12">
+              <CheckCircle className="h-5 w-5 text-white sm:h-6 sm:w-6" />
             </div>
             <div>
-              <p className="text-ylang-charcoal text-2xl font-bold">
+              <p className="text-ylang-charcoal text-xl font-bold sm:text-2xl">
                 {verifiedUsers}
               </p>
-              <p className="text-ylang-charcoal/60 text-sm">Emails vérifiés</p>
+              <p className="text-ylang-charcoal/60 text-[10px] sm:text-sm">
+                Vérifiés
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500">
-              <ShoppingBag className="h-6 w-6 text-white" />
+        <div className="border-ylang-terracotta rounded-2xl border bg-white p-4 transition-all sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500 shadow-sm shadow-purple-200 sm:h-12 sm:w-12">
+              <ShoppingBag className="h-5 w-5 text-white sm:h-6 sm:w-6" />
             </div>
             <div>
-              <p className="text-ylang-charcoal text-2xl font-bold">
+              <p className="text-ylang-charcoal text-xl font-bold sm:text-2xl">
                 {activeCustomers}
               </p>
-              <p className="text-ylang-charcoal/60 text-sm">Clients actifs</p>
+              <p className="text-ylang-charcoal/60 text-[10px] sm:text-sm">
+                Clients
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="border-ylang-terracotta rounded-2xl border bg-white p-6">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500">
-              <Euro className="h-6 w-6 text-white" />
+        <div className="border-ylang-terracotta rounded-2xl border bg-white p-4 transition-all sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 shadow-sm shadow-orange-200 sm:h-12 sm:w-12">
+              <Euro className="h-5 w-5 text-white sm:h-6 sm:w-6" />
             </div>
             <div>
-              <p className="text-ylang-charcoal text-2xl font-bold">
+              <p className="text-ylang-charcoal text-xl font-bold sm:text-2xl">
                 {totalRevenue.toFixed(0)}€
               </p>
-              <p className="text-ylang-charcoal/60 text-sm">CA total clients</p>
+              <p className="text-ylang-charcoal/60 text-[10px] sm:text-sm">
+                CA Client
+              </p>
             </div>
           </div>
         </div>
