@@ -661,7 +661,7 @@ export function SettingsClient({
       <div className="grid gap-8 lg:grid-cols-5">
         {/* Sidebar / Navigation */}
         <div className="min-w-0 lg:col-span-1">
-          <nav className="touch-action-manipulation -mx-4 flex flex-nowrap items-center gap-2 overflow-x-auto px-4 pb-4 lg:-mx-0 lg:w-56 lg:flex-col lg:overflow-x-visible lg:px-0 lg:pb-0">
+          <nav className="touch-action-manipulation -mx-4 flex flex-nowrap items-center gap-2 overflow-x-auto px-4 pb-4 lg:mx-0 lg:w-56 lg:flex-col lg:overflow-x-visible lg:px-0 lg:pb-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -1217,13 +1217,40 @@ export function SettingsClient({
                           />
                         </label>
                       </div>
-                      <div className="border-ylang-beige bg-ylang-cream flex aspect-video items-center justify-center overflow-hidden rounded-xl border">
+                      <div className="group border-ylang-beige bg-ylang-cream relative flex aspect-3/4 scale-90 items-center justify-center overflow-hidden rounded-xl border">
                         {settings.craftsmanshipImage ? (
-                          <img
-                            src={settings.craftsmanshipImage}
-                            alt="Atelier"
-                            className="h-full w-full object-cover"
-                          />
+                          <>
+                            <img
+                              src={settings.craftsmanshipImage}
+                              alt="Atelier"
+                              className="h-full w-full object-cover"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                              <label className="text-ylang-charcoal cursor-pointer rounded-lg bg-white px-4 py-2 text-sm font-medium">
+                                Modifier
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  accept="image/*"
+                                  onChange={(e) =>
+                                    e.target.files?.[0] &&
+                                    handleImageSelect(
+                                      "craftsmanshipImage",
+                                      e.target.files[0],
+                                    )
+                                  }
+                                />
+                              </label>
+                              <button
+                                onClick={() =>
+                                  handleSettingsChange("craftsmanshipImage", "")
+                                }
+                                className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
+                              >
+                                <Trash2 className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </>
                         ) : (
                           <ImageIcon className="text-ylang-charcoal/20 h-12 w-12" />
                         )}
@@ -1256,13 +1283,40 @@ export function SettingsClient({
                           />
                         </label>
                       </div>
-                      <div className="border-ylang-beige bg-ylang-cream flex aspect-3/4 items-center justify-center overflow-hidden rounded-xl border">
+                      <div className="group border-ylang-beige bg-ylang-cream relative flex aspect-3/4 scale-90 items-center justify-center overflow-hidden rounded-xl border">
                         {settings.aboutImage ? (
-                          <img
-                            src={settings.aboutImage}
-                            alt="Fondatrice"
-                            className="h-full w-full object-cover"
-                          />
+                          <>
+                            <img
+                              src={settings.aboutImage}
+                              alt="Fondatrice"
+                              className="h-full w-full object-cover"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                              <label className="text-ylang-charcoal cursor-pointer rounded-lg bg-white px-4 py-2 text-sm font-medium">
+                                Modifier
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  accept="image/*"
+                                  onChange={(e) =>
+                                    e.target.files?.[0] &&
+                                    handleImageSelect(
+                                      "aboutImage",
+                                      e.target.files[0],
+                                    )
+                                  }
+                                />
+                              </label>
+                              <button
+                                onClick={() =>
+                                  handleSettingsChange("aboutImage", "")
+                                }
+                                className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
+                              >
+                                <Trash2 className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </>
                         ) : (
                           <ImageIcon className="text-ylang-charcoal/20 h-12 w-12" />
                         )}

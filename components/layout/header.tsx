@@ -36,7 +36,7 @@ import * as React from "react";
 
 // Navigation principales
 const mainNavigation = [
-  { name: "Créations", href: "/collections", hasMegaMenu: true },
+  { name: "LA BOUTIQUE", href: "/collections", hasMegaMenu: true },
   { name: "Créations sur mesure", href: "/configurateur", featured: true },
   { name: "Nouvelle collection", href: "/collections?filter=new" },
   { name: "La marque", href: "/a-propos" },
@@ -435,10 +435,10 @@ export function Header() {
                 }
                 aria-expanded={isMegaMenuOpen}
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2",
-                  "text-ylang-charcoal bg-white/50 backdrop-blur-sm hover:bg-white/80",
+                  "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
+                  "text-white bg-ylang-rose backdrop-blur-sm hover:bg-ylang-rose/90",
                   isMegaMenuOpen &&
-                    "bg-ylang-rose hover:bg-ylang-rose/90 text-white",
+                    "hover:bg-ylang-rose/90",
                 )}
               >
                 {isMegaMenuOpen ? (

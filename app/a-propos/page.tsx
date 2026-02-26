@@ -10,8 +10,8 @@ import {
   MapPin,
   Scissors,
   Shield,
-  Wand2,
   Users,
+  Wand2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -93,7 +93,7 @@ const stats = [
 ];
 
 export default function AProposPage() {
-  const [aboutImage, setAboutImage] = useState("/images/about/founder.jpg");
+  const [aboutImage, setAboutImage] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -125,13 +125,13 @@ export default function AProposPage() {
           >
             <motion.p
               variants={fadeInUp}
-              className="text-ylang-rose font-abramo font-semibold mb-4 text-sm tracking-widest uppercase"
+              className="text-ylang-rose font-abramo mb-4 text-sm font-semibold tracking-widest uppercase"
             >
               Notre Histoire
             </motion.p>
             <motion.h1
               variants={fadeInUp}
-              className="font-abramo-script text-ylang-charcoal mb-6 text-4xl  lg:text-6xl"
+              className="font-abramo-script text-ylang-charcoal mb-6 text-4xl lg:text-6xl"
             >
               Élégance, raffinement
               <br />
@@ -154,13 +154,14 @@ export default function AProposPage() {
             </motion.p>
             <motion.div
               variants={fadeInUp}
-              className="flex items-center justify-center w-full"
+              className="flex w-full items-center justify-center"
             >
               <Image
-              width={200}
-              height={200}
-              src={"/Illustrations/Porte Jouet 3.png"}
-              alt="Illustration de la marque Ylang Créations" />
+                width={200}
+                height={200}
+                src={"/Illustrations/Porte Jouet 3.png"}
+                alt="Illustration de la marque Ylang Créations"
+              />
             </motion.div>
           </motion.div>
         </div>
@@ -179,30 +180,27 @@ export default function AProposPage() {
               className="relative"
             >
               <div className="bg-ylang-beige relative aspect-4/5 overflow-hidden rounded-3xl shadow-xs">
-                <Image
-                  src={aboutImage}
-                  alt="Mélissa, fondatrice de Ylang Créations"
-                  fill
-                  className="object-cover"
-                  onError={(e) => {
-                    // Fallback si l'image n'existe pas
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = "none";
-                  }}
-                />
-
-                {/* Placeholder gradient si pas d'image */}
-                <div className="from-ylang-rose/30 via-ylang-beige to-ylang-sage/30 absolute inset-0 flex items-center justify-center bg-linear-to-br">
-                  <div className="text-center">
-                    <Wand2 className="text-ylang-rose mx-auto mb-4 h-16 w-16" />
-                    <p className="font-display text-ylang-charcoal text-xl">
-                      Mélissa
-                    </p>
-                    <p className="font-body text-ylang-charcoal/60 text-sm">
-                      Fondatrice
-                    </p>
+                {aboutImage ? (
+                  <Image
+                    src={aboutImage}
+                    alt="Mélissa, fondatrice de Ylang Créations"
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  /* Placeholder gradient si pas d'image */
+                  <div className="from-ylang-rose/30 via-ylang-beige to-ylang-sage/30 absolute inset-0 flex items-center justify-center bg-linear-to-br">
+                    <div className="text-center">
+                      <Scissors className="text-ylang-rose mx-auto mb-4 h-16 w-16" />
+                      <p className="font-display text-ylang-charcoal text-xl">
+                        Mélissa
+                      </p>
+                      <p className="font-body text-ylang-charcoal/60 text-sm">
+                        Fondatrice
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
               {/* Decorative badge */}
               <div className="absolute -right-6 -bottom-6 rounded-2xl bg-white p-6 shadow-xs">
@@ -224,7 +222,7 @@ export default function AProposPage() {
               className="space-y-6"
             >
               <div>
-                <p className="text-ylang-rose font-abramo font-semibold mb-3 text-sm tracking-widest uppercase">
+                <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
                   L'histoire d'Ylang
                 </p>
                 <h2 className="font-abramo-script text-ylang-charcoal mb-6 text-3xl lg:text-4xl">
@@ -292,7 +290,7 @@ export default function AProposPage() {
             viewport={{ once: true }}
             className="mb-16 text-center"
           >
-            <p className="text-ylang-rose font-abramo font-semibold mb-3 text-sm tracking-widest uppercase">
+            <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
               Notre parcours
             </p>
             <h2 className="font-abramo-script text-ylang-charcoal text-3xl lg:text-4xl">
@@ -358,7 +356,7 @@ export default function AProposPage() {
             viewport={{ once: true }}
             className="mb-16 text-center"
           >
-            <p className="text-ylang-rose font-abramo font-semibold mb-3 text-sm tracking-widest uppercase">
+            <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
               Nos engagements
             </p>
             <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-3xl lg:text-4xl">
@@ -379,12 +377,12 @@ export default function AProposPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="group rounded-2xl bg-white p-8 transition-all duration-300 hover:-translate-y-2 "
+                className="group rounded-2xl bg-white p-8 transition-all duration-300 hover:-translate-y-2"
               >
                 <div className="bg-ylang-rose/10 group-hover:bg-ylang-terracotta mb-6 flex h-14 w-14 items-center justify-center rounded-xl transition-colors">
                   <value.icon className="text-ylang-terracotta h-7 w-7 transition-colors group-hover:text-white" />
                 </div>
-                <h3 className="font-abramo font-semibold text-ylang-charcoal mb-3 text-lg">
+                <h3 className="font-abramo text-ylang-charcoal mb-3 text-lg font-semibold">
                   {value.title}
                 </h3>
                 <p className="font-body text-ylang-charcoal/60 text-sm leading-relaxed">
@@ -478,7 +476,7 @@ export default function AProposPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-ylang-terracotta/40 rounded-3xl bg-linear-to-br p-12 text-center text-charcoal/90 lg:p-20"
+            className="bg-ylang-terracotta/40 text-charcoal/90 rounded-3xl bg-linear-to-br p-12 text-center lg:p-20"
           >
             <h2 className="font-abramo-script mb-6 text-3xl lg:text-4xl">
               Notre concept
