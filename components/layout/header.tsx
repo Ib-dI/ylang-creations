@@ -390,12 +390,12 @@ export function Header() {
     <>
       <header
         className={cn(
-          "bg-pattern fixed top-0 right-0 left-0 z-50 transition-all duration-500",
+          "bg-ylang-rose fixed top-0 right-0 left-0 z-50 transition-all duration-500",
           isScrolled && "shadow-[0_2px_20px_rgba(0,0,0,0.08)]",
         )}
       >
         {/* Barre Social Media */}
-        <div className="bg-ylang-rose px-4 py-1.5 sm:px-6 lg:px-8">
+        <div className="bg-ylang-rose px-4 py-1.5 sm:px-6 lg:px-8 border-b border-ylang-beige">
           <div className="mx-auto flex max-w-7xl items-center justify-between">
             <div className="flex items-center space-x-4">
               <a
@@ -436,9 +436,9 @@ export function Header() {
                 aria-expanded={isMegaMenuOpen}
                 className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
-                  "text-white bg-ylang-rose backdrop-blur-sm hover:bg-ylang-rose/90",
+                  "text-ylang-charcoal bg-white/50 backdrop-blur-sm hover:bg-white/80",
                   isMegaMenuOpen &&
-                    "hover:bg-ylang-rose/90",
+                    "bg-white/80 hover:bg-white/80 text-ylang-charcoal",
                 )}
               >
                 {isMegaMenuOpen ? (
