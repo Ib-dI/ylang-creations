@@ -6,7 +6,12 @@ import { type CatalogProduct } from "@/data/products";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import type { CartItem } from "@/types/cart";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionTemplate,
+  useSpring,
+} from "framer-motion";
 import {
   Check,
   ChevronLeft,
@@ -23,7 +28,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ProductReviews } from "@/components/product/product-reviews";
 import type { ReviewWithUser } from "@/lib/actions/reviews";
@@ -52,7 +57,6 @@ export default function ProductDetails({
 }: ProductDetailsProps) {
   // États locaux
   const [selectedImage, setSelectedImage] = useState(0);
-  const [direction, setDirection] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
 
   // Wishlist
@@ -68,34 +72,24 @@ export default function ProductDetails({
       ? product.images
       : [product.image];
 
+  // Spring-based slide transition (same as hero-section)
+  const x = selectedImage * 100;
+  const xSpring = useSpring(x, { bounce: 0 });
+  const xPct = useMotionTemplate`-${xSpring}%`;
+
+  useEffect(() => {
+    xSpring.set(x);
+  }, [x, xSpring]);
+
   const nextImage = () => {
-    setDirection(1);
     setSelectedImage((prev: number) => (prev + 1) % productImages.length);
   };
 
   const prevImage = () => {
-    setDirection(-1);
     setSelectedImage(
       (prev: number) =>
         (prev - 1 + productImages.length) % productImages.length,
     );
-  };
-
-  const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-    }),
   };
 
   return (
@@ -123,30 +117,20 @@ export default function ProductDetails({
           <div className="space-y-3 lg:space-y-4">
             {/* Image principale */}
             <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden rounded-2xl shadow-(--shadow-card)">
-              <AnimatePresence initial={false} custom={direction}>
-                <motion.div
-                  key={selectedImage}
-                  custom={direction}
-                  variants={variants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{
-                    x: { type: "spring", stiffness: 300, damping: 30 },
-                    opacity: { duration: 0.2 },
-                  }}
-                  className="absolute inset-0 h-full w-full"
-                >
-                  <Image
-                    src={productImages[selectedImage]}
-                    alt={product.name}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                </motion.div>
-              </AnimatePresence>
+              <motion.div style={{ x: xPct }} className="flex h-full">
+                {productImages.map((img, i) => (
+                  <div key={i} className="relative h-full w-full flex-shrink-0">
+                    <Image
+                      src={img}
+                      alt={`${product.name} - vue ${i + 1}`}
+                      fill
+                      priority={i === 0}
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </motion.div>
 
               {/* Badges */}
               {product.customizable && (
@@ -197,7 +181,6 @@ export default function ProductDetails({
                   whileHover={{ y: -4 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
-                    setDirection(idx > selectedImage ? 1 : -1);
                     setSelectedImage(idx);
                   }}
                   style={{
