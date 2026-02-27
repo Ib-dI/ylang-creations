@@ -119,7 +119,7 @@ export default function ProductDetails({
             <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden rounded-2xl shadow-(--shadow-card)">
               <motion.div style={{ x: xPct }} className="flex h-full">
                 {productImages.map((img, i) => (
-                  <div key={i} className="relative h-full w-full flex-shrink-0">
+                  <div key={i} className="relative h-full w-full shrink-0">
                     <Image
                       src={img}
                       alt={`${product.name} - vue ${i + 1}`}
@@ -307,7 +307,6 @@ export default function ProductDetails({
                   configuration: {
                     fabricName: "Standard",
                     fabricColor: "Original",
-                    accessories: [],
                   },
                   price: product.price,
                   quantity: 1,

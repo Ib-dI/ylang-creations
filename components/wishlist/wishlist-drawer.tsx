@@ -21,7 +21,6 @@ export function WishlistDrawer() {
       configuration: {
         fabricName: "Standard",
         fabricColor: "Original",
-        accessories: [],
       },
       price: item.price,
       quantity: 1,
@@ -58,39 +57,39 @@ export function WishlistDrawer() {
             className="fixed top-0 right-0 bottom-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-ylang-beige p-6">
+            <div className="border-ylang-beige flex items-center justify-between border-b p-6">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#b76e79]/10">
                   <Heart className="h-5 w-5 text-[#b76e79]" />
                 </div>
                 <div>
-                  <h2 className="font-display text-xl font-bold text-ylang-charcoal">
+                  <h2 className="font-display text-ylang-charcoal text-xl font-bold">
                     Mes favoris
                   </h2>
-                  <p className="text-sm text-ylang-charcoal/60">
+                  <p className="text-ylang-charcoal/60 text-sm">
                     {getTotalItems()} article{getTotalItems() > 1 ? "s" : ""}
                   </p>
                 </div>
               </div>
               <button
                 onClick={closeWishlist}
-                className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-ylang-beige"
+                className="hover:bg-ylang-beige flex h-10 w-10 items-center justify-center rounded-full transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* Items */}
-            <div className="flex-1 overflow-y-auto bg-ylang-terracotta/50 p-6">
+            <div className="bg-ylang-terracotta/50 flex-1 overflow-y-auto p-6">
               {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
-                  <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-ylang-beige">
-                    <Heart className="h-10 w-10 text-ylang-charcoal/40" />
+                  <div className="bg-ylang-beige mb-4 flex h-20 w-20 items-center justify-center rounded-full">
+                    <Heart className="text-ylang-charcoal/40 h-10 w-10" />
                   </div>
-                  <p className="font-display mb-2 text-lg text-ylang-charcoal">
+                  <p className="font-display text-ylang-charcoal mb-2 text-lg">
                     Aucun favori
                   </p>
-                  <p className="mb-6 text-sm text-ylang-charcoal/60">
+                  <p className="text-ylang-charcoal/60 mb-6 text-sm">
                     Découvrez nos créations et ajoutez vos coups de cœur
                   </p>
                   <Button variant="primary" onClick={closeWishlist} asChild>
@@ -105,7 +104,7 @@ export function WishlistDrawer() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: -100 }}
-                      className="rounded-2xl bg-ylang-cream p-4"
+                      className="bg-ylang-cream rounded-2xl p-4"
                     >
                       <div className="flex gap-4">
                         {/* Thumbnail */}
@@ -130,14 +129,14 @@ export function WishlistDrawer() {
 
                         {/* Info */}
                         <div className="min-w-0 flex-1">
-                          <p className="mb-1 text-xs tracking-wider text-ylang-charcoal/50 font-abramo font-semibold uppercase">
+                          <p className="text-ylang-charcoal/50 font-abramo mb-1 text-xs font-semibold tracking-wider uppercase">
                             {item.category}
                           </p>
                           <Link
                             href={`/produits/${item.productId}`}
                             onClick={closeWishlist}
                           >
-                            <h3 className="font-display mb-1 font-semibold text-ylang-charcoal transition-colors hover:text-[#b76e79]">
+                            <h3 className="font-display text-ylang-charcoal mb-1 font-semibold transition-colors hover:text-[#b76e79]">
                               {item.name}
                             </h3>
                           </Link>
@@ -190,7 +189,7 @@ export function WishlistDrawer() {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t border-ylang-beige bg-ylang-cream p-6">
+              <div className="border-ylang-beige bg-ylang-cream border-t p-6">
                 <Button
                   variant="luxury"
                   className="w-full"
@@ -206,7 +205,7 @@ export function WishlistDrawer() {
 
                 <button
                   onClick={closeWishlist}
-                  className="mt-3 w-full text-sm text-ylang-charcoal/60 transition-colors hover:text-ylang-charcoal"
+                  className="text-ylang-charcoal/60 hover:text-ylang-charcoal mt-3 w-full text-sm transition-colors"
                 >
                   Fermer
                 </button>

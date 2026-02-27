@@ -16,7 +16,6 @@ import {
   Package,
   Palette,
   ShoppingBag,
-  Sparkles,
   Type,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -51,19 +50,11 @@ interface Fabric {
   image: string; // Texture image path
 }
 
-interface Accessory {
-  id: string;
-  name: string;
-  price: number;
-  emoji: string;
-}
-
 interface Configuration {
   product: Product | null;
   fabric: Fabric | null;
   embroidery: string;
   embroideryColor: string;
-  accessories: string[];
   selectedColor: string | null;
 }
 
@@ -322,6 +313,34 @@ const ProductConfigurator = () => {
       baseColor: "#fce7f3",
       image: "/Tissu/Vichy-7.png",
     },
+    {
+      id: "test-1",
+      name: "Test 1",
+      price: 0,
+      baseColor: "#fce7f3",
+      image: "/Tissu/tissu-jardin-des-reves.webp",
+    },
+    {
+      id: "test-2",
+      name: "Test 2",
+      price: 0,
+      baseColor: "#fce7f3",
+      image: "/Tissu/tissu-vallarta.webp",
+    },
+    {
+      id: "test-3",
+      name: "Test 3",
+      price: 0,
+      baseColor: "#fce7f3",
+      image: "/Tissu/tissu-japoneries.webp",
+    },
+    {
+      id: "test-4",
+      name: "Test 4",
+      price: 0,
+      baseColor: "#fce7f3",
+      image: "/Tissu/tissu-jardin-exoachic.webp",
+    },
   ];
 
   const embroideryColors = [
@@ -348,16 +367,10 @@ const ProductConfigurator = () => {
     { name: "Pêche", hex: "#FFCBA4" },
   ];
 
-  const accessories: Accessory[] = [
-    { id: "bow", name: "Noeud décoratif", price: 5, emoji: "🎀" },
-    { id: "lace", name: "Finition dentelle", price: 8, emoji: "🕸️" },
-    { id: "pompom", name: "Pompons", price: 6, emoji: "🧶" },
-  ];
-
   // --- State ---
 
   const [activeTab, setActiveTab] = useState<
-    "product" | "fabric" | "embroidery" | "accessories" | "summary"
+    "product" | "fabric" | "embroidery" | "summary"
   >("product");
 
   const [configuration, setConfiguration] = useState<Configuration>({
@@ -365,7 +378,6 @@ const ProductConfigurator = () => {
     fabric: fabrics[0], // Default to first fabric
     embroidery: "",
     embroideryColor: embroideryColors[0].hex,
-    accessories: [],
     selectedColor: null,
   });
 
@@ -406,27 +418,14 @@ const ProductConfigurator = () => {
     let total = configuration.product?.basePrice || 0;
     total += configuration.fabric?.price || 0;
     if (configuration.embroidery) total += 15;
-    configuration.accessories.forEach((accId) => {
-      const acc = accessories.find((a) => a.id === accId);
-      if (acc) total += acc.price;
-    });
     return total;
-  };
-
-  const toggleAccessory = (id: string) => {
-    setConfiguration((prev) => ({
-      ...prev,
-      accessories: prev.accessories.includes(id)
-        ? prev.accessories.filter((a) => a !== id)
-        : [...prev.accessories, id],
-    }));
   };
 
   // Tabs Navigation
   const tabs = [
     {
       id: "product" as const,
-      label: "Produit",
+      label: configuration.product?.name ?? "Produit",
       icon: Package,
       complete: !!configuration.product,
     },
@@ -441,12 +440,6 @@ const ProductConfigurator = () => {
       label: "Broderie",
       icon: Type,
       complete: configuration.embroidery.length > 0,
-    },
-    {
-      id: "accessories" as const,
-      label: "Accessoires",
-      icon: Sparkles,
-      complete: configuration.accessories.length > 0,
     },
     {
       id: "summary" as const,
@@ -505,7 +498,6 @@ const ProductConfigurator = () => {
         fabricName: configuration.fabric.name,
         fabricColor: configuration.fabric.baseColor,
         embroidery: configuration.embroidery || undefined,
-        accessories: configuration.accessories,
       },
       price: totalPrice(),
       quantity: 1,
@@ -593,20 +585,32 @@ const ProductConfigurator = () => {
             const textureCtx = textureCanvas.getContext("2d");
 
             if (textureCtx) {
-              // Créer le pattern de texture
-              const pattern = textureCtx.createPattern(fabricImg, "repeat");
-              if (pattern) {
-                textureCtx.fillStyle = pattern;
-                textureCtx.fillRect(0, 0, canvas.width, canvas.height);
-              }
+              // Centrer l'image du tissu sans répétition
+              const x = (canvas.width - fabricImg.naturalWidth) / 2;
+              const y = (canvas.height - fabricImg.naturalHeight) / 2;
 
-              // Récupérer les données
+              textureCtx.drawImage(
+                fabricImg,
+                0,
+                0,
+                canvas.width,
+                canvas.height,
+              );
+
               const textureData = textureCtx.getImageData(
                 0,
                 0,
                 canvas.width,
                 canvas.height,
               );
+
+              // Récupérer les données
+              // const textureData = textureCtx.getImageData(
+              //   0,
+              //   0,
+              //   canvas.width,
+              //   canvas.height,
+              // );
               const baseData = ctx.getImageData(
                 0,
                 0,
@@ -949,7 +953,7 @@ const ProductConfigurator = () => {
             </div>
 
             {/* Tabs navigation */}
-            <div className="scrollbar-hide -mx-4 mb-8 flex gap-2 overflow-x-auto px-4 py-2">
+            <div className="scrollbar-hide -mx-4 mb-8 flex gap-2 w-full px-4 py-2">
               {tabs.map((tab, index) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -966,7 +970,7 @@ const ProductConfigurator = () => {
                         setActiveTab(tab.id);
                       }
                     }}
-                    className={`group relative flex shrink-0 items-center gap-2.5 rounded-2xl px-5 py-3 text-sm font-bold transition-all duration-500 ${
+                    className={`group relative flex flex-1 items-center justify-center gap-2.5 rounded-2xl px-5 py-3 text-sm font-bold transition-all duration-500 ${
                       isActive
                         ? "from-ylang-rose to-ylang-terracotta scale-105 bg-linear-to-r text-white shadow-[0_5px_5px_-5px_rgba(232,180,184,0.5)]"
                         : isPast
@@ -977,7 +981,7 @@ const ProductConfigurator = () => {
                     } border-2`}
                   >
                     <Icon
-                      className={`h-4 w-4 transition-transform duration-500 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
+                      className={`h-4 w-4 transition-transform duration-500 whitespace-nowrap ${isActive ? "scale-105" : "group-hover:scale-105"}`}
                     />
                     <span>{tab.label}</span>
                     {isPast && (
@@ -1149,6 +1153,143 @@ const ProductConfigurator = () => {
 
                   {/* Aperçu rapide: 4 tissus de chaque type */}
                   <div className="space-y-8">
+                    {/* Tissu test */}
+                    <div className="rounded-2xl bg-linear-to-br from-[#faf9f6] to-white p-6 shadow-sm">
+                      <div className="mb-6 flex items-center justify-between">
+                        <div>
+                          <h3 className="text-ylang-charcoal text-xl font-bold">
+                            Tissu test resolution (666 x 666)
+                          </h3>
+                          <p className="text-ylang-charcoal/60 text-sm font-medium">
+                            Carreaux iconiques et charme rétro
+                          </p>
+                        </div>
+                        {fabrics.filter((f) => f.id.startsWith("test")).length >
+                          5 && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <button className="text-ylang-rose hover:text-ylang-terracotta group flex items-center gap-1.5 text-sm font-bold transition-all">
+                                <span>Voir tout</span>
+                                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                              </button>
+                            </DialogTrigger>
+                            <DialogContent
+                              className="z-50 max-h-[90vh] max-w-5xl overflow-hidden rounded-3xl border-none bg-white p-0 shadow-2xl"
+                              showCloseButton={true}
+                            >
+                              <div className="sticky top-0 z-20 border-b border-[#e8dcc8]/50 bg-white/80 px-8 py-6 backdrop-blur-xl">
+                                <DialogHeader>
+                                  <DialogTitle className="text-ylang-charcoal text-3xl font-black">
+                                    Vichy
+                                  </DialogTitle>
+                                  <DialogDescription className="text-ylang-charcoal/60 text-lg font-medium">
+                                    Le style Vichy pour une touche de poésie et
+                                    de tradition •{" "}
+                                    <span className="text-ylang-rose">
+                                      {
+                                        fabrics.filter((f) =>
+                                          f.id.startsWith("test"),
+                                        ).length
+                                      }{" "}
+                                      couleurs
+                                    </span>
+                                  </DialogDescription>
+                                </DialogHeader>
+                              </div>
+                              <div
+                                className="overflow-y-auto px-8 py-8"
+                                style={{ maxHeight: "calc(90vh - 120px)" }}
+                              >
+                                <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                                  {fabrics
+                                    .filter((f) => f.id.startsWith("test"))
+                                    .map((fabric) => {
+                                      const isSelected =
+                                        configuration.fabric?.id === fabric.id;
+                                      return (
+                                        <button
+                                          key={fabric.id}
+                                          onClick={() => {
+                                            setConfiguration((prev) => ({
+                                              ...prev,
+                                              fabric,
+                                            }));
+                                          }}
+                                          className={`group relative flex flex-col overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
+                                            isSelected
+                                              ? "border-ylang-rose bg-ylang-rose/5 ring-ylang-rose/10 scale-95 shadow-lg ring-4"
+                                              : "hover:border-ylang-rose/30 border-[#f5f1e8] bg-white hover:scale-105 hover:shadow-xl"
+                                          }`}
+                                        >
+                                          <div
+                                            className="aspect-square w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                            style={{
+                                              backgroundImage: `url('${fabric.image}')`,
+                                            }}
+                                          />
+                                          <div className="p-3 text-center">
+                                            <h4 className="text-ylang-charcoal truncate text-xs font-bold">
+                                              {fabric.name}
+                                            </h4>
+                                          </div>
+                                          {isSelected && (
+                                            <div className="bg-ylang-rose absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full shadow-lg ring-4 ring-white">
+                                              <Check className="h-4 w-4 text-white" />
+                                            </div>
+                                          )}
+                                        </button>
+                                      );
+                                    })}
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+                        {fabrics
+                          .filter((f) => f.id.startsWith("test"))
+                          .slice(0, 5)
+                          .map((fabric) => {
+                            const isSelected =
+                              configuration.fabric?.id === fabric.id;
+                            return (
+                              <button
+                                key={fabric.id}
+                                onClick={() =>
+                                  setConfiguration((prev) => ({
+                                    ...prev,
+                                    fabric,
+                                  }))
+                                }
+                                className={`group relative flex flex-col overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
+                                  isSelected
+                                    ? "border-ylang-rose bg-ylang-rose/5 ring-ylang-rose/10 scale-[0.98] shadow-lg ring-4"
+                                    : "hover:border-ylang-rose/30 border-[#f5f1e8] bg-white hover:scale-[1.02] hover:shadow-xl"
+                                }`}
+                              >
+                                <div
+                                  className="aspect-square w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                                  style={{
+                                    backgroundImage: `url('${fabric.image}')`,
+                                  }}
+                                />
+                                <div className="p-2.5 text-center">
+                                  <h4 className="text-ylang-charcoal truncate text-[13px] font-bold">
+                                    {fabric.name}
+                                  </h4>
+                                </div>
+                                {isSelected && (
+                                  <div className="bg-ylang-rose absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg ring-2 ring-white">
+                                    <Check className="h-3.5 w-3.5 text-white" />
+                                  </div>
+                                )}
+                              </button>
+                            );
+                          })}
+                      </div>
+                    </div>
+
                     {/* Cotons */}
                     <div className="rounded-2xl bg-linear-to-br from-[#faf9f6] to-white p-6 shadow-sm">
                       <div className="mb-6 flex items-center justify-between">
@@ -1800,77 +1941,6 @@ const ProductConfigurator = () => {
                 </>
               )}
 
-              {/* Step 4: Accessories */}
-              {activeTab === "accessories" && (
-                <>
-                  <div className="mb-6">
-                    <h2 className="text-ylang-charcoal mb-2 text-3xl font-black">
-                      Accessoires décoratifs
-                    </h2>
-                    <p className="text-ylang-charcoal/60 text-base font-medium">
-                      Personnalisez votre création avec une touche finale unique
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {accessories.map((acc) => {
-                      const isSelected = configuration.accessories.includes(
-                        acc.id,
-                      );
-                      return (
-                        <button
-                          key={acc.id}
-                          onClick={() => toggleAccessory(acc.id)}
-                          className={`group relative flex items-center gap-5 rounded-3xl border-2 p-5 transition-all duration-500 ${
-                            isSelected
-                              ? "border-ylang-rose bg-ylang-rose/5 ring-ylang-rose/10 scale-[0.98] shadow-xl ring-4"
-                              : "hover:border-ylang-rose/30 border-[#f5f1e8] bg-white hover:scale-[1.02] hover:shadow-2xl"
-                          }`}
-                        >
-                          <div
-                            className={`flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-500 ${
-                              isSelected
-                                ? "bg-ylang-rose/20 rotate-6"
-                                : "group-hover:bg-ylang-rose/10 bg-[#faf9f6] group-hover:rotate-6"
-                            }`}
-                          >
-                            <span className="text-3xl drop-shadow-sm filter">
-                              {acc.emoji}
-                            </span>
-                          </div>
-
-                          <div className="flex-1 text-left">
-                            <h4 className="text-ylang-charcoal mb-0.5 text-lg font-black">
-                              {acc.name}
-                            </h4>
-                            <div className="flex items-center gap-2">
-                              <span className="text-ylang-rose text-lg font-bold">
-                                +{acc.price}€
-                              </span>
-                              {!acc.id.includes("none") && (
-                                <span className="bg-ylang-charcoal/5 text-ylang-charcoal/20 rounded-full px-2 py-0.5 text-[10px] font-black tracking-wider uppercase">
-                                  Option
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          {isSelected && (
-                            <div className="bg-ylang-rose animate-in zoom-in absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full shadow-lg ring-4 ring-white duration-300">
-                              <Check className="h-5 w-5 text-white" />
-                            </div>
-                          )}
-
-                          {/* Decorative blur circle when selected */}
-                          {isSelected && (
-                            <div className="bg-ylang-rose/10 absolute -z-10 h-24 w-24 rounded-full blur-3xl" />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-
               {/* Step 5: Summary */}
               {activeTab === "summary" && (
                 <>
@@ -1915,20 +1985,6 @@ const ProductConfigurator = () => {
                         <span className="font-bold">+15€</span>
                       </div>
                     )}
-                    {configuration.accessories.map((accId) => {
-                      const acc = accessories.find((a) => a.id === accId);
-                      return acc ? (
-                        <div
-                          key={accId}
-                          className="flex justify-between text-sm"
-                        >
-                          <span className="text-ylang-charcoal/70">
-                            {acc.name}
-                          </span>
-                          <span className="font-bold">+{acc.price}€</span>
-                        </div>
-                      ) : null;
-                    })}
                   </div>
 
                   <div className="from-ylang-rose/10 to-ylang-terracotta/10 flex items-center justify-between rounded-xl bg-linear-to-r p-4">

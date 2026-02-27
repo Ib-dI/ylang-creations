@@ -159,10 +159,6 @@ export async function POST(req: Request) {
                   item.configuration?.fabric?.name ||
                   "Standard",
                 embroidery: item.configuration?.embroidery || undefined,
-                accessories:
-                  item.configuration?.accessories?.map((a: any) =>
-                    typeof a === "string" ? a : a.name,
-                  ) || [],
               },
             }));
 

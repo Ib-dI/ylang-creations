@@ -27,7 +27,6 @@ interface SendOrderConfirmationParams {
     configuration: {
       fabricName: string;
       embroidery?: string;
-      accessories: string[];
     };
   }>;
   total: number;

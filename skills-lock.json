@@ -5,6 +5,11 @@
       "source": "vercel/components.build",
       "sourceType": "github",
       "computedHash": "cb71f9b5e9cf87c2e0a69384347818ddbbf50dd372cf7e7f90877b397de87e83"
+    },
+    "sumup": {
+      "source": "sumup/sumup-skills",
+      "sourceType": "github",
+      "computedHash": "d0db1fa46e823044a06ace8ab92f12eb703558cd02a007604e8cb2c658e2b914"
     }
   }
 }

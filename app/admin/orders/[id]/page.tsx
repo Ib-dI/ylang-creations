@@ -354,19 +354,7 @@ export default function OrderDetailPage() {
                                   </span>
                                 </div>
                               )}
-                              {item.configuration.accessories.length > 0 && (
-                                <div className="text-ylang-charcoal/60 col-span-full flex items-center gap-2 text-sm">
-                                  <Sparkles className="h-4 w-4" />
-                                  <span>
-                                    Accessoires:{" "}
-                                    <strong className="text-ylang-charcoal font-semibold">
-                                      {item.configuration.accessories.join(
-                                        ", ",
-                                      )}
-                                    </strong>
-                                  </span>
-                                </div>
-                              )}
+
                             </div>
                           ) : (
                             <p className="text-ylang-charcoal/40 mt-2 text-sm italic">

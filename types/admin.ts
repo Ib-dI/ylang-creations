@@ -19,7 +19,6 @@ export interface Order {
     configuration?: {
       fabricName: string;
       embroidery?: string;
-      accessories: string[];
     };
   }>;
   total: number;

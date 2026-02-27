@@ -16,7 +16,6 @@ import {
   Palette,
   Scissors,
   ShoppingBag,
-  Sparkles,
   Truck,
   User,
   X,
@@ -304,20 +303,6 @@ export default function OrderDetailModal({
                                         <strong className="text-ylang-charcoal font-semibold">
                                           &quot;{item.configuration.embroidery}
                                           &quot;
-                                        </strong>
-                                      </span>
-                                    </div>
-                                  )}
-                                  {item.configuration.accessories.length >
-                                    0 && (
-                                    <div className="text-ylang-charcoal/60 col-span-full flex items-center gap-2 text-sm">
-                                      <Sparkles className="h-4 w-4" />
-                                      <span>
-                                        Accessoires:{" "}
-                                        <strong className="text-ylang-charcoal font-semibold">
-                                          {item.configuration.accessories.join(
-                                            ", ",
-                                          )}
                                         </strong>
                                       </span>
                                     </div>

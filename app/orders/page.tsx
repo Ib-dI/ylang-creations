@@ -24,7 +24,6 @@ interface OrderItem {
   configuration?: {
     fabricName: string;
     embroidery?: string;
-    accessories?: string[];
   };
 }
 

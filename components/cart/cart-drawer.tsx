@@ -77,7 +77,7 @@ export function CartDrawer() {
             </div>
 
             {/* Items */}
-            <div className="flex-1 overflow-y-auto bg-ylang-terracotta/50 p-6">
+            <div className="bg-ylang-terracotta/50 flex-1 overflow-y-auto p-6">
               {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
                   <div className="bg-ylang-beige mb-4 flex h-20 w-20 items-center justify-center rounded-full">
@@ -128,15 +128,6 @@ export function CartDrawer() {
                           {item.configuration.embroidery && (
                             <p className="text-ylang-charcoal/60 mb-1 text-xs">
                               Broderie: "{item.configuration.embroidery}"
-                            </p>
-                          )}
-                          {item.configuration.accessories.length > 0 && (
-                            <p className="text-ylang-charcoal/60 text-xs">
-                              +{item.configuration.accessories.length}{" "}
-                              accessoire
-                              {item.configuration.accessories.length > 1
-                                ? "s"
-                                : ""}
                             </p>
                           )}
                         </div>
