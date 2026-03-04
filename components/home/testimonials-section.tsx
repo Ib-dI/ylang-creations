@@ -1,19 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { X, ZoomIn } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
 
 export function TestimonialsSection() {
   const [testimonialsList, setTestimonialsList] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.testimonials) {
-          // Filtrer les témoignages qui ont une image
+        if (data?.testimonials) {
           setTestimonialsList(data.testimonials.filter((t: any) => t.image));
         }
       })
@@ -21,10 +22,8 @@ export function TestimonialsSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading || testimonialsList.length === 0) return null;
-
   return (
-    <section className="section-padding from-ylang-beige/30 relative overflow-hidden bg-linear-to-b to-white">
+    <section className="section-padding from-ylang-terracotta/40 relative overflow-hidden bg-linear-to-b to-ylang-rose/40 py-20">
       {/* Decoration */}
       <div className="bg-ylang-rose/5 absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" />
 
@@ -34,47 +33,93 @@ export function TestimonialsSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
           className="mb-16 text-center"
         >
-          <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
+          <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
             Vos retours en images
           </p>
-          <h2 className="font-display text-ylang-charcoal mb-6 text-4xl lg:text-5xl">
+          <h2 className="text-ylang-charcoal font-abramo-script mb-6 font-serif text-4xl lg:text-5xl">
             Ils adorent Ylang Créations
           </h2>
-          <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl">
-            Nous sommes fiers de partager avec vous les messages de bonheur que
-            nous recevons chaque jour.
+          <p className="text-ylang-charcoal/60 mx-auto max-w-2xl">
+            Cliquez sur les images pour découvrir les moments de bonheur partagés par notre communauté.
           </p>
         </motion.div>
 
-        {/* Visual Grid for Screenshots */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Masonry Layout Grid */}
+        <div className="columns-1 gap-10 p-4 sm:columns-2 lg:columns-4">
           {testimonialsList.map((testimonial, index) => (
             <motion.div
               key={testimonial.id || index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              onClick={() => setSelectedImage(testimonial.image)}
+              className="group relative mb-10 cursor-zoom-in break-inside-avoid"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="group relative aspect-5/4 overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              transition={{ delay: index * 0.05 }}
+              whileHover={{ scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
             >
-              <div className="relative h-full w-full">
-                <Image
-                  src={testimonial.image}
-                  alt={`Témoignage client ${index + 1}`}
-                  fill
-                  loading="lazy"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                />
+              {/* stamp-card reçoit maintenant DIRECTEMENT le masque dentelé ET le drop-shadow */}
+              <div className="stamp-card transition-all duration-300 group-hover:scale-105">
+                <div className="stamp-inner">
+                  <Image
+                    src={testimonial.image}
+                    alt={
+                      testimonial.name || "Témoignage client Ylang Créations"
+                    }
+                    width={400}
+                    height={600}
+                    className="z-100 block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+
+                  {/* Overlay zoom */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 transition-opacity duration-300 group-hover:opacity-50">
+                    <div className="text-ylang-rose scale-90 rounded-full bg-white/90 p-3 transition-transform duration-300 group-hover:scale-100">
+                      <ZoomIn size={20} />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="absolute inset-0 bg-black/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </motion.div>
           ))}
         </div>
       </div>
+
+      {/* Lightbox / Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm md:p-10"
+          >
+            <button
+              className="hover:text-ylang-rose absolute top-6 right-6 text-white transition-colors"
+              onClick={() => setSelectedImage(null)}
+            >
+              <X size={40} />
+            </button>
+
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-h-full max-w-4xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Image zoomée sans effet timbre */}
+              <img
+                src={selectedImage}
+                alt="Zoom témoignage"
+                className="max-h-[85vh] w-auto rounded-lg border-4 border-white/10 shadow-2xl"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

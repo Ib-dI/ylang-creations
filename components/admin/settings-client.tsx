@@ -21,6 +21,7 @@ import {
   Eye,
   EyeOff,
   Image as ImageIcon,
+  Info,
   Loader2,
   Mail,
   Package,
@@ -978,6 +979,51 @@ export function SettingsClient({
                         <Plus className="h-4 w-4" />
                         Ajouter un slide
                       </Button>
+                    </div>
+
+                    {/* CTA Links Guide */}
+                    <div className="border-ylang-terracotta/20 bg-ylang-cream flex items-start gap-4 rounded-xl border p-4 shadow-sm">
+                      <div className="bg-ylang-terracotta/10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+                        <Info className="text-ylang-terracotta h-5 w-5" />
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-ylang-charcoal text-sm font-semibold">
+                            Guide des liens CTA
+                          </p>
+                          <p className="text-ylang-charcoal/70 mt-1 text-xs leading-relaxed">
+                            Les liens CTA (Call to Action) permettent de rediriger
+                            vos clients vers des pages spécifiques de votre boutique
+                            lorsqu&apos;ils cliquent sur le bouton d&apos;un slide.
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-4">
+                          <div className="flex items-center gap-2">
+                            <span className="bg-ylang-terracotta/10 text-ylang-terracotta rounded-md border border-ylang-terracotta/20 px-2 py-0.5 font-mono text-[10px] font-bold">
+                              /
+                            </span>
+                            <span className="text-ylang-charcoal/60 text-[11px] font-medium">
+                              Page d&apos;accueil
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="bg-ylang-terracotta/10 text-ylang-terracotta rounded-md border border-ylang-terracotta/20 px-2 py-0.5 font-mono text-[10px] font-bold">
+                              /collections
+                            </span>
+                            <span className="text-ylang-charcoal/60 text-[11px] font-medium">
+                              Boutique / Collections
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="bg-ylang-terracotta/10 text-ylang-terracotta rounded-md border border-ylang-terracotta/20 px-2 py-0.5 font-mono text-[10px] font-bold">
+                              /configurateur
+                            </span>
+                            <span className="text-ylang-charcoal/60 text-[11px] font-medium">
+                              Configurateur personnalisé
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="grid gap-6">
