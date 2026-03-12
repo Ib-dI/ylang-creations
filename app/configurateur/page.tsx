@@ -100,11 +100,11 @@ function FabricCategorySection({
   setConfiguration,
 }: FabricCategoryProps) {
   const categoryFabrics = fabrics.filter((f) => f.id.startsWith(prefix));
-  const displayedFabrics = categoryFabrics.slice(0, 5);
-  const hasMore = categoryFabrics.length > 5;
+  const displayedFabrics = categoryFabrics.slice(0, 8);
+  const hasMore = categoryFabrics.length > 8;
 
   return (
-    <div className="bg-ylang-beige/70 rounded-2xl p-6 shadow-sm">
+    <div className="bg-ylang-beige/70 rounded-2xl p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-ylang-charcoal font-abramo-script text-5xl">
@@ -983,7 +983,7 @@ const ProductConfigurator = () => {
   // --- Render ---
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#faf9f6] to-[#f5f1e8]">
+    <div className="min-h-screen bg-linear-to-br from-ylang-beige to-[#f5f1e8]">
       <div
         className="flex min-h-screen flex-col lg:flex-row"
         style={{ marginTop: "90px" }}
@@ -1206,7 +1206,7 @@ const ProductConfigurator = () => {
 
                   {/* Color Selection - uniquement si le produit a un colorMaskImage */}
                   {configuration.product?.colorMaskImage && (
-                    <div className="mt-6 rounded-2xl border-2 border-dashed border-[#e8dcc8] bg-[#faf9f6] p-4">
+                    <div className="mt-6 rounded-2xl border-2 border-dashed border-[#e8dcc8] bg-ylang-beige p-4">
                       <div className="mb-3 flex items-center gap-2">
                         <Palette className="text-ylang-rose h-5 w-5" />
                         <h3 className="text-ylang-charcoal text-lg font-bold">
@@ -1284,7 +1284,7 @@ const ProductConfigurator = () => {
                     <h2 className="text-ylang-charcoal/90 mb-2 text-2xl font-bold">
                       Choisissez votre tissu
                     </h2>
-                    <p className="text-ylang-charcoal/70 text-base">
+                    <p className="text-ylang-charcoal/70 text-sm">
                       Visible en temps réel sur le modèle • Collection premium
                     </p>
                   </div>
@@ -1317,7 +1317,7 @@ const ProductConfigurator = () => {
                     </p>
                   </div>
                   <div className="space-y-4">
-                    <div className="rounded-2xl border border-[#f5f1e8] bg-[#faf9f6]/50 p-6 shadow-sm">
+                    <div className="rounded-2xl border border-[#f5f1e8] bg-ylang-beige/50 p-6">
                       <label className="text-ylang-charcoal mb-3 block text-base font-bold">
                         Texte à broder
                       </label>
@@ -1332,7 +1332,7 @@ const ProductConfigurator = () => {
                             }))
                           }
                           placeholder="Ex: Zoé, Mon Bébé..."
-                          className="focus:border-ylang-rose focus:ring-ylang-rose/10 placeholder:text-ylang-charcoal/20 w-full rounded-2xl border-2 border-[#e8dcc8] bg-white px-5 py-3 text-lg font-medium transition-all focus:ring-4 focus:outline-none"
+                          className="focus:border-ylang-rose focus:ring-ylang-rose/10 placeholder:text-ylang-charcoal/20 w-full rounded-2xl border-2 border-[#e8dcc8] bg-white px-5 py-2 text-lg font-medium transition-all focus:ring-4 focus:outline-none"
                           maxLength={15}
                         />
                         <div className="absolute top-1/2 right-5 -translate-y-1/2">
@@ -1348,14 +1348,14 @@ const ProductConfigurator = () => {
                         </div>
                       </div>
                       <p className="text-ylang-charcoal/50 mt-3 flex items-center gap-2 text-sm font-medium">
-                        <span className="bg-ylang-rose/10 text-ylang-rose flex h-5 w-5 items-center justify-center rounded-full text-[10px]">
+                        <span className="bg-ylang-rose/20 text-ylang-rose flex h-5 w-5 items-center justify-center rounded-full text-[10px]">
                           i
                         </span>
                         Aperçu en temps réel sur l'image ci-dessus
                       </p>
                     </div>
 
-                    <div className="rounded-2xl border border-[#f5f1e8] bg-white p-6 shadow-sm transition-all">
+                    <div className="rounded-2xl border border-[#f5f1e8] bg-ylang-beige/50 p-6 transition-all">
                       <div className="mb-4 flex items-center justify-between">
                         <label className="text-ylang-charcoal text-base font-bold">
                           Couleur du fil
@@ -1470,8 +1470,8 @@ const ProductConfigurator = () => {
                 disabled={!canGoPrevious}
                 className={`group flex items-center gap-2 rounded-xl px-6 py-3 font-bold transition-all duration-300 ${
                   canGoPrevious
-                    ? "text-ylang-charcoal bg-[#faf9f6] hover:scale-102 hover:bg-[#f5f1e8]"
-                    : "text-ylang-charcoal cursor-not-allowed bg-[#faf9f6] opacity-30"
+                    ? "text-ylang-charcoal bg-ylang-beige hover:scale-102 hover:bg-[#f5f1e8]"
+                    : "text-ylang-charcoal cursor-not-allowed bg-ylang-beige opacity-30"
                 }`}
               >
                 <ChevronLeft
