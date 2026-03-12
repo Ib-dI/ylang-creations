@@ -2,68 +2,72 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// ─── Configuration ──────────────────────────────────────────────────────────
 const FONT_FOLDER = "/fonts/moonlight";
 
-// ─── Ajustements par lettre ─────────────────────────────────────────────────
 type LetterAdj = { offsetY: number; advanceX: number; leftBearing: number };
 
 const DEFAULT_ADJUSTMENTS: Record<string, LetterAdj> = {
-  A: { offsetY: 0, advanceX: -10, leftBearing: 0 },
-  B: { offsetY: 0, advanceX: -27, leftBearing: 0 },
-  C: { offsetY: 15, advanceX: -36, leftBearing: 0 },
-  D: { offsetY: 0, advanceX: -18, leftBearing: 0 },
-  E: { offsetY: -26, advanceX: 0, leftBearing: 0 },
-  F: { offsetY: 0, advanceX: -44, leftBearing: 0 },
-  G: { offsetY: 26, advanceX: -33, leftBearing: 0 },
-  H: { offsetY: 24, advanceX: -20, leftBearing: 0 },
-  I: { offsetY: -6, advanceX: -26, leftBearing: 0 },
-  J: { offsetY: 15, advanceX: -26, leftBearing: 0 },
-  K: { offsetY: 0, advanceX: -11, leftBearing: 0 },
-  L: { offsetY: 0, advanceX: 6, leftBearing: 0 },
-  M: { offsetY: -3, advanceX: -46, leftBearing: 0 },
-  N: { offsetY: 13, advanceX: -33, leftBearing: 0 },
-  O: { offsetY: 0, advanceX: 0, leftBearing: 0 },
-  P: { offsetY: 0, advanceX: -25, leftBearing: 0 },
-  Q: { offsetY: 0, advanceX: 0, leftBearing: 0 },
-  R: { offsetY: -4, advanceX: -10, leftBearing: 0 },
-  S: { offsetY: 8, advanceX: -4, leftBearing: 0 },
-  T: { offsetY: -9, advanceX: -51, leftBearing: 0 },
-  U: { offsetY: 0, advanceX: 0, leftBearing: 0 },
-  V: { offsetY: 0, advanceX: -73, leftBearing: 0 },
-  W: { offsetY: -1, advanceX: -74, leftBearing: 0 },
-  X: { offsetY: 0, advanceX: 0, leftBearing: 0 },
-  Y: { offsetY: 0, advanceX: 0, leftBearing: 0 },
-  Z: { offsetY: 27, advanceX: -16, leftBearing: 0 },
-  a: { offsetY: 0, advanceX: -5, leftBearing: 0 },
-  b: { offsetY: 0, advanceX: -7, leftBearing: 0 },
-  c: { offsetY: 0, advanceX: -7, leftBearing: 0 },
-  d: { offsetY: 0, advanceX: -19, leftBearing: 0 },
-  e: { offsetY: -1, advanceX: -7, leftBearing: 0 },
-  f: { offsetY: 20, advanceX: -15, leftBearing: 0 },
-  g: { offsetY: 20, advanceX: -13, leftBearing: -14 },
-  h: { offsetY: 0, advanceX: -10, leftBearing: 0 },
-  i: { offsetY: 0, advanceX: -5, leftBearing: 0 },
-  j: { offsetY: 20, advanceX: 0, leftBearing: 0 },
-  k: { offsetY: 0, advanceX: -7, leftBearing: 0 },
-  l: { offsetY: 0, advanceX: -17, leftBearing: 0 },
-  m: { offsetY: 0, advanceX: -16, leftBearing: -8 },
-  n: { offsetY: 4, advanceX: -16, leftBearing: -8 },
-  o: { offsetY: 0, advanceX: -5, leftBearing: 0 },
-  p: { offsetY: 20, advanceX: -33, leftBearing: -28 },
-  q: { offsetY: 20, advanceX: -7, leftBearing: 0 },
-  r: { offsetY: 0, advanceX: -7, leftBearing: 0 },
-  s: { offsetY: 0, advanceX: -7, leftBearing: 0 },
-  t: { offsetY: 0, advanceX: -7, leftBearing: 0 },
-  u: { offsetY: 0, advanceX: 0, leftBearing: 0 },
-  v: { offsetY: 0, advanceX: -5, leftBearing: 0 },
-  w: { offsetY: 0, advanceX: -5, leftBearing: 0 },
-  x: { offsetY: 0, advanceX: -5, leftBearing: 0 },
-  y: { offsetY: 24, advanceX: -21, leftBearing: -19 },
-  z: { offsetY: 24, advanceX: -24, leftBearing: -24 },
+  A:{offsetY:18,advanceX:0,leftBearing:0},
+  B:{offsetY:0,advanceX:-40,leftBearing:0},
+  C:{offsetY:29,advanceX:-46,leftBearing:0},
+  D:{offsetY:0,advanceX:-33,leftBearing:0},
+  E:{offsetY:0,advanceX:-12,leftBearing:0},
+  F:{offsetY:0,advanceX:-74,leftBearing:0},
+  G:{offsetY:38,advanceX:-60,leftBearing:0},
+  H:{offsetY:44,advanceX:-51,leftBearing:0},
+  I:{offsetY:0,advanceX:-37,leftBearing:0},
+  J:{offsetY:24,advanceX:-43,leftBearing:0},
+  K:{offsetY:0,advanceX:-23,leftBearing:0},
+  L:{offsetY:0,advanceX:-7,leftBearing:0},
+  M:{offsetY:0,advanceX:-54,leftBearing:0},
+  N:{offsetY:10,advanceX:-49,leftBearing:0},
+  O:{offsetY:0,advanceX:-22,leftBearing:0},
+  P:{offsetY:0,advanceX:-45,leftBearing:0},
+  Q:{offsetY:19,advanceX:-9,leftBearing:0},
+  R:{offsetY:0,advanceX:-23,leftBearing:0},
+  S:{offsetY:15,advanceX:-18,leftBearing:0},
+  T:{offsetY:0,advanceX:-68,leftBearing:0},
+  U:{offsetY:0,advanceX:-88,leftBearing:0},
+  V:{offsetY:0,advanceX:-84,leftBearing:0},
+  W:{offsetY:0,advanceX:-84,leftBearing:0},
+  X:{offsetY:0,advanceX:-39,leftBearing:0},
+  Y:{offsetY:45,advanceX:-9,leftBearing:0},
+  Z:{offsetY:30,advanceX:-34,leftBearing:0},
+  a:{offsetY:0,advanceX:-17,leftBearing:0},
+  b:{offsetY:0,advanceX:-16,leftBearing:0},
+  c:{offsetY:0,advanceX:-14,leftBearing:0},
+  d:{offsetY:0,advanceX:-32,leftBearing:0},
+  e:{offsetY:0,advanceX:-17,leftBearing:0},
+  f:{offsetY:36,advanceX:-66,leftBearing:-35},
+  g:{offsetY:36,advanceX:-27,leftBearing:-14},
+  h:{offsetY:0,advanceX:-26,leftBearing:-6},
+  i:{offsetY:0,advanceX:-15,leftBearing:0},
+  j:{offsetY:36,advanceX:-51,leftBearing:-34},
+  k:{offsetY:0,advanceX:-37,leftBearing:-15},
+  l:{offsetY:0,advanceX:-30,leftBearing:0},
+  m:{offsetY:0,advanceX:-26,leftBearing:-10},
+  n:{offsetY:0,advanceX:-22,leftBearing:-5},
+  o:{offsetY:0,advanceX:-18,leftBearing:0},
+  p:{offsetY:37,advanceX:-42,leftBearing:-28},
+  q:{offsetY:30,advanceX:-17,leftBearing:0},
+  r:{offsetY:0,advanceX:-13,leftBearing:3},
+  s:{offsetY:0,advanceX:-24,leftBearing:-7},
+  t:{offsetY:0,advanceX:-18,leftBearing:0},
+  u:{offsetY:0,advanceX:-18,leftBearing:-2},
+  v:{offsetY:0,advanceX:-16,leftBearing:0},
+  w:{offsetY:0,advanceX:-18,leftBearing:0},
+  x:{offsetY:0,advanceX:-23,leftBearing:-6},
+  y:{offsetY:28,advanceX:-34,leftBearing:-19},
+  z:{offsetY:36,advanceX:-40,leftBearing:-24}
 };
 
-// ─── PES Parser ──────────────────────────────────────────────────────────────
+const SYMBOL_MAP: Record<string, string> = {
+  _amp_: "&", _ap_: "'", _at_: "@", _col_: ":", _comma_: ",",
+  _dash_: "-", _dol_: "$", _dot_: ".", _exc_: "!", _hash_: "#",
+  _inv_: '"', _parL_: "(", _parR_: ")", _perc_: "%", _quest_: "?",
+  _sem_: ";", _sl_: "/", _st_: "*",
+};
+
 interface Stitch { x: number; y: number; type: "stitch"|"jump"|"trim"|"end"; }
 interface ColorBlock { color: string; stitches: Stitch[]; }
 interface PESData {
@@ -80,52 +84,57 @@ const PES_COLORS = [
   "#FF8080","#80FF80","#8080FF","#FFCC00","#CC00FF","#00FFCC",
 ];
 
-function parsePES(buffer: ArrayBuffer): PESData {
-  const view = new DataView(buffer);
-  const bytes = new Uint8Array(buffer);
-  const header = String.fromCharCode(bytes[0],bytes[1],bytes[2],bytes[3]);
-  if (!header.startsWith("#PES")) throw new Error("Not a valid PES file");
-  const pecOffset = view.getUint32(8, true);
-  const stitchOffset = pecOffset + 532;
-  const stitches: Stitch[] = [];
-  let pos = stitchOffset, x = 0, y = 0;
-  while (pos < bytes.length - 1) {
-    const b1 = bytes[pos], b2 = bytes[pos+1];
-    if (b1===0xff && b2===0x00) { stitches.push({x,y,type:"end"}); break; }
-    else if (b1===0xfe && b2===0xb0) { pos+=3; stitches.push({x,y,type:"trim"}); continue; }
-    else if ((b1&0x80)===0 && (b2&0x80)===0) {
-      x += b1>63?b1-128:b1; y += b2>63?b2-128:b2;
-      stitches.push({x,y,type:"stitch"}); pos+=2;
-    } else if ((b1&0x80)!==0 && (b2&0x80)!==0) {
-      const val=((b1&0x0f)<<8)|b2, dx=b1&0x10?-val:val>2047?val-4096:val;
-      pos+=2;
-      const b3=bytes[pos], b4=bytes[pos+1]; let dy=0;
-      if ((b3&0x80)!==0) { const v2=((b3&0x0f)<<8)|b4; dy=b3&0x10?-v2:v2>2047?v2-4096:v2; pos+=2; }
-      x+=dx; y+=dy; stitches.push({x,y,type:"jump"});
-    } else pos+=2;
-  }
-  // Use loops instead of spread to avoid stack overflow on large files (8in = 100k+ stitches)
-  const pts = stitches.filter(s=>s.type==="stitch");
-  if (!pts.length) return {colorBlocks:[],minX:0,maxX:0,minY:0,maxY:0,width:0,height:0};
+function buildFromStitches(stitches: Stitch[]): PESData {
+  const pts = stitches.filter(s => s.type === "stitch");
+  if (!pts.length) return { colorBlocks:[], minX:0, maxX:0, minY:0, maxY:0, width:0, height:0 };
   let minX=pts[0].x, maxX=pts[0].x, minY=pts[0].y, maxY=pts[0].y;
   for (const s of pts) {
     if(s.x<minX)minX=s.x; if(s.x>maxX)maxX=s.x;
     if(s.y<minY)minY=s.y; if(s.y>maxY)maxY=s.y;
   }
+  const sx=minX, sy=minY;
+  const norm = (s: Stitch): Stitch => ({ ...s, x: s.x-sx, y: s.y-sy });
   const colorBlocks: ColorBlock[] = [];
   let current: Stitch[] = [], ci=0;
   for (const s of stitches) {
     if (s.type==="trim"||s.type==="end") {
-      if (current.length) { colorBlocks.push({color:PES_COLORS[ci%PES_COLORS.length],stitches:current}); current=[]; ci++; }
-    } else current.push(s);
+      if (current.length) { colorBlocks.push({ color: PES_COLORS[ci%PES_COLORS.length], stitches: current }); current=[]; ci++; }
+    } else current.push(norm(s));
   }
-  if (current.length) colorBlocks.push({color:PES_COLORS[ci%PES_COLORS.length],stitches:current});
-  return {colorBlocks,minX,maxX,minY,maxY,width:maxX-minX,height:maxY-minY};
+  if (current.length) colorBlocks.push({ color: PES_COLORS[ci%PES_COLORS.length], stitches: current });
+  const nMaxX=maxX-sx, nMaxY=maxY-sy;
+  return { colorBlocks, minX:0, maxX:nMaxX, minY:0, maxY:nMaxY, width:nMaxX, height:nMaxY };
 }
 
-// ─── Canvas Renderer ─────────────────────────────────────────────────────────
+function parseEXP(buffer: ArrayBuffer): PESData {
+  const bytes = new Uint8Array(buffer);
+  const stitches: Stitch[] = [];
+  let x=0, y=0, pos=0;
+  while (pos < bytes.length-1) {
+    const b0 = bytes[pos];
+    if (b0===0x80) {
+      const cmd=bytes[pos+1]; pos+=2;
+      if (cmd===0x02||cmd===0x00) { stitches.push({x,y,type:"end"}); break; }
+      else if (cmd===0x01||cmd===0x04) {
+        if (pos+1<bytes.length) {
+          const dx=bytes[pos]>127?bytes[pos]-256:bytes[pos];
+          const dy=bytes[pos+1]>127?bytes[pos+1]-256:bytes[pos+1];
+          x+=dx; y-=dy;
+          stitches.push({x,y,type:cmd===0x01?"trim":"jump"}); pos+=2;
+        }
+      }
+    } else {
+      const dx=b0>127?b0-256:b0;
+      const dy=bytes[pos+1]>127?bytes[pos+1]-256:bytes[pos+1];
+      x+=dx; y-=dy;
+      stitches.push({x,y,type:"stitch"}); pos+=2;
+    }
+  }
+  return buildFromStitches(stitches);
+}
+
 function shadeColor(hex: string, amt: number, alpha=1): string {
-  const n = parseInt(hex.replace("#",""),16);
+  const n=parseInt(hex.replace("#",""),16);
   const r=Math.min(255,Math.max(0,(n>>16)+amt));
   const g=Math.min(255,Math.max(0,((n>>8)&0xff)+amt));
   const b=Math.min(255,Math.max(0,(n&0xff)+amt));
@@ -144,19 +153,32 @@ function drawPath(ctx: CanvasRenderingContext2D, stitches: Stitch[], scale: numb
   ctx.stroke();
 }
 
-function renderPES(ctx: CanvasRenderingContext2D, pes: PESData, scale: number, offsetX: number, colorOverride?: string) {
+function renderEXP(ctx: CanvasRenderingContext2D, pes: PESData, scale: number, offsetX: number, colorOverride?: string) {
   if (!pes.colorBlocks.length) return;
   ctx.lineCap="round"; ctx.lineJoin="round";
+
+  // Passe 1 : underlay – suit exactement les chemins de points
+  // Utilise la couleur du fil (légèrement éclaircie) comme en broderie réelle
+  // pour un rendu naturel sans cadre artificiel
   for (const block of pes.colorBlocks) {
     if (block.stitches.length<2) continue;
-    const color = colorOverride??block.color;
+    const color=colorOverride??block.color;
     ctx.beginPath();
-    ctx.shadowColor="rgba(0,0,0,0.45)"; ctx.shadowBlur=2;
+    ctx.shadowColor="transparent";
+    ctx.strokeStyle=shadeColor(color,80,0.92); // couleur du fil éclaircie
+    ctx.lineWidth=scale*2.2;
+    drawPath(ctx,block.stitches,scale,offsetX);
+  }
+
+  // Passe 2 : ombrage de profondeur
+  for (const block of pes.colorBlocks) {
+    if (block.stitches.length<2) continue;
+    const color=colorOverride??block.color;
+    ctx.beginPath(); ctx.shadowColor="rgba(0,0,0,0.45)"; ctx.shadowBlur=2;
     ctx.shadowOffsetX=0.6; ctx.shadowOffsetY=0.6;
     ctx.strokeStyle=shadeColor(color,-40); ctx.lineWidth=scale*0.95;
     drawPath(ctx,block.stitches,scale,offsetX);
-    ctx.beginPath();
-    ctx.shadowColor="transparent";
+    ctx.beginPath(); ctx.shadowColor="transparent";
     ctx.strokeStyle=color; ctx.lineWidth=scale*0.62;
     drawPath(ctx,block.stitches,scale,offsetX);
     ctx.beginPath();
@@ -165,21 +187,15 @@ function renderPES(ctx: CanvasRenderingContext2D, pes: PESData, scale: number, o
   }
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
 export interface EmbroideryPreviewProps {
   text: string;
   threadColor?: string | null;
   className?: string;
-  // Hauteur cible en pixels canvas (défaut: 130). Contrôle la taille de rendu
-  // indépendamment du CSS — utilise cette prop pour changer la taille, pas CSS width/height.
   targetHeight?: number;
 }
 
 export default function EmbroideryPreview({
-  text,
-  threadColor,
-  className = "",
-  targetHeight = 130,
+  text, threadColor, className="", targetHeight=130,
 }: EmbroideryPreviewProps) {
   const [fontFiles, setFontFiles] = useState<FontFiles>({});
   const [errorMsg, setErrorMsg] = useState("");
@@ -190,21 +206,45 @@ export default function EmbroideryPreview({
     try {
       const mRes = await fetch(`${folder}/manifest.json`);
       if (!mRes.ok) throw new Error(`manifest.json introuvable dans ${folder}`);
-      const filenames: string[] = await mRes.json();
+      const raw = await mRes.json();
+
+      let filenames: string[] = [];
+      let prefix = "";
+
+      if (Array.isArray(raw)) {
+        filenames = raw;
+      } else if (typeof raw === "object" && raw !== null) {
+        const keys = Object.keys(raw).sort((a,b)=>parseFloat(a)-parseFloat(b));
+        const firstKey = keys[0];
+        if (firstKey) { filenames = raw[firstKey]; prefix = `${firstKey}/`; }
+      }
+
+      if (!filenames.length) throw new Error("Aucun fichier dans le manifest.");
+
       const newFonts: FontFiles = {};
-      await Promise.all(filenames.map(async (filename) => {
-        const letter = filename.charAt(0);
-        if (!letter.match(/[a-zA-Z]/)) return;
+      await Promise.all(filenames.map(async (filename: string) => {
+        if (!filename.toLowerCase().endsWith(".exp")) return;
+        let letter = "";
+        const lowerFile = filename.toLowerCase();
+        for (const [key, val] of Object.entries(SYMBOL_MAP)) {
+          if (lowerFile.startsWith(key.toLowerCase())) { letter=val; break; }
+        }
+        if (!letter) {
+          const firstChar = filename.charAt(0);
+          if (firstChar.match(/[a-zA-Z0-9]/)) letter = firstChar;
+        }
+        if (!letter) return;
         try {
-          const res = await fetch(`${folder}/${filename}`);
+          const res = await fetch(`${folder}/${prefix}${filename}`);
           if (!res.ok) return;
-          newFonts[letter] = parsePES(await res.arrayBuffer());
-        } catch {}
+          newFonts[letter] = parseEXP(await res.arrayBuffer());
+        } catch(e) { console.warn(`Failed to load ${filename}`, e); }
       }));
-      if (!Object.keys(newFonts).length) throw new Error("Aucun fichier PES valide chargé.");
+
+      if (!Object.keys(newFonts).length) throw new Error("Aucun fichier EXP valide chargé.");
       setFontFiles(newFonts);
-    } catch (e: any) {
-      setErrorMsg(e.message ?? "Erreur inconnue");
+    } catch(e: unknown) {
+      setErrorMsg(e instanceof Error ? e.message : "Erreur inconnue");
     }
   }, []);
 
@@ -216,105 +256,89 @@ export default function EmbroideryPreview({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     if (!text) { canvas.width=1; canvas.height=1; return; }
 
     const PX=16, PY=12, CAP=targetHeight;
     const chars = text.split("").map(c=>c===" "?null:c);
     const allPes = Object.values(fontFiles);
-
     if (!allPes.length) { canvas.width=1; canvas.height=1; return; }
 
-    // Scale: tallest letter fits in CAP pixels
     let maxH=1;
     for (const p of allPes) if(p.height>maxH) maxH=p.height;
-    const SCALE = CAP / maxH;
+    const SCALE = CAP/maxH;
 
-    // Baseline detection from x-height letters
-    const XHL = new Set(["a","c","e","m","n","o","r","s","u","v","w","x","z"]);
-    const DESC = new Set(["g","y","p","q","j"]);
-    const xhV = Object.entries(fontFiles).filter(([l])=>XHL.has(l)).map(([,p])=>p.maxY).filter(v=>v>0).sort((a,b)=>a-b);
-    const fbV = Object.entries(fontFiles).filter(([l])=>!DESC.has(l)&&l===l.toLowerCase()).map(([,p])=>p.maxY).filter(v=>v>0).sort((a,b)=>a-b);
-    const cands = xhV.length>=2?xhV:fbV;
-    const lower = cands.slice(0,Math.ceil(cands.length/2));
-    const baseN = lower[Math.floor(lower.length/2)]??maxH;
+    const ADJ_SCALE = CAP / 130;
 
-    // Global Y bounds
-    let gMinY=0, gMaxY=1;
-    for (const p of allPes) { if(p.minY<gMinY)gMinY=p.minY; if(p.maxY>gMaxY)gMaxY=p.maxY; }
-    const totH = (gMaxY-gMinY)*SCALE;
+    // Calcul du descender max parmi les caractères du texte
+    let maxDescender = 0;
+    for (const ch of chars) {
+      if (!ch) continue;
+      const adj = DEFAULT_ADJUSTMENTS[ch];
+      if (adj && adj.offsetY > 0) {
+        maxDescender = Math.max(maxDescender, adj.offsetY * ADJ_SCALE);
+      }
+    }
 
-    // Letter advances
+    const baselineY = PY+CAP;
+    const canvasH = baselineY + Math.ceil(maxDescender) + PY;
+
+    const GAP = CAP * 0.05;
+
+    // Les ajustements DEFAULT_ADJUSTMENTS ont été calibrés dans l'outil de preview
+    // avec targetHeight=130 comme référence. Pour les appliquer correctement à
+    // n'importe quelle targetHeight, on les scale proportionnellement.
+
     const advances = chars.map(ch=>{
       if (!ch) return CAP*0.28;
       const pes=fontFiles[ch]; if(!pes) return CAP*0.4;
       const adj=DEFAULT_ADJUSTMENTS[ch]??{offsetY:0,advanceX:0,leftBearing:0};
-      return pes.maxX*SCALE+adj.advanceX;
+      // pes.width*SCALE = largeur réelle de la lettre en px canvas
+      // adj.advanceX calibré à targetHeight=130, donc on scale
+      return pes.width*SCALE + GAP + adj.advanceX*ADJ_SCALE;
     });
 
-    // Canvas width
-    const fp = chars[0]?fontFiles[chars[0]]:null;
-    const fmx = fp?fp.minX:0;
-    let tw = PX - fmx*SCALE;
+    let tw=PX;
     advances.forEach((adv,i)=>{
-      tw += i<chars.length-1 ? adv : (chars[i]?(fontFiles[chars[i]!]?.maxX??0)*SCALE:adv);
+      tw += i<chars.length-1 ? adv : (chars[i]?(fontFiles[chars[i]!]?.width??0)*SCALE:adv);
     });
-    tw += PX;
+    tw+=PX;
 
-    canvas.width = Math.max(Math.ceil(tw), 1);
-    canvas.height = Math.ceil(PY + totH + PY);
+    canvas.width=Math.max(Math.ceil(tw),1);
+    canvas.height=Math.ceil(canvasH);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    const vOff = PY - gMinY*SCALE;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    let curX = PX - fmx*SCALE;
-    chars.forEach((ch, i)=>{
+    let curX=PX;
+    chars.forEach((ch,i)=>{
       if (!ch) { curX+=advances[i]; return; }
       const pes=fontFiles[ch];
       const adj=DEFAULT_ADJUSTMENTS[ch]??{offsetY:0,advanceX:0,leftBearing:0};
-      const dx = curX+adj.leftBearing;
+
+      const originX = curX + adj.leftBearing*ADJ_SCALE;
+      const vertY = pes ? (baselineY - pes.maxY*SCALE + adj.offsetY*ADJ_SCALE) : adj.offsetY*ADJ_SCALE;
+
       if (pes?.colorBlocks.length) {
         ctx.save();
-        ctx.translate(0, vOff+adj.offsetY);
-        renderPES(ctx, pes, SCALE, dx, threadColor??undefined);
+        ctx.translate(0, vertY);
+        renderEXP(ctx, pes, SCALE, originX, threadColor??undefined);
         ctx.restore();
       } else {
         ctx.save();
         ctx.font=`${CAP*0.75}px Georgia`;
         ctx.fillStyle="rgba(0,0,0,0.15)";
         ctx.textBaseline="bottom";
-        ctx.fillText(ch, dx, vOff+baseN*SCALE);
+        ctx.fillText(ch, originX, baselineY+adj.offsetY*ADJ_SCALE);
         ctx.restore();
       }
       curX+=advances[i];
     });
   }, [text, fontFiles, threadColor, targetHeight]);
 
-  if (errorMsg) return <div className="text-xs text-red-500">Erreur PES: {errorMsg}</div>;
+  if (errorMsg) return <div className="text-xs text-red-500">Erreur EXP: {errorMsg}</div>;
 
-  // Le canvas a ses vraies dimensions en pixels.
-  // On l'enveloppe dans un div qui centre et ne compresse pas.
-  // CSS ne doit PAS redimensionner le canvas directement (ça pixelise et déforme).
-  // Le parent dans le configurateur doit utiliser overflow:visible.
   return (
-    <div
-      className={className}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "visible",
-      }}
-    >
-      <canvas
-        ref={canvasRef}
-        style={{
-          display: "block",
-          imageRendering: "crisp-edges",
-          // Pas de width/height CSS : on laisse le canvas à sa taille naturelle
-          // Le parent (configurateur) peut utiliser transform:scale() pour ajuster
-        }}
-      />
+    <div className={className} style={{display:"flex",alignItems:"center",justifyContent:"center",overflow:"visible"}}>
+      <canvas ref={canvasRef} style={{display:"block",imageRendering:"crisp-edges"}}/>
     </div>
   );
 }

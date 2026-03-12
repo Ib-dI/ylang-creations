@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
-import EmbroideryPreview from "@/components/configurator/EmbroideryPreview";
+// import EmbroideryPreview from "@/components/configurator/EmbroideryPreview";
+import EmbroideryZoneOverlay from "@/components/configurator/EmbroideryZoneOverlay"
 import {
   Suspense,
   useEffect,
@@ -232,7 +233,7 @@ const ProductConfigurator = () => {
         x: 0.52, // Centre horizontal
         y: 0.48, // Légèrement en bas du centre
         maxWidth: 0.5,
-        rotation: -30,
+        rotation: -15,
         fontSize: 80,
         alignment: "center",
       },
@@ -249,7 +250,7 @@ const ProductConfigurator = () => {
         x: 0.51,
         y: 0.5,
         maxWidth: 0.5,
-        rotation: 60,
+        rotation: 30,
         fontSize: 70,
         alignment: "center",
       },
@@ -283,7 +284,7 @@ const ProductConfigurator = () => {
         x: 0.7,
         y: 0.4,
         maxWidth: 0.5,
-        rotation: -11,
+        rotation: -10,
         fontSize: 80,
         alignment: "center",
       },
@@ -301,7 +302,7 @@ const ProductConfigurator = () => {
         x: 0.6,
         y: 0.33,
         maxWidth: 1,
-        rotation: 26,
+        rotation: 13,
         fontSize: 50,
         alignment: "center",
       },
@@ -603,6 +604,7 @@ const ProductConfigurator = () => {
   // Canvas Refs
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageCache = useRef<Record<string, HTMLImageElement>>({});
+  const productContainerRef = useRef<HTMLDivElement>(null);
 
   // Effect to handle initial product selection from URL
   useEffect(() => {
@@ -988,7 +990,7 @@ const ProductConfigurator = () => {
       >
         {/* LEFT: Preview (Sticky) */}
         <div className="from-ylang-terracotta/30 to-ylang-rose/10 relative flex h-[50vh] flex-col items-center justify-center bg-linear-to-br p-8 lg:sticky lg:top-[90px] lg:h-[calc(100vh-90px)] lg:w-1/2">
-          <div
+          <div ref={productContainerRef}
             className={`bg-ylang-beige/35 relative w-full max-w-lg overflow-hidden rounded-4xl shadow-xl transition-opacity duration-300 ${isProcessing ? "opacity-50" : "opacity-100"}`}
           >
             <canvas ref={canvasRef} className="h-auto w-full" />
@@ -1004,11 +1006,14 @@ const ProductConfigurator = () => {
                     overflow: "visible",
                   }}
                 >
-                  <EmbroideryPreview
-                    text={configuration.embroidery}
-                    threadColor={configuration.embroideryColor}
-                    targetHeight={configuration.product.embroideryZone.fontSize}
-                  />
+                  {configuration.embroidery && configuration.product?.embroideryZone && (
+                      <EmbroideryZoneOverlay
+                        text={configuration.embroidery}
+                        threadColor={configuration.embroideryColor}
+                        zone={configuration.product.embroideryZone}
+                        containerRef={productContainerRef}
+                      />
+                    )}
                 </div>
               )}
 
