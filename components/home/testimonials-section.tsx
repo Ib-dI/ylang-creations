@@ -5,22 +5,24 @@ import { X, ZoomIn } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
 
-export function TestimonialsSection() {
-  const [testimonialsList, setTestimonialsList] = React.useState<any[]>([]);
-  const [loading, setLoading] = React.useState(true);
+interface Testimonial {
+  image: string;
+  id?: string;
+  name?: string;
+}
+
+export function TestimonialsSection({
+  testimonials,
+}: {
+  testimonials: Testimonial[];
+}) {
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    fetch("/api/settings")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.testimonials) {
-          setTestimonialsList(data.testimonials.filter((t: any) => t.image));
-        }
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  // Filter testimonials to ensure they have an image
+  const testimonialsList = React.useMemo(
+    () => testimonials.filter((t) => t.image),
+    [testimonials],
+  );
 
   return (
     <section className="section-padding from-ylang-terracotta/40 relative overflow-hidden bg-linear-to-b to-ylang-rose/40 py-20">

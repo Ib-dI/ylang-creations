@@ -213,65 +213,34 @@
 /* global.css */
 
 .stamp-card {
-  --circle-radius: 6px;
-  --circle-gap: 12px;
-  --mask-size: calc(var(--circle-radius) * 2 + var(--circle-gap));
-
   position: relative;
-  background: white;
-  padding: 12px;
-
-  /* On utilise filter pour l'ombre car box-shadow est coupé par le mask */
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.12));
-
-  /* Masque composite : 
-     1. Un fond plein au centre (content-box) qui protège l'image
-     2. Le motif de trous (border-box) par dessus
-     On utilise 'add' pour que le centre reste plein.
-  */
-  -webkit-mask-image:
-    linear-gradient(black, black),
-    radial-gradient(
-      circle,
-      transparent var(--circle-radius),
-      black calc(var(--circle-radius) + 0.5px)
-    );
-  mask-image:
-    linear-gradient(black, black),
-    radial-gradient(
-      circle,
-      transparent var(--circle-radius),
-      black calc(var(--circle-radius) + 0.5px)
-    );
-
-  /* Taille et répétition */
-  -webkit-mask-size:
-    100% 100%,
-    var(--mask-size) var(--mask-size);
-  mask-size:
-    100% 100%,
-    var(--mask-size) var(--mask-size);
-
-  /* Clip : le premier masque est limité au content-box (le centre), le second au border-box */
-  -webkit-mask-clip: content-box, border-box;
-  mask-clip: content-box, border-box;
-
-  /* Positionnement */
-  -webkit-mask-position:
-    0 0,
-    calc(var(--mask-size) / -2) calc(var(--mask-size) / -2);
-  mask-position:
-    0 0,
-    calc(var(--mask-size) / -2) calc(var(--mask-size) / -2);
-
-  /* Composite : on additionne le centre plein avec les trous du bord */
-  -webkit-mask-composite: source-over;
-  mask-composite: add;
+  border-radius: 8px;
+  padding: 8px;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #7e97b4 0,
+    #7e97b4 14px,
+    #e5e7eb 14px,
+    #e5e7eb 28px,
+    #d69999 28px,
+    #d69999 42px,
+    var(--color-ylang-terracotta) 42px,
+    #e5e7eb 56px
+  );
+  box-shadow:
+    rgba(0, 0, 0, 0.05) 0px 3px 3px,
+    rgba(0, 0, 0, 0.03) 0px 4px 4px,
+    rgba(0, 0, 0, 0.08) 0px 7px 7px,
+    rgba(0, 0, 0, 0.03) 0px 1px 1px;
 }
 
-/* On s'assure que stamp-inner ne rajoute pas de clipping bizarre */
 .stamp-inner {
   position: relative;
+  z-index: 10;
   width: 100%;
   height: 100%;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  overflow: hidden;
 }

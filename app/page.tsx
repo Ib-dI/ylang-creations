@@ -104,6 +104,18 @@ function ProductsLoadingFallback() {
   );
 }
 
+async function TestimonialsData() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("settings");
+
+  const result = await getCachedSettings();
+  const settings = result[0];
+  const testimonials = settings?.testimonials ?? [];
+
+  return <TestimonialsSection testimonials={testimonials as any[]} />;
+}
+
 export default async function Home() {
   const result = await getCachedSettings();
   const settings = result[0];
@@ -172,7 +184,7 @@ export default async function Home() {
           </div>
         }
       >
-        <TestimonialsSection />
+        <TestimonialsData />
       </Suspense>
     </>
   );
