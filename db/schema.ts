@@ -76,7 +76,7 @@ export const customer = pgTable(
       .references(() => user.id),
     email: text("email").notNull(),
     name: text("name"),
-    stripeCustomerId: text("stripe_customer_id").unique(),
+    sumupCustomerId: text("sumup_customer_id").unique(),
     createdAt: timestamp("created_at").notNull(),
     updatedAt: timestamp("updated_at").notNull(),
   },
@@ -91,8 +91,8 @@ export const order = pgTable(
     customerId: text("customer_id")
       .notNull()
       .references(() => customer.id),
-    stripeSessionId: text("stripe_session_id").unique(),
-    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    sumupCheckoutId: text("sumup_checkout_id").unique(),
+    sumupTransactionId: text("sumup_transaction_id"),
     status: text("status").notNull().default("pending"), // pending, paid, shipped, delivered, cancelled
     totalAmount: integer("total_amount").notNull(),
     currency: text("currency").notNull().default("eur"),
@@ -177,3 +177,43 @@ export const review = pgTable(
     index("review_product_id_idx").on(table.productId),
   ],
 );
+
+// Configurator Fabric Categories
+export const configuratorFabricCategory = pgTable("configurator_fabric_category", {
+  id: text("id").primaryKey(), // prefix, e.g., "coton"
+  title: text("title").notNull(),
+  description: text("description"),
+  order: integer("order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Configurator Fabrics
+export const configuratorFabric = pgTable("configurator_fabric", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  price: integer("price").notNull().default(0), // Price in cents
+  baseColor: text("base_color").notNull(),
+  image: text("image").notNull(),
+  category: text("category").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Configurator Products
+export const configuratorProduct = pgTable("configurator_product", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  basePrice: integer("base_price").notNull(),
+  icon: text("icon"),
+  baseImage: text("base_image").notNull(),
+  maskImage: text("mask_image").notNull(),
+  colorMaskImage: text("color_mask_image"),
+  embroideryZone: jsonb("embroidery_zone").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});

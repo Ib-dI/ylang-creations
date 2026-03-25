@@ -9,7 +9,7 @@ ALTER TABLE "product" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "settings" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "review" ENABLE ROW LEVEL SECURITY;
 
--- 1. Public Read-Only Tables (Product, Settings)
+-- 1. Public Read-Only Tables (Product, Settings, Configurator)
 -- Products are visible to everyone
 CREATE POLICY "Public read access for products" ON "product"
 AS PERMISSIVE FOR SELECT
@@ -18,6 +18,20 @@ USING (true);
 
 -- Settings are visible to everyone
 CREATE POLICY "Public read access for settings" ON "settings"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true);
+
+-- Configurator products are visible to everyone
+ALTER TABLE "configurator_product" ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read access for configurator_product" ON "configurator_product"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true);
+
+-- Configurator fabrics are visible to everyone
+ALTER TABLE "configurator_fabric" ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read access for configurator_fabric" ON "configurator_fabric"
 AS PERMISSIVE FOR SELECT
 TO public
 USING (true);

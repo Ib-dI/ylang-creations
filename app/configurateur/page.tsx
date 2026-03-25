@@ -58,6 +58,14 @@ interface Fabric {
   price: number;
   baseColor: string; // Used for fallback or cart display
   image: string; // Texture image path
+  category?: string; // Explicit category relationship
+}
+
+interface FabricCategory {
+  id: string; // prefix
+  title: string;
+  description: string;
+  order: number;
 }
 
 interface Configuration {
@@ -99,7 +107,7 @@ function FabricCategorySection({
   configuration,
   setConfiguration,
 }: FabricCategoryProps) {
-  const categoryFabrics = fabrics.filter((f) => f.id.startsWith(prefix));
+  const categoryFabrics = fabrics.filter((f) => f.category ? f.category === prefix : f.id.startsWith(prefix));
   const displayedFabrics = categoryFabrics.slice(0, 8);
   const hasMore = categoryFabrics.length > 8;
 
@@ -220,287 +228,10 @@ function SeeAllDialog({
 const ProductConfigurator = () => {
   // --- Data Definitions ---
 
-  const products: Product[] = [
-    {
-      id: "bib",
-      name: "Bavoir",
-      description: "Bavoir naissance ergonomique",
-      basePrice: 13,
-      icon: "👶",
-      baseImage: "/images/produits/bavoir-base.png",
-      maskImage: "/images/produits/bavoir-mask.png",
-      embroideryZone: {
-        x: 0.52, // Centre horizontal
-        y: 0.48, // Légèrement en bas du centre
-        maxWidth: 0.5,
-        rotation: -15,
-        fontSize: 80,
-        alignment: "center",
-      },
-    },
-    {
-      id: "pacifier",
-      name: "Attache-tétine",
-      description: "Attache-tétine sécurisée en tissu",
-      basePrice: 18,
-      icon: "🍼",
-      baseImage: "/images/produits/attache-tetine-base.png",
-      maskImage: "/images/produits/attache-tetine-mask.png",
-      embroideryZone: {
-        x: 0.51,
-        y: 0.5,
-        maxWidth: 0.5,
-        rotation: 30,
-        fontSize: 70,
-        alignment: "center",
-      },
-    },
-    {
-      id: "bag",
-      name: "Sac",
-      description: "Sac écolier",
-      basePrice: 25,
-      icon: "👜",
-      baseImage: "/images/produits/sac-base.png",
-      maskImage: "/images/produits/sac-mask.png",
-      embroideryZone: {
-        x: 0.48,
-        y: 0.35,
-        maxWidth: 0.5,
-        rotation: 0,
-        fontSize: 75,
-        alignment: "center",
-      },
-    },
-    {
-      id: "bag2",
-      name: "Sac à langer",
-      description: "Grand sac voyage",
-      basePrice: 40,
-      icon: "👜",
-      baseImage: "/images/produits/sac-a-langer-base.png",
-      maskImage: "/images/produits/sac-a-langer-mask.png",
-      embroideryZone: {
-        x: 0.7,
-        y: 0.4,
-        maxWidth: 0.5,
-        rotation: -10,
-        fontSize: 80,
-        alignment: "center",
-      },
-    },
-    {
-      id: "gigo",
-      name: "Gigoteuse",
-      description: "Gigoteuse raffinée",
-      basePrice: 19,
-      icon: "👗",
-      baseImage: "/images/produits/gigoteuse-base.png",
-      maskImage: "/images/produits/gigoteuse-mask.png",
-      colorMaskImage: "/images/produits/gigoteuse-color-mask.png",
-      embroideryZone: {
-        x: 0.6,
-        y: 0.33,
-        maxWidth: 1,
-        rotation: 13,
-        fontSize: 50,
-        alignment: "center",
-      },
-    },
-  ];
-
-  // Dynamically populated from previous step findings + prices added
-  const fabrics: Fabric[] = [
-    {
-      id: "test-1",
-      name: "Test 1",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/tissu-jardin-des-reves.webp",
-    },
-    {
-      id: "test-2",
-      name: "Test 2",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/tissu-vallarta.webp",
-    },
-    {
-      id: "test-3",
-      name: "Test 3",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/tissu-japoneries.webp",
-    },
-    {
-      id: "test-4",
-      name: "Test 4",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/tissu-jardin-exoachic.webp",
-    },
-    {
-      id: "coton-1",
-      name: "Coton 1",
-      price: 0,
-      baseColor: "#e5e7eb",
-      image: "/Tissu/Coton-1.png",
-    },
-    {
-      id: "coton-2",
-      name: "Coton 2",
-      price: 0,
-      baseColor: "#d1d5db",
-      image: "/Tissu/Coton-2.png",
-    },
-    {
-      id: "coton-3",
-      name: "Coton 3",
-      price: 0,
-      baseColor: "#9ca3af",
-      image: "/Tissu/Coton-3.png",
-    },
-    {
-      id: "coton-4",
-      name: "Coton 4",
-      price: 0,
-      baseColor: "#fcd34d",
-      image: "/Tissu/Coton-4.png",
-    },
-    {
-      id: "coton-5",
-      name: "Coton 5",
-      price: 0,
-      baseColor: "#fbbf24",
-      image: "/Tissu/Coton-5.png",
-    },
-    {
-      id: "coton-6",
-      name: "Coton 6",
-      price: 0,
-      baseColor: "#f59e0b",
-      image: "/Tissu/Coton-6.png",
-    },
-    {
-      id: "coton-7",
-      name: "Coton 7",
-      price: 0,
-      baseColor: "#f59e0b",
-      image: "/Tissu/Coton-7.png",
-    },
-    {
-      id: "coton-8",
-      name: "Coton 8",
-      price: 0,
-      baseColor: "#f59e0b",
-      image: "/Tissu/Coton-8.png",
-    },
-    {
-      id: "coton-9",
-      name: "Coton 9",
-      price: 0,
-      baseColor: "#f59e0b",
-      image: "/Tissu/Coton-9.png",
-    },
-    {
-      id: "coton-10",
-      name: "Coton 10",
-      price: 0,
-      baseColor: "#f59e0b",
-      image: "/Tissu/Coton-10.png",
-    },
-    {
-      id: "jersey-1",
-      name: "Jersey Coton 1",
-      price: 0,
-      baseColor: "#e5e7eb",
-      image: "/Tissu/Jersey coton-1.png",
-    },
-    {
-      id: "jersey-2",
-      name: "Jersey Coton 2",
-      price: 0,
-      baseColor: "#e5e7eb",
-      image: "/Tissu/Jersey coton-2.png",
-    },
-    {
-      id: "jersey-3",
-      name: "Jersey Coton 3",
-      price: 0,
-      baseColor: "#e5e7eb",
-      image: "/Tissu/Jersey coton-3.png",
-    },
-    {
-      id: "jersey-4",
-      name: "Jersey Coton 4",
-      price: 0,
-      baseColor: "#e5e7eb",
-      image: "/Tissu/Jersey coton-4.png",
-    },
-    {
-      id: "toile-1",
-      name: "Toile de Jouy 1",
-      price: 0,
-      baseColor: "#fee2e2",
-      image: "/Tissu/Toile de Jouy-1.png",
-    },
-    {
-      id: "toile-2",
-      name: "Toile de Jouy 2",
-      price: 0,
-      baseColor: "#fee2e2",
-      image: "/Tissu/Toile de jouy-2.png",
-    },
-    {
-      id: "vichy-1",
-      name: "Vichy 1",
-      price: 5,
-      baseColor: "#fce7f3",
-      image: "/Tissu/Vichy-1.png",
-    },
-    {
-      id: "vichy-2",
-      name: "Vichy 2",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/Vichy-2.png",
-    },
-    {
-      id: "vichy-3",
-      name: "Vichy 3",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/Vichy-3.png",
-    },
-    {
-      id: "vichy-4",
-      name: "Vichy 4",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/Vichy-4.png",
-    },
-    {
-      id: "vichy-5",
-      name: "Vichy 5",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/Vichy-5.png",
-    },
-    {
-      id: "vichy-6",
-      name: "Vichy 6",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/Vichy-6.png",
-    },
-    {
-      id: "vichy-7",
-      name: "Vichy 7",
-      price: 0,
-      baseColor: "#fce7f3",
-      image: "/Tissu/Vichy-7.png",
-    },
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [fabrics, setFabrics] = useState<Fabric[]>([]);
+  const [categories, setCategories] = useState<FabricCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const embroideryColors = [
     { name: "Doré", hex: "#D4AF37" },
@@ -535,33 +266,6 @@ const ProductConfigurator = () => {
     { name: "Turquoise", hex: "#00FFCC" },
   ];
 
-  const fabricCategories = [
-    {
-      prefix: "test",
-      title: "Tissu test resolution (666 x 666)",
-      description: "Tissu temporaires",
-    },
-    {
-      prefix: "coton",
-      title: "Cotons Unis",
-      description: "Douceur et respirabilité premium",
-    },
-    {
-      prefix: "jersey",
-      title: "Jersey Coton",
-      description: "Extensible, doux et confortable",
-    },
-    {
-      prefix: "toile",
-      title: "Toile de Jouy",
-      description: "Motifs classiques et élégance intemporelle",
-    },
-    {
-      prefix: "vichy",
-      title: "Vichy",
-      description: "Carreaux iconiques et charme rétro",
-    },
-  ] as const;
 
   // Palette de couleurs pour les éléments avec color mask
   const productColors = [
@@ -584,8 +288,8 @@ const ProductConfigurator = () => {
   >("product");
 
   const [configuration, setConfiguration] = useState<Configuration>({
-    product: products[0], // Default to Bib
-    fabric: fabrics[0], // Default to first fabric
+    product: null as unknown as Product, // Will be set after load
+    fabric: null as unknown as Fabric, // Will be set after load
     embroidery: "",
     embroideryColor: embroideryColors[0].hex,
     selectedColor: null,
@@ -606,21 +310,54 @@ const ProductConfigurator = () => {
   const imageCache = useRef<Record<string, HTMLImageElement>>({});
   const productContainerRef = useRef<HTMLDivElement>(null);
 
-  // Effect to handle initial product selection from URL
+  // Effect to load data and handle initial product selection from URL
   useEffect(() => {
-    if (initialProductId) {
-      const product = products.find(
-        (p) =>
-          p.id.toLowerCase() === initialProductId.toLowerCase() ||
-          p.name.toLowerCase().includes(initialProductId.toLowerCase()),
-      );
-      if (product) {
-        setConfiguration((prev) => ({
-          ...prev,
-          product,
-        }));
+    async function loadConfiguratorData() {
+      try {
+        const [prodRes, fabRes, catRes] = await Promise.all([
+          fetch("/api/configurator/products?active=true"),
+          fetch("/api/configurator/fabrics?active=true"),
+          fetch("/api/configurator/categories?active=true")
+        ]);
+        const prodData = await prodRes.json();
+        const fabData = await fabRes.json();
+        const catData = await catRes.json();
+        
+        const loadedProducts = prodData.products || [];
+        const loadedFabrics = fabData.fabrics || [];
+        const loadedCategories = catData.categories || [];
+        
+        setProducts(loadedProducts);
+        setFabrics(loadedFabrics);
+        setCategories(loadedCategories);
+        
+        let initialConfigProduct = loadedProducts[0];
+        
+        if (initialProductId && loadedProducts.length > 0) {
+          const foundProduct = loadedProducts.find(
+            (p: Product) =>
+              p.id.toLowerCase() === initialProductId.toLowerCase() ||
+              p.name.toLowerCase().includes(initialProductId.toLowerCase()),
+          );
+          if (foundProduct) {
+            initialConfigProduct = foundProduct;
+          }
+        }
+
+        if (loadedProducts.length > 0 && loadedFabrics.length > 0) {
+          setConfiguration((prev) => ({
+            ...prev,
+            product: initialConfigProduct,
+            fabric: loadedFabrics[0],
+          }));
+        }
+      } catch (e) {
+        console.error("Erreur de chargement des données", e);
+      } finally {
+        setIsLoading(false);
       }
     }
+    loadConfiguratorData();
   }, [initialProductId]);
 
   // --- Logic ---
@@ -628,7 +365,7 @@ const ProductConfigurator = () => {
   const totalPrice = () => {
     let total = configuration.product?.basePrice || 0;
     total += configuration.fabric?.price || 0;
-    if (configuration.embroidery) total += 15;
+    if (configuration.embroidery) total += 1500;
     return total;
   };
 
@@ -710,7 +447,7 @@ const ProductConfigurator = () => {
         fabricColor: configuration.fabric.baseColor,
         embroidery: configuration.embroidery || undefined,
       },
-      price: totalPrice(),
+      price: totalPrice() / 100,
       quantity: 1,
       thumbnail: thumbnailDataUrl,
     };
@@ -982,6 +719,22 @@ const ProductConfigurator = () => {
 
   // --- Render ---
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-ylang-beige to-[#f5f1e8]">
+        <div className="border-ylang-rose h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!configuration.product || !configuration.fabric) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-ylang-beige to-[#f5f1e8]">
+        <div className="text-ylang-charcoal text-xl font-medium">Aucun produit ou tissu n'est disponible pour le moment.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-linear-to-br from-ylang-beige to-[#f5f1e8]">
       <div
@@ -1055,7 +808,7 @@ const ProductConfigurator = () => {
           <div className="absolute top-6 right-6 rounded-2xl bg-white/95 px-5 py-3 shadow-lg backdrop-blur-md lg:hidden">
             <p className="text-ylang-charcoal/60 text-xs">Total</p>
             <p className="text-ylang-rose text-2xl font-bold">
-              {totalPrice()}€
+              {totalPrice() / 100}€
             </p>
           </div>
         </div>
@@ -1181,7 +934,7 @@ const ProductConfigurator = () => {
                                 À partir de
                               </span>
                               <p className="text-ylang-rose text-2xl font-black">
-                                {product.basePrice}€
+                                {product.basePrice / 100}€
                               </p>
                             </div>
                             {isSelected ? (
@@ -1290,12 +1043,12 @@ const ProductConfigurator = () => {
                   </div>
 
                   <div className="space-y-4">
-                    {fabricCategories.map((category) => (
+                    {categories.map((category) => (
                       <FabricCategorySection
-                        key={category.prefix}
+                        key={category.id}
                         title={category.title}
                         description={category.description}
-                        prefix={category.prefix}
+                        prefix={category.id}
                         fabrics={fabrics}
                         configuration={configuration}
                         setConfiguration={setConfiguration}
@@ -1427,17 +1180,17 @@ const ProductConfigurator = () => {
                           {configuration.product.name}
                         </span>
                         <span className="font-bold">
-                          {configuration.product.basePrice}€
+                          {configuration.product.basePrice / 100}€
                         </span>
                       </div>
                     )}
-                    {configuration.fabric && (
+                    {configuration.fabric && configuration.fabric.price > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-ylang-charcoal/70">
                           {configuration.fabric.name}
                         </span>
                         <span className="font-bold">
-                          +{configuration.fabric.price}€
+                          +{configuration.fabric.price / 100}€
                         </span>
                       </div>
                     )}
@@ -1454,7 +1207,7 @@ const ProductConfigurator = () => {
                   <div className="from-ylang-rose/10 to-ylang-terracotta/10 flex items-center justify-between rounded-xl bg-linear-to-r p-4">
                     <span className="text-lg font-bold">Total</span>
                     <span className="text-ylang-rose text-3xl font-bold">
-                      {totalPrice()}€
+                      {totalPrice() / 100}€
                     </span>
                   </div>
                 </>
@@ -1485,7 +1238,7 @@ const ProductConfigurator = () => {
                   Prix Total
                 </span>
                 <span className="text-ylang-charcoal text-xl font-black sm:text-2xl">
-                  {totalPrice()}€
+                  {totalPrice() / 100}€
                 </span>
               </div>
 
