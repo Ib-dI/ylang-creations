@@ -36,7 +36,7 @@ interface UserDetails {
   lastSignInAt: string | null;
   orderCount: number;
   totalSpent: number;
-  stripeCustomerId: string | null;
+  sumupCustomerId: string | null;
   orders: Order[];
 }
 
@@ -175,10 +175,10 @@ export default function UserDetailPage() {
               </div>
               <div className="flex items-center justify-between py-2">
                 <span className="text-ylang-charcoal/60 text-sm">
-                  Stripe Customer ID
+                  SumUp Customer ID
                 </span>
                 <span className="text-ylang-charcoal/60 font-mono text-xs">
-                  {user.stripeCustomerId || "Aucun"}
+                  {user.sumupCustomerId || "Aucun"}
                 </span>
               </div>
             </div>

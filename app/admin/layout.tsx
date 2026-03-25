@@ -9,6 +9,7 @@ import {
   LogOut,
   Menu,
   Package,
+  Palette,
   Settings,
   ShoppingBag,
   Users,
@@ -17,6 +18,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Toaster } from "sonner";
 
 const navItems = [
   {
@@ -33,6 +35,11 @@ const navItems = [
     name: "Produits",
     href: "/admin/products",
     icon: Package,
+  },
+  {
+    name: "Configurateur",
+    href: "/admin/configurator",
+    icon: Palette,
   },
   {
     name: "Clients",
@@ -229,6 +236,7 @@ export default function AdminLayout({
           <div className="safe-area-bottom">{children}</div>
         </div>
       </main>
+      <Toaster position="top-right" richColors />
     </div>
   );
 }

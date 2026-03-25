@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     const orders = await db
       .select({
         id: order.id,
-        stripeSessionId: order.stripeSessionId,
+        sumupCheckoutId: order.sumupCheckoutId,
         status: order.status,
         totalAmount: order.totalAmount,
         currency: order.currency,

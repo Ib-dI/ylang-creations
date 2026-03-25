@@ -262,7 +262,7 @@ const AnimatedBadge = React.memo(({ count }: { count: number }) => {
 
   return (
     <span
-      className="bg-ylang-rose animate-scale-in absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium text-white lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px]"
+      className="bg-ylang-beige animate-scale-in absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium text-ylang-rose lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px]"
       aria-hidden="true"
     >
       {count}
@@ -988,7 +988,7 @@ export function Header() {
                   />
                   <span className="text-ylang-charcoal text-xs">Favoris</span>
                   {wishlistCount > 0 && (
-                    <span className="bg-ylang-rose absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-white">
+                    <span className="bg-ylang-beige absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-ylang-rose">
                       {wishlistCount}
                     </span>
                   )}
@@ -1008,7 +1008,7 @@ export function Header() {
                   />
                   <span className="text-ylang-charcoal text-xs">Panier</span>
                   {cartCount > 0 && (
-                    <span className="bg-ylang-rose absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-white">
+                    <span className="bg-ylang-beige absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-ylang-rose">
                       {cartCount}
                     </span>
                   )}

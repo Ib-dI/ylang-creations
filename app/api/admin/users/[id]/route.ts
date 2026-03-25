@@ -68,7 +68,7 @@ export async function GET(
       lastSignInAt: authUser.user.last_sign_in_at,
       orderCount: orders.length,
       totalSpent,
-      stripeCustomerId: customerRecord?.stripeCustomerId || null,
+      sumupCustomerId: customerRecord?.sumupCustomerId || null,
       orders: orders.map((o) => ({
         id: o.id,
         status: o.status,

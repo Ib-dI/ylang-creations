@@ -12,15 +12,20 @@ import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
-import Stripe from "stripe";
+const sumupApiUrl = "https://api.sumup.com/v0.1";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY is not defined");
+if (!process.env.SUMUP_SECRET_KEY) {
+  throw new Error("SUMUP_SECRET_KEY is not defined");
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-11-17.clover",
-});
+if (!process.env.SUMUP_MERCHANT_CODE) {
+  throw new Error("SUMUP_MERCHANT_CODE is not defined");
+}
+
+const sumupHeaders = {
+  Authorization: `Bearer ${process.env.SUMUP_SECRET_KEY}`,
+  "Content-Type": "application/json",
+};
 
 const UCP_METADATA = {
   version: "2026-01-11",
@@ -50,19 +55,21 @@ interface CheckoutResult {
 }
 
 /**
- * Gets or creates a Stripe customer
+ * Gets or creates a local customer reference
  */
-async function getOrCreateStripeCustomer(
+async function getOrCreateLocalCustomer(
   userId: string,
   email: string,
   name: string,
-): Promise<{ stripeCustomerId: string; customerId: string }> {
+): Promise<string> {
   // Ensure user exists in our local database (mirrored from Supabase)
   const existingUser = await db
     .select()
     .from(userTable)
     .where(eq(userTable.id, userId))
     .limit(1);
+
+  const now = new Date();
 
   if (existingUser.length === 0) {
     // Check if user exists with same email but different ID (e.g. from a previous signup or seeded data)
@@ -71,8 +78,6 @@ async function getOrCreateStripeCustomer(
       .from(userTable)
       .where(eq(userTable.email, email))
       .limit(1);
-
-    const now = new Date();
 
     if (existingUserByEmail.length > 0) {
       console.log(
@@ -93,19 +98,16 @@ async function getOrCreateStripeCustomer(
       });
 
       // 2. Migrate related records
-      // Migrate customer
       await db
         .update(customer)
         .set({ userId: userId })
         .where(eq(customer.userId, oldUserId));
 
-      // Migrate accounts (OAuth)
       await db
         .update(account)
         .set({ userId: userId })
         .where(eq(account.userId, oldUserId));
 
-      // Migrate sessions
       await db
         .update(session)
         .set({ userId: userId })
@@ -141,64 +143,23 @@ async function getOrCreateStripeCustomer(
     .where(eq(customer.userId, userId))
     .limit(1);
 
-  if (existingCustomer.length > 0 && existingCustomer[0].stripeCustomerId) {
-    return {
-      stripeCustomerId: existingCustomer[0].stripeCustomerId,
-      customerId: existingCustomer[0].id,
-    };
-  }
-
-  // Check if customer exists in Stripe by email
-  const existingStripeCustomers = await stripe.customers.list({
-    email,
-    limit: 1,
-  });
-
-  let stripeCustomerId: string;
-
-  if (existingStripeCustomers.data.length > 0) {
-    stripeCustomerId = existingStripeCustomers.data[0].id;
-  } else {
-    // Create new Stripe customer
-    const newStripeCustomer = await stripe.customers.create({
-      email,
-      name,
-      metadata: {
-        userId,
-      },
-    });
-    stripeCustomerId = newStripeCustomer.id;
-  }
-
-  // Create or update customer in database
-  const customerId = crypto.randomUUID();
-  const now = new Date();
-
   if (existingCustomer.length > 0) {
-    await db
-      .update(customer)
-      .set({ stripeCustomerId, name, updatedAt: now })
-      .where(eq(customer.userId, userId));
-    return {
-      stripeCustomerId,
-      customerId: existingCustomer[0].id,
-    };
+     return existingCustomer[0].id;
   }
 
+  // Create new local customer
+  const customerId = crypto.randomUUID();
+  
   await db.insert(customer).values({
     id: customerId,
     userId,
     email,
     name,
-    stripeCustomerId,
     createdAt: now,
     updatedAt: now,
   });
 
-  return {
-    stripeCustomerId,
-    customerId,
-  };
+  return customerId;
 }
 
 /**
@@ -244,79 +205,29 @@ export async function createCheckoutSession(
     );
     const isFreeShipping = subtotal >= freeShippingThresholdValue;
 
-    // 4. Create Stripe line items
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
-      (item) => ({
-        price_data: {
-          currency: "eur",
-          product_data: {
-            name: item.name,
-            images: item.image ? [item.image] : [],
-            metadata: {
-              productId: item.productId,
-            },
-          },
-          unit_amount: Math.round(item.price * 100), // Convert to cents
-        },
-        quantity: item.quantity,
-      }),
-    );
-
-    // 5. Setup shipping options
-    const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] =
-      [
-        {
-          shipping_rate_data: {
-            type: "fixed_amount",
-            fixed_amount: {
-              amount: isFreeShipping ? 0 : Math.round(shippingFeeValue * 100),
-              currency: "eur",
-            },
-            display_name: isFreeShipping
-              ? "Livraison Gratuite"
-              : "Livraison Standard",
-            delivery_estimate: {
-              minimum: { unit: "business_day", value: 5 },
-              maximum: { unit: "business_day", value: 10 },
-            },
-          },
-        },
-      ];
-
-    // 4. Get or create Stripe customer
-    const { stripeCustomerId, customerId } = await getOrCreateStripeCustomer(
+    // 4. Get or create local customer
+    const customerId = await getOrCreateLocalCustomer(
       user.id,
       user.email!,
-      user.user_metadata.full_name || user.email!,
+      user.user_metadata?.full_name || user.email!,
     );
 
-    // 5. Create pending order in database before Stripe redirect
-    // This avoids Stripe's 500-character metadata limit for large carts
+    // 5. Create pending order in database
     const orderId = crypto.randomUUID();
     const now = new Date();
+    const totalAmount = subtotal + (isFreeShipping ? 0 : shippingFeeValue);
 
     await db.insert(order).values({
       id: orderId,
       customerId: customerId,
       status: "pending",
-      totalAmount: Math.round(
-        (subtotal + (isFreeShipping ? 0 : shippingFeeValue)) * 100,
-      ),
+      totalAmount: Math.round(totalAmount * 100),
       currency: "eur",
       items: items,
       createdAt: now,
       updatedAt: now,
     });
 
-    // 6. Prepare metadata for Stripe (minimal IDs only)
-    const metadata = {
-      userId: user.id,
-      userEmail: user.email!,
-      customerId,
-      orderId, // This allows the webhook to reconcile with ease
-    };
-
-    // 7. Create Stripe Checkout Session
     const headersList = await headers();
     const origin = headersList.get("origin");
     const baseUrl =
@@ -325,43 +236,40 @@ export async function createCheckoutSession(
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
       "http://localhost:3000";
 
-    const checkoutSession = await stripe.checkout.sessions.create({
-      mode: "payment",
-      payment_method_types: ["card"],
-      line_items: lineItems,
-      customer: stripeCustomerId,
-      shipping_address_collection: {
-        allowed_countries: [
-          "FR",
-          "BE",
-          "CH",
-          "LU",
-          "MC",
-          "DE",
-          "IT",
-          "ES",
-          "PT",
-          "NL",
-          "GB",
-          "US",
-          "CA",
-        ],
-      },
-      shipping_options: shippingOptions,
-      metadata,
-      success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/checkout`,
+    // 6. Create SumUp Checkout
+    const sumupPayload = {
+      merchant_code: process.env.SUMUP_MERCHANT_CODE,
+      amount: totalAmount,
+      currency: "EUR",
+      checkout_reference: orderId, // Our internal order ID
+      redirect_url: `${baseUrl}/checkout/success`,
+      return_url: `${baseUrl}/api/webhooks/sumup`,
+      description: `Commande sur Ylang Créations - ${items.length} article(s)`,
+    };
+
+    const sumupResponse = await fetch(`${sumupApiUrl}/checkouts`, {
+      method: "POST",
+      headers: sumupHeaders,
+      body: JSON.stringify(sumupPayload),
     });
 
-    // 8. Update order with Stripe Session ID
+    if (!sumupResponse.ok) {
+      const errorText = await sumupResponse.text();
+      console.error("Failed to create SumUp checkout:", errorText);
+      throw new Error("Failed to create checkout session");
+    }
+
+    const checkoutSession = await sumupResponse.json();
+
+    // 7. Update order with SumUp Checkout ID
     await db
       .update(order)
-      .set({ stripeSessionId: checkoutSession.id, updatedAt: new Date() })
+      .set({ sumupCheckoutId: checkoutSession.id, updatedAt: new Date() })
       .where(eq(order.id, orderId));
 
     return {
       success: true,
-      url: checkoutSession.url ?? undefined,
+      url: checkoutSession.id, // Return checkout ID instead of URL for the Card Widget
       ucp: UCP_METADATA,
     };
   } catch (error) {
@@ -387,28 +295,46 @@ export async function getCheckoutSession(sessionId: string) {
       return { success: false, error: "Non authentifié" };
     }
 
-    const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ["line_items", "customer_details"],
+    const sumupResponse = await fetch(`${sumupApiUrl}/checkouts/${sessionId}`, {
+      method: "GET",
+      headers: sumupHeaders,
     });
 
-    // Verify the session belongs to this user
-    if (checkoutSession.metadata?.userId !== user.id) {
+    if (!sumupResponse.ok) {
       return { success: false, error: "Session non trouvée" };
     }
+
+    const checkoutSession = await sumupResponse.json();
+
+    // Verify the session belongs to this user (we verify against our local DB using the checkout reference)
+    const orderDetails = await db
+      .select({
+        id: order.id,
+        items: order.items,
+        customerId: order.customerId,
+      })
+      .from(order)
+      .where(eq(order.id, checkoutSession.checkout_reference))
+      .limit(1);
+
+    if (orderDetails.length === 0) {
+      return { success: false, error: "Commande non trouvée" };
+    }
+
+    const parsedItems = (orderDetails[0].items as any[]) || [];
 
     return {
       success: true,
       session: {
         id: checkoutSession.id,
-        customerEmail: checkoutSession.customer_details?.email,
-        customerName: checkoutSession.customer_details?.name,
-        amountTotal: checkoutSession.amount_total,
-        paymentStatus: checkoutSession.payment_status,
-        shippingAddress: checkoutSession.customer_details?.address,
-        lineItems: checkoutSession.line_items?.data.map((item) => ({
-          name: item.description,
+        customerEmail: user.email,
+        customerName: user.user_metadata?.full_name || "Client",
+        amountTotal: Math.round(checkoutSession.amount * 100), // convert to cents for frontend consistency
+        paymentStatus: checkoutSession.status, // "PAID", "PENDING", "FAILED" etc.
+        lineItems: parsedItems.map((item) => ({
+          name: item.name,
           quantity: item.quantity,
-          amount: item.amount_total,
+          amount: Math.round(item.price * item.quantity * 100),
         })),
       },
     };

@@ -12,7 +12,7 @@
   },
   "transports": ["rest"],
   "transport_priority": ["rest"],
-  "payment_handlers": ["stripe"],
+  "payment_handlers": ["sumup"],
   "features": {
     "ap2_mandates": false,
     "identity_linking": false,
@@ -21,7 +21,7 @@
   "domain": "ylang-creations.com",
   "existing_apis": {
     "checkout": "/checkout",
-    "webhook": "/api/webhooks/stripe"
+    "webhook": "/api/webhooks/sumup"
   },
   "policy_urls": {
     "privacy": "/legal/confidentialite",

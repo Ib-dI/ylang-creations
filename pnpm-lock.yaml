@@ -47,12 +47,9 @@ importers:
       '@react-three/fiber':
         specifier: ^9.4.2
         version: 9.4.2(@types/react@19.2.6)(immer@11.1.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(three@0.181.2)
-      '@stripe/react-stripe-js':
-        specifier: ^5.4.1
-        version: 5.4.1(@stripe/stripe-js@8.5.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@stripe/stripe-js':
-        specifier: ^8.5.3
-        version: 8.5.3
+      '@sumup/sdk':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@supabase/ssr':
         specifier: ^0.8.0
         version: 0.8.0(@supabase/supabase-js@2.86.0)
@@ -116,15 +113,15 @@ importers:
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      stripe:
-        specifier: ^20.0.0
-        version: 20.0.0(@types/node@20.19.25)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
       three:
         specifier: ^0.181.2
         version: 0.181.2
+      torph:
+        specifier: ^0.0.5
+        version: 0.0.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       zod:
         specifier: ^4.1.13
         version: 4.1.13
@@ -1991,16 +1988,9 @@ packages:
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
-  '@stripe/react-stripe-js@5.4.1':
-    resolution: {integrity: sha512-ipeYcAHa4EPmjwfv0lFE+YDVkOQ0TMKkFWamW+BqmnSkEln/hO8rmxGPPWcd9WjqABx6Ro8Xg4pAS7evCcR9cw==}
-    peerDependencies:
-      '@stripe/stripe-js': '>=8.0.0 <9.0.0'
-      react: '>=16.8.0 <20.0.0'
-      react-dom: '>=16.8.0 <20.0.0'
-
-  '@stripe/stripe-js@8.5.3':
-    resolution: {integrity: sha512-UM0GHAxlTN7v0lCK2P6t0VOlvBIdApIQxhnM3yZ2kupQ4PpSrLsK/n/NyYKtw2NJGMaNRRD1IicWS7fSL2sFtA==}
-    engines: {node: '>=12.16'}
+  '@sumup/sdk@0.1.0':
+    resolution: {integrity: sha512-YMbdHvylSuzmGrKvSMNmXpyZpr+9dDAbiKy0Y+dJc5RNlkvC+0FysM3rNOaWp8ZdwZX3bPMfxh1QAICdB6IMDA==}
+    engines: {node: '>=18'}
 
   '@supabase/auth-js@2.86.0':
     resolution: {integrity: sha512-3xPqMvBWC6Haqpr6hEWmSUqDq+6SA1BAEdbiaHdAZM9QjZ5uiQJ+6iD9pZOzOa6MVXZh4GmwjhC9ObIG0K1NcA==}
@@ -3786,10 +3776,6 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qs@6.14.0:
-    resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
-    engines: {node: '>=0.6'}
-
   querystringify@2.2.0:
     resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
 
@@ -4100,15 +4086,6 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
-  stripe@20.0.0:
-    resolution: {integrity: sha512-EaZeWpbJOCcDytdjKSwdrL5BxzbDGNueiCfHjHXlPdBQvLqoxl6AAivC35SPzTmVXJb5duXQlXFGS45H0+e6Gg==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      '@types/node': '>=16'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-
   styled-jsx@5.1.6:
     resolution: {integrity: sha512-qSVyDTeMotdvQYoHWLNGwRFJHC+i+ZvdBRYosOFgC+Wg1vx4frN2/RG/NA7SYqqvKNLf39P2LSRA2pu6n0XYZA==}
     engines: {node: '>= 12.0.0'}
@@ -4181,6 +4158,23 @@ packages:
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
+
+  torph@0.0.5:
+    resolution: {integrity: sha512-A9mwvWouyRIIZ8Y9McJioZ4O5itSjgtfPQMGxU+qvA5MYaF31EY1Cq3OpOLT34wXLhsfOC7tto5Gzg0d6I3NQg==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+      svelte: '>=4'
+      vue: '>=3'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
 
   troika-three-text@0.52.4:
     resolution: {integrity: sha512-V50EwcYGruV5rUZ9F4aNsrytGdKcXKALjEtQXIOBfhVoZU9VAqZNIoGQ3TMiooVqFAbR1w15T+f+8gkzoFzawg==}
@@ -6543,14 +6537,7 @@ snapshots:
 
   '@standard-schema/utils@0.3.0': {}
 
-  '@stripe/react-stripe-js@5.4.1(@stripe/stripe-js@8.5.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
-    dependencies:
-      '@stripe/stripe-js': 8.5.3
-      prop-types: 15.8.1
-      react: 19.2.0
-      react-dom: 19.2.0(react@19.2.0)
-
-  '@stripe/stripe-js@8.5.3': {}
+  '@sumup/sdk@0.1.0': {}
 
   '@supabase/auth-js@2.86.0':
     dependencies:
@@ -8349,10 +8336,6 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qs@6.14.0:
-    dependencies:
-      side-channel: 1.1.0
-
   querystringify@2.2.0: {}
 
   queue-microtask@1.2.3: {}
@@ -8814,12 +8797,6 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  stripe@20.0.0(@types/node@20.19.25):
-    dependencies:
-      qs: 6.14.0
-    optionalDependencies:
-      '@types/node': 20.19.25
-
   styled-jsx@5.1.6(@babel/core@7.28.5)(react@19.2.0):
     dependencies:
       client-only: 0.0.1
@@ -8884,6 +8861,11 @@ snapshots:
   to-regex-range@5.0.1:
     dependencies:
       is-number: 7.0.0
+
+  torph@0.0.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+    optionalDependencies:
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
 
   troika-three-text@0.52.4(three@0.181.2):
     dependencies:

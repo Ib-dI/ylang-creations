@@ -66,7 +66,7 @@ export async function GET(request: Request) {
           updatedAt: u.updated_at,
           orderCount: userOrders.length,
           totalSpent,
-          stripeCustomerId: customerRecord?.stripeCustomerId || null,
+          sumupCustomerId: customerRecord?.sumupCustomerId || null,
         };
       });
 

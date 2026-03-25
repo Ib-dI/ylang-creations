@@ -17,7 +17,15 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { useEffect, useState } from "react";
+
+// Add TypeScript declaration for SumUpCard
+declare global {
+  interface Window {
+    SumUpCard: any;
+  }
+}
 
 export default function CheckoutPage() {
   const {
@@ -32,6 +40,8 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [checkoutId, setCheckoutId] = useState<string | null>(null);
+  const [isWidgetMounted, setIsWidgetMounted] = useState(false);
 
   // Check authentication status
   useEffect(() => {
@@ -69,23 +79,48 @@ export default function CheckoutPage() {
       const result = await createCheckoutSession(checkoutItems);
 
       if (result.success && result.url) {
-        // Redirection vers Stripe Checkout
-        window.location.href = result.url;
+        // Here result.url is actually the checkout ID returned by our new API
+        setCheckoutId(result.url);
       } else {
         setError(result.error || "Une erreur est survenue");
+        setIsLoading(false);
       }
     } catch (err) {
       setError("Impossible de procéder au paiement. Veuillez réessayer.");
-    } finally {
       setIsLoading(false);
     }
   };
+
+  // Effect is triggered when checkoutId is set and the SumUp script is loaded
+  useEffect(() => {
+    if (checkoutId && window.SumUpCard && !isWidgetMounted) {
+      setIsWidgetMounted(true);
+
+      window.SumUpCard.mount({
+        id: "sumup-card-container",
+        checkoutId: checkoutId,
+        onResponse: function (type: string, body: any) {
+          console.log("SumUp Response:", type, body);
+
+          // Verify on backend before marking success
+          if (type === "success" || type === "payment-success") {
+            window.location.href = `/checkout/success?session_id=${checkoutId}`;
+          } else {
+            setError("Le paiement a échoué ou a été annulé.");
+            setCheckoutId(null);
+            setIsWidgetMounted(false);
+            setIsLoading(false);
+          }
+        },
+      });
+    }
+  }, [checkoutId, isWidgetMounted]);
 
   // Loading state
   if (isCheckingAuth) {
     return (
       <div className="from-ylang-cream to-ylang-beige flex min-h-screen items-center justify-center bg-linear-to-br pt-24 pb-12">
-        <Loader2 className="h-12 w-12 animate-spin text-ylang-rose" />
+        <Loader2 className="text-ylang-rose h-12 w-12 animate-spin" />
       </div>
     );
   }
@@ -303,35 +338,49 @@ export default function CheckoutPage() {
                   </h2>
                 </div>
 
-                <p className="text-ylang-charcoal/60 mb-6 text-sm">
-                  Vous allez être redirigé vers notre plateforme de paiement
-                  sécurisée Stripe pour finaliser votre commande.
-                </p>
+                {checkoutId ? (
+                  <div className="mt-4">
+                    <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                      Veuillez saisir vos coordonnées bancaires ci-dessous :
+                    </p>
+                    {/* SumUp Widget Container */}
+                    <div
+                      id="sumup-card-container"
+                      className="bg-ylang-cream/30 border-ylang-beige min-h-[300px] w-full rounded-lg border p-4"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-ylang-charcoal/60 mb-6 text-sm">
+                      Cliquez ci-dessous pour démarrer le paiement sécurisé de
+                      votre commande.
+                    </p>
+                    <Button
+                      variant="luxury"
+                      size="lg"
+                      className="w-full"
+                      onClick={handleCheckout}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Préparation...
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="mr-2 h-5 w-5" />
+                          Payer {getFinalPrice().toFixed(2)}€
+                        </>
+                      )}
+                    </Button>
+                  </>
+                )}
 
-                <Button
-                  variant="luxury"
-                  size="lg"
-                  className="w-full"
-                  onClick={handleCheckout}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Redirection en cours...
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="mr-2 h-5 w-5" />
-                      Payer {getFinalPrice().toFixed(2)}€
-                    </>
-                  )}
-                </Button>
-
-                {/* Stripe badge */}
+                {/* Secure payment badge */}
                 <div className="text-ylang-charcoal/40 mt-4 flex items-center justify-center gap-2 text-xs">
                   <Lock className="h-3 w-3" />
-                  Paiement sécurisé par Stripe
+                  Paiement sécurisé par SumUp
                 </div>
               </div>
             )}
@@ -383,6 +432,11 @@ export default function CheckoutPage() {
           </motion.div>
         </div>
       </div>
+      {/* SumUp Script Loading */}
+      <Script
+        src="https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js"
+        strategy="lazyOnload"
+      />
     </div>
   );
 }

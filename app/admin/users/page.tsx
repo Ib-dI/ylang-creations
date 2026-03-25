@@ -24,7 +24,7 @@ interface User {
   createdAt: Date;
   orderCount: number;
   totalSpent: number;
-  stripeCustomerId: string | null;
+  sumupCustomerId: string | null;
 }
 
 export default function UsersPage() {
