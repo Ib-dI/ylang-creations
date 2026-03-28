@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { TrashBin } from "@gravity-ui/icons";
+import { AnimatePresence } from "framer-motion";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Loader2, Plus, Edit, Trash2, Eye, EyeOff, Search, ChevronDown, LayoutGrid, List, Palette } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, Eye, EyeOff, Search, ChevronDown, LayoutGrid, List, Palette, Crosshair, RotateCcw, Type, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
 
 type Fabric = {
@@ -16,15 +19,26 @@ type Fabric = {
   isActive: boolean;
 };
 
+type EmbroideryZone = {
+  x: number;        // 0–1 (fraction de la largeur)
+  y: number;        // 0–1 (fraction de la hauteur)
+  maxWidth: number; // 0–1 (fraction de la largeur)
+  rotation: number; // degrés
+  fontSize: number; // pixels à l'échelle naturelle
+  alignment: "center" | "left" | "right";
+};
+
 type ConfigProduct = {
   id: string;
   name: string;
   description: string;
   basePrice: number;
+  weight: number;
   icon: string | null;
   baseImage: string;
   maskImage: string;
   colorMaskImage: string | null;
+  embroideryZone: EmbroideryZone | null;
   isActive: boolean;
 };
 
@@ -37,7 +51,7 @@ type FabricCategory = {
 };
 
 export default function ConfiguratorAdmin() {
-  const [activeTab, setActiveTab] = useState<"fabrics" | "products">("fabrics");
+  const [activeTab, setActiveTab] = useState<"fabrics" | "products" | "broderie">("fabrics");
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [products, setProducts] = useState<ConfigProduct[]>([]);
   const [categories, setCategories] = useState<FabricCategory[]>([]);
@@ -57,10 +71,118 @@ export default function ConfiguratorAdmin() {
   // Product modal
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Partial<ConfigProduct> | null>(null);
+  const [isSavingProduct, setIsSavingProduct] = useState(false);
+  const [productImages, setProductImages] = useState<{
+    baseImage: string | File;
+    maskImage: string | File;
+    colorMaskImage: string | File | null;
+  }>({ baseImage: "", maskImage: "", colorMaskImage: null });
 
   // Category modal
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Partial<FabricCategory> | null>(null);
+
+  // Broderie tab
+  const [embroideryProduct, setEmbroideryProduct] = useState<ConfigProduct | null>(null);
+  const [embroideryZone, setEmbroideryZone] = useState<EmbroideryZone>({
+    x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center",
+  });
+  const [previewText, setPreviewText] = useState("Ylang");
+  const [isSavingEmbroidery, setIsSavingEmbroidery] = useState(false);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const [imageScale, setImageScale] = useState(1);
+
+  const openEmbroideryEditor = useCallback((product: ConfigProduct) => {
+    setEmbroideryProduct(product);
+    setEmbroideryZone(product.embroideryZone ?? {
+      x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!embroideryProduct || !imageContainerRef.current) return;
+    const img = imageContainerRef.current.querySelector("img");
+    if (!img) return;
+    const compute = () => {
+      const w = imageContainerRef.current?.getBoundingClientRect().width ?? 0;
+      const natural = img.naturalWidth || 500;
+      setImageScale(w / natural);
+    };
+    img.addEventListener("load", compute);
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(imageContainerRef.current);
+    return () => { ro.disconnect(); img.removeEventListener("load", compute); };
+  }, [embroideryProduct]);
+
+  const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * 100) / 100;
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * 100) / 100;
+    setEmbroideryZone(prev => ({ ...prev, x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) }));
+  };
+
+  const handleSaveEmbroidery = async () => {
+    if (!embroideryProduct) return;
+    setIsSavingEmbroidery(true);
+    try {
+      const res = await fetch(`/api/admin/configurator/products?id=${embroideryProduct.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ embroideryZone }),
+      });
+      if (res.ok) {
+        toast.success("Zone de broderie sauvegardée");
+        setProducts(prev => prev.map(p =>
+          p.id === embroideryProduct.id ? { ...p, embroideryZone } : p
+        ));
+        setEmbroideryProduct(prev => prev ? { ...prev, embroideryZone } : prev);
+      } else {
+        toast.error("Erreur lors de la sauvegarde");
+      }
+    } catch {
+      toast.error("Erreur réseau");
+    } finally {
+      setIsSavingEmbroidery(false);
+    }
+  };
+
+  // Delete confirmation modal
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    type: "fabric" | "category" | "product";
+    id: string | null;
+    name: string;
+  }>({ isOpen: false, type: "fabric", id: null, name: "" });
+
+  const openDeleteModal = (type: "fabric" | "category" | "product", id: string, name: string) => {
+    setDeleteConfirmation({ isOpen: true, type, id, name });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirmation.id) return;
+    try {
+      const url = deleteConfirmation.type === "fabric"
+        ? `/api/admin/configurator/fabrics?id=${deleteConfirmation.id}`
+        : deleteConfirmation.type === "category"
+        ? `/api/admin/configurator/categories?id=${deleteConfirmation.id}`
+        : `/api/admin/configurator/products?id=${deleteConfirmation.id}`;
+      const res = await fetch(url, { method: "DELETE" });
+      if (res.ok) {
+        toast.success(
+          deleteConfirmation.type === "fabric" ? "Tissu supprimé" :
+          deleteConfirmation.type === "category" ? "Catégorie supprimée" :
+          "Produit supprimé"
+        );
+        setDeleteConfirmation({ isOpen: false, type: "fabric", id: null, name: "" });
+        fetchData();
+      } else {
+        toast.error("Erreur lors de la suppression");
+      }
+    } catch {
+      toast.error("Erreur réseau");
+    }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -120,7 +242,7 @@ export default function ConfiguratorAdmin() {
   const handleCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingCategory?.id || !editingCategory?.title) {
-      alert("Veuillez remplir les champs obligatoires");
+      toast.error("Veuillez remplir les champs obligatoires");
       return;
     }
     const isExisting = categories.some(c => c.id === editingCategory.id);
@@ -135,9 +257,9 @@ export default function ConfiguratorAdmin() {
         fetchData();
       } else {
         const err = await res.json();
-        alert("Erreur serveur : " + (err.error || "Une erreur est survenue"));
+        toast.error("Erreur serveur : " + (err.error || "Une erreur est survenue"));
       }
-    } catch { alert("Erreur réseau"); }
+    } catch { toast.error("Erreur réseau"); }
   };
 
   const toggleCategoryActive = async (category: FabricCategory, e: React.MouseEvent) => {
@@ -159,21 +281,16 @@ export default function ConfiguratorAdmin() {
     } catch { toast.error("Erreur réseau"); }
   };
 
-  const deleteCategory = async (id: string, e: React.MouseEvent) => {
+  const deleteCategory = (id: string, name: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Voulez-vous vraiment supprimer cette catégorie ?")) return;
-    try {
-      const res = await fetch(`/api/admin/configurator/categories?id=${id}`, { method: "DELETE" });
-      if (res.ok) { toast.success("Catégorie supprimée"); fetchData(); }
-      else toast.error("Erreur lors de la suppression");
-    } catch { toast.error("Erreur réseau"); }
+    openDeleteModal("category", id, name);
   };
 
   // ─── Fabric CRUD ──────────────────────────────────────────────────────────────
   const handleFabricSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingFabric?.id || !editingFabric?.name || !editingFabric?.baseColor || !editingFabric?.image || !editingFabric?.category) {
-      alert("Veuillez remplir les champs obligatoires");
+      toast.error("Veuillez remplir les champs obligatoires");
       return;
     }
     
@@ -200,7 +317,7 @@ export default function ConfiguratorAdmin() {
         const uploadData = await uploadRes.json();
         finalImageUrl = uploadData.url;
       } catch (err) {
-        alert("Erreur lors de l'upload de l'image");
+        toast.error("Erreur lors de l'upload de l'image");
         setIsSavingFabric(false);
         return;
       }
@@ -221,10 +338,10 @@ export default function ConfiguratorAdmin() {
         fetchData();
       } else {
         const err = await res.json();
-        alert("Erreur serveur : " + (err.error || "Une erreur est survenue"));
+        toast.error("Erreur serveur : " + (err.error || "Une erreur est survenue"));
       }
-    } catch { 
-      alert("Erreur réseau"); 
+    } catch {
+      toast.error("Erreur réseau");
     } finally {
       setIsSavingFabric(false);
     }
@@ -250,39 +367,105 @@ export default function ConfiguratorAdmin() {
     } catch { toast.error("Erreur réseau"); }
   };
 
-  const deleteFabric = async (id: string) => {
-    if (!confirm("Voulez-vous vraiment supprimer ce tissu ?")) return;
-    try {
-      const res = await fetch(`/api/admin/configurator/fabrics?id=${id}`, { method: "DELETE" });
-      if (res.ok) { toast.success("Tissu supprimé"); fetchData(); }
-      else toast.error("Erreur lors de la suppression");
-    } catch { toast.error("Erreur réseau"); }
+  const deleteFabric = (id: string, name: string) => {
+    openDeleteModal("fabric", id, name);
   };
 
   // ─── Product CRUD ─────────────────────────────────────────────────────────────
+  const handleOpenProductModal = (product?: ConfigProduct) => {
+    if (product) {
+      setEditingProduct(product);
+      setProductImages({
+        baseImage: product.baseImage,
+        maskImage: product.maskImage,
+        colorMaskImage: product.colorMaskImage || null,
+      });
+    } else {
+      setEditingProduct({});
+      setProductImages({ baseImage: "", maskImage: "", colorMaskImage: null });
+    }
+    setIsProductModalOpen(true);
+  };
+
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingProduct?.id || !editingProduct?.name) {
-      alert("Veuillez remplir les champs obligatoires");
+    if (!editingProduct?.name) {
+      toast.error("Veuillez remplir les champs obligatoires");
       return;
     }
-    const payload = { name: editingProduct.name, description: editingProduct.description, basePrice: Math.round((editingProduct.basePrice ?? 0) * 100) };
+    const isExisting = products.some(p => p.id === editingProduct.id);
+    if (!isExisting && !editingProduct.id) {
+      toast.error("L'ID du produit est requis");
+      return;
+    }
+
+    setIsSavingProduct(true);
+
+    // Upload des images si nécessaire (même pattern que handleFabricSubmit)
+    const uploadImage = async (file: string | File | null, layerName: string): Promise<string | null> => {
+      if (!file) return null;
+      if (typeof file === "string") return file;
+      const safeName = file.name.replace(/\s/g, "-").toLowerCase();
+      const uploadPath = `configurator/products/${editingProduct.id}/${layerName}-${safeName}`;
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", uploadPath);
+      const res = await fetch("/api/admin/storage/upload", { method: "POST", body: formData });
+      if (!res.ok) throw new Error(`Erreur upload ${layerName}`);
+      const data = await res.json();
+      return data.url;
+    };
+
     try {
-      const res = await fetch(`/api/admin/configurator/products?id=${editingProduct.id}`, {
-        method: "PUT",
+      const baseImageUrl = await uploadImage(productImages.baseImage, "base");
+      const maskImageUrl = await uploadImage(productImages.maskImage, "mask");
+      const colorMaskUrl = await uploadImage(productImages.colorMaskImage, "color-mask");
+
+      if (!baseImageUrl || !maskImageUrl) {
+        toast.error("Les images Base et Masque sont requises");
+        setIsSavingProduct(false);
+        return;
+      }
+
+      const payload = {
+        name: editingProduct.name,
+        description: editingProduct.description || "",
+        basePrice: Math.round((editingProduct.basePrice ?? 0) * 100),
+        weight: editingProduct.weight ?? 0,
+        icon: editingProduct.icon || null,
+        baseImage: baseImageUrl,
+        maskImage: maskImageUrl,
+        colorMaskImage: colorMaskUrl,
+      };
+
+      const url = isExisting
+        ? `/api/admin/configurator/products?id=${editingProduct.id}`
+        : "/api/admin/configurator/products";
+      const method = isExisting ? "PUT" : "POST";
+
+      // Pour POST, inclure l'id dans le payload
+      const fullPayload = isExisting ? payload : { ...payload, id: editingProduct.id };
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(fullPayload),
       });
+
       if (res.ok) {
-        toast.success("Produit mis à jour");
+        toast.success(isExisting ? "Produit mis à jour" : "Produit créé");
         setIsProductModalOpen(false);
         setEditingProduct(null);
         fetchData();
       } else {
         const err = await res.json();
-        alert("Erreur serveur : " + (err.error || "Une erreur est survenue"));
+        toast.error("Erreur : " + (err.error || "Une erreur est survenue"));
       }
-    } catch { alert("Erreur réseau"); }
+    } catch (err: any) {
+      toast.error(err.message || "Erreur réseau");
+    } finally {
+      setIsSavingProduct(false);
+    }
   };
 
   const toggleProductActive = async (product: ConfigProduct) => {
@@ -342,10 +525,15 @@ export default function ConfiguratorAdmin() {
           onClick={() => { setActiveTab('products'); setSearchQuery(""); setSelectedCategory(null); }}>
           Produits ({products.length})
         </button>
+        <button className={`flex items-center gap-1.5 px-4 py-2 font-medium transition-colors ${activeTab === 'broderie' ? 'text-ylang-rose border-b-2 border-ylang-rose' : 'text-ylang-charcoal/60 hover:text-ylang-charcoal'}`}
+          onClick={() => { setActiveTab('broderie'); setSearchQuery(""); setSelectedCategory(null); }}>
+          <Crosshair className="h-4 w-4" />
+          Calibrage Broderie
+        </button>
       </div>
 
       {/* Action bar */}
-      <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center">
+      {activeTab !== 'broderie' && <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center">
         <div className="flex gap-2 lg:flex-1">
           {/* Search */}
           <div className="relative flex-1">
@@ -421,7 +609,7 @@ export default function ConfiguratorAdmin() {
             </div>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* ═══ FABRICS & CATEGORIES TAB ═══════════════════════════════════════════════════════ */}
       {activeTab === 'fabrics' && (
@@ -460,7 +648,7 @@ export default function ConfiguratorAdmin() {
                         className={`flex h-8 w-8 items-center justify-center rounded-xl transition-colors ${category.isActive ? 'bg-gray-100 text-gray-500 hover:bg-gray-200' : 'bg-green-100 text-green-600 hover:bg-green-200'}`}>
                         {category.isActive ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
-                      <button onClick={e => deleteCategory(category.id, e)}
+                      <button onClick={e => deleteCategory(category.id, category.title, e)}
                         className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100">
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -488,7 +676,7 @@ export default function ConfiguratorAdmin() {
                               <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="flex h-7 w-7 items-center justify-center rounded-lg border border-blue-300 bg-blue-100 p-1 text-blue-600 transition-colors hover:bg-blue-200">
                                 <Edit className="h-3.5 w-3.5" />
                               </button>
-                              <button onClick={() => deleteFabric(fabric.id)} className="flex h-7 w-7 items-center justify-center rounded-lg border border-red-300 bg-red-100 p-1 text-red-500 transition-colors hover:bg-red-200">
+                              <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="flex h-7 w-7 items-center justify-center rounded-lg border border-red-300 bg-red-100 p-1 text-red-500 transition-colors hover:bg-red-200">
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
                             </div>
@@ -519,7 +707,7 @@ export default function ConfiguratorAdmin() {
                               <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="rounded-lg border border-blue-300 bg-blue-100 p-1.5 text-blue-600 transition-colors hover:bg-blue-200">
                                 <Edit className="h-4 w-4" />
                               </button>
-                              <button onClick={() => deleteFabric(fabric.id)} className="rounded-lg border border-red-300 bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200">
+                              <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="rounded-lg border border-red-300 bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200">
                                 <Trash2 className="h-4 w-4" />
                               </button>
                             </div>
@@ -560,7 +748,7 @@ export default function ConfiguratorAdmin() {
                             <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="flex h-7 w-7 items-center justify-center rounded-lg border border-blue-300 bg-blue-100 p-1 text-blue-600 transition-colors hover:bg-blue-200">
                               <Edit className="h-3.5 w-3.5" />
                             </button>
-                            <button onClick={() => deleteFabric(fabric.id)} className="flex h-7 w-7 items-center justify-center rounded-lg border border-red-300 bg-red-100 p-1 text-red-500 transition-colors hover:bg-red-200">
+                            <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="flex h-7 w-7 items-center justify-center rounded-lg border border-red-300 bg-red-100 p-1 text-red-500 transition-colors hover:bg-red-200">
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           </div>
@@ -592,7 +780,7 @@ export default function ConfiguratorAdmin() {
                             <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="rounded-lg border border-blue-300 bg-blue-100 p-1.5 text-blue-600 transition-colors hover:bg-blue-200">
                               <Edit className="h-4 w-4" />
                             </button>
-                            <button onClick={() => deleteFabric(fabric.id)} className="rounded-lg border border-red-300 bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200">
+                            <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="rounded-lg border border-red-300 bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200">
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
@@ -610,40 +798,342 @@ export default function ConfiguratorAdmin() {
 
       {/* ═══ PRODUCTS TAB ══════════════════════════════════════════════════════ */}
       {activeTab === 'products' && (
-        <div className="grid grid-cols-1 gap-4">
-          {filteredProducts.map(product => (
-            <div key={product.id} className={`flex flex-col gap-4 rounded-3xl border bg-white p-5 shadow-xs transition-all hover:shadow-md sm:flex-row sm:items-center ${product.isActive ? 'border-ylang-beige' : 'border-gray-200 opacity-70'}`}>
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#f5f1e8]">
-                {product.baseImage ? (
-                  <img src={product.baseImage} alt={product.name} className="h-full w-full object-cover" />
-                ) : (
-                  <span className="text-3xl">{product.icon}</span>
-                )}
-              </div>
-              <div className="grow">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-lg font-bold text-ylang-charcoal">{product.name}</h3>
-                  {product.icon && <span className="text-xl">{product.icon}</span>}
-                  <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${product.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                    {product.isActive ? 'Actif' : 'Inactif'}
-                  </span>
+        <div>
+          {/* Bouton créer */}
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={() => handleOpenProductModal()}
+              className="bg-ylang-rose hover:bg-ylang-terracotta flex items-center gap-1.5 rounded-xl px-4 h-10 text-sm font-bold text-white transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Nouveau Produit
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {filteredProducts.map(product => {
+              const layerCount = [product.baseImage, product.maskImage, product.colorMaskImage].filter(Boolean).length;
+              return (
+                <div key={product.id} className={`rounded-3xl border bg-white p-5 shadow-xs transition-all hover:shadow-md ${product.isActive ? 'border-ylang-beige' : 'border-gray-200 opacity-70'}`}>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                    {/* Aperçu calques */}
+                    <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#f5f1e8]">
+                      {product.baseImage && (
+                        <img src={product.baseImage} alt={product.name} className="h-full w-full object-cover" />
+                      )}
+                      {!product.baseImage && (
+                        <span className="text-3xl">{product.icon || "?"}</span>
+                      )}
+                    </div>
+
+                    {/* Infos */}
+                    <div className="grow">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-lg font-bold text-ylang-charcoal">{product.name}</h3>
+                        {product.icon && <span className="text-xl">{product.icon}</span>}
+                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${product.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                          {product.isActive ? 'Actif' : 'Inactif'}
+                        </span>
+                      </div>
+                      {product.description && <p className="mt-1 text-sm text-ylang-charcoal/60 line-clamp-1">{product.description}</p>}
+                      <p className="mt-1 text-sm font-black text-ylang-rose">Prix de base : {product.basePrice.toFixed(2)}€</p>
+
+                      {/* Calques */}
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        <span className="text-xs text-ylang-charcoal/40 font-medium">{layerCount} calque{layerCount > 1 ? 's' : ''} :</span>
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${product.baseImage ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-500'}`}>
+                          {product.baseImage ? '✓' : '✗'} Base
+                        </span>
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${product.maskImage ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-500'}`}>
+                          {product.maskImage ? '✓' : '✗'} Masque tissu
+                        </span>
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${product.colorMaskImage ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400'}`}>
+                          {product.colorMaskImage ? '✓' : '○'} Masque couleur
+                        </span>
+                        {product.embroideryZone && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-ylang-rose/10 px-2 py-0.5 text-[10px] font-bold text-ylang-rose">
+                            ✓ Broderie
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex shrink-0 flex-wrap items-center gap-2 border-t pt-3 sm:border-none sm:pt-0">
+                      <button onClick={() => handleOpenProductModal(product)}
+                        className="flex items-center gap-1.5 rounded-xl border border-blue-300 bg-blue-100 px-3 py-2 text-sm font-bold text-blue-600 transition-colors hover:bg-blue-200">
+                        <Edit className="h-4 w-4" /> Modifier
+                      </button>
+                      <button onClick={() => toggleProductActive(product)}
+                        className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${product.isActive ? 'border-gray-300 bg-gray-100 text-gray-600 hover:bg-gray-200' : 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200'}`}>
+                        {product.isActive ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {product.isActive ? 'Désactiver' : 'Activer'}
+                      </button>
+                      <button onClick={() => openDeleteModal("product", product.id, product.name)}
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-red-300 bg-red-50 text-red-500 transition-colors hover:bg-red-100">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Miniatures des calques */}
+                  {(product.baseImage || product.maskImage || product.colorMaskImage) && (
+                    <div className="mt-4 flex gap-2 border-t border-ylang-beige pt-4">
+                      {product.baseImage && (
+                        <div className="group relative">
+                          <img src={product.baseImage} alt="Base" className="h-14 w-14 rounded-xl border border-ylang-beige object-cover bg-[#f5f1e8]" />
+                          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover:opacity-100">Base</span>
+                        </div>
+                      )}
+                      {product.maskImage && (
+                        <div className="group relative">
+                          <img src={product.maskImage} alt="Masque" className="h-14 w-14 rounded-xl border border-ylang-beige object-cover bg-gray-100" />
+                          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover:opacity-100">Masque tissu</span>
+                        </div>
+                      )}
+                      {product.colorMaskImage && (
+                        <div className="group relative">
+                          <img src={product.colorMaskImage} alt="Masque couleur" className="h-14 w-14 rounded-xl border border-blue-200 object-cover bg-gray-100" />
+                          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover:opacity-100">Masque couleur</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-                {product.description && <p className="mt-1 text-sm text-ylang-charcoal/60 line-clamp-1">{product.description}</p>}
-                <p className="mt-1 text-sm font-black text-ylang-rose">Prix de base : {product.basePrice.toFixed(2)}€</p>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ═══ BRODERIE TAB ════════════════════════════════════════════════════════ */}
+      {activeTab === 'broderie' && (
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+
+          {/* ── Liste des produits ── */}
+          <div className="w-full shrink-0 space-y-2 lg:w-72">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-ylang-charcoal/40">Produits</p>
+            {products.map(product => (
+              <button
+                key={product.id}
+                onClick={() => openEmbroideryEditor(product)}
+                className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all ${
+                  embroideryProduct?.id === product.id
+                    ? 'border-ylang-rose bg-ylang-rose/5'
+                    : 'border-ylang-beige bg-white hover:border-ylang-rose/40'
+                }`}
+              >
+                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#f5f1e8]">
+                  {product.baseImage
+                    ? <img src={product.baseImage} alt={product.name} className="h-full w-full object-cover" />
+                    : <span className="flex h-full w-full items-center justify-center text-2xl">{product.icon}</span>
+                  }
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-ylang-charcoal">{product.name}</p>
+                  {product.embroideryZone
+                    ? <p className="text-[11px] text-green-600 font-medium">x:{Math.round(product.embroideryZone.x * 100)}% y:{Math.round(product.embroideryZone.y * 100)}% ✓</p>
+                    : <p className="text-[11px] text-ylang-charcoal/40">Non configuré</p>
+                  }
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* ── Éditeur ── */}
+          {!embroideryProduct ? (
+            <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-ylang-beige bg-white py-24">
+              <Crosshair className="mb-3 h-10 w-10 text-ylang-charcoal/20" />
+              <p className="text-sm text-ylang-charcoal/40">Sélectionnez un produit pour calibrer sa zone de broderie</p>
+            </div>
+          ) : (
+            <div className="flex flex-1 flex-col gap-6 lg:flex-row">
+
+              {/* Image interactive */}
+              <div className="flex-1">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ylang-charcoal/40">
+                  Cliquez sur l'image pour positionner la broderie
+                </p>
+                <div
+                  ref={imageContainerRef}
+                  className="relative cursor-crosshair overflow-hidden rounded-2xl border border-ylang-beige bg-[#f5f1e8] shadow-sm select-none"
+                  onClick={handleImageClick}
+                >
+                  <img
+                    src={embroideryProduct.baseImage}
+                    alt={embroideryProduct.name}
+                    className="w-full object-contain pointer-events-none"
+                    draggable={false}
+                  />
+
+                  {/* Crosshair marker */}
+                  <div
+                    className="pointer-events-none absolute"
+                    style={{
+                      left: `${embroideryZone.x * 100}%`,
+                      top: `${embroideryZone.y * 100}%`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  >
+                    <div className="relative h-8 w-8">
+                      <div className="absolute top-1/2 left-0 h-px w-full bg-ylang-rose/80" />
+                      <div className="absolute left-1/2 top-0 h-full w-px bg-ylang-rose/80" />
+                      <div className="absolute top-1/2 left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ylang-rose ring-2 ring-white shadow" />
+                    </div>
+                  </div>
+
+                  {/* Aperçu texte broderie */}
+                  {previewText && (
+                    <div
+                      className="pointer-events-none absolute whitespace-nowrap font-bold text-ylang-rose drop-shadow-sm"
+                      style={{
+                        left: `${embroideryZone.x * 100}%`,
+                        top: `${embroideryZone.y * 100}%`,
+                        transform: `translate(-50%, -50%) rotate(${embroideryZone.rotation}deg)`,
+                        fontSize: `${embroideryZone.fontSize * imageScale}px`,
+                        maxWidth: `${embroideryZone.maxWidth * 100}%`,
+                        textAlign: embroideryZone.alignment,
+                      }}
+                    >
+                      {previewText}
+                    </div>
+                  )}
+
+                  {/* Zone max-width indicator */}
+                  <div
+                    className="pointer-events-none absolute border border-dashed border-ylang-rose/30"
+                    style={{
+                      left: `${(embroideryZone.x - embroideryZone.maxWidth / 2) * 100}%`,
+                      top: `${embroideryZone.y * 100}%`,
+                      width: `${embroideryZone.maxWidth * 100}%`,
+                      height: "1px",
+                      transform: `translateY(-50%) rotate(${embroideryZone.rotation}deg)`,
+                      transformOrigin: "center",
+                    }}
+                  />
+                </div>
               </div>
-              <div className="flex shrink-0 items-center gap-2 border-t pt-3 sm:border-none sm:pt-0">
-                <button onClick={() => { setEditingProduct(product); setIsProductModalOpen(true); }}
-                  className="flex items-center gap-1.5 rounded-xl border border-blue-300 bg-blue-100 px-3 py-2 text-sm font-bold text-blue-600 transition-colors hover:bg-blue-200">
-                  <Edit className="h-4 w-4" /> Modifier
-                </button>
-                <button onClick={() => toggleProductActive(product)}
-                  className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${product.isActive ? 'border-gray-300 bg-gray-100 text-gray-600 hover:bg-gray-200' : 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200'}`}>
-                  {product.isActive ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  {product.isActive ? 'Désactiver' : 'Activer'}
+
+              {/* Contrôles */}
+              <div className="flex w-full flex-col gap-5 lg:w-72">
+                <div className="rounded-2xl border border-ylang-beige bg-white p-5 shadow-sm">
+                  <h3 className="mb-4 text-sm font-bold text-ylang-charcoal">Paramètres</h3>
+
+                  {/* Texte de prévisualisation */}
+                  <div className="mb-4">
+                    <label className="mb-1 block text-xs font-semibold text-ylang-charcoal/60">Texte de prévisualisation</label>
+                    <input
+                      type="text"
+                      value={previewText}
+                      onChange={e => setPreviewText(e.target.value.slice(0, 15))}
+                      placeholder="Ylang"
+                      className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-3 py-2 text-sm outline-none"
+                    />
+                  </div>
+
+                  {/* Position X */}
+                  <div className="mb-3">
+                    <div className="mb-1 flex items-center justify-between">
+                      <label className="text-xs font-semibold text-ylang-charcoal/60">Position X</label>
+                      <span className="text-xs font-bold text-ylang-rose">{Math.round(embroideryZone.x * 100)}%</span>
+                    </div>
+                    <input type="range" min="0" max="100" step="1"
+                      value={Math.round(embroideryZone.x * 100)}
+                      onChange={e => setEmbroideryZone(prev => ({ ...prev, x: Number(e.target.value) / 100 }))}
+                      className="w-full accent-ylang-rose" />
+                  </div>
+
+                  {/* Position Y */}
+                  <div className="mb-3">
+                    <div className="mb-1 flex items-center justify-between">
+                      <label className="text-xs font-semibold text-ylang-charcoal/60">Position Y</label>
+                      <span className="text-xs font-bold text-ylang-rose">{Math.round(embroideryZone.y * 100)}%</span>
+                    </div>
+                    <input type="range" min="0" max="100" step="1"
+                      value={Math.round(embroideryZone.y * 100)}
+                      onChange={e => setEmbroideryZone(prev => ({ ...prev, y: Number(e.target.value) / 100 }))}
+                      className="w-full accent-ylang-rose" />
+                  </div>
+
+                  {/* Rotation */}
+                  <div className="mb-3">
+                    <div className="mb-1 flex items-center justify-between">
+                      <label className="flex items-center gap-1.5 text-xs font-semibold text-ylang-charcoal/60">
+                        <RotateCcw className="h-3 w-3" /> Rotation
+                      </label>
+                      <span className="text-xs font-bold text-ylang-rose">{embroideryZone.rotation}°</span>
+                    </div>
+                    <input type="range" min="-90" max="90" step="1"
+                      value={embroideryZone.rotation}
+                      onChange={e => setEmbroideryZone(prev => ({ ...prev, rotation: Number(e.target.value) }))}
+                      className="w-full accent-ylang-rose" />
+                  </div>
+
+                  {/* Taille de police */}
+                  <div className="mb-3">
+                    <div className="mb-1 flex items-center justify-between">
+                      <label className="flex items-center gap-1.5 text-xs font-semibold text-ylang-charcoal/60">
+                        <Type className="h-3 w-3" /> Taille police
+                      </label>
+                      <span className="text-xs font-bold text-ylang-rose">{embroideryZone.fontSize}px</span>
+                    </div>
+                    <input type="range" min="10" max="80" step="1"
+                      value={embroideryZone.fontSize}
+                      onChange={e => setEmbroideryZone(prev => ({ ...prev, fontSize: Number(e.target.value) }))}
+                      className="w-full accent-ylang-rose" />
+                  </div>
+
+                  {/* Largeur max */}
+                  <div className="mb-4">
+                    <div className="mb-1 flex items-center justify-between">
+                      <label className="flex items-center gap-1.5 text-xs font-semibold text-ylang-charcoal/60">
+                        <Maximize2 className="h-3 w-3" /> Largeur max
+                      </label>
+                      <span className="text-xs font-bold text-ylang-rose">{Math.round(embroideryZone.maxWidth * 100)}%</span>
+                    </div>
+                    <input type="range" min="5" max="100" step="1"
+                      value={Math.round(embroideryZone.maxWidth * 100)}
+                      onChange={e => setEmbroideryZone(prev => ({ ...prev, maxWidth: Number(e.target.value) / 100 }))}
+                      className="w-full accent-ylang-rose" />
+                  </div>
+
+                  {/* Alignement */}
+                  <div>
+                    <label className="mb-2 block text-xs font-semibold text-ylang-charcoal/60">Alignement</label>
+                    <div className="flex gap-2">
+                      {(["left", "center", "right"] as const).map(align => (
+                        <button
+                          key={align}
+                          onClick={() => setEmbroideryZone(prev => ({ ...prev, alignment: align }))}
+                          className={`flex-1 rounded-lg border py-1.5 text-xs font-bold transition-colors ${
+                            embroideryZone.alignment === align
+                              ? 'border-ylang-rose bg-ylang-rose text-white'
+                              : 'border-gray-200 bg-white text-ylang-charcoal/60 hover:border-ylang-rose/40'
+                          }`}
+                        >
+                          {align === "left" ? "◀" : align === "center" ? "◉" : "▶"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Valeurs JSON */}
+                <div className="rounded-2xl border border-ylang-beige bg-gray-50 px-4 py-3 font-mono text-[10px] text-ylang-charcoal/50">
+                  <pre>{JSON.stringify(embroideryZone, null, 2)}</pre>
+                </div>
+
+                <button
+                  onClick={handleSaveEmbroidery}
+                  disabled={isSavingEmbroidery}
+                  className="bg-ylang-rose hover:bg-ylang-terracotta flex items-center justify-center gap-2 rounded-2xl py-3 font-bold text-white transition-colors disabled:opacity-70"
+                >
+                  {isSavingEmbroidery && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {isSavingEmbroidery ? "Sauvegarde..." : "Sauvegarder la zone"}
                 </button>
               </div>
             </div>
-          ))}
+          )}
         </div>
       )}
 
@@ -711,35 +1201,159 @@ export default function ConfiguratorAdmin() {
 
       {/* ═══ PRODUCT MODAL ═════════════════════════════════════════════════════ */}
       <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-ylang-charcoal text-xl font-bold">Modifier le produit</DialogTitle>
+            <DialogTitle className="text-ylang-charcoal text-xl font-bold">
+              {editingProduct?.id && products.some(p => p.id === editingProduct.id) ? "Modifier le produit" : "Nouveau produit configurateur"}
+            </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleProductSubmit} className="mt-4 space-y-4">
+          <form onSubmit={handleProductSubmit} className="mt-4 space-y-5">
+            {/* ID - seulement pour la création */}
+            {!products.some(p => p.id === editingProduct?.id) && (
+              <div>
+                <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">ID unique <span className="text-ylang-rose">*</span></label>
+                <input type="text" value={editingProduct?.id || ""} onChange={e => setEditingProduct(prev => ({ ...prev!, id: e.target.value }))}
+                  placeholder="ex: gigoteuse-4-saisons"
+                  className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-2 text-sm outline-none" required />
+              </div>
+            )}
+
+            {/* Nom */}
             <div>
-              <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Nom</label>
+              <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Nom <span className="text-ylang-rose">*</span></label>
               <input type="text" value={editingProduct?.name || ""} onChange={e => setEditingProduct(prev => ({ ...prev!, name: e.target.value }))}
-                className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" required />
+                className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-2 text-sm outline-none" required />
             </div>
+
+            {/* Description */}
             <div>
-              <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Description</label>
+              <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Description</label>
               <textarea value={editingProduct?.description || ""} onChange={e => setEditingProduct(prev => ({ ...prev!, description: e.target.value }))}
-                className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full min-h-[100px] rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" />
+                rows={2} className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-2 text-sm outline-none resize-none" />
             </div>
-            <div>
-              <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Prix de base (€)</label>
-              <div className="relative">
-                <input type="number" step="0.01" min="0" value={editingProduct?.basePrice ?? 0} onChange={e => setEditingProduct(prev => ({ ...prev!, basePrice: parseFloat(e.target.value) || 0 }))}
-                  className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border bg-white py-2 pr-8 pl-4 outline-none focus:ring-2" required />
-                <span className="absolute top-1/2 right-3 -translate-y-1/2 text-sm font-bold text-ylang-charcoal/40">€</span>
+
+            {/* Prix & Poids */}
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Prix base (€)</label>
+                <input type="number" step="0.01" min="0" value={editingProduct?.basePrice ?? 0}
+                  onChange={e => setEditingProduct(prev => ({ ...prev!, basePrice: parseFloat(e.target.value) || 0 }))}
+                  className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-3 py-2 text-sm outline-none" />
+              </div>
+              <div>
+                <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Poids (g)</label>
+                <input type="number" min="0" value={editingProduct?.weight ?? 0}
+                  onChange={e => setEditingProduct(prev => ({ ...prev!, weight: parseInt(e.target.value) || 0 }))}
+                  className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-3 py-2 text-sm outline-none" />
+              </div>
+              <div>
+                <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Icône (emoji)</label>
+                <input type="text" value={editingProduct?.icon || ""} onChange={e => setEditingProduct(prev => ({ ...prev!, icon: e.target.value }))}
+                  placeholder="🧸" className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-3 py-2 text-sm outline-none" />
               </div>
             </div>
-            <button type="submit" className="bg-ylang-rose hover:bg-ylang-terracotta mt-4 w-full rounded-xl py-3 font-bold text-white transition-colors">
-              Enregistrer
+
+            {/* Séparateur calques */}
+            <div className="border-t border-ylang-beige pt-4">
+              <h3 className="mb-3 text-sm font-bold text-ylang-charcoal">Calques du produit</h3>
+
+              {/* Image de base */}
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-medium text-ylang-charcoal/80">
+                  Image de base <span className="text-ylang-rose">*</span>
+                  <span className="ml-1 text-[10px] font-normal text-ylang-charcoal/40">Silhouette avec ombres et reflets</span>
+                </label>
+                <ImageUpload
+                  value={productImages.baseImage ? [productImages.baseImage] : []}
+                  onChange={urls => setProductImages(prev => ({ ...prev, baseImage: urls[0] || "" }))}
+                  onRemove={() => setProductImages(prev => ({ ...prev, baseImage: "" }))}
+                  showPreview={true}
+                />
+              </div>
+
+              {/* Masque tissu */}
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-medium text-ylang-charcoal/80">
+                  Masque tissu <span className="text-ylang-rose">*</span>
+                  <span className="ml-1 text-[10px] font-normal text-ylang-charcoal/40">Image N&B — zone blanche = tissu</span>
+                </label>
+                <ImageUpload
+                  value={productImages.maskImage ? [productImages.maskImage] : []}
+                  onChange={urls => setProductImages(prev => ({ ...prev, maskImage: urls[0] || "" }))}
+                  onRemove={() => setProductImages(prev => ({ ...prev, maskImage: "" }))}
+                  showPreview={true}
+                />
+              </div>
+
+              {/* Masque couleur (optionnel) */}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-ylang-charcoal/80">
+                  Masque couleur
+                  <span className="ml-1 text-[10px] font-normal text-ylang-charcoal/40">Optionnel — zone d&apos;accent coloré</span>
+                </label>
+                <ImageUpload
+                  value={productImages.colorMaskImage ? [productImages.colorMaskImage as string] : []}
+                  onChange={urls => setProductImages(prev => ({ ...prev, colorMaskImage: urls[0] || null }))}
+                  onRemove={() => setProductImages(prev => ({ ...prev, colorMaskImage: null }))}
+                  showPreview={true}
+                />
+              </div>
+            </div>
+
+            <button type="submit" disabled={isSavingProduct}
+              className="bg-ylang-rose hover:bg-ylang-terracotta flex w-full items-center justify-center gap-2 rounded-xl py-3 font-bold text-white transition-colors disabled:opacity-70">
+              {isSavingProduct && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isSavingProduct ? "Enregistrement..." : "Enregistrer"}
             </button>
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* ═══ DELETE CONFIRMATION MODAL ══════════════════════════════════════════ */}
+      <AnimatePresence>
+        {deleteConfirmation.isOpen && (
+          <Dialog
+            open={deleteConfirmation.isOpen}
+            onOpenChange={(open) => setDeleteConfirmation(prev => ({ ...prev, isOpen: open }))}
+          >
+            <DialogContent className="overflow-hidden p-0 sm:max-w-[485px]">
+              <div className="flex flex-col p-4">
+                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-500">
+                  <TrashBin className="h-6 w-6" />
+                </div>
+                <DialogHeader className="mb-2">
+                  <DialogTitle className="text-xl font-semibold text-gray-900">
+                    {deleteConfirmation.type === "fabric" ? "Supprimer le tissu ?" :
+                     deleteConfirmation.type === "category" ? "Supprimer la catégorie ?" :
+                     "Supprimer le produit ?"}
+                  </DialogTitle>
+                </DialogHeader>
+                <DialogDescription className="text-sm text-gray-500">
+                  Êtes-vous sûr de vouloir supprimer{" "}
+                  <span className="font-semibold text-gray-700">&laquo;{deleteConfirmation.name}&raquo;</span> ?
+                  Cette action est irréversible et supprimera toutes les données associées.
+                </DialogDescription>
+              </div>
+              <DialogFooter className="flex flex-col gap-2 bg-gray-50/50 p-4 sm:flex-row sm:justify-end sm:gap-0">
+                <Button
+                  variant="ghost"
+                  onClick={() => setDeleteConfirmation(prev => ({ ...prev, isOpen: false }))}
+                  className="w-full cursor-pointer font-medium hover:bg-gray-100 sm:w-auto"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  variant="primary"
+                  className="w-full cursor-pointer bg-red-600 px-2 font-medium text-white shadow-sm hover:bg-red-700 sm:ml-2 sm:w-auto"
+                  onClick={handleConfirmDelete}
+                >
+                  Supprimer définitivement
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
 
       {/* ═══ CATEGORY MODAL ══════════════════════════════════════════════════════ */}
       <Dialog open={isCategoryModalOpen} onOpenChange={setIsCategoryModalOpen}>

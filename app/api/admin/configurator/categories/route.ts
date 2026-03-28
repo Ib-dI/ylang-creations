@@ -1,4 +1,4 @@
-import { configuratorFabricCategory } from "@/db/schema";
+import { configuratorFabric, configuratorFabricCategory } from "@/db/schema";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -102,6 +102,10 @@ export async function DELETE(request: Request) {
         { status: 400 }
       );
     }
+
+    await db
+      .delete(configuratorFabric)
+      .where(eq(configuratorFabric.category, id));
 
     const [deletedCategory] = await db
       .delete(configuratorFabricCategory)
