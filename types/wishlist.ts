@@ -4,6 +4,7 @@ export interface WishlistItem {
   name: string;
   category: string;
   price: number;
+  weight: number;
   image: string;
   customizable?: boolean;
   addedAt: Date;

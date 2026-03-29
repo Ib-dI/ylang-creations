@@ -435,18 +435,18 @@ export function Header() {
                 }
                 aria-expanded={isMegaMenuOpen}
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
-                  "text-ylang-charcoal bg-white/50 backdrop-blur-sm hover:bg-white/80",
+                  "flex h-10 w-10 items-center justify-center transition-all duration-300 lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
+                  "text-ylang-white bg-white/20 backdrop-blur-sm hover:bg-white/80 hover:text-ylang-rose",
                   isMegaMenuOpen &&
-                    "bg-white/80 hover:bg-white/80 text-ylang-charcoal",
+                    "bg-white/80 hover:bg-white/80 text-ylang-rose ",
                 )}
               >
                 {isMegaMenuOpen ? (
-                  <X className="h-5 w-5" strokeWidth={1.5} />
+                  <X className="h-5 w-5" strokeWidth={1.2} />
                 ) : (
-                  <Menu className="h-5 w-5" strokeWidth={1.5} />
+                  <Menu className="h-5 w-5" strokeWidth={1.2} />
                 )}
-                <span className="font-body hidden text-sm font-medium tracking-wide uppercase lg:inline">
+                <span className="font-body hidden text-sm font-light tracking-wide uppercase lg:inline">
                   Menu
                 </span>
               </button>
@@ -484,9 +484,9 @@ export function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Rechercher"
-                className="text-ylang-charcoal hover:text-ylang-rose hidden transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:block"
+                className="text-ylang-white hover:text-ylang-rose hidden transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:block"
               >
-                <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.5} />
+                <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
               </button>
 
               {/* Reste du code dans la partie 2... */}
@@ -598,9 +598,9 @@ export function Header() {
                 <button
                   onClick={() => router.push("/sign-in")}
                   aria-label="Se connecter"
-                  className="text-ylang-charcoal hover:text-ylang-rose transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
+                  className="text-ylang-charcoal hover:text-ylang-rose transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
                 >
-                  <User className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.5} />
+                  <User className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
                 </button>
               )}
 
@@ -608,9 +608,9 @@ export function Header() {
               <button
                 onClick={() => useWishlistStore.getState().openWishlist()}
                 aria-label="Ma liste d'envies"
-                className="text-ylang-charcoal hover:text-ylang-rose relative transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
+                className="text-ylang-white hover:text-ylang-rose relative transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
               >
-                <Heart className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.5} />
+                <Heart className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
                 <AnimatedBadge count={wishlistCount} />
               </button>
 
@@ -618,11 +618,11 @@ export function Header() {
               <button
                 onClick={() => useCartStore.getState().openCart()}
                 aria-label="Mon panier"
-                className="text-ylang-charcoal hover:text-ylang-rose group relative transform rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
+                className="text-ylang-white hover:text-ylang-rose group relative transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
               >
                 <ShoppingBag
                   className="h-4 w-4 lg:h-5 lg:w-5"
-                  strokeWidth={1.5}
+                  strokeWidth={1.2}
                 />
                 <AnimatedBadge count={cartCount} />
               </button>
@@ -632,7 +632,7 @@ export function Header() {
                 onClick={() => router.push("/configurateur")}
                 variant="luxury"
                 size="sm"
-                className="ml-2 hidden lg:flex"
+                className="ml-2 hidden lg:flex border duration-300 transition-all border-ylang-beige/20 hover:border-ylang-beige"
               >
                 Configurer
               </Button>
@@ -654,7 +654,7 @@ export function Header() {
             <div className="flex gap-12">
               {/* Navigation Principale */}
               <div className="border-ylang-terracotta shrink-0 border-r pr-8">
-                <h3 className="text-ylang-charcoal/50 font-body mb-6 text-xs font-semibold tracking-widest uppercase">
+                <h3 className="text-ylang-rose font-abramo mb-6 text-md font-semibold tracking-widest uppercase">
                   Menu
                 </h3>
                 <ul className="space-y-2">

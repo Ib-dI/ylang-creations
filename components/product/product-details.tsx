@@ -331,6 +331,7 @@ export default function ProductDetails({
                     name: product.name,
                     category: product.category,
                     price: product.price,
+                    weight: product.weight ?? 0,
                     image: productImages[0],
                     customizable: product.customizable,
                   })

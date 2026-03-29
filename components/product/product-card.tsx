@@ -20,6 +20,7 @@ interface ProductCardProps {
     featured?: boolean;
     new?: boolean;
     customizable?: boolean;
+    weight?: number;
   };
   className?: string;
   priority?: boolean; // Pour les 2-4 premiers produits
@@ -140,6 +141,7 @@ export function ProductCard({
               name: product.name,
               category: product.category,
               price: product.price,
+              weight: product.weight ?? 0,
               image: product.image,
               customizable: product.customizable,
             });

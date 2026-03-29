@@ -23,6 +23,7 @@ export function WishlistDrawer() {
         fabricColor: "Original",
       },
       price: item.price,
+      weight: item.weight,
       quantity: 1,
       thumbnail: item.image,
     });
