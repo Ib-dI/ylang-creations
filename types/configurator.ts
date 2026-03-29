@@ -8,6 +8,7 @@ export interface Product {
   image: string;
   sizes?: string[];
   defaultSize?: string;
+  weight?: number; // Weight in grams
 }
 
 export interface Fabric {

@@ -129,6 +129,9 @@ export async function PATCH(
     if (validatedData.stock !== undefined) {
       updateData.stock = validatedData.stock;
     }
+    if (validatedData.weight !== undefined) {
+      updateData.weight = validatedData.weight;
+    }
 
     // Handle JSONB fields (no need for JSON.stringify, Drizzle handles jsonb natively)
     if (validatedData.images !== undefined) {

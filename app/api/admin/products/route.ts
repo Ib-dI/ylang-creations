@@ -41,6 +41,7 @@ export async function GET(request: Request) {
       subcategory: p.subcategory,
       images: (p.images as string[] | null) ?? [],
       stock: p.stock,
+      weight: p.weight,
       sku: p.sku,
       isActive: p.isActive,
       isFeatured: p.isFeatured,
@@ -122,6 +123,7 @@ export async function POST(request: Request) {
       isFeatured,
       tags,
       options,
+      weight,
     } = validation.data;
 
     // Generate slug from name
@@ -146,6 +148,7 @@ export async function POST(request: Request) {
       subcategory: subcategory || null,
       images: images ?? null,
       stock: stock || 0,
+      weight: weight ?? 0,
       sku: sku || null,
       isActive: isActive ?? true,
       isFeatured: isFeatured ?? false,

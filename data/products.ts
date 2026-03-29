@@ -18,6 +18,7 @@ export interface CatalogProduct {
   sizes?: string[];
   defaultSize?: string;
   compareAtPrice?: number | null;
+  weight?: number; // Weight in grams
 }
 
 // Produits du catalogue principal
@@ -50,6 +51,7 @@ export const catalogProducts: CatalogProduct[] = [
     customizable: true,
     sizes: ["0-6 mois", "6-12 mois", "12-24 mois", "24-36 mois"],
     defaultSize: "0-6 mois",
+    weight: 500,
   },
   {
     id: "2",
@@ -78,6 +80,7 @@ export const catalogProducts: CatalogProduct[] = [
     customizable: true,
     sizes: ["60x120 cm", "70x140 cm"],
     defaultSize: "60x120 cm",
+    weight: 700,
   },
   {
     id: "3",
@@ -106,6 +109,7 @@ export const catalogProducts: CatalogProduct[] = [
     customizable: true,
     sizes: ["0-3 mois", "3-6 mois", "6-12 mois", "12-18 mois"],
     defaultSize: "0-3 mois",
+    weight: 250,
   },
   {
     id: "4",
@@ -132,6 +136,7 @@ export const catalogProducts: CatalogProduct[] = [
       "Reliure cousue main",
     ],
     customizable: true,
+    weight: 200,
   },
   {
     id: "5",
@@ -159,6 +164,7 @@ export const catalogProducts: CatalogProduct[] = [
     ],
     new: true,
     customizable: true,
+    weight: 200,
   },
   {
     id: "6",
@@ -185,6 +191,7 @@ export const catalogProducts: CatalogProduct[] = [
       "Lavable en machine",
     ],
     customizable: true,
+    weight: 350,
   },
   {
     id: "7",
@@ -211,6 +218,7 @@ export const catalogProducts: CatalogProduct[] = [
       "Personnalisation sur-mesure",
     ],
     customizable: true,
+    weight: 500,
   },
   {
     id: "8",
@@ -239,6 +247,7 @@ export const catalogProducts: CatalogProduct[] = [
     customizable: true,
     sizes: ["0-3 mois", "3-6 mois", "6-12 mois", "12-18 mois"],
     defaultSize: "0-3 mois",
+    weight: 300,
   },
 ];
 

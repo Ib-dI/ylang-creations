@@ -1316,35 +1316,33 @@ export default function ConfiguratorAdmin() {
             open={deleteConfirmation.isOpen}
             onOpenChange={(open) => setDeleteConfirmation(prev => ({ ...prev, isOpen: open }))}
           >
-            <DialogContent className="overflow-hidden p-0 sm:max-w-[485px]">
-              <div className="flex flex-col p-4">
-                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-500">
+            <DialogContent className="sm:max-w-[440px]">
+              <DialogHeader>
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500">
                   <TrashBin className="h-6 w-6" />
                 </div>
-                <DialogHeader className="mb-2">
-                  <DialogTitle className="text-xl font-semibold text-gray-900">
-                    {deleteConfirmation.type === "fabric" ? "Supprimer le tissu ?" :
-                     deleteConfirmation.type === "category" ? "Supprimer la catégorie ?" :
-                     "Supprimer le produit ?"}
-                  </DialogTitle>
-                </DialogHeader>
-                <DialogDescription className="text-sm text-gray-500">
-                  Êtes-vous sûr de vouloir supprimer{" "}
-                  <span className="font-semibold text-gray-700">&laquo;{deleteConfirmation.name}&raquo;</span> ?
-                  Cette action est irréversible et supprimera toutes les données associées.
+                <DialogTitle>
+                  {deleteConfirmation.type === "fabric" ? "Supprimer le tissu ?" :
+                   deleteConfirmation.type === "category" ? "Supprimer la catégorie ?" :
+                   "Supprimer le produit ?"}
+                </DialogTitle>
+                <DialogDescription>
+                  Vous êtes sur le point de supprimer{" "}
+                  <span className="font-semibold text-ylang-charcoal">&laquo;{deleteConfirmation.name}&raquo;</span>.
+                  Cette action est irréversible.
                 </DialogDescription>
-              </div>
-              <DialogFooter className="flex flex-col gap-2 bg-gray-50/50 p-4 sm:flex-row sm:justify-end sm:gap-0">
+              </DialogHeader>
+              <DialogFooter>
                 <Button
                   variant="ghost"
                   onClick={() => setDeleteConfirmation(prev => ({ ...prev, isOpen: false }))}
-                  className="w-full cursor-pointer font-medium hover:bg-gray-100 sm:w-auto"
+                  className="cursor-pointer font-medium text-ylang-charcoal/60 hover:bg-ylang-beige/50 hover:text-ylang-charcoal"
                 >
                   Annuler
                 </Button>
                 <Button
                   variant="primary"
-                  className="w-full cursor-pointer bg-red-600 px-2 font-medium text-white shadow-sm hover:bg-red-700 sm:ml-2 sm:w-auto"
+                  className="cursor-pointer bg-red-500 font-medium text-white hover:bg-red-600"
                   onClick={handleConfirmDelete}
                 >
                   Supprimer définitivement

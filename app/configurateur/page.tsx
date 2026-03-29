@@ -45,11 +45,12 @@ interface Product {
   name: string;
   description: string;
   basePrice: number;
+  weight: number; // Weight in grams
   icon: string;
   baseImage: string;
   maskImage: string;
   colorMaskImage?: string;
-  embroideryZone: EmbroideryZone; // NOUVELLE PROPRIÉTÉ
+  embroideryZone: EmbroideryZone;
 }
 
 interface Fabric {
@@ -448,6 +449,7 @@ const ProductConfigurator = () => {
         embroidery: configuration.embroidery || undefined,
       },
       price: totalPrice() / 100,
+      weight: configuration.product.weight ?? 0,
       quantity: 1,
       thumbnail: thumbnailDataUrl,
     };
@@ -1275,6 +1277,116 @@ const ProductConfigurator = () => {
           </div>
         </div>
       </div>
+
+      {/* ═══ DESCRIPTION & PRODUITS SIMILAIRES ══════════════════════════════════ */}
+      {configuration.product && (
+        <div className="bg-white px-6 py-16 sm:px-12 lg:px-20">
+          <div className="mx-auto max-w-6xl">
+
+            {/* Description détaillée */}
+            <div className="mb-20 grid grid-cols-1 gap-12 lg:grid-cols-2">
+              {/* Visuel */}
+              <div className="flex items-center justify-center">
+                <div className="relative w-full max-w-sm overflow-hidden rounded-4xl bg-[#f5f1e8] shadow-xl">
+                  <img
+                    src={configuration.product.baseImage}
+                    alt={configuration.product.name}
+                    className="h-auto w-full object-contain"
+                  />
+                  {/* Badge personnalisable */}
+                  <div className="from-ylang-rose to-ylang-terracotta absolute top-5 left-5 rounded-2xl bg-linear-to-r px-4 py-2 text-xs font-black text-white shadow-lg">
+                    100% Personnalisable
+                  </div>
+                </div>
+              </div>
+
+              {/* Texte */}
+              <div className="flex flex-col justify-center">
+                <p className="text-ylang-rose mb-2 text-sm font-semibold uppercase tracking-widest">Création artisanale</p>
+                <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-4xl leading-tight">
+                  {configuration.product.name}
+                </h2>
+
+                {configuration.product.description && (
+                  <p className="text-ylang-charcoal/70 mb-8 leading-relaxed">
+                    {configuration.product.description}
+                  </p>
+                )}
+
+                {/* Specs */}
+                <div className="mb-8 grid grid-cols-2 gap-4">
+                  <div className="bg-ylang-beige/50 rounded-2xl p-4">
+                    <p className="text-ylang-charcoal/50 mb-1 text-xs font-semibold uppercase tracking-wider">Prix de base</p>
+                    <p className="text-ylang-rose text-2xl font-black">{(configuration.product.basePrice / 100).toFixed(2)}€</p>
+                  </div>
+                  {configuration.product.weight > 0 && (
+                    <div className="bg-ylang-beige/50 rounded-2xl p-4">
+                      <p className="text-ylang-charcoal/50 mb-1 text-xs font-semibold uppercase tracking-wider">Poids</p>
+                      <p className="text-ylang-charcoal text-2xl font-black">{configuration.product.weight}g</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Points clés */}
+                <ul className="space-y-3">
+                  {[
+                    "Fabriqué à la main avec soin",
+                    "Tissu de votre choix parmi notre collection",
+                    "Broderie personnalisée optionnelle",
+                    "Livraison soignée dans un emballage cadeau",
+                  ].map((point) => (
+                    <li key={point} className="flex items-start gap-3">
+                      <span className="from-ylang-rose to-ylang-terracotta mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-linear-to-br text-[10px] font-black text-white">✓</span>
+                      <span className="text-ylang-charcoal/70 text-sm">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Produits similaires */}
+            {products.filter(p => p.id !== configuration.product!.id).length > 0 && (
+              <div>
+                <div className="mb-8 flex items-end justify-between">
+                  <div>
+                    <p className="text-ylang-rose mb-1 text-sm font-semibold uppercase tracking-widest">Découvrir aussi</p>
+                    <h3 className="font-abramo-script text-ylang-charcoal text-3xl">Produits similaires</h3>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                  {products
+                    .filter(p => p.id !== configuration.product!.id)
+                    .map(product => (
+                      <button
+                        key={product.id}
+                        onClick={() => {
+                          setConfiguration(prev => ({ ...prev, product }));
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        className="group text-left"
+                      >
+                        <div className="mb-3 overflow-hidden rounded-3xl bg-[#f5f1e8] shadow-sm transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
+                          <div className="aspect-square w-full">
+                            <img
+                              src={product.baseImage}
+                              alt={product.name}
+                              className="h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                            />
+                          </div>
+                        </div>
+                        <p className="text-ylang-charcoal mb-1 text-sm font-bold">{product.name}</p>
+                        <p className="text-ylang-rose text-sm font-black">
+                          À partir de {(product.basePrice / 100).toFixed(2)}€
+                        </p>
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Toast de confirmation */}
       {addedToCart && (

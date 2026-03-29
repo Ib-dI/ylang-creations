@@ -62,8 +62,14 @@ export const createProductSchema = z.object({
     .optional()
     .nullable(),
   options: z.record(z.string(), z.unknown()).optional().nullable(),
+  weight: z
+    .number()
+    .int("Le poids doit être un entier")
+    .min(0, "Le poids ne peut pas être négatif")
+    .max(99999, "Le poids ne doit pas dépasser 99999g")
+    .optional()
+    .default(0),
 });
-
 export const updateProductSchema = createProductSchema.partial();
 
 // --- Schéma Commande ---

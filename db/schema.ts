@@ -121,6 +121,7 @@ export const product = pgTable(
     subcategory: text("subcategory"),
     images: jsonb("images"), // JSONB array of image URLs
     stock: integer("stock").notNull().default(0),
+    weight: integer("weight").notNull().default(0), // Weight in grams
     sku: text("sku").unique(),
     isActive: boolean("is_active").notNull().default(true),
     isFeatured: boolean("is_featured").notNull().default(false),
@@ -208,6 +209,7 @@ export const configuratorProduct = pgTable("configurator_product", {
   name: text("name").notNull(),
   description: text("description"),
   basePrice: integer("base_price").notNull(),
+  weight: integer("weight").notNull().default(0), // Weight in grams
   icon: text("icon"),
   baseImage: text("base_image").notNull(),
   maskImage: text("mask_image").notNull(),

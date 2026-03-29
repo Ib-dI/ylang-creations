@@ -309,6 +309,7 @@ export default function ProductDetails({
                     fabricColor: "Original",
                   },
                   price: product.price,
+                  weight: product.weight ?? 0,
                   quantity: 1,
                   thumbnail: productImages[selectedImage],
                 };

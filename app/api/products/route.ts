@@ -103,6 +103,7 @@ async function getCachedProducts(params: {
       defaultSize: parsedOptions.sizes?.[0] || null,
       slug: p.slug,
       compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
+      weight: p.weight ?? 0,
     };
   });
 

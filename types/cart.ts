@@ -8,6 +8,7 @@ export interface CartItem {
     embroidery?: string;
   };
   price: number;
+  weight: number; // Weight in grams
   quantity: number;
   thumbnail?: string;
 }

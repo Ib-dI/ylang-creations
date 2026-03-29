@@ -14,6 +14,7 @@ import {
   Shield,
   ShoppingBag,
   Truck,
+  AlertTriangle,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,6 +35,8 @@ export default function CheckoutPage() {
     getShipping,
     getFinalPrice,
     freeShippingThreshold,
+    getTotalWeight,
+    isOverWeightLimit,
   } = useCartStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -72,6 +75,7 @@ export default function CheckoutPage() {
         name: item.productName,
         price: item.price,
         quantity: item.quantity,
+        weight: item.weight,
         image: item.thumbnail,
         configuration: item.configuration,
       }));
@@ -351,18 +355,29 @@ export default function CheckoutPage() {
                   </div>
                 ) : (
                   <>
-                    <p className="text-ylang-charcoal/60 mb-6 text-sm">
-                      Cliquez ci-dessous pour démarrer le paiement sécurisé de
-                      votre commande.
-                    </p>
+                    {isOverWeightLimit() && (
+                      <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+                        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
+                        <div className="space-y-1 text-left">
+                          <p className="text-sm font-bold">Limite de poids (30kg) dépassée</p>
+                          <p className="text-xs opacity-90">
+                            Votre colis pèse {(getTotalWeight() / 1000).toFixed(1)}kg. 
+                            Merci de diviser votre commande en plusieurs colis s'il vous plaît.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     <Button
-                      variant="luxury"
+                      variant={isOverWeightLimit() ? "secondary" : "luxury"}
                       size="lg"
                       className="w-full"
                       onClick={handleCheckout}
-                      disabled={isLoading}
+                      disabled={isLoading || isOverWeightLimit()}
                     >
-                      {isLoading ? (
+                      {isOverWeightLimit() ? (
+                        "Commande trop lourde"
+                      ) : isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                           Préparation...

@@ -43,6 +43,7 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
     defaultSize:
       parsedOptions.defaultSize || parsedOptions.sizes?.[0] || undefined,
     compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
+    weight: p.weight ?? 0,
   };
 }
 

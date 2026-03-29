@@ -43,8 +43,24 @@ interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  weight?: number;
   image?: string;
   configuration?: any;
+}
+
+/**
+ * Calcule les frais de livraison Colissimo à domicile 2026
+ * en fonction du poids total du colis (en grammes).
+ */
+function calculateColissimoHomeRate(weightGrams: number): number {
+  if (weightGrams <= 250) return 5.49;
+  if (weightGrams <= 500) return 7.59;
+  if (weightGrams <= 750) return 9.29;
+  if (weightGrams <= 1000) return 9.59;
+  if (weightGrams <= 2000) return 11.19;
+  if (weightGrams <= 5000) return 17.39;
+  if (weightGrams <= 10000) return 25.29;
+  return 39.59; // jusqu'à 30 kg
 }
 
 interface CheckoutResult {
@@ -195,7 +211,6 @@ export async function createCheckoutSession(
       .limit(1);
 
     const s = settingsResult[0];
-    const shippingFeeValue = (s?.shippingFee ?? 990) / 100;
     const freeShippingThresholdValue =
       (s?.freeShippingThreshold ?? 15000) / 100;
 
@@ -204,6 +219,17 @@ export async function createCheckoutSession(
       0,
     );
     const isFreeShipping = subtotal >= freeShippingThresholdValue;
+
+    // Calcul des frais par poids Colissimo 2026
+    const totalWeight = items.reduce(
+      (acc, item) => acc + (item.weight ?? 0) * item.quantity,
+      0,
+    );
+    // Fallback sur la valeur DB si aucun poids défini
+    const shippingFeeValue =
+      totalWeight > 0
+        ? calculateColissimoHomeRate(totalWeight)
+        : (s?.shippingFee ?? 990) / 100;
 
     // 4. Get or create local customer
     const customerId = await getOrCreateLocalCustomer(

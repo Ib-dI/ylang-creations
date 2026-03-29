@@ -11,8 +11,10 @@ import {
   ShoppingBag,
   Trash2,
   X,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export function CartDrawer() {
   const {
@@ -26,7 +28,16 @@ export function CartDrawer() {
     getShipping,
     getFinalPrice,
     freeShippingThreshold,
+    refreshWeights,
+    isOverWeightLimit,
+    getTotalWeight,
   } = useCartStore();
+
+  const MAX_WEIGHT_GRAMS = 30000;
+
+  useEffect(() => {
+    refreshWeights();
+  }, []);
 
   return (
     <>
@@ -159,7 +170,8 @@ export function CartDrawer() {
                             onClick={() =>
                               updateQuantity(item.id, item.quantity + 1)
                             }
-                            className="hover:bg-ylang-beige flex h-8 w-8 items-center justify-center rounded-lg bg-white transition-colors"
+                            disabled={isOverWeightLimit()}
+                            className="hover:bg-ylang-beige disabled:text-ylang-charcoal/20 flex h-8 w-8 items-center justify-center rounded-lg bg-white transition-colors"
                           >
                             <Plus className="h-4 w-4" />
                           </button>
@@ -213,17 +225,41 @@ export function CartDrawer() {
                   </div>
                 </div>
 
+                {isOverWeightLimit() && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="mb-4 overflow-hidden"
+                  >
+                    <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+                      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
+                      <div className="space-y-1 text-left">
+                        <p className="text-sm font-bold leading-tight">Limite de poids (30kg) dépassée</p>
+                        <p className="text-[11px] leading-relaxed opacity-90">
+                          Votre colis pèse actuellement {(getTotalWeight() / 1000).toFixed(1)}kg. 
+                          Merci de diviser votre commande en deux ou plusieurs envois s'il vous plaît.
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 <Button
-                  variant="luxury"
+                  variant={isOverWeightLimit() ? "secondary" : "luxury"}
                   className="w-full"
                   size="lg"
-                  asChild
-                  onClick={closeCart}
+                  disabled={isOverWeightLimit()}
+                  asChild={!isOverWeightLimit()}
+                  onClick={!isOverWeightLimit() ? closeCart : undefined}
                 >
-                  <Link href="/checkout">
-                    Passer commande
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
+                  {!isOverWeightLimit() ? (
+                    <Link href="/checkout">
+                      Passer commande
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  ) : (
+                    <span>Commande trop lourde</span>
+                  )}
                 </Button>
 
                 <button

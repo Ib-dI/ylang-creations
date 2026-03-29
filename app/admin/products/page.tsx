@@ -56,6 +56,7 @@ interface Product {
   isActive: boolean;
   isFeatured: boolean;
   tags: string[];
+  weight: number;
   options: {
     sizes?: string[];
     defaultSize?: string;
@@ -126,6 +127,7 @@ export default function ProductsPage() {
     isActive: true,
     isFeatured: false,
     customizable: true,
+    weight: "0",
     images: [] as (string | File)[],
     tags: "",
     features: [] as string[],
@@ -181,6 +183,7 @@ export default function ProductsPage() {
         isActive: product.isActive,
         isFeatured: product.isFeatured,
         customizable: product.options?.customizable ?? true,
+        weight: String(product.weight || 0),
         images: product.images,
         tags: product.tags.join(", "),
         features: product.options?.features || [],
@@ -203,6 +206,7 @@ export default function ProductsPage() {
         isActive: true,
         isFeatured: false,
         customizable: true,
+        weight: "0",
         images: [],
         tags: "",
         features: [],
@@ -267,6 +271,7 @@ export default function ProductsPage() {
         sku: formData.sku || null,
         isActive: formData.isActive,
         isFeatured: formData.isFeatured,
+        weight: parseInt(formData.weight) || 0,
         images: finalImages,
         tags: formData.tags
           .split(",")
@@ -1052,6 +1057,24 @@ export default function ProductsPage() {
                           </div>
                           <div>
                             <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
+                              Poids (g) <span className="text-ylang-rose">*</span>
+                            </label>
+                            <Input
+                              type="number"
+                              value={formData.weight}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  weight: e.target.value,
+                                })
+                              }
+                              className=""
+                              placeholder="0"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
                               Prix barré (€)
                             </label>
                             <div className="relative">
@@ -1659,34 +1682,27 @@ export default function ProductsPage() {
               setDeleteConfirmation((prev) => ({ ...prev, isOpen: open }))
             }
           >
-            <DialogContent className="overflow-hidden p-0 sm:max-w-[485px]">
-              <div className="flex flex-col p-4">
-                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-500">
+            <DialogContent className="sm:max-w-[440px]">
+              <DialogHeader>
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500">
                   <TrashBin className="h-6 w-6" />
                 </div>
-                <DialogHeader className="mb-2">
-                  <DialogTitle className="text-xl font-semibold text-gray-900">
-                    Supprimer le produit ?
-                  </DialogTitle>
-                </DialogHeader>
-                <DialogDescription className="text-sm text-gray-500">
-                  Êtes-vous sûr de vouloir supprimer ce produit ? Cette action
-                  est irréversible et supprimera toutes les données associées.
+                <DialogTitle>Supprimer le produit ?</DialogTitle>
+                <DialogDescription>
+                  Cette action est irréversible et supprimera toutes les données associées au produit.
                 </DialogDescription>
-              </div>
-              <DialogFooter className="flex flex-col gap-2 bg-gray-50/50 p-4 sm:flex-row sm:justify-end sm:gap-0">
+              </DialogHeader>
+              <DialogFooter>
                 <Button
                   variant="ghost"
-                  onClick={() =>
-                    setDeleteConfirmation({ isOpen: false, productId: null })
-                  }
-                  className="w-full cursor-pointer font-medium hover:bg-gray-100 sm:w-auto"
+                  onClick={() => setDeleteConfirmation({ isOpen: false, productId: null })}
+                  className="cursor-pointer font-medium text-ylang-charcoal/60 hover:bg-ylang-beige/50 hover:text-ylang-charcoal"
                 >
                   Annuler
                 </Button>
                 <Button
                   variant="primary"
-                  className="w-full cursor-pointer bg-red-600 px-2 font-medium text-white shadow-sm hover:bg-red-700 sm:ml-2 sm:w-auto"
+                  className="cursor-pointer bg-red-500 font-medium text-white hover:bg-red-600"
                   onClick={confirmDelete}
                 >
                   Supprimer définitivement
