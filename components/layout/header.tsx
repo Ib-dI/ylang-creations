@@ -598,7 +598,7 @@ export function Header() {
                 <button
                   onClick={() => router.push("/sign-in")}
                   aria-label="Se connecter"
-                  className="text-ylang-charcoal hover:text-ylang-rose transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
+                  className="text-ylang-white hover:text-ylang-rose transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
                 >
                   <User className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
                 </button>
