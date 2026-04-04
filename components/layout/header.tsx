@@ -395,7 +395,7 @@ export function Header() {
         )}
       >
         {/* Barre Social Media */}
-        <div className="bg-ylang-rose px-4 py-1.5 sm:px-6 lg:px-8 border-b border-ylang-beige">
+        <div className="bg-ylang-charcoal/90 px-4 py-1.5 sm:px-6 lg:px-8 border-b border-ylang-beige">
           <div className="mx-auto flex max-w-7xl items-center justify-between">
             <div className="flex items-center space-x-4">
               <a
@@ -403,7 +403,7 @@ export function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="text-white transition-colors hover:text-white/80"
+                className="text-white/80 transition-colors hover:text-ylang-rose"
               >
                 <Instagram className="h-3.5 w-3.5" />
               </a>
@@ -412,12 +412,12 @@ export function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="text-white transition-colors hover:text-white/80"
+                className="text-white/80 transition-colors hover:text-ylang-rose"
               >
                 <Facebook className="h-3.5 w-3.5" />
               </a>
             </div>
-            <p className="font-body hidden text-[10px] font-medium tracking-widest text-white uppercase sm:block">
+            <p className="font-body hidden text-[12px] font-medium tracking-widest text-white uppercase sm:block">
               Livraison offerte dès {freeShippingThreshold}€ d&apos;achat
             </p>
           </div>
@@ -425,7 +425,7 @@ export function Header() {
 
         {/* Barre principale */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between lg:h-20">
+          <div className="flex h-16 items-center justify-between lg:h-18">
             {/* Bouton Menu et Recherche Mobile */}
             <div className="flex items-center gap-2" ref={megaMenuRef}>
               <button

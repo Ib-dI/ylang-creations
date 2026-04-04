@@ -219,3 +219,15 @@ export const configuratorProduct = pgTable("configurator_product", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+// Configurator Color Palettes (product colors & embroidery thread colors)
+export const configuratorColor = pgTable("configurator_color", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),          // e.g. "Rose Poudré"
+  hex: text("hex").notNull(),            // e.g. "#E8B4B8"
+  type: text("type").notNull(),          // "product" | "embroidery"
+  order: integer("order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});

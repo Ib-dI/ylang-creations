@@ -22,7 +22,7 @@ export function ClientLayoutWrapper({
   return (
     <>
       <Header />
-      <div className="mt-22 lg:mt-26">{children}</div>
+      <div className="mt-22 lg:mt-25">{children}</div>
       <Footer />
       <CartDrawer />
       <WishlistDrawer />

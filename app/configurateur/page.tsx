@@ -232,55 +232,9 @@ const ProductConfigurator = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [categories, setCategories] = useState<FabricCategory[]>([]);
+  const [productColors, setProductColors] = useState<{ name: string; hex: string }[]>([]);
+  const [embroideryColors, setEmbroideryColors] = useState<{ name: string; hex: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const embroideryColors = [
-    { name: "Doré", hex: "#D4AF37" },
-    { name: "Argent", hex: "#C0C0C0" },
-    { name: "Rose", hex: "#FFB6C1" },
-    { name: "Bleu", hex: "#87CEEB" },
-    { name: "Terra Cotta", hex: "#E2725B" },
-    { name: "Blanc", hex: "#FFFFFF" },
-    { name: "Gris Anthracite", hex: "#36454F" },
-    { name: "Noir", hex: "#000000" },
-    { name: "Jaune Citron", hex: "#FFFF00" },
-    { name: "Rouge Vif", hex: "#FF0000" },
-    { name: "Bleu Roi", hex: "#0000FF" },
-    { name: "Vert Pré", hex: "#00FF00" },
-    { name: "Magenta", hex: "#FF00FF" },
-    { name: "Cyan", hex: "#00FFFF" },
-    { name: "Orange", hex: "#FF8000" },
-    { name: "Violet", hex: "#8000FF" },
-    { name: "Azur", hex: "#0080FF" },
-    { name: "Framboise", hex: "#FF0080" },
-    { name: "Chocolat", hex: "#804000" },
-    { name: "Vert Sapin", hex: "#008040" },
-    { name: "Indigo", hex: "#400080" },
-    { name: "Corail Vif", hex: "#FF4040" },
-    { name: "Vert Menthe", hex: "#40FF40" },
-    { name: "Bleu Indigo", hex: "#4040FF" },
-    { name: "Saumon", hex: "#FF8080" },
-    { name: "Menthe à l'eau", hex: "#80FF80" },
-    { name: "Lavande", hex: "#8080FF" },
-    { name: "Ambre", hex: "#FFCC00" },
-    { name: "Mauve Électrique", hex: "#CC00FF" },
-    { name: "Turquoise", hex: "#00FFCC" },
-  ];
-
-
-  // Palette de couleurs pour les éléments avec color mask
-  const productColors = [
-    { name: "Rose Poudré", hex: "#E8B4B8" },
-    { name: "Terracotta", hex: "#C4756C" },
-    { name: "Bleu Ciel", hex: "#89CFF0" },
-    { name: "Vert Sauge", hex: "#9DC183" },
-    { name: "Jaune Miel", hex: "#F5D76E" },
-    { name: "Lilas", hex: "#C8A2C8" },
-    { name: "Corail", hex: "#FF8A80" },
-    { name: "Beige", hex: "#D4C4A8" },
-    { name: "Menthe", hex: "#98FF98" },
-    { name: "Pêche", hex: "#FFCBA4" },
-  ];
 
   // --- State ---
 
@@ -292,12 +246,13 @@ const ProductConfigurator = () => {
     product: null as unknown as Product, // Will be set after load
     fabric: null as unknown as Fabric, // Will be set after load
     embroidery: "",
-    embroideryColor: embroideryColors[0].hex,
+    embroideryColor: "#D4AF37", // Sera écrasé après le chargement des couleurs
     selectedColor: null,
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [showColorBubble, setShowColorBubble] = useState(false);
 
   // Cart store
   const { addItem, openCart } = useCartStore();
@@ -315,25 +270,33 @@ const ProductConfigurator = () => {
   useEffect(() => {
     async function loadConfiguratorData() {
       try {
-        const [prodRes, fabRes, catRes] = await Promise.all([
+        const [prodRes, fabRes, catRes, productColorsRes, embroideryColorsRes] = await Promise.all([
           fetch("/api/configurator/products?active=true"),
           fetch("/api/configurator/fabrics?active=true"),
-          fetch("/api/configurator/categories?active=true")
+          fetch("/api/configurator/categories?active=true"),
+          fetch("/api/configurator/colors?type=product&active=true"),
+          fetch("/api/configurator/colors?type=embroidery&active=true"),
         ]);
         const prodData = await prodRes.json();
         const fabData = await fabRes.json();
         const catData = await catRes.json();
-        
+        const productColorsData = await productColorsRes.json();
+        const embroideryColorsData = await embroideryColorsRes.json();
+
         const loadedProducts = prodData.products || [];
         const loadedFabrics = fabData.fabrics || [];
         const loadedCategories = catData.categories || [];
-        
+        const loadedProductColors: { name: string; hex: string }[] = productColorsData.colors || [];
+        const loadedEmbroideryColors: { name: string; hex: string }[] = embroideryColorsData.colors || [];
+
         setProducts(loadedProducts);
         setFabrics(loadedFabrics);
         setCategories(loadedCategories);
-        
+        setProductColors(loadedProductColors);
+        setEmbroideryColors(loadedEmbroideryColors);
+
         let initialConfigProduct = loadedProducts[0];
-        
+
         if (initialProductId && loadedProducts.length > 0) {
           const foundProduct = loadedProducts.find(
             (p: Product) =>
@@ -350,6 +313,10 @@ const ProductConfigurator = () => {
             ...prev,
             product: initialConfigProduct,
             fabric: loadedFabrics[0],
+            embroideryColor: loadedEmbroideryColors[0]?.hex ?? "#D4AF37",
+            selectedColor: initialConfigProduct?.colorMaskImage && loadedProductColors[0]
+              ? loadedProductColors[0].hex
+              : null,
           }));
         }
       } catch (e) {
@@ -902,14 +869,21 @@ const ProductConfigurator = () => {
                   </div>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {products.map((product) => {
-                      const isSelected =
-                        configuration.product?.id === product.id;
+                      const isSelected = configuration.product?.id === product.id;
                       return (
                         <button
                           key={product.id}
-                          onClick={() =>
-                            setConfiguration((prev) => ({ ...prev, product }))
-                          }
+                          onClick={() => {
+                            const isNewProduct = configuration.product?.id !== product.id;
+                            setConfiguration((prev) => ({
+                              ...prev,
+                              product,
+                              selectedColor: product.colorMaskImage
+                                ? isNewProduct ? productColors[0].hex : prev.selectedColor
+                                : null,
+                            }));
+                            if (product.colorMaskImage) setShowColorBubble(true);
+                          }}
                           className={`group relative overflow-hidden rounded-2xl border-2 p-4 text-left transition-all duration-500 ${
                             isSelected
                               ? "border-ylang-rose bg-ylang-rose/10 scale-[0.98] shadow-[0_10px_30px_-10px_rgba(232,180,184,0.4)]"
@@ -950,6 +924,23 @@ const ProductConfigurator = () => {
                             )}
                           </div>
 
+                          {/* Chip "Changer la couleur" sur la carte sélectionnée */}
+                          {isSelected && product.colorMaskImage && configuration.selectedColor && (
+                            <div
+                              onClick={(e) => { e.stopPropagation(); setShowColorBubble(true); }}
+                              className="border-ylang-rose/20 mt-3 flex w-full items-center gap-2 rounded-xl border bg-white/60 px-3 py-2 text-xs font-bold transition-all hover:bg-white"
+                            >
+                              <div
+                                className="h-4 w-4 shrink-0 rounded-full border border-white shadow-sm"
+                                style={{ backgroundColor: configuration.selectedColor }}
+                              />
+                              <span className="text-ylang-charcoal/70">
+                                {productColors.find((c) => c.hex === configuration.selectedColor)?.name}
+                              </span>
+                              <span className="text-ylang-rose ml-auto">Changer</span>
+                            </div>
+                          )}
+
                           {/* Decorative element */}
                           <div
                             className={`bg-ylang-rose/5 absolute -right-4 -bottom-4 h-24 w-24 rounded-full blur-2xl transition-opacity duration-500 ${isSelected ? "opacity-100" : "opacity-0"}`}
@@ -959,75 +950,58 @@ const ProductConfigurator = () => {
                     })}
                   </div>
 
-                  {/* Color Selection - uniquement si le produit a un colorMaskImage */}
-                  {configuration.product?.colorMaskImage && (
-                    <div className="mt-6 rounded-2xl border-2 border-dashed border-[#e8dcc8] bg-ylang-beige p-4">
-                      <div className="mb-3 flex items-center gap-2">
-                        <Palette className="text-ylang-rose h-5 w-5" />
-                        <h3 className="text-ylang-charcoal text-lg font-bold">
-                          Personnalisez la couleur
-                        </h3>
-                      </div>
-                      <p className="text-ylang-charcoal/60 mb-4 text-sm">
-                        Ce produit dispose d'éléments personnalisables en
-                        couleur
-                      </p>
-                      <div className="flex flex-wrap gap-3">
-                        {productColors.map((color) => (
+                  {/* Bulle flottante de sélection de couleur */}
+                  {showColorBubble && configuration.product?.colorMaskImage && (
+                    <>
+                      {/* Backdrop léger */}
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setShowColorBubble(false)}
+                      />
+                      {/* Bulle */}
+                      <div className="animate-in fade-in slide-in-from-bottom-4 fixed bottom-24 left-1/2 z-50 w-[min(420px,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-3xl bg-white shadow-[0_20px_60px_-10px_rgba(0,0,0,0.2)] duration-200">
+                        <div className="from-ylang-rose/10 to-ylang-rose/5 flex items-center justify-between bg-linear-to-r px-5 py-4">
+                          <div className="flex items-center gap-2">
+                            <Palette className="text-ylang-rose h-5 w-5" />
+                            <span className="text-ylang-charcoal text-sm font-bold">
+                              Couleur de l&apos;élément
+                            </span>
+                          </div>
                           <button
-                            key={color.hex}
-                            onClick={() =>
-                              setConfiguration((prev) => ({
-                                ...prev,
-                                selectedColor:
-                                  prev.selectedColor === color.hex
-                                    ? null
-                                    : color.hex,
-                              }))
-                            }
-                            className={`group relative h-10 w-10 rounded-full border-2 transition-all duration-300 ${
-                              configuration.selectedColor === color.hex
-                                ? "ring-ylang-rose scale-110 border-white shadow-lg ring-2 ring-offset-2"
-                                : "border-white/50 hover:scale-110 hover:shadow-md"
-                            }`}
-                            style={{ backgroundColor: color.hex }}
-                            title={color.name}
+                            onClick={() => setShowColorBubble(false)}
+                            className="text-ylang-charcoal/40 hover:text-ylang-charcoal transition-colors"
                           >
-                            {configuration.selectedColor === color.hex && (
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <Check className="h-5 w-5 text-white drop-shadow-md" />
-                              </div>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                      {configuration.selectedColor && (
-                        <div className="mt-3 flex items-center gap-2">
-                          <div
-                            className="h-4 w-4 rounded-full border border-[#e8dcc8]"
-                            style={{
-                              backgroundColor: configuration.selectedColor,
-                            }}
-                          />
-                          <span className="text-ylang-charcoal/70 text-sm font-medium">
-                            {productColors.find(
-                              (c) => c.hex === configuration.selectedColor,
-                            )?.name || "Couleur sélectionnée"}
-                          </span>
-                          <button
-                            onClick={() =>
-                              setConfiguration((prev) => ({
-                                ...prev,
-                                selectedColor: null,
-                              }))
-                            }
-                            className="text-ylang-rose ml-auto text-xs hover:underline"
-                          >
-                            Réinitialiser
+                            ✕
                           </button>
                         </div>
-                      )}
-                    </div>
+                        <div className="p-5">
+                          <div className="flex flex-wrap gap-3">
+                            {productColors.map((color) => (
+                              <button
+                                key={color.hex}
+                                onClick={() => {
+                                  setConfiguration((prev) => ({ ...prev, selectedColor: color.hex }));
+                                  setShowColorBubble(false);
+                                }}
+                                className={`relative h-10 w-10 rounded-full border-2 transition-all duration-300 ${
+                                  configuration.selectedColor === color.hex
+                                    ? "ring-ylang-rose scale-110 border-white shadow-lg ring-2 ring-offset-2"
+                                    : "border-white/50 hover:scale-110 hover:shadow-md"
+                                }`}
+                                style={{ backgroundColor: color.hex }}
+                                title={color.name}
+                              >
+                                {configuration.selectedColor === color.hex && (
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <Check className="h-5 w-5 text-white drop-shadow-md" />
+                                  </div>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   )}
                 </>
               )}
