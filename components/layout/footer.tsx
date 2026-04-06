@@ -154,7 +154,7 @@ export function Footer() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-ylang-cream w-full rounded-md border-gray-300 py-6"
+                  className="bg-ylang-cream w-full rounded-none border-ylang-rose/30 py-6"
                 />
               </div>
               <Button

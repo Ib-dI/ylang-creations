@@ -52,6 +52,8 @@ export async function POST(request: Request) {
       maskImage: body.maskImage,
       colorMaskImage: body.colorMaskImage || null,
       embroideryZone: body.embroideryZone ?? { x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center" },
+      sizes: body.sizes ?? null,
+      defaultSize: body.defaultSize ?? null,
       isActive: body.isActive ?? true,
     }).returning();
 

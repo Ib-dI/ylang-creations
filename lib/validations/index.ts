@@ -62,6 +62,12 @@ export const createProductSchema = z.object({
     .optional()
     .nullable(),
   options: z.record(z.string(), z.unknown()).optional().nullable(),
+  sizes: z
+    .array(z.string().max(50))
+    .max(30, "Maximum 30 tailles")
+    .optional()
+    .nullable(),
+  defaultSize: z.string().max(50).optional().nullable(),
   weight: z
     .number()
     .int("Le poids doit être un entier")

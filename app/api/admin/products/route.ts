@@ -47,6 +47,8 @@ export async function GET(request: Request) {
       isFeatured: p.isFeatured,
       tags: (p.tags as string[] | null) ?? [],
       options: (p.options as Record<string, unknown> | null) ?? {},
+      sizes: (p.sizes as string[] | null) ?? [],
+      defaultSize: p.defaultSize ?? null,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
     }));
@@ -123,6 +125,8 @@ export async function POST(request: Request) {
       isFeatured,
       tags,
       options,
+      sizes,
+      defaultSize,
       weight,
     } = validation.data;
 
@@ -154,6 +158,8 @@ export async function POST(request: Request) {
       isFeatured: isFeatured ?? false,
       tags: tags ?? null,
       options: options ?? null,
+      sizes: sizes ?? null,
+      defaultSize: defaultSize ?? null,
       createdAt: now,
       updatedAt: now,
     });

@@ -56,6 +56,8 @@ export async function GET(
         isFeatured: p.isFeatured,
         tags: (p.tags as string[] | null) ?? [],
         options: (p.options as Record<string, unknown> | null) ?? {},
+        sizes: (p.sizes as string[] | null) ?? [],
+        defaultSize: p.defaultSize ?? null,
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,
       },
@@ -142,6 +144,12 @@ export async function PATCH(
     }
     if (validatedData.options !== undefined) {
       updateData.options = validatedData.options ?? null;
+    }
+    if (validatedData.sizes !== undefined) {
+      updateData.sizes = validatedData.sizes ?? null;
+    }
+    if (validatedData.defaultSize !== undefined) {
+      updateData.defaultSize = validatedData.defaultSize ?? null;
     }
 
     await db.update(product).set(updateData).where(eq(product.id, id));

@@ -58,6 +58,9 @@ export default function ProductDetails({
   // États locaux
   const [selectedImage, setSelectedImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(
+    product.defaultSize ?? product.sizes?.[0],
+  );
 
   // Wishlist
   const { isInWishlist, toggleItem } = useWishlistStore();
@@ -71,6 +74,11 @@ export default function ProductDetails({
     product.images && product.images.length > 0
       ? product.images
       : [product.image];
+
+  // Scroll to top on first mount (fix Suspense scroll restoration)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 
   // Spring-based slide transition (same as hero-section)
   const x = selectedImage * 100;
@@ -149,7 +157,8 @@ export default function ProductDetails({
                 whileHover={{ scale: 1.1, backgroundColor: "white" }}
                 whileTap={{ scale: 0.9 }}
                 onClick={prevImage}
-                className="absolute top-1/2 left-4 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5"
+                aria-label="Image précédente"
+                className="absolute top-1/2 left-4 z-10 -translate-y-1/2 select-none rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50"
               >
                 <ChevronLeft className="text-ylang-charcoal h-6 w-6" />
               </motion.button>
@@ -157,7 +166,8 @@ export default function ProductDetails({
                 whileHover={{ scale: 1.1, backgroundColor: "white" }}
                 whileTap={{ scale: 0.9 }}
                 onClick={nextImage}
-                className="absolute top-1/2 right-4 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5"
+                aria-label="Image suivante"
+                className="absolute top-1/2 right-4 z-10 -translate-y-1/2 select-none rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50"
               >
                 <ChevronRight className="text-ylang-charcoal h-6 w-6" />
               </motion.button>
@@ -167,30 +177,32 @@ export default function ProductDetails({
                 whileHover={{ scale: 1.1, backgroundColor: "white" }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setShowZoom(true)}
-                className="absolute right-4 bottom-4 z-10 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5"
+                aria-label="Agrandir l'image"
+                className="absolute right-4 bottom-4 z-10 select-none rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50"
               >
                 <ZoomIn className="text-ylang-charcoal h-5 w-5" />
               </motion.button>
             </div>
 
             {/* Thumbnails */}
-            <div className="flex gap-3 lg:gap-4">
+            <div
+              className="grid gap-3 lg:gap-4"
+              style={{
+                gridTemplateColumns: `repeat(${Math.min(productImages.length, 6)}, 1fr)`,
+              }}
+            >
               {productImages.map((img, idx) => (
                 <motion.button
                   key={idx}
-                  whileHover={{ y: -4 }}
+                  whileHover={{ y: -3 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    setSelectedImage(idx);
-                  }}
-                  style={{
-                    width: `calc((100% - ${(productImages.length - 1) * 16}px) / ${productImages.length})`,
-                    maxWidth: productImages.length === 1 ? "150px" : undefined,
-                  }}
-                  className={`relative aspect-square shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+                  onClick={() => setSelectedImage(idx)}
+                  aria-label={`Voir l'image ${idx + 1}`}
+                  aria-pressed={selectedImage === idx}
+                  className={`relative aspect-square overflow-hidden rounded-lg border-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50 ${
                     selectedImage === idx
                       ? "border-ylang-rose"
-                      : "hover:border-ylang-rose/40 border-transparent"
+                      : "border-transparent hover:border-ylang-rose/40"
                   }`}
                 >
                   <Image
@@ -266,6 +278,38 @@ export default function ProductDetails({
               </p>
             </div>
 
+            {/* Sélecteur de taille */}
+            {product.sizes && product.sizes.length > 0 && (
+              <div>
+                <div className="mb-3 flex items-center justify-between">
+                  <label className="font-body text-ylang-charcoal/60 text-xs font-medium tracking-wide uppercase">
+                    Taille
+                  </label>
+                  {selectedSize && (
+                    <span className="font-body text-ylang-rose text-sm font-medium">
+                      {selectedSize}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setSelectedSize(size)}
+                      className={`font-body min-w-11 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50 ${
+                        selectedSize === size
+                          ? "border-ylang-rose bg-ylang-rose/10 text-ylang-rose"
+                          : "border-ylang-beige/60 text-ylang-charcoal hover:border-ylang-rose/40 hover:text-ylang-rose"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* CTA Personnaliser */}
             {product.customizable && (
               <div className="from-ylang-rose/10 to-ylang-terracotta/10 border-ylang-rose/20 rounded-2xl border bg-linear-to-r p-5 lg:p-6">
@@ -301,12 +345,13 @@ export default function ProductDetails({
               className="w-full"
               onClick={() => {
                 const item: CartItem = {
-                  id: `${product.id}-standard-${Date.now()}`,
+                  id: `${product.id}-standard-${selectedSize ?? "unique"}-${Date.now()}`,
                   productId: product.id,
                   productName: product.name,
                   configuration: {
                     fabricName: "Standard",
                     fabricColor: "Original",
+                    ...(selectedSize ? { size: selectedSize } : {}),
                   },
                   price: product.price,
                   weight: product.weight ?? 0,
@@ -336,21 +381,23 @@ export default function ProductDetails({
                     customizable: product.customizable,
                   })
                 }
-                className={`font-body group bg-ylang-beige flex flex-1 items-center justify-center gap-2 border-2 py-3 transition-all ${
+                aria-label={isWishlisted ? "Retirer des favoris" : "Ajouter aux favoris"}
+                aria-pressed={isWishlisted}
+                className={`font-body group flex flex-1 items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50 ${
                   isWishlisted
                     ? "border-ylang-rose bg-ylang-rose/10 text-ylang-rose"
-                    : "border-ylang-beige/10 hover:border-ylang-rose hover:text-ylang-rose text-ylang-charcoal"
+                    : "border-ylang-beige/80 bg-ylang-beige/60 text-ylang-charcoal hover:border-ylang-rose/50 hover:text-ylang-rose"
                 }`}
               >
                 <Heart
-                  className={`group-hover:text-ylang-rose h-5 w-5 transition-colors ${isWishlisted ? "fill-current" : ""}`}
+                  className={`h-5 w-5 transition-colors group-hover:text-ylang-rose ${isWishlisted ? "fill-current" : ""}`}
                 />
                 {isWishlisted ? "Ajouté aux favoris" : "Ajouter aux favoris"}
               </button>
             </div>
 
             {/* Points forts */}
-            <div className="border-ylang-beige bg-ylang-terracotta/30 grid grid-cols-2 gap-3 border p-4 pt-6 lg:gap-4">
+            <div className="border-ylang-yellow/50 bg-ylang-terracotta/30 grid grid-cols-2 gap-4 rounded-2xl border p-5">
               <div className="flex items-start gap-3">
                 <div className="bg-ylang-sage/30 rounded-lg p-2">
                   <Truck className="text-ylang-charcoal h-5 w-5" />

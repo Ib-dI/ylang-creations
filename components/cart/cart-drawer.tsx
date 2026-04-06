@@ -133,9 +133,14 @@ export function CartDrawer() {
                           <h3 className="font-display text-ylang-charcoal mb-1 font-semibold">
                             {item.productName}
                           </h3>
-                          <p className="text-ylang-charcoal/60 mb-2 text-xs">
+                          <p className="text-ylang-charcoal/60 mb-1 text-xs">
                             Tissu: {item.configuration.fabricName}
                           </p>
+                          {item.configuration.size && (
+                            <p className="text-ylang-charcoal/60 mb-1 text-xs">
+                              Taille: {item.configuration.size}
+                            </p>
+                          )}
                           {item.configuration.embroidery && (
                             <p className="text-ylang-charcoal/60 mb-1 text-xs">
                               Broderie: "{item.configuration.embroidery}"

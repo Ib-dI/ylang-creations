@@ -17,13 +17,14 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
   const parsedImages = (p.images as string[] | null) ?? [];
 
   interface ParsedOptions {
-    sizes?: string[];
     customizable?: boolean;
     isNew?: boolean;
   }
 
   const parsedOptions: ParsedOptions =
     (p.options as ParsedOptions | null) ?? {};
+
+  const parsedSizes = (p.sizes as string[] | null) ?? [];
 
   return {
     id: p.id,
@@ -38,8 +39,8 @@ function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
     new: parsedOptions.isNew ?? new Date(p.createdAt) > thirtyDaysAgo,
     featured: p.isFeatured,
     customizable: parsedOptions.customizable ?? true,
-    sizes: parsedOptions.sizes || [],
-    defaultSize: parsedOptions.sizes?.[0] || undefined,
+    sizes: parsedSizes,
+    defaultSize: p.defaultSize ?? parsedSizes[0] ?? undefined,
     slug: p.slug,
     compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
   };

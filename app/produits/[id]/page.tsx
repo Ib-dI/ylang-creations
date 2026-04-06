@@ -1,7 +1,7 @@
 import ProductDetails from "@/components/product/product-details";
 import { CatalogProduct } from "@/data/products";
 import { product as productTable } from "@/db/schema";
-import { getReviews } from "@/lib/actions/reviews";
+import { getReviews, type ReviewWithUser } from "@/lib/actions/reviews";
 import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { and, eq, ne } from "drizzle-orm";
@@ -17,12 +17,12 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
   const parsedImages = (p.images as string[] | null) ?? [];
 
   let parsedOptions: {
-    sizes?: string[];
-    defaultSize?: string;
     features?: string[];
     longDescription?: string;
     customizable?: boolean;
   } = (p.options as typeof parsedOptions | null) ?? {};
+
+  const parsedSizes = (p.sizes as string[] | null) ?? [];
 
   return {
     id: p.id,
@@ -39,9 +39,8 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
       new Date(p.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     featured: p.isFeatured,
     customizable: parsedOptions.customizable ?? true,
-    sizes: parsedOptions.sizes || [],
-    defaultSize:
-      parsedOptions.defaultSize || parsedOptions.sizes?.[0] || undefined,
+    sizes: parsedSizes,
+    defaultSize: p.defaultSize ?? parsedSizes[0] ?? undefined,
     compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
     weight: p.weight ?? 0,
   };
@@ -94,13 +93,21 @@ export default async function Page({ params }: PageProps) {
   );
 }
 
+interface ProductDetailsWrapperProps {
+  product: CatalogProduct;
+  similarProducts: CatalogProduct[];
+  reviews: ReviewWithUser[];
+  averageRating: number;
+  totalReviews: number;
+}
+
 async function ProductDetailsWrapper({
   product,
   similarProducts,
   reviews,
   averageRating,
   totalReviews,
-}: any) {
+}: ProductDetailsWrapperProps) {
   // dynamic getUser() inside Suspense
   const supabase = await createClient();
   const {

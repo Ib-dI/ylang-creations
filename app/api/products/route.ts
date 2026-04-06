@@ -74,13 +74,14 @@ async function getCachedProducts(params: {
     const parsedImages = (p.images as string[] | null) ?? [];
 
     interface ParsedOptions {
-      sizes?: string[];
       customizable?: boolean;
       isNew?: boolean;
     }
 
     const parsedOptions: ParsedOptions =
       (p.options as ParsedOptions | null) ?? {};
+
+    const parsedSizes = (p.sizes as string[] | null) ?? [];
 
     return {
       id: p.id,
@@ -90,17 +91,17 @@ async function getCachedProducts(params: {
       image: parsedImages[0] || "/images/placeholder.jpg",
       images: parsedImages,
       description: p.description,
-      longDescription: p.description, // using description as both for now
-      features: [], // db doesn't have features column yet, maybe tags?
+      longDescription: p.description,
+      features: [],
       new:
         parsedOptions.isNew !== undefined
           ? parsedOptions.isNew
           : new Date(p.createdAt) >
-            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Fallback to 30 days
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       featured: p.isFeatured,
-      customizable: parsedOptions.customizable ?? true, // Assuming all Ylang creations are customizable
-      sizes: parsedOptions.sizes || [],
-      defaultSize: parsedOptions.sizes?.[0] || null,
+      customizable: parsedOptions.customizable ?? true,
+      sizes: parsedSizes,
+      defaultSize: p.defaultSize ?? parsedSizes[0] ?? null,
       slug: p.slug,
       compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
       weight: p.weight ?? 0,

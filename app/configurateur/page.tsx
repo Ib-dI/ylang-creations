@@ -51,6 +51,8 @@ interface Product {
   maskImage: string;
   colorMaskImage?: string;
   embroideryZone: EmbroideryZone;
+  sizes?: string[];
+  defaultSize?: string | null;
 }
 
 interface Fabric {
@@ -72,6 +74,7 @@ interface FabricCategory {
 interface Configuration {
   product: Product | null;
   fabric: Fabric | null;
+  size: string | null;
   embroidery: string;
   embroideryColor: string;
   selectedColor: string | null;
@@ -245,6 +248,7 @@ const ProductConfigurator = () => {
   const [configuration, setConfiguration] = useState<Configuration>({
     product: null as unknown as Product, // Will be set after load
     fabric: null as unknown as Fabric, // Will be set after load
+    size: null,
     embroidery: "",
     embroideryColor: "#D4AF37", // Sera écrasé après le chargement des couleurs
     selectedColor: null,
@@ -313,6 +317,7 @@ const ProductConfigurator = () => {
             ...prev,
             product: initialConfigProduct,
             fabric: loadedFabrics[0],
+            size: initialConfigProduct?.defaultSize ?? initialConfigProduct?.sizes?.[0] ?? null,
             embroideryColor: loadedEmbroideryColors[0]?.hex ?? "#D4AF37",
             selectedColor: initialConfigProduct?.colorMaskImage && loadedProductColors[0]
               ? loadedProductColors[0].hex
@@ -366,10 +371,11 @@ const ProductConfigurator = () => {
   ];
 
   const currentTabIndex = tabs.findIndex((t) => t.id === activeTab);
+  const productNeedsSize = !!(configuration.product?.sizes?.length);
   const canGoNext =
     currentTabIndex < tabs.length - 1 &&
     (activeTab === "product"
-      ? !!configuration.product
+      ? !!configuration.product && (!productNeedsSize || !!configuration.size)
       : activeTab === "fabric"
         ? !!configuration.fabric
         : true);
@@ -414,6 +420,7 @@ const ProductConfigurator = () => {
         fabricName: configuration.fabric.name,
         fabricColor: configuration.fabric.baseColor,
         embroidery: configuration.embroidery || undefined,
+        size: configuration.size || undefined,
       },
       price: totalPrice() / 100,
       weight: configuration.product.weight ?? 0,
@@ -878,6 +885,9 @@ const ProductConfigurator = () => {
                             setConfiguration((prev) => ({
                               ...prev,
                               product,
+                              size: isNewProduct
+                                ? (product.defaultSize ?? product.sizes?.[0] ?? null)
+                                : prev.size,
                               selectedColor: product.colorMaskImage
                                 ? isNewProduct ? productColors[0].hex : prev.selectedColor
                                 : null,
@@ -949,6 +959,45 @@ const ProductConfigurator = () => {
                       );
                     })}
                   </div>
+
+                  {/* Sélecteur de taille — affiché si le produit sélectionné a des tailles */}
+                  {configuration.product?.sizes && configuration.product.sizes.length > 0 && (
+                    <div className="rounded-2xl bg-white/70 p-5 backdrop-blur-sm">
+                      <div className="mb-3 flex items-center justify-between">
+                        <span className="text-ylang-charcoal/60 text-xs font-semibold tracking-widest uppercase">
+                          Taille
+                        </span>
+                        {configuration.size && (
+                          <span className="text-ylang-rose text-sm font-semibold">
+                            {configuration.size}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {configuration.product.sizes.map((size) => (
+                          <button
+                            key={size}
+                            type="button"
+                            onClick={() =>
+                              setConfiguration((prev) => ({ ...prev, size }))
+                            }
+                            className={`min-w-11 rounded-lg border-2 px-3 py-2 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50 ${
+                              configuration.size === size
+                                ? "border-ylang-rose bg-ylang-rose/10 text-ylang-rose"
+                                : "border-[#e8dcc8] text-ylang-charcoal hover:border-ylang-rose/40 hover:text-ylang-rose"
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                      {productNeedsSize && !configuration.size && (
+                        <p className="text-ylang-rose mt-2 text-xs font-medium">
+                          Veuillez sélectionner une taille pour continuer
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   {/* Bulle flottante de sélection de couleur */}
                   {showColorBubble && configuration.product?.colorMaskImage && (

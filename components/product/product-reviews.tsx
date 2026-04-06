@@ -37,6 +37,10 @@ export function ProductReviews({
   const [isPending, startTransition] = useTransition();
   const [hoverRating, setHoverRating] = useState(0);
 
+  const MAX_COMMENT_LENGTH = 500;
+  const ratingLabels = ["", "Terrible", "Mauvais", "Passable", "Bien", "Excellent"] as const;
+  const activeRatingLabel = ratingLabels[hoverRating || rating];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) return;
@@ -120,19 +124,33 @@ export function ProductReviews({
 
             {currentUser ? (
               <form onSubmit={handleSubmit} className="relative space-y-6">
-                <div>
-                  <label className="font-body text-ylang-charcoal/60 mb-3 block text-xs font-medium tracking-wide uppercase">
-                    Quelle est votre note ?
-                  </label>
+                <fieldset>
+                  <div className="mb-3 flex items-center gap-3">
+                    <legend className="font-body text-ylang-charcoal/60 text-xs font-medium tracking-wide uppercase">
+                      Quelle est votre note ?
+                    </legend>
+                    {activeRatingLabel && (
+                      <motion.span
+                        key={activeRatingLabel}
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="font-body text-ylang-rose text-xs font-semibold"
+                      >
+                        {activeRatingLabel}
+                      </motion.span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
                         type="button"
+                        aria-label={`${ratingLabels[star]}`}
+                        aria-pressed={rating === star}
                         onMouseEnter={() => setHoverRating(star)}
                         onMouseLeave={() => setHoverRating(0)}
                         onClick={() => setRating(star)}
-                        className="group relative transition-transform hover:scale-110 focus:outline-hidden"
+                        className="group relative transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/50 focus-visible:ring-offset-1 rounded"
                       >
                         <Star
                           className={`h-10 w-10 transition-colors duration-300 ${
@@ -150,15 +168,32 @@ export function ProductReviews({
                       </button>
                     ))}
                   </div>
-                </div>
+                </fieldset>
 
                 <div>
-                  <label className="font-body text-ylang-charcoal/60 mb-2 block text-xs font-medium tracking-wide uppercase">
-                    Votre témoignage
-                  </label>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label
+                      htmlFor="review-comment"
+                      className="font-body text-ylang-charcoal/60 text-xs font-medium tracking-wide uppercase"
+                    >
+                      Votre témoignage
+                    </label>
+                    <span
+                      className={`font-body text-xs tabular-nums transition-colors ${
+                        comment.length >= MAX_COMMENT_LENGTH
+                          ? "text-red-400"
+                          : "text-ylang-charcoal/30"
+                      }`}
+                    >
+                      {comment.length}/{MAX_COMMENT_LENGTH}
+                    </span>
+                  </div>
                   <Textarea
+                    id="review-comment"
                     value={comment}
-                    onChange={(e) => setComment(e.target.value)}
+                    onChange={(e) =>
+                      setComment(e.target.value.slice(0, MAX_COMMENT_LENGTH))
+                    }
                     placeholder="Qu'avez-vous particulièrement aimé ?"
                     className="border-ylang-beige/50 bg-ylang-beige/5 font-body ring-ylang-rose/20 focus:border-ylang-rose/30 min-h-[120px] resize-none p-4 transition-all focus:bg-white focus:ring-4"
                   />
@@ -187,10 +222,7 @@ export function ProductReviews({
                   communauté.
                 </p>
                 <Link href="/sign-in">
-                  <Button
-                    variant="secondary"
-                    className=""
-                  >
+                  <Button variant="secondary">
                     Se connecter
                   </Button>
                 </Link>
@@ -219,8 +251,9 @@ export function ProductReviews({
             ) : (
               <div className="grid gap-6">
                 {reviews.map((review, idx) => (
-                  <motion.div
+                  <motion.article
                     key={review.id}
+                    aria-label={`Avis de ${review.user?.name ?? "Client Anonyme"}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1 }}
@@ -278,7 +311,7 @@ export function ProductReviews({
                         </p>
                       </div>
                     )}
-                  </motion.div>
+                  </motion.article>
                 ))}
               </div>
             )}

@@ -6,6 +6,7 @@ export interface CartItem {
     fabricName: string;
     fabricColor: string;
     embroidery?: string;
+    size?: string;
   };
   price: number;
   weight: number; // Weight in grams

@@ -49,8 +49,6 @@ export const catalogProducts: CatalogProduct[] = [
     ],
     new: true,
     customizable: true,
-    sizes: ["0-6 mois", "6-12 mois", "12-24 mois", "24-36 mois"],
-    defaultSize: "0-6 mois",
     weight: 500,
   },
   {
@@ -78,8 +76,6 @@ export const catalogProducts: CatalogProduct[] = [
       "Plusieurs coloris disponibles",
     ],
     customizable: true,
-    sizes: ["60x120 cm", "70x140 cm"],
-    defaultSize: "60x120 cm",
     weight: 700,
   },
   {
@@ -107,8 +103,6 @@ export const catalogProducts: CatalogProduct[] = [
       "Lavable en machine 30°C",
     ],
     customizable: true,
-    sizes: ["0-3 mois", "3-6 mois", "6-12 mois", "12-18 mois"],
-    defaultSize: "0-3 mois",
     weight: 250,
   },
   {
@@ -245,8 +239,6 @@ export const catalogProducts: CatalogProduct[] = [
       "Lavable en machine 30°C",
     ],
     customizable: true,
-    sizes: ["0-3 mois", "3-6 mois", "6-12 mois", "12-18 mois"],
-    defaultSize: "0-3 mois",
     weight: 300,
   },
 ];
@@ -346,8 +338,6 @@ export const mockProducts: ConfiguratorProduct[] = [
     description:
       "Gigoteuse évolutive 4 saisons en coton bio, personnalisable avec vos tissus préférés",
     image: "/images/products/gigoteuse.jpg",
-    sizes: ["0-6 mois", "6-12 mois", "12-24 mois", "24-36 mois"],
-    defaultSize: "0-6 mois",
   },
   {
     id: "tour-lit-1",
@@ -356,8 +346,6 @@ export const mockProducts: ConfiguratorProduct[] = [
     basePrice: 65,
     description: "Tour de lit sécurisé et confortable pour protéger bébé",
     image: "/images/products/tour-lit.jpg",
-    sizes: ["60x120 cm", "70x140 cm"],
-    defaultSize: "60x120 cm",
   },
   {
     id: "mobile-1",

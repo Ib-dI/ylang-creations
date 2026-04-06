@@ -127,6 +127,8 @@ export const product = pgTable(
     isFeatured: boolean("is_featured").notNull().default(false),
     tags: jsonb("tags"), // JSONB array of tags
     options: jsonb("options"), // JSONB object for product options
+    sizes: jsonb("sizes"), // JSONB array of available sizes e.g. ["XS", "S", "M", "L"]
+    defaultSize: text("default_size"), // Default selected size
     createdAt: timestamp("created_at").notNull(),
     updatedAt: timestamp("updated_at").notNull(),
   },
@@ -215,6 +217,8 @@ export const configuratorProduct = pgTable("configurator_product", {
   maskImage: text("mask_image").notNull(),
   colorMaskImage: text("color_mask_image"),
   embroideryZone: jsonb("embroidery_zone").notNull(),
+  sizes: jsonb("sizes"), // JSONB array of available sizes e.g. ["XS", "S", "M", "L"]
+  defaultSize: text("default_size"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

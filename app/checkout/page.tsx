@@ -228,6 +228,11 @@ export default function CheckoutPage() {
                       <p className="text-ylang-charcoal/60 text-xs">
                         Tissu: {item.configuration.fabricName}
                       </p>
+                      {item.configuration.size && (
+                        <p className="text-ylang-charcoal/60 text-xs">
+                          Taille: {item.configuration.size}
+                        </p>
+                      )}
                       {item.configuration.embroidery && (
                         <p className="text-ylang-charcoal/60 text-xs">
                           Broderie: &quot;{item.configuration.embroidery}&quot;

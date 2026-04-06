@@ -57,9 +57,9 @@ interface Product {
   isFeatured: boolean;
   tags: string[];
   weight: number;
+  sizes: string[];
+  defaultSize: string | null;
   options: {
-    sizes?: string[];
-    defaultSize?: string;
     features?: string[];
     longDescription?: string;
     customizable?: boolean;
@@ -187,8 +187,8 @@ export default function ProductsPage() {
         images: product.images,
         tags: product.tags.join(", "),
         features: product.options?.features || [],
-        sizes: product.options?.sizes || [],
-        defaultSize: product.options?.defaultSize || "",
+        sizes: product.sizes || [],
+        defaultSize: product.defaultSize || "",
         isNew: product.options?.isNew ?? true,
       });
     } else {
@@ -277,9 +277,9 @@ export default function ProductsPage() {
           .split(",")
           .map((t) => t.trim())
           .filter(Boolean),
+        sizes: formData.sizes,
+        defaultSize: formData.defaultSize || null,
         options: {
-          sizes: formData.sizes,
-          defaultSize: formData.defaultSize,
           features: formData.features,
           longDescription: formData.longDescription,
           customizable: formData.customizable,
@@ -377,21 +377,17 @@ export default function ProductsPage() {
 
   const addSize = () => {
     if (newSize.trim() && !formData.sizes.includes(newSize.trim())) {
-      setFormData({
-        ...formData,
-        sizes: [...formData.sizes, newSize.trim()],
-      });
+      setFormData({ ...formData, sizes: [...formData.sizes, newSize.trim()] });
       setNewSize("");
     }
   };
 
   const removeSize = (index: number) => {
-    const removedSize = formData.sizes[index];
+    const removed = formData.sizes[index];
     setFormData({
       ...formData,
       sizes: formData.sizes.filter((_, i) => i !== index),
-      defaultSize:
-        formData.defaultSize === removedSize ? "" : formData.defaultSize,
+      defaultSize: formData.defaultSize === removed ? "" : formData.defaultSize,
     });
   };
 
@@ -1337,7 +1333,7 @@ export default function ProductsPage() {
                         </div>
                       </div>
 
-                      {/* Sizes */}
+                      {/* Tailles disponibles */}
                       <div className="border-ylang-terracotta/20 rounded-2xl border bg-white p-6 shadow-sm">
                         <h3 className="text-ylang-charcoal mb-2 flex items-center gap-2 text-lg font-semibold">
                           <div className="bg-ylang-rose/10 flex h-8 w-8 items-center justify-center rounded-lg">
@@ -1346,10 +1342,9 @@ export default function ProductsPage() {
                           Tailles disponibles
                         </h3>
                         <p className="text-ylang-charcoal/60 mb-4 ml-10 text-sm">
-                          Définissez les tailles disponibles pour ce produit.
+                          Définissez les tailles disponibles pour ce produit (ex : XS, S, M, L, XL ou 0-6 mois, 6-12 mois…).
                         </p>
 
-                        {/* Existing sizes */}
                         {formData.sizes.length > 0 && (
                           <div className="mb-4 flex flex-wrap gap-2">
                             {formData.sizes.map((size, index) => (
@@ -1361,13 +1356,9 @@ export default function ProductsPage() {
                                     : "border-ylang-beige bg-white"
                                 }`}
                               >
-                                <span className="text-sm font-medium">
-                                  {size}
-                                </span>
+                                <span className="text-sm font-medium">{size}</span>
                                 {formData.defaultSize === size && (
-                                  <span className="text-xs opacity-60">
-                                    (défaut)
-                                  </span>
+                                  <span className="text-xs opacity-60">(défaut)</span>
                                 )}
                                 <button
                                   onClick={() => removeSize(index)}
@@ -1380,18 +1371,15 @@ export default function ProductsPage() {
                           </div>
                         )}
 
-                        {/* Add new size */}
                         <div className="flex gap-2">
                           <Input
                             type="text"
                             value={newSize}
                             onChange={(e) => setNewSize(e.target.value)}
                             onKeyDown={(e) =>
-                              e.key === "Enter" &&
-                              (e.preventDefault(), addSize())
+                              e.key === "Enter" && (e.preventDefault(), addSize())
                             }
-                            className=""
-                            placeholder="Ex: 0-6 mois, S, M, L..."
+                            placeholder="Ex: XS, S, M, L ou 0-6 mois…"
                           />
                           <Button
                             variant="secondary"
@@ -1403,7 +1391,6 @@ export default function ProductsPage() {
                           </Button>
                         </div>
 
-                        {/* Default size selector */}
                         {formData.sizes.length > 0 && (
                           <div className="mt-4">
                             <label className="text-ylang-charcoal mb-2 block text-sm font-medium">
@@ -1412,23 +1399,19 @@ export default function ProductsPage() {
                             <select
                               value={formData.defaultSize}
                               onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  defaultSize: e.target.value,
-                                })
+                                setFormData({ ...formData, defaultSize: e.target.value })
                               }
                               className="border-ylang-beige focus:ring-ylang-rose/20 focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-3 transition-all focus:ring-2 focus:outline-none"
                             >
-                              <option value="">Sélectionner...</option>
+                              <option value="">Sélectionner…</option>
                               {formData.sizes.map((size) => (
-                                <option key={size} value={size}>
-                                  {size}
-                                </option>
+                                <option key={size} value={size}>{size}</option>
                               ))}
                             </select>
                           </div>
                         )}
                       </div>
+
                     </motion.div>
                   )}
 
