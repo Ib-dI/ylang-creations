@@ -6,7 +6,10 @@ export interface CartItem {
     fabricName: string;
     fabricColor: string;
     embroidery?: string;
+    embroideryColor?: string;
     size?: string;
+    selectedColor?: string;    // hex, pour le swatch
+    selectedColorName?: string; // nom affiché
   };
   price: number;
   weight: number; // Weight in grams

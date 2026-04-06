@@ -233,6 +233,17 @@ export default function CheckoutPage() {
                           Taille: {item.configuration.size}
                         </p>
                       )}
+                      {item.configuration.selectedColor && (
+                        <div className="flex items-center gap-1.5">
+                          <div
+                            className="h-2.5 w-2.5 shrink-0 rounded-full border border-black/10"
+                            style={{ backgroundColor: item.configuration.selectedColor }}
+                          />
+                          <span className="text-ylang-charcoal/60 text-xs">
+                            {item.configuration.selectedColorName ?? item.configuration.selectedColor}
+                          </span>
+                        </div>
+                      )}
                       {item.configuration.embroidery && (
                         <p className="text-ylang-charcoal/60 text-xs">
                           Broderie: &quot;{item.configuration.embroidery}&quot;

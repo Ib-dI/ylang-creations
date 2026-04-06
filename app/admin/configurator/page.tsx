@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { TrashBin } from "@gravity-ui/icons";
 import { AnimatePresence } from "framer-motion";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Loader2, Plus, Edit, Trash2, Eye, EyeOff, Search, ChevronDown, LayoutGrid, List, Palette, Crosshair, RotateCcw, Type, Maximize2 } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, Eye, EyeOff, Search, ChevronDown, LayoutGrid, List, Palette, Crosshair, RotateCcw, Type, Maximize2, Package } from "lucide-react";
 import { toast } from "sonner";
 
 type Fabric = {
@@ -39,6 +39,8 @@ type ConfigProduct = {
   maskImage: string;
   colorMaskImage: string | null;
   embroideryZone: EmbroideryZone | null;
+  sizes: string[] | null;
+  defaultSize: string | null;
   isActive: boolean;
 };
 
@@ -81,6 +83,7 @@ export default function ConfiguratorAdmin() {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Partial<ConfigProduct> | null>(null);
   const [isSavingProduct, setIsSavingProduct] = useState(false);
+  const [newSizeInput, setNewSizeInput] = useState("");
   const [productImages, setProductImages] = useState<{
     baseImage: string | File;
     maskImage: string | File;
@@ -459,9 +462,10 @@ export default function ConfiguratorAdmin() {
         colorMaskImage: product.colorMaskImage || null,
       });
     } else {
-      setEditingProduct({});
+      setEditingProduct({ sizes: null, defaultSize: null });
       setProductImages({ baseImage: "", maskImage: "", colorMaskImage: null });
     }
+    setNewSizeInput("");
     setIsProductModalOpen(true);
   };
 
@@ -514,6 +518,8 @@ export default function ConfiguratorAdmin() {
         baseImage: baseImageUrl,
         maskImage: maskImageUrl,
         colorMaskImage: colorMaskUrl,
+        sizes: editingProduct.sizes && editingProduct.sizes.length > 0 ? editingProduct.sizes : null,
+        defaultSize: editingProduct.defaultSize || null,
       };
 
       const url = isExisting
@@ -1419,110 +1425,333 @@ export default function ConfiguratorAdmin() {
 
       {/* ═══ PRODUCT MODAL ═════════════════════════════════════════════════════ */}
       <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[580px]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-black text-ylang-charcoal">
-              {editingProduct?.id && products.some(p => p.id === editingProduct.id) ? "Modifier le produit" : "Nouveau produit configurateur"}
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleProductSubmit} className="mt-4 space-y-5">
-            {/* ID - seulement pour la création */}
-            {!products.some(p => p.id === editingProduct?.id) && (
-              <div>
-                <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">ID unique <span className="text-ylang-rose">*</span></label>
-                <input type="text" value={editingProduct?.id || ""} onChange={e => setEditingProduct(prev => ({ ...prev!, id: e.target.value }))}
-                  placeholder="ex: gigoteuse-4-saisons"
-                  className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-2 text-sm outline-none" required />
-              </div>
-            )}
+        <DialogContent className="max-h-[92vh] overflow-y-auto p-0 sm:max-w-[1080px]">
 
-            {/* Nom */}
-            <div>
-              <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Nom <span className="text-ylang-rose">*</span></label>
-              <input type="text" value={editingProduct?.name || ""} onChange={e => setEditingProduct(prev => ({ ...prev!, name: e.target.value }))}
-                className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-2 text-sm outline-none" required />
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Description</label>
-              <textarea value={editingProduct?.description || ""} onChange={e => setEditingProduct(prev => ({ ...prev!, description: e.target.value }))}
-                rows={2} className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-4 py-2 text-sm outline-none resize-none" />
-            </div>
-
-            {/* Prix & Poids */}
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Prix base (€)</label>
-                <input type="number" step="0.01" min="0" value={editingProduct?.basePrice ?? 0}
-                  onChange={e => setEditingProduct(prev => ({ ...prev!, basePrice: parseFloat(e.target.value) || 0 }))}
-                  className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-3 py-2 text-sm outline-none" />
+          {/* ── Header ── */}
+          <div className="sticky top-0 z-10 border-b border-[#ede8df] bg-white px-7 py-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-ylang-rose/10">
+                <Package className="h-4 w-4 text-ylang-rose" />
               </div>
               <div>
-                <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Poids (g)</label>
-                <input type="number" min="0" value={editingProduct?.weight ?? 0}
-                  onChange={e => setEditingProduct(prev => ({ ...prev!, weight: parseInt(e.target.value) || 0 }))}
-                  className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-3 py-2 text-sm outline-none" />
-              </div>
-              <div>
-                <label className="text-ylang-charcoal/80 mb-1 block text-sm font-medium">Icône (emoji)</label>
-                <input type="text" value={editingProduct?.icon || ""} onChange={e => setEditingProduct(prev => ({ ...prev!, icon: e.target.value }))}
-                  placeholder="🧸" className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-3 py-2 text-sm outline-none" />
+                <DialogTitle className="text-base font-black text-ylang-charcoal leading-tight">
+                  {editingProduct?.id && products.some(p => p.id === editingProduct.id)
+                    ? "Modifier le produit"
+                    : "Nouveau produit configurateur"}
+                </DialogTitle>
+                <p className="text-[11px] text-ylang-charcoal/40 font-medium mt-0.5">
+                  {editingProduct?.id && products.some(p => p.id === editingProduct.id)
+                    ? `ID : ${editingProduct.id}`
+                    : "Remplissez les informations du nouveau produit"}
+                </p>
               </div>
             </div>
+          </div>
 
-            {/* Séparateur calques */}
-            <div className="border-t border-ylang-beige pt-4">
-              <h3 className="mb-3 text-sm font-bold text-ylang-charcoal">Calques du produit</h3>
+          <form onSubmit={handleProductSubmit} className="divide-y divide-[#f0ebe0]">
 
-              {/* Image de base */}
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium text-ylang-charcoal/80">
-                  Image de base <span className="text-ylang-rose">*</span>
-                  <span className="ml-1 text-[10px] font-normal text-ylang-charcoal/40">Silhouette avec ombres et reflets</span>
-                </label>
-                <ImageUpload
-                  value={productImages.baseImage ? [productImages.baseImage] : []}
-                  onChange={urls => setProductImages(prev => ({ ...prev, baseImage: urls[0] || "" }))}
-                  onRemove={() => setProductImages(prev => ({ ...prev, baseImage: "" }))}
-                  showPreview={true}
-                />
+            {/* ── Section 1 : Identité ── */}
+            <div className="px-7 py-6 space-y-4">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ylang-charcoal text-[10px] font-black text-white">1</span>
+                <h3 className="text-xs font-black tracking-widest text-ylang-charcoal/50 uppercase">Identité</h3>
               </div>
 
-              {/* Masque tissu */}
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium text-ylang-charcoal/80">
-                  Masque tissu <span className="text-ylang-rose">*</span>
-                  <span className="ml-1 text-[10px] font-normal text-ylang-charcoal/40">Image N&B — zone blanche = tissu</span>
-                </label>
-                <ImageUpload
-                  value={productImages.maskImage ? [productImages.maskImage] : []}
-                  onChange={urls => setProductImages(prev => ({ ...prev, maskImage: urls[0] || "" }))}
-                  onRemove={() => setProductImages(prev => ({ ...prev, maskImage: "" }))}
-                  showPreview={true}
-                />
+              {/* ID — création uniquement */}
+              {!products.some(p => p.id === editingProduct?.id) && (
+                <div>
+                  <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-ylang-charcoal/70">
+                    Identifiant unique
+                    <span className="text-ylang-rose">*</span>
+                    <span className="ml-auto text-[10px] font-normal text-ylang-charcoal/30">slug sans espaces</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct?.id || ""}
+                    onChange={e => setEditingProduct(prev => ({ ...prev!, id: e.target.value.toLowerCase().replace(/\s+/g, "-") }))}
+                    placeholder="gigoteuse-4-saisons"
+                    className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-4 py-2.5 font-mono text-sm text-ylang-charcoal placeholder:text-ylang-charcoal/25 outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                    required
+                  />
+                </div>
+              )}
+
+              {/* Nom + Icône sur la même ligne */}
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <label className="mb-1.5 flex items-center gap-1 text-xs font-semibold text-ylang-charcoal/70">
+                    Nom du produit <span className="text-ylang-rose">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct?.name || ""}
+                    onChange={e => setEditingProduct(prev => ({ ...prev!, name: e.target.value }))}
+                    placeholder="Gigoteuse 4 saisons"
+                    className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-4 py-2.5 text-sm text-ylang-charcoal placeholder:text-ylang-charcoal/25 outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                    required
+                  />
+                </div>
+                <div className="w-24 shrink-0">
+                  <label className="mb-1.5 block text-xs font-semibold text-ylang-charcoal/70">Icône</label>
+                  <input
+                    type="text"
+                    value={editingProduct?.icon || ""}
+                    onChange={e => setEditingProduct(prev => ({ ...prev!, icon: e.target.value }))}
+                    placeholder="🧸"
+                    className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-3 py-2.5 text-center text-lg outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                  />
+                </div>
               </div>
 
-              {/* Masque couleur (optionnel) */}
+              {/* Description */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-ylang-charcoal/80">
-                  Masque couleur
-                  <span className="ml-1 text-[10px] font-normal text-ylang-charcoal/40">Optionnel — zone d&apos;accent coloré</span>
-                </label>
-                <ImageUpload
-                  value={productImages.colorMaskImage ? [productImages.colorMaskImage as string] : []}
-                  onChange={urls => setProductImages(prev => ({ ...prev, colorMaskImage: urls[0] || null }))}
-                  onRemove={() => setProductImages(prev => ({ ...prev, colorMaskImage: null }))}
-                  showPreview={true}
+                <label className="mb-1.5 block text-xs font-semibold text-ylang-charcoal/70">Description</label>
+                <textarea
+                  value={editingProduct?.description || ""}
+                  onChange={e => setEditingProduct(prev => ({ ...prev!, description: e.target.value }))}
+                  rows={2}
+                  placeholder="Description courte visible sur la page configurateur…"
+                  className="w-full resize-none rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-4 py-2.5 text-sm text-ylang-charcoal placeholder:text-ylang-charcoal/25 outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
                 />
               </div>
             </div>
 
-            <button type="submit" disabled={isSavingProduct}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-ylang-charcoal py-3 font-bold text-white transition-colors hover:bg-ylang-charcoal/80 disabled:opacity-70">
-              {isSavingProduct && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isSavingProduct ? "Enregistrement…" : "Enregistrer"}
-            </button>
+            {/* ── Section 2 : Tarification ── */}
+            <div className="px-7 py-6 space-y-4">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ylang-charcoal text-[10px] font-black text-white">2</span>
+                <h3 className="text-xs font-black tracking-widest text-ylang-charcoal/50 uppercase">Tarification & logistique</h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-ylang-charcoal/70">
+                    Prix de base (€) <span className="text-ylang-rose">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-ylang-charcoal/30">€</span>
+                    <input
+                      type="number" step="0.01" min="0"
+                      value={editingProduct?.basePrice ?? 0}
+                      onChange={e => setEditingProduct(prev => ({ ...prev!, basePrice: parseFloat(e.target.value) || 0 }))}
+                      className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] py-2.5 pl-8 pr-4 text-sm text-ylang-charcoal outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-ylang-charcoal/70">Poids (grammes)</label>
+                  <div className="relative">
+                    <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-ylang-charcoal/30">g</span>
+                    <input
+                      type="number" min="0"
+                      value={editingProduct?.weight ?? 0}
+                      onChange={e => setEditingProduct(prev => ({ ...prev!, weight: parseInt(e.target.value) || 0 }))}
+                      className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] py-2.5 pl-4 pr-8 text-sm text-ylang-charcoal outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Section 3 : Calques visuels ── */}
+            <div className="px-7 py-6 space-y-4">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ylang-charcoal text-[10px] font-black text-white">3</span>
+                <h3 className="text-xs font-black tracking-widest text-ylang-charcoal/50 uppercase">Calques visuels</h3>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                {/* Image de base */}
+                <div className="rounded-2xl border border-[#ede8df] bg-[#fdfaf6] p-4 flex flex-col">
+                  <div className="mb-2 flex items-start justify-between gap-1">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-ylang-charcoal leading-tight">
+                        Image de base <span className="text-ylang-rose">*</span>
+                      </p>
+                      <p className="text-[10px] text-ylang-charcoal/40 mt-0.5">Silhouette + ombres</p>
+                    </div>
+                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.baseImage ? "bg-green-100 text-green-700" : "bg-[#ede8df] text-ylang-charcoal/40"}`}>
+                      {productImages.baseImage ? "✓" : "Requis"}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <ImageUpload
+                      value={productImages.baseImage ? [productImages.baseImage] : []}
+                      onChange={urls => setProductImages(prev => ({ ...prev, baseImage: urls[0] || "" }))}
+                      onRemove={() => setProductImages(prev => ({ ...prev, baseImage: "" }))}
+                      showPreview={true}
+                      compact={true}
+                    />
+                  </div>
+                </div>
+
+                {/* Masque tissu */}
+                <div className="rounded-2xl border border-[#ede8df] bg-[#fdfaf6] p-4 flex flex-col">
+                  <div className="mb-2 flex items-start justify-between gap-1">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-ylang-charcoal leading-tight">
+                        Masque tissu <span className="text-ylang-rose">*</span>
+                      </p>
+                      <p className="text-[10px] text-ylang-charcoal/40 mt-0.5">N&amp;B — blanc = tissu</p>
+                    </div>
+                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.maskImage ? "bg-green-100 text-green-700" : "bg-[#ede8df] text-ylang-charcoal/40"}`}>
+                      {productImages.maskImage ? "✓" : "Requis"}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <ImageUpload
+                      value={productImages.maskImage ? [productImages.maskImage] : []}
+                      onChange={urls => setProductImages(prev => ({ ...prev, maskImage: urls[0] || "" }))}
+                      onRemove={() => setProductImages(prev => ({ ...prev, maskImage: "" }))}
+                      showPreview={true}
+                      compact={true}
+                    />
+                  </div>
+                </div>
+
+                {/* Masque couleur */}
+                <div className="rounded-2xl border border-dashed border-[#ddd5c8] bg-white p-4 flex flex-col">
+                  <div className="mb-2 flex items-start justify-between gap-1">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-ylang-charcoal leading-tight">Masque couleur</p>
+                      <p className="text-[10px] text-ylang-charcoal/40 mt-0.5">Zone d&apos;accent coloré</p>
+                    </div>
+                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.colorMaskImage ? "bg-green-100 text-green-700" : "bg-ylang-beige text-ylang-charcoal/40"}`}>
+                      {productImages.colorMaskImage ? "✓" : "Optionnel"}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <ImageUpload
+                      value={productImages.colorMaskImage ? [productImages.colorMaskImage as string] : []}
+                      onChange={urls => setProductImages(prev => ({ ...prev, colorMaskImage: urls[0] || null }))}
+                      onRemove={() => setProductImages(prev => ({ ...prev, colorMaskImage: null }))}
+                      showPreview={true}
+                      compact={true}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Section 4 : Tailles ── */}
+            <div className="px-7 py-6 space-y-4">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ylang-charcoal text-[10px] font-black text-white">4</span>
+                <h3 className="text-xs font-black tracking-widest text-ylang-charcoal/50 uppercase">Tailles disponibles</h3>
+                <span className="ml-auto rounded-md bg-ylang-beige px-1.5 py-0.5 text-[10px] font-semibold text-ylang-charcoal/50">Optionnel</span>
+              </div>
+              <p className="text-xs text-ylang-charcoal/40 -mt-2">
+                Laisser vide si le produit n&apos;a pas de taille. Cliquer sur une taille pour la définir par défaut <span className="text-ylang-rose">★</span>
+              </p>
+
+              {/* Input d'ajout */}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newSizeInput}
+                  onChange={e => setNewSizeInput(e.target.value.toUpperCase())}
+                  onKeyDown={e => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const val = newSizeInput.trim();
+                      if (!val) return;
+                      const current = editingProduct?.sizes ?? [];
+                      if (current.includes(val)) return;
+                      setEditingProduct(prev => ({ ...prev!, sizes: [...current, val] }));
+                      setNewSizeInput("");
+                    }
+                  }}
+                  placeholder="Ex : XS, S, M, L, XL, 0–3M…"
+                  className="flex-1 rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-4 py-2.5 text-sm text-ylang-charcoal placeholder:text-ylang-charcoal/25 outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const val = newSizeInput.trim();
+                    if (!val) return;
+                    const current = editingProduct?.sizes ?? [];
+                    if (current.includes(val)) return;
+                    setEditingProduct(prev => ({ ...prev!, sizes: [...current, val] }));
+                    setNewSizeInput("");
+                  }}
+                  className="flex shrink-0 items-center gap-1.5 rounded-xl bg-ylang-charcoal px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-ylang-charcoal/80 active:scale-95"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Ajouter
+                </button>
+              </div>
+
+              {/* Tags des tailles */}
+              {(editingProduct?.sizes ?? []).length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {(editingProduct?.sizes ?? []).map(size => {
+                    const isDefault = editingProduct?.defaultSize === size;
+                    return (
+                      <div
+                        key={size}
+                        className={`flex items-center gap-1 rounded-xl border-2 pl-3 pr-1.5 py-1.5 text-sm font-bold transition-all ${
+                          isDefault
+                            ? "border-ylang-rose bg-ylang-rose/8 text-ylang-rose shadow-sm shadow-ylang-rose/15"
+                            : "border-[#e8dcc8] bg-white text-ylang-charcoal hover:border-ylang-rose/40"
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          title="Définir par défaut"
+                          onClick={() => setEditingProduct(prev => ({ ...prev!, defaultSize: isDefault ? null : size }))}
+                          className="flex items-center gap-1 leading-none"
+                        >
+                          {size}
+                          {isDefault && <span className="text-ylang-rose text-xs">★</span>}
+                        </button>
+                        <button
+                          type="button"
+                          title="Supprimer"
+                          onClick={() => {
+                            const next = (editingProduct?.sizes ?? []).filter(s => s !== size);
+                            setEditingProduct(prev => ({
+                              ...prev!,
+                              sizes: next,
+                              defaultSize: prev?.defaultSize === size ? (next[0] ?? null) : prev?.defaultSize ?? null,
+                            }));
+                          }}
+                          className="ml-1 flex h-5 w-5 items-center justify-center rounded-lg text-ylang-charcoal/30 transition-colors hover:bg-red-50 hover:text-red-500"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-[#ddd5c8] py-4 text-center">
+                  <p className="text-xs text-ylang-charcoal/30">Aucune taille ajoutée — produit sans taille</p>
+                </div>
+              )}
+
+              {editingProduct?.defaultSize && (
+                <p className="text-[11px] text-ylang-charcoal/50">
+                  Par défaut : <strong className="text-ylang-rose">{editingProduct.defaultSize}</strong>
+                </p>
+              )}
+            </div>
+
+            {/* ── Footer / Submit ── */}
+            <div className="sticky bottom-0 z-10 border-t border-[#ede8df] bg-white px-7 py-4">
+              <button
+                type="submit"
+                disabled={isSavingProduct}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-ylang-rose to-ylang-terracotta py-3 text-sm font-black text-white shadow-[0_4px_16px_rgba(183,110,121,0.3)] transition-all hover:shadow-[0_6px_20px_rgba(183,110,121,0.4)] hover:brightness-105 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none"
+              >
+                {isSavingProduct && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isSavingProduct ? "Enregistrement…" : (
+                  editingProduct?.id && products.some(p => p.id === editingProduct.id)
+                    ? "Enregistrer les modifications"
+                    : "Créer le produit"
+                )}
+              </button>
+            </div>
+
           </form>
         </DialogContent>
       </Dialog>

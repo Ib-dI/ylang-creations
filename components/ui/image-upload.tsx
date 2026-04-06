@@ -12,6 +12,7 @@ interface ImageUploadProps {
   onRemove: (value: string | File) => void;
   disabled?: boolean;
   showPreview?: boolean;
+  compact?: boolean; // dropzone compact + preview pleine largeur
 }
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -23,6 +24,7 @@ export function ImageUpload({
   onRemove,
   disabled,
   showPreview = true,
+  compact = false,
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,61 +67,105 @@ export function ImageUpload({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Preview */}
       {showPreview && value.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-          {value.map((item, index) => {
-            const url =
-              typeof item === "string" ? item : URL.createObjectURL(item);
-            return (
-              <div
-                key={index}
-                className="relative aspect-square overflow-hidden rounded-xl border bg-white"
-              >
-                <button
-                  type="button"
-                  onClick={() => handleRemove(item)}
-                  className="absolute top-2 right-2 z-10 rounded-full bg-red-500 p-1 text-white"
+        compact ? (
+          // Mode compact : image pleine largeur, plus grande
+          <div className="space-y-2">
+            {value.map((item, index) => {
+              const url =
+                typeof item === "string" ? item : URL.createObjectURL(item);
+              return (
+                <div
+                  key={index}
+                  className="relative w-full overflow-hidden rounded-xl border border-[#ede8df] bg-white"
+                  style={{ aspectRatio: "4/3" }}
                 >
-                  <X className="h-4 w-4" />
-                </button>
-                <Image
-                  fill
-                  src={url}
-                  alt="Image produit"
-                  className="object-cover"
-                  onLoad={() => {
-                    if (typeof item !== "string") {
-                      URL.revokeObjectURL(url);
-                    }
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(item)}
+                    className="absolute top-2 right-2 z-[1] rounded-full bg-red-500 p-1 text-white shadow-md transition-transform hover:scale-110"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                  <Image
+                    fill
+                    src={url}
+                    alt="Image produit"
+                    className="object-contain p-1"
+                    onLoad={() => {
+                      if (typeof item !== "string") {
+                        URL.revokeObjectURL(url);
+                      }
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            {value.map((item, index) => {
+              const url =
+                typeof item === "string" ? item : URL.createObjectURL(item);
+              return (
+                <div
+                  key={index}
+                  className="relative aspect-square overflow-hidden rounded-xl border bg-white"
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(item)}
+                    className="absolute top-2 right-2 z-10 rounded-full bg-red-500 p-1 text-white"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                  <Image
+                    fill
+                    src={url}
+                    alt="Image produit"
+                    className="object-cover"
+                    onLoad={() => {
+                      if (typeof item !== "string") {
+                        URL.revokeObjectURL(url);
+                      }
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )
       )}
 
       {/* Dropzone */}
       <div
         {...getRootProps()}
         className={cn(
-          "border-ylang-rose flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 transition",
+          "border-ylang-rose flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition",
+          compact ? "p-3 gap-1" : "p-8",
           isDragActive && "bg-ylang-rose/5",
           disabled && "cursor-not-allowed opacity-50",
         )}
       >
         <input {...getInputProps()} />
-        <div className="flex flex-col items-center gap-3 text-center">
-          <Upload className="text-ylang-rose h-6 w-6" />
-          <p className="text-sm font-medium">
-            Cliquez ou glissez des images ici
-          </p>
-          <p className="text-muted-foreground text-xs">
-            JPG, PNG, WEBP — max 5MB
-          </p>
-        </div>
+        {compact ? (
+          <div className="flex items-center gap-2 text-ylang-charcoal/40">
+            <Upload className="h-4 w-4 text-ylang-rose" />
+            <span className="text-xs font-medium">Glisser ou cliquer</span>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-3 text-center">
+            <Upload className="text-ylang-rose h-6 w-6" />
+            <p className="text-sm font-medium">
+              Cliquez ou glissez des images ici
+            </p>
+            <p className="text-muted-foreground text-xs">
+              JPG, PNG, WEBP — max 5MB
+            </p>
+          </div>
+        )}
       </div>
 
       {error && (

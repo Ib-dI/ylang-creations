@@ -141,6 +141,17 @@ export function CartDrawer() {
                               Taille: {item.configuration.size}
                             </p>
                           )}
+                          {item.configuration.selectedColor && (
+                            <div className="mb-1 flex items-center gap-1.5">
+                              <div
+                                className="h-3 w-3 shrink-0 rounded-full border border-black/10 shadow-sm"
+                                style={{ backgroundColor: item.configuration.selectedColor }}
+                              />
+                              <span className="text-ylang-charcoal/60 text-xs">
+                                {item.configuration.selectedColorName ?? item.configuration.selectedColor}
+                              </span>
+                            </div>
+                          )}
                           {item.configuration.embroidery && (
                             <p className="text-ylang-charcoal/60 mb-1 text-xs">
                               Broderie: "{item.configuration.embroidery}"

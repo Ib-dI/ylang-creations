@@ -18,6 +18,7 @@ import {
   ShoppingBag,
   Type,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
 // import EmbroideryPreview from "@/components/configurator/EmbroideryPreview";
@@ -399,14 +400,58 @@ const ProductConfigurator = () => {
       return;
     }
 
-    // Capturer l'image du canvas comme thumbnail
+    // Capturer l'image du canvas comme thumbnail, avec la broderie composite
     const canvas = canvasRef.current;
     let thumbnailDataUrl: string | undefined;
     if (canvas) {
       try {
-        thumbnailDataUrl = canvas.toDataURL("image/png");
+        // Canvas composite : produit + broderie dessinée dessus
+        const compositeCanvas = document.createElement("canvas");
+        compositeCanvas.width = canvas.width;
+        compositeCanvas.height = canvas.height;
+        const compositeCtx = compositeCanvas.getContext("2d");
+
+        if (compositeCtx) {
+          compositeCtx.drawImage(canvas, 0, 0);
+
+          // Superposer la broderie si présente
+          if (
+            configuration.embroidery &&
+            configuration.product.embroideryZone &&
+            productContainerRef.current
+          ) {
+            const container = productContainerRef.current;
+            const allCanvases = container.querySelectorAll<HTMLCanvasElement>("canvas");
+            // Premier canvas = produit, second = EmbroideryPreview
+            const embCanvas = allCanvases.length > 1 ? allCanvases[1] : null;
+
+            if (embCanvas) {
+              const containerRect = container.getBoundingClientRect();
+              const scaleX = canvas.width / containerRect.width;
+              const scaleY = canvas.height / containerRect.height;
+
+              const zone = configuration.product.embroideryZone;
+              const centerX = zone.x * canvas.width;
+              const centerY = zone.y * canvas.height;
+
+              // Taille affichée de la broderie (après CSS scale), convertie en coords naturelles
+              const embRect = embCanvas.getBoundingClientRect();
+              const embNatW = embRect.width * scaleX;
+              const embNatH = embRect.height * scaleY;
+
+              compositeCtx.save();
+              compositeCtx.translate(centerX, centerY);
+              compositeCtx.rotate((zone.rotation * Math.PI) / 180);
+              compositeCtx.drawImage(embCanvas, -embNatW / 2, -embNatH / 2, embNatW, embNatH);
+              compositeCtx.restore();
+            }
+          }
+
+          thumbnailDataUrl = compositeCanvas.toDataURL("image/png");
+        }
       } catch (e) {
         console.warn("Impossible de capturer le thumbnail du canvas", e);
+        try { thumbnailDataUrl = canvas.toDataURL("image/png"); } catch {}
       }
     }
 
@@ -420,7 +465,12 @@ const ProductConfigurator = () => {
         fabricName: configuration.fabric.name,
         fabricColor: configuration.fabric.baseColor,
         embroidery: configuration.embroidery || undefined,
+        embroideryColor: configuration.embroidery ? configuration.embroideryColor : undefined,
         size: configuration.size || undefined,
+        selectedColor: configuration.selectedColor || undefined,
+        selectedColorName: configuration.selectedColor
+          ? (productColors.find((c) => c.hex === configuration.selectedColor)?.name ?? undefined)
+          : undefined,
       },
       price: totalPrice() / 100,
       weight: configuration.product.weight ?? 0,
@@ -1183,59 +1233,182 @@ const ProductConfigurator = () => {
                 </>
               )}
 
-              {/* Step 5: Summary */}
+              {/* Step 4: Summary */}
               {activeTab === "summary" && (
-                <>
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="space-y-5"
+                >
+                  {/* En-tête */}
                   <div className="text-center">
-                    <div className="bg-ylang-rose mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                      <Check className="h-8 w-8 text-white" />
-                    </div>
-                    <h2 className="mb-2 text-2xl font-bold">
-                      Création terminée !
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.08, type: "spring", stiffness: 280, damping: 22 }}
+                      className="bg-ylang-rose mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full shadow-[0_6px_20px_rgba(183,110,121,0.4)]"
+                    >
+                      <Check className="h-6 w-6 text-white" strokeWidth={3} />
+                    </motion.div>
+                    <h2 className="font-abramo-script text-ylang-charcoal text-4xl leading-none">
+                      Votre création
                     </h2>
-                    <p className="text-ylang-charcoal/60 text-sm">
-                      Vérifiez votre configuration
+                    <p className="text-ylang-charcoal/45 mt-1 text-xs font-medium tracking-wide">
+                      Vérifiez avant d'ajouter au panier
                     </p>
                   </div>
 
-                  <div className="space-y-2 rounded-xl bg-[#f5f1e8] p-4">
-                    {configuration.product && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-ylang-charcoal/70">
-                          {configuration.product.name}
-                        </span>
-                        <span className="font-bold">
-                          {configuration.product.basePrice / 100}€
-                        </span>
+                  {/* Carte de configuration */}
+                  <div className="overflow-hidden rounded-2xl border border-[#ede8df] bg-white shadow-sm">
+
+                    {/* Produit */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.12 }}
+                      className="flex items-start justify-between border-b border-[#f5f1e8] px-5 py-4"
+                    >
+                      <div>
+                        <p className="text-ylang-charcoal/35 mb-1 text-[9px] font-black tracking-[0.12em] uppercase">Produit</p>
+                        <p className="text-ylang-charcoal font-semibold">{configuration.product?.name}</p>
+                        {configuration.size && (
+                          <p className="text-ylang-charcoal/50 mt-0.5 text-xs">Taille {configuration.size}</p>
+                        )}
                       </div>
+                      <span className="text-ylang-charcoal mt-0.5 text-sm font-bold">
+                        {(configuration.product?.basePrice ?? 0) / 100}€
+                      </span>
+                    </motion.div>
+
+                    {/* Tissu */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.18 }}
+                      className="flex items-center justify-between border-b border-[#f5f1e8] px-5 py-4"
+                    >
+                      <div>
+                        <p className="text-ylang-charcoal/35 mb-2 text-[9px] font-black tracking-[0.12em] uppercase">Tissu</p>
+                        <div className="flex items-center gap-2.5">
+                          {configuration.fabric?.image && (
+                            <div
+                              className="h-8 w-8 shrink-0 rounded-lg border border-[#ede8df] bg-cover bg-center shadow-inner"
+                              style={{ backgroundImage: `url('${configuration.fabric.image}')` }}
+                            />
+                          )}
+                          <span className="text-ylang-charcoal font-semibold">{configuration.fabric?.name}</span>
+                        </div>
+                      </div>
+                      {(configuration.fabric?.price ?? 0) > 0 ? (
+                        <span className="text-ylang-charcoal text-sm font-bold">+{configuration.fabric!.price / 100}€</span>
+                      ) : (
+                        <span className="text-ylang-charcoal/30 text-xs font-semibold">Inclus</span>
+                      )}
+                    </motion.div>
+
+                    {/* Couleur produit */}
+                    {configuration.selectedColor && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.22 }}
+                        className="flex items-center justify-between border-b border-[#f5f1e8] px-5 py-4"
+                      >
+                        <div>
+                          <p className="text-ylang-charcoal/35 mb-2 text-[9px] font-black tracking-[0.12em] uppercase">Couleur</p>
+                          <div className="flex items-center gap-2.5">
+                            <div
+                              className="h-7 w-7 shrink-0 rounded-full border-2 border-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
+                              style={{ backgroundColor: configuration.selectedColor }}
+                            />
+                            <span className="text-ylang-charcoal font-semibold">
+                              {productColors.find((c) => c.hex === configuration.selectedColor)?.name ?? configuration.selectedColor}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-ylang-charcoal/30 text-xs font-semibold">Inclus</span>
+                      </motion.div>
                     )}
-                    {configuration.fabric && configuration.fabric.price > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-ylang-charcoal/70">
-                          {configuration.fabric.name}
-                        </span>
-                        <span className="font-bold">
-                          +{configuration.fabric.price / 100}€
-                        </span>
-                      </div>
-                    )}
-                    {configuration.embroidery && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-ylang-charcoal/70">
-                          Broderie "{configuration.embroidery}"
-                        </span>
-                        <span className="font-bold">+15€</span>
-                      </div>
+
+                    {/* Broderie */}
+                    {configuration.embroidery ? (
+                      <motion.div
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.26 }}
+                        className="flex items-center justify-between px-5 py-4"
+                      >
+                        <div>
+                          <p className="text-ylang-charcoal/35 mb-2 text-[9px] font-black tracking-[0.12em] uppercase">Broderie</p>
+                          <div className="flex items-center gap-2.5">
+                            <div
+                              className="h-7 w-7 shrink-0 rounded-full border-2 border-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
+                              style={{ backgroundColor: configuration.embroideryColor }}
+                            />
+                            <div>
+                              <p className="font-abramo-script text-ylang-charcoal text-xl leading-tight">
+                                {configuration.embroidery}
+                              </p>
+                              <p className="text-ylang-charcoal/40 text-xs">
+                                {embroideryColors.find((c) => c.hex === configuration.embroideryColor)?.name}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <span className="text-ylang-charcoal text-sm font-bold">+15€</span>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.26 }}
+                        className="px-5 py-4"
+                      >
+                        <p className="text-ylang-charcoal/35 mb-1 text-[9px] font-black tracking-[0.12em] uppercase">Broderie</p>
+                        <p className="text-ylang-charcoal/30 text-xs italic">Aucune broderie</p>
+                      </motion.div>
                     )}
                   </div>
 
-                  <div className="from-ylang-rose/10 to-ylang-terracotta/10 flex items-center justify-between rounded-xl bg-linear-to-r p-4">
-                    <span className="text-lg font-bold">Total</span>
-                    <span className="text-ylang-rose text-3xl font-bold">
+                  {/* Total */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.32 }}
+                    className="flex items-center justify-between rounded-2xl bg-linear-to-r from-[#fdf0f1] to-[#fdf5f0] px-6 py-5 ring-1 ring-[#edd8d8]"
+                  >
+                    <div>
+                      <p className="text-ylang-charcoal/40 text-[9px] font-black tracking-[0.12em] uppercase">Total</p>
+                      <p className="text-ylang-charcoal/50 mt-0.5 text-xs">Livraison calculée au checkout</p>
+                    </div>
+                    <span className="text-ylang-rose text-[2rem] font-black tracking-tight leading-none">
                       {totalPrice() / 100}€
                     </span>
-                  </div>
-                </>
+                  </motion.div>
+
+                  {/* Badges de confiance */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="grid grid-cols-3 gap-2"
+                  >
+                    {[
+                      { label: "Fait main" },
+                      { label: "Tissu certifié" },
+                      { label: "Expédié sous 7j" },
+                    ].map((badge) => (
+                      <div
+                        key={badge.label}
+                        className="rounded-xl bg-[#fdfaf6] py-2.5 text-center text-[11px] font-semibold text-ylang-charcoal/50"
+                      >
+                        <span className="text-ylang-rose mb-0.5 block text-[9px]">✦</span>
+                        {badge.label}
+                      </div>
+                    ))}
+                  </motion.div>
+                </motion.div>
               )}
             </div>
           </div>

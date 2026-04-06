@@ -342,19 +342,49 @@ export default function OrderDetailPage() {
                                   </strong>
                                 </span>
                               </div>
+                              {item.configuration.size && (
+                                <div className="text-ylang-charcoal/60 flex items-center gap-2 text-sm">
+                                  <Package className="h-4 w-4" />
+                                  <span>
+                                    Taille:{" "}
+                                    <strong className="text-ylang-charcoal font-semibold">
+                                      {item.configuration.size}
+                                    </strong>
+                                  </span>
+                                </div>
+                              )}
+                              {item.configuration.selectedColor && (
+                                <div className="text-ylang-charcoal/60 flex items-center gap-2 text-sm">
+                                  <div
+                                    className="h-4 w-4 shrink-0 rounded-full border border-black/10 shadow-sm"
+                                    style={{ backgroundColor: item.configuration.selectedColor }}
+                                  />
+                                  <span>
+                                    Couleur:{" "}
+                                    <strong className="text-ylang-charcoal font-semibold">
+                                      {item.configuration.selectedColorName ?? item.configuration.selectedColor}
+                                    </strong>
+                                  </span>
+                                </div>
+                              )}
                               {item.configuration.embroidery && (
                                 <div className="text-ylang-charcoal/60 flex items-center gap-2 text-sm">
                                   <Scissors className="h-4 w-4" />
                                   <span>
                                     Broderie:{" "}
                                     <strong className="text-ylang-charcoal font-semibold">
-                                      &quot;{item.configuration.embroidery}
-                                      &quot;
+                                      &quot;{item.configuration.embroidery}&quot;
                                     </strong>
+                                    {item.configuration.embroideryColor && (
+                                      <span
+                                        className="ml-1.5 inline-block h-3 w-3 rounded-full border border-black/10 align-middle"
+                                        style={{ backgroundColor: item.configuration.embroideryColor }}
+                                        title={item.configuration.embroideryColor}
+                                      />
+                                    )}
                                   </span>
                                 </div>
                               )}
-
                             </div>
                           ) : (
                             <p className="text-ylang-charcoal/40 mt-2 text-sm italic">

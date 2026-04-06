@@ -18,7 +18,12 @@ export interface Order {
     image?: string;
     configuration?: {
       fabricName: string;
+      fabricColor?: string;
       embroidery?: string;
+      embroideryColor?: string;
+      size?: string;
+      selectedColor?: string;
+      selectedColorName?: string;
     };
   }>;
   total: number;
