@@ -762,15 +762,15 @@ const ProductConfigurator = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-ylang-beige to-[#f5f1e8]">
+    <div className="min-h-screen bg-ylang-terracotta/40">
       <div
-        className="flex min-h-screen flex-col lg:flex-row"
+        className="flex min-h-screen flex-col lg:flex-row bg-ylang-terracotta/30"
         style={{ marginTop: "90px" }}
       >
         {/* LEFT: Preview (Sticky) */}
-        <div className="from-ylang-terracotta/30 to-ylang-rose/10 relative flex h-[50vh] flex-col items-center justify-center bg-linear-to-br p-8 lg:sticky lg:top-[90px] lg:h-[calc(100vh-90px)] lg:w-1/2">
+        <div className="bg-ylang-terracotta/70 relative flex h-[50vh] flex-col items-center justify-center p-8 lg:sticky lg:top-[90px] lg:h-[calc(100vh-90px)] lg:w-1/2">
           <div ref={productContainerRef}
-            className={`bg-ylang-beige/35 relative w-full max-w-lg overflow-hidden rounded-4xl shadow-xl transition-opacity duration-300 ${isProcessing ? "opacity-50" : "opacity-100"}`}
+            className={`bg-ylang-beige/35 relative w-full max-w-lg overflow-hidden rounded-4xl shadow-md transition-opacity duration-300 backdrop-blur-sm ${isProcessing ? "opacity-50" : "opacity-100"}`}
           >
             <canvas ref={canvasRef} className="h-auto w-full" />
 
@@ -816,7 +816,7 @@ const ProductConfigurator = () => {
 
           {/* Info produit */}
           {configuration.product && configuration.fabric && (
-            <div className="bg-ylang-beige/30 absolute top-6 left-6 rounded-2xl px-5 py-3 shadow-lg backdrop-blur-md">
+            <div className="bg-ylang-beige/30 absolute top-6 left-6 rounded-2xl px-5 py-3 shadow-lg backdrop-blur-xl">
               <p className="text-ylang-charcoal/60 mb-1 text-xs">
                 Votre création
               </p>
@@ -1414,7 +1414,7 @@ const ProductConfigurator = () => {
           </div>
 
           {/* Footer Navigation - Sticky */}
-          <div className="sticky bottom-0 border-t border-[#f5f1e8] bg-white/80 p-4 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] backdrop-blur-xl lg:px-8">
+          <div className="sticky bottom-0 border-t border-[#f5f1e8] bg-ylang-white/80 p-4 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] backdrop-blur-xl lg:px-8">
             <div className="mx-auto flex max-w-4xl items-center justify-between gap-6">
               <button
                 onClick={goPrevious}
@@ -1426,7 +1426,7 @@ const ProductConfigurator = () => {
                 }`}
               >
                 <ChevronLeft
-                  className={`h-5 w-5 transition-transform duration-300 ${canGoPrevious ? "group-hover:-translate-x-1" : ""}`}
+                  className={`h-5 w-5 transition-transform bg-ylang-beige/20 duration-300 ${canGoPrevious ? "group-hover:-translate-x-1" : ""}`}
                 />
                 <span className="hidden sm:inline">Précédent</span>
               </button>
@@ -1476,7 +1476,7 @@ const ProductConfigurator = () => {
 
       {/* ═══ DESCRIPTION & PRODUITS SIMILAIRES ══════════════════════════════════ */}
       {configuration.product && (
-        <div className="bg-white px-6 py-16 sm:px-12 lg:px-20">
+        <div className="bg-ylang-terracotta/30 px-6 py-16 sm:px-12 lg:px-20">
           <div className="mx-auto max-w-6xl">
 
             {/* Description détaillée */}
@@ -1571,7 +1571,7 @@ const ProductConfigurator = () => {
                             />
                           </div>
                         </div>
-                        <p className="text-ylang-charcoal mb-1 text-sm font-bold">{product.name}</p>
+                        <p className="text-ylang-charcoal mb-1 text-2xl font-abramo-script">{product.name}</p>
                         <p className="text-ylang-rose text-sm font-black">
                           À partir de {(product.basePrice / 100).toFixed(2)}€
                         </p>
