@@ -69,12 +69,43 @@ const socialLinks = [
 export function Footer() {
   const [email, setEmail] = React.useState("");
   const [isSubscribed, setIsSubscribed] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    // À connecter avec votre service email
-    setIsSubscribed(true);
-    setTimeout(() => setIsSubscribed(false), 3000);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 409) {
+          // Déjà inscrit : on affiche le succès quand même
+          setIsSubscribed(true);
+          setEmail("");
+          setTimeout(() => setIsSubscribed(false), 5000);
+        } else {
+          setError(data.error || "Une erreur est survenue.");
+        }
+        return;
+      }
+
+      setIsSubscribed(true);
+      setEmail("");
+      setTimeout(() => setIsSubscribed(false), 5000);
+    } catch {
+      setError("Impossible de contacter le serveur.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -143,28 +174,38 @@ export function Footer() {
             </div>
 
             {/* Form Newsletter */}
-            <form
-              onSubmit={handleNewsletter}
-              className="flex flex-col gap-3 sm:flex-row"
-            >
-              <div className="flex-1">
-                <Input
-                  type="email"
-                  placeholder="votre@email.fr"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="bg-ylang-cream w-full rounded-none border-ylang-rose/30 py-6"
-                />
-              </div>
-              <Button
-                type="submit"
-                variant={isSubscribed ? "secondary" : "primary"}
-                className="whitespace-nowrap sm:w-auto"
+            <div>
+              <form
+                onSubmit={handleNewsletter}
+                className="flex flex-col gap-3 sm:flex-row"
               >
-                {isSubscribed ? "✓ Inscrit !" : "S'inscrire"}
-              </Button>
-            </form>
+                <div className="flex-1">
+                  <Input
+                    type="email"
+                    placeholder="votre@email.fr"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={isLoading}
+                    className="bg-ylang-cream w-full rounded-none border-ylang-rose/30 py-6"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  variant={isSubscribed ? "secondary" : "primary"}
+                  disabled={isLoading}
+                  className="whitespace-nowrap sm:w-auto"
+                >
+                  {isLoading ? "..." : isSubscribed ? "✓ Inscrit !" : "S'inscrire"}
+                </Button>
+              </form>
+              {error && (
+                <p className="text-ylang-rose mt-2 text-sm">{error}</p>
+              )}
+              <p className="font-body text-ylang-charcoal/40 mt-3 text-xs">
+                En vous inscrivant, vous acceptez de recevoir nos communications. Désinscription possible à tout moment.
+              </p>
+            </div>
           </div>
         </div>
       </div>

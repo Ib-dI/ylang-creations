@@ -235,3 +235,17 @@ export const configuratorColor = pgTable("configurator_color", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+// Newsletter Subscribers
+export const newsletterSubscriber = pgTable(
+  "newsletter_subscriber",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull().unique(),
+    status: text("status").notNull().default("active"), // "active" | "unsubscribed"
+    unsubscribeToken: text("unsubscribe_token").notNull().unique(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [index("newsletter_email_idx").on(table.email)],
+);

@@ -225,6 +225,29 @@ export const checkoutSchema = z.object({
     .max(50, "Maximum 50 articles par commande"),
 });
 
+// --- Schéma Newsletter ---
+export const newsletterCampaignSchema = z.object({
+  subject: z
+    .string()
+    .min(1, "Le sujet est requis")
+    .max(200, "Le sujet ne doit pas dépasser 200 caractères")
+    .transform(sanitizeString),
+  htmlContent: z
+    .string()
+    .min(10, "Le contenu est trop court"),
+});
+export type NewsletterCampaignInput = z.infer<typeof newsletterCampaignSchema>;
+
+export const newsletterSubscribeSchema = z.object({
+  email: z
+    .string()
+    .min(1, "L'email est requis")
+    .email("Adresse email invalide")
+    .max(254, "L'email ne doit pas dépasser 254 caractères")
+    .transform((val) => val.toLowerCase().trim()),
+});
+export type NewsletterSubscribeInput = z.infer<typeof newsletterSubscribeSchema>;
+
 // --- Types exportés ---
 export type CreateProductInput = z.infer<typeof createProductSchema>;
 export type UpdateProductInput = z.infer<typeof updateProductSchema>;

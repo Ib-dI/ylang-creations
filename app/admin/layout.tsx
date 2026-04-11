@@ -7,6 +7,7 @@ import { Session } from "@supabase/supabase-js";
 import {
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
   Package,
   Palette,
@@ -45,6 +46,11 @@ const navItems = [
     name: "Clients",
     href: "/admin/users",
     icon: Users,
+  },
+  {
+    name: "Newsletter",
+    href: "/admin/newsletter",
+    icon: Mail,
   },
 ];
 
