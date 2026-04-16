@@ -417,7 +417,7 @@ export function Header() {
                 <Facebook className="h-3.5 w-3.5" />
               </a>
             </div>
-            <p className="font-body hidden text-[12px] font-medium tracking-widest text-white uppercase sm:block">
+            <p className="font-body text-[10px] font-medium tracking-widest text-white uppercase sm:text-[12px]">
               Livraison offerte dès {freeShippingThreshold}€ d&apos;achat
             </p>
           </div>
@@ -435,7 +435,7 @@ export function Header() {
                 }
                 aria-expanded={isMegaMenuOpen}
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center transition-all duration-300 lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
+                  "flex h-10 w-10 items-center justify-center transition-all duration-300 rounded-full sm:rounded-none lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
                   "text-ylang-white bg-white/20 backdrop-blur-sm hover:bg-white/80 hover:text-ylang-rose",
                   isMegaMenuOpen &&
                     "bg-white/80 hover:bg-white/80 text-ylang-rose ",
@@ -455,9 +455,9 @@ export function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Rechercher"
-                className="text-ylang-charcoal hover:text-ylang-rose flex transform items-center justify-center rounded-full bg-white/50 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:hidden"
+                className="text-ylang-white hover:text-ylang-rose flex transform items-center justify-center rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:hidden"
               >
-                <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.5} />
+                <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
               </button>
             </div>
 
@@ -647,7 +647,7 @@ export function Header() {
       {isMegaMenuOpen && (
         <div
           ref={desktopMegaMenuRef}
-          className="bg-ylang-cream/98 animate-fade-in-down fixed top-20 right-0 left-0 z-40 hidden shadow-2xl backdrop-blur-lg lg:block"
+          className="bg-ylang-beige/90 animate-fade-in-down fixed top-20 right-0 left-0 z-40 hidden shadow-2xl backdrop-blur-sm lg:block"
           style={{ animation: "fadeInDown 0.3s ease-out" }}
         >
           <div className="mx-auto max-w-7xl px-8 py-10">

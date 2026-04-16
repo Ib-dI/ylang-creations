@@ -33,10 +33,8 @@ export default function EmbroideryZoneOverlay({ text, threadColor, zone, contain
       if (!canvas) return;
 
       const containerW = container.getBoundingClientRect().width;
-      const maxPx = containerW * zone.maxWidth;
-      const canvasW = canvas.width;
-
-      const newScale = canvasW > maxPx ? maxPx / canvasW : 1;
+      const REFERENCE_WIDTH = 512;
+      const newScale = Math.min(containerW / REFERENCE_WIDTH, 1);
       setScale(newScale);
       setCanvasH(canvas.height);
     };

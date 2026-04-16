@@ -139,7 +139,7 @@ function FabricCategorySection({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 lg:grid-cols-8">
+      <div className="grid grid-cols-4 gap-2 lg:grid-cols-8">
         {displayedFabrics.map((fabric) => (
           <FabricGridItem
             key={fabric.id}
@@ -768,7 +768,7 @@ const ProductConfigurator = () => {
         style={{ marginTop: "90px" }}
       >
         {/* LEFT: Preview (Sticky) */}
-        <div className="bg-ylang-terracotta/70 relative flex h-[50vh] flex-col items-center justify-center p-8 lg:sticky lg:top-[90px] lg:h-[calc(100vh-90px)] lg:w-1/2">
+        <div className="bg-ylang-terracotta/70 relative flex h-[50vh] flex-col items-center justify-center p-4 sm:p-6 lg:p-8 lg:sticky lg:top-[90px] lg:h-[calc(100vh-90px)] lg:w-1/2">
           <div ref={productContainerRef}
             className={`bg-ylang-beige/35 relative w-full max-w-lg overflow-hidden rounded-4xl shadow-md transition-opacity duration-300 backdrop-blur-sm ${isProcessing ? "opacity-50" : "opacity-100"}`}
           >
@@ -814,9 +814,9 @@ const ProductConfigurator = () => {
             </button>
           </div> */}
 
-          {/* Info produit */}
+          {/* Info produit — desktop uniquement (overlay sur la preview) */}
           {configuration.product && configuration.fabric && (
-            <div className="bg-ylang-beige/30 absolute top-6 left-6 rounded-2xl px-5 py-3 shadow-lg backdrop-blur-xl">
+            <div className="bg-ylang-beige/30 absolute top-6 left-6 hidden rounded-2xl px-5 py-3 shadow-lg backdrop-blur-xl lg:block">
               <p className="text-ylang-charcoal/60 mb-1 text-xs">
                 Votre création
               </p>
@@ -842,6 +842,23 @@ const ProductConfigurator = () => {
         {/* RIGHT: Options (Scrollable content with sticky footer) */}
         <div className="bg-ylang-terracotta/30 flex flex-col lg:h-[calc(100vh-90px)] lg:w-1/2">
           <div className="flex-1 overflow-y-auto p-6 lg:p-4">
+            {/* Info produit — mobile uniquement (dans la colonne options) */}
+            {configuration.product && configuration.fabric && (
+              <div className="mb-4 flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 shadow-sm backdrop-blur-md lg:hidden">
+                <div className="bg-ylang-rose/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+                  <Package className="text-ylang-rose h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-ylang-charcoal truncate text-sm font-bold">
+                    {configuration.product.name}
+                  </p>
+                  <p className="text-ylang-charcoal/50 truncate text-xs">
+                    Tissu : <span className="text-ylang-rose font-medium">{configuration.fabric.name}</span>
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Progress bar and Header */}
             <div className="mb-4">
               <div className="mb-3 flex items-center justify-between">
@@ -887,7 +904,7 @@ const ProductConfigurator = () => {
                         setActiveTab(tab.id);
                       }
                     }}
-                    className={`group relative flex flex-1 items-center justify-center gap-2.5 rounded-2xl px-5 py-3 text-sm font-bold whitespace-nowrap transition-all duration-500 ${
+                    className={`group relative flex flex-1 items-center justify-center gap-1.5 rounded-2xl px-2 py-3 text-sm font-bold whitespace-nowrap transition-all duration-500 sm:gap-2.5 sm:px-5 ${
                       isActive
                         ? "from-ylang-rose to-ylang-terracotta scale-105 bg-linear-to-r text-white shadow-[0_5px_5px_-5px_rgba(232,180,184,0.5)]"
                         : isPast
@@ -898,9 +915,9 @@ const ProductConfigurator = () => {
                     } border-2`}
                   >
                     <Icon
-                      className={`h-4 w-4 transition-transform duration-500 ${isActive ? "scale-105" : "group-hover:scale-105"}`}
+                      className={`h-4 w-4 shrink-0 transition-transform duration-500 ${isActive ? "scale-105" : "group-hover:scale-105"}`}
                     />
-                    <span>{tab.label}</span>
+                    <span className={isActive ? "inline" : "hidden sm:inline"}>{tab.label}</span>
                     {isPast && (
                       <div className="bg-ylang-rose absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full shadow-sm">
                         <Check className="h-2.5 w-2.5 stroke-[3px] text-white" />
@@ -1444,14 +1461,15 @@ const ProductConfigurator = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={!configuration.product || !configuration.fabric}
-                  className={`group flex items-center gap-3 rounded-2xl px-6 py-4 font-black text-white shadow-[0_10px_20px_-5px_rgba(232,180,184,0.5)] transition-all duration-500 ${
+                  className={`group flex items-center gap-3 rounded-xl px-6 py-3 font-black text-white shadow-[0_10px_20px_-5px_rgba(232,180,184,0.5)] transition-all duration-500 ${
                     configuration.product && configuration.fabric
                       ? "from-ylang-rose to-ylang-terracotta bg-linear-to-r hover:scale-102 hover:shadow-[0_15px_30px_-5px_rgba(232,180,184,0.6)]"
                       : "text-ylang-charcoal/20 cursor-not-allowed bg-[#f5f1e8]"
                   }`}
                 >
-                  <ShoppingBag className="h-5 w-5 transition-transform group-hover:rotate-12" />
-                  <span>Ajouter au panier</span>
+                  <ShoppingBag className="h-5 w-5 shrink-0 transition-transform group-hover:rotate-12" />
+                  <span className="hidden sm:inline">Ajouter au panier</span>
+                  <span className="sm:hidden">Panier</span>
                 </button>
               ) : (
                 <button

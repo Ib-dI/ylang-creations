@@ -276,39 +276,101 @@ function CollectionsContent() {
   const filteredProducts = useMemo(() => {
     let filtered = products.filter((product) => {
       const searchLower = searchTerm.toLowerCase();
+
+      // Mots significatifs du terme de recherche (ex: "Gigoteuse légère 0/3" → ["gigoteuse", "legere"])
+      const searchWords = searchLower
+        .split(/[\s/\-]+/)
+        .map((w) => w.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
+        .filter((w) => w.length > 2 && !/^\d+$/.test(w));
+
+      const productNameNorm = product.name
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      const productCatNorm = product.category
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
       const matchesSearch =
         searchTerm === "" ||
         product.name.toLowerCase().includes(searchLower) ||
         product.category.toLowerCase().includes(searchLower) ||
         (product.description &&
-          product.description.toLowerCase().includes(searchLower));
+          product.description.toLowerCase().includes(searchLower)) ||
+        // Fallback word-by-word : gère "Gigoteuse légère 0/3" → "Gigoteuse légère" sans taille
+        (searchWords.length > 0 &&
+          searchWords.every(
+            (word) =>
+              productNameNorm.includes(word) || productCatNorm.includes(word),
+          ));
+
+      const categorySlug = slugify(selectedCategory);
+      const productCatSlug = slugify(product.category);
+
       const matchesCategory =
         selectedCategory === "Tout" ||
         product.category === selectedCategory ||
-        slugify(product.category) === slugify(selectedCategory) ||
-        // Gérer les catégories parentes (ex: 'chambre' matches 'Coussin musical')
-        (selectedCategory === "chambre" &&
+        productCatSlug === categorySlug ||
+        // La Chambre
+        (categorySlug.includes("chambre") &&
           [
             "coussin",
             "couverture",
             "draps",
             "gigoteuse",
-            "housse-matelas",
-            "mobile-lit",
+            "housse",
+            "mobile",
             "tour-de-lit",
             "chambre",
             "lit",
-            "sommeil",
+            "lange",
           ].some(
-            (sub) =>
-              slugify(product.category).includes(sub) ||
-              slugify(product.name).includes(sub),
+            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
           )) ||
-        (selectedCategory === "toilette" &&
+        // La Toilette
+        (categorySlug.includes("toilette") &&
           ["bavoir", "cape", "gant", "serviette", "bain", "toilette"].some(
-            (sub) =>
-              slugify(product.category).includes(sub) ||
-              slugify(product.name).includes(sub),
+            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+          )) ||
+        // Linge de naissance
+        (categorySlug.includes("naissance") &&
+          [
+            "pyjama",
+            "chausson",
+            "pantalon",
+            "gilet",
+            "bloomer",
+            "robe",
+            "naissance",
+            "linge",
+            "vetement",
+          ].some(
+            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+          )) ||
+        // Bagageries/promenade
+        (categorySlug.includes("bagagerie") &&
+          [
+            "valisette",
+            "vanity",
+            "sac",
+            "matelas",
+            "protege",
+            "trousse",
+            "bagagerie",
+            "promenade",
+          ].some(
+            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+          )) ||
+        // Accessoires
+        (categorySlug.includes("accessoire") &&
+          ["anneau", "dentition", "attache", "tetine", "brosse", "accessoire"].some(
+            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+          )) ||
+        // Les jeux
+        ((categorySlug.includes("jeux") || categorySlug.includes("jeu")) &&
+          ["poupee", "bebe", "jeu", "jouet"].some(
+            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
           ));
 
       const matchesPrice =
