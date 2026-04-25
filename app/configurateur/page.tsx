@@ -1390,7 +1390,7 @@ const ProductConfigurator = () => {
                     )}
 
                     {/* Broderie */}
-                    {configuration.embroidery ? (
+                    {configuration.embroideries.some(e => e) ? (
                       <motion.div
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -1405,9 +1405,11 @@ const ProductConfigurator = () => {
                               style={{ backgroundColor: configuration.embroideryColor }}
                             />
                             <div>
-                              <p className="font-abramo-script text-ylang-charcoal text-xl leading-tight">
-                                {configuration.embroidery}
-                              </p>
+                              {configuration.embroideries.filter(Boolean).map((name, i) => (
+                                <p key={i} className="font-abramo-script text-ylang-charcoal text-xl leading-tight">
+                                  {name}
+                                </p>
+                              ))}
                               <p className="text-ylang-charcoal/40 text-xs">
                                 {embroideryColors.find((c) => c.hex === configuration.embroideryColor)?.name}
                               </p>
