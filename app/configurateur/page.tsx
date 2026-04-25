@@ -1158,36 +1158,82 @@ const ProductConfigurator = () => {
                   </div>
                   <div className="space-y-4">
                     <div className="rounded-2xl border border-[#f5f1e8] bg-ylang-beige/50 p-6">
-                      <label className="text-ylang-charcoal mb-3 block text-base font-bold">
-                        Texte à broder
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={configuration.embroidery}
-                          onChange={(e) =>
+                      <div className="mb-4 flex items-center justify-between">
+                        <label className="text-ylang-charcoal text-base font-bold">
+                          Noms à broder
+                        </label>
+                        <span className="text-ylang-charcoal/40 text-xs font-medium">
+                          {configuration.embroideries.length} / 3
+                        </span>
+                      </div>
+
+                      <div className="space-y-3">
+                        {configuration.embroideries.map((name, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                              <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => {
+                                  const next = [...configuration.embroideries];
+                                  next[index] = e.target.value.slice(0, 15);
+                                  setConfiguration((prev) => ({ ...prev, embroideries: next }));
+                                }}
+                                placeholder={
+                                  index === 0 ? "Ex: Zoé" :
+                                  index === 1 ? "Ex: Mon Bébé" :
+                                  "Ex: Chéri(e)"
+                                }
+                                className="focus:border-ylang-rose focus:ring-ylang-rose/10 placeholder:text-ylang-charcoal/20 w-full rounded-2xl border-2 border-[#e8dcc8] bg-white px-5 py-2 text-lg font-medium transition-all focus:ring-4 focus:outline-none"
+                                maxLength={15}
+                              />
+                              <div className="absolute top-1/2 right-5 -translate-y-1/2">
+                                <span
+                                  className={`text-sm font-bold ${name.length >= 12 ? "text-ylang-rose" : "text-ylang-charcoal/30"}`}
+                                >
+                                  {name.length}
+                                  <span className="text-ylang-charcoal/10 mx-0.5">/</span>
+                                  15
+                                </span>
+                              </div>
+                            </div>
+                            {configuration.embroideries.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const next = configuration.embroideries.filter((_, i) => i !== index);
+                                  setConfiguration((prev) => ({ ...prev, embroideries: next }));
+                                }}
+                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-[#e8dcc8] text-ylang-charcoal/40 transition-colors hover:border-red-200 hover:text-red-400"
+                                aria-label="Supprimer ce nom"
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {configuration.embroideries.length < 3 &&
+                        configuration.embroideries[configuration.embroideries.length - 1].length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() =>
                             setConfiguration((prev) => ({
                               ...prev,
-                              embroidery: e.target.value.slice(0, 15),
+                              embroideries: [...prev.embroideries, ""],
                             }))
                           }
-                          placeholder="Ex: Zoé, Mon Bébé..."
-                          className="focus:border-ylang-rose focus:ring-ylang-rose/10 placeholder:text-ylang-charcoal/20 w-full rounded-2xl border-2 border-[#e8dcc8] bg-white px-5 py-2 text-lg font-medium transition-all focus:ring-4 focus:outline-none"
-                          maxLength={15}
-                        />
-                        <div className="absolute top-1/2 right-5 -translate-y-1/2">
-                          <span
-                            className={`text-sm font-bold ${configuration.embroidery.length >= 12 ? "text-ylang-rose" : "text-ylang-charcoal/30"}`}
-                          >
-                            {configuration.embroidery.length}
-                            <span className="text-ylang-charcoal/10 mx-0.5">
-                              /
-                            </span>
-                            15
+                          className="text-ylang-rose hover:text-ylang-terracotta mt-3 flex items-center gap-2 text-sm font-bold transition-colors"
+                        >
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-current text-xs leading-none">
+                            +
                           </span>
-                        </div>
-                      </div>
-                      <p className="text-ylang-charcoal/50 mt-3 flex items-center gap-2 text-sm font-medium">
+                          Ajouter un nom
+                        </button>
+                      )}
+
+                      <p className="text-ylang-charcoal/50 mt-4 flex items-center gap-2 text-sm font-medium">
                         <span className="bg-ylang-rose/20 text-ylang-rose flex h-5 w-5 items-center justify-center rounded-full text-[10px]">
                           i
                         </span>
