@@ -12,16 +12,16 @@ interface EmbroideryZone {
 }
 
 interface Props {
-  text: string;
+  texts: string[];
   threadColor: string;
   zone: EmbroideryZone;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export default function EmbroideryZoneOverlay({ text, threadColor, zone, containerRef }: Props) {
+export default function EmbroideryZoneOverlay({ texts, threadColor, zone, containerRef }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
-  const [canvasH, setCanvasH] = useState(0);
+  const [lastCanvasH, setLastCanvasH] = useState(0);
 
   useEffect(() => {
     const update = () => {
@@ -29,34 +29,35 @@ export default function EmbroideryZoneOverlay({ text, threadColor, zone, contain
       const wrapper = wrapperRef.current;
       if (!container || !wrapper) return;
 
-      const canvas = wrapper.querySelector("canvas");
-      if (!canvas) return;
-
       const containerW = container.getBoundingClientRect().width;
       const REFERENCE_WIDTH = 512;
       const newScale = Math.min(containerW / REFERENCE_WIDTH, 1);
       setScale(newScale);
-      setCanvasH(canvas.height);
+
+      // Compensation basée sur le dernier canvas (ligne la plus basse du groupe)
+      const canvases = wrapper.querySelectorAll<HTMLCanvasElement>("canvas");
+      const lastCanvas = canvases.length > 0 ? canvases[canvases.length - 1] : null;
+      if (lastCanvas) setLastCanvasH(lastCanvas.height);
     };
 
     update();
-    // Re-run when canvas redraws (MutationObserver on canvas size changes)
     const ro = new ResizeObserver(update);
     if (containerRef.current) ro.observe(containerRef.current);
     if (wrapperRef.current) ro.observe(wrapperRef.current);
     return () => ro.disconnect();
-  }, [text, zone, containerRef]);
+  }, [texts, zone, containerRef]);
 
-  // Géométrie du canvas (doit correspondre à EmbroideryPreview) :
-  //   PY_TOP (12px) + fontSize + maxDescender + PY_TOP (12px)
-  // Sans descender : canvas symétrique → centre canvas = centre lettre → aucune compensation
-  // Avec descender d : le canvas grossit en bas de d px → son centre descend de d/2
-  //   → il faut décaler l'élément VERS LE BAS de d/2 pour que la lettre reste fixe
-  const PY_TOP = 12; // doit correspondre à PY dans EmbroideryPreview
-  const symmetricBase = 2 * PY_TOP + zone.fontSize; // taille du canvas sans descender
-  const actualDescender = canvasH > symmetricBase ? canvasH - symmetricBase : 0;
-  // Décalage vers le bas (valeur positive = bas) pour compenser la croissance du canvas
+  const PY_TOP = 12;
+  const symmetricBase = 2 * PY_TOP + zone.fontSize;
+  const actualDescender = lastCanvasH > symmetricBase ? lastCanvasH - symmetricBase : 0;
   const verticalCompensation = (actualDescender / 2) * scale;
+
+  // Réduction du double padding entre les canvases empilés :
+  // Chaque EmbroideryPreview a PY=12px en haut et en bas → 24px entre deux lignes.
+  // On applique un margin-top négatif en px de référence (le wrapper scale() s'en charge visuellement).
+  const lineGap = -(PY_TOP * 1.5); // px de référence, PAS multiplié par scale
+
+  if (!texts.length) return null;
 
   return (
     <div
@@ -64,7 +65,6 @@ export default function EmbroideryZoneOverlay({ text, threadColor, zone, contain
       style={{
         left: `${zone.x * 100}%`,
         top: `${zone.y * 100}%`,
-        // On descend légèrement quand il y a des descenders pour maintenir la position des lettres
         transform: `translate(-50%, calc(-50% + ${verticalCompensation}px)) rotate(${zone.rotation}deg)`,
         overflow: "visible",
       }}
@@ -75,13 +75,23 @@ export default function EmbroideryZoneOverlay({ text, threadColor, zone, contain
           transformOrigin: "center center",
           transform: `scale(${scale})`,
           overflow: "visible",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        <EmbroideryPreview
-          text={text}
-          threadColor={threadColor}
-          targetHeight={zone.fontSize}
-        />
+        {texts.map((text, i) => (
+          <div
+            key={i}
+            style={{ marginTop: i > 0 ? lineGap : 0 }}
+          >
+            <EmbroideryPreview
+              text={text}
+              threadColor={threadColor}
+              targetHeight={zone.fontSize}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
