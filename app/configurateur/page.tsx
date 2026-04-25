@@ -76,7 +76,7 @@ interface Configuration {
   product: Product | null;
   fabric: Fabric | null;
   size: string | null;
-  embroidery: string;
+  embroideries: string[];
   embroideryColor: string;
   selectedColor: string | null;
 }
@@ -250,7 +250,7 @@ const ProductConfigurator = () => {
     product: null as unknown as Product, // Will be set after load
     fabric: null as unknown as Fabric, // Will be set after load
     size: null,
-    embroidery: "",
+    embroideries: [""],
     embroideryColor: "#D4AF37", // Sera écrasé après le chargement des couleurs
     selectedColor: null,
   });
@@ -339,7 +339,7 @@ const ProductConfigurator = () => {
   const totalPrice = () => {
     let total = configuration.product?.basePrice || 0;
     total += configuration.fabric?.price || 0;
-    if (configuration.embroidery) total += 1500;
+    if (configuration.embroideries.some(e => e.length > 0)) total += 1500;
     return total;
   };
 
@@ -361,7 +361,7 @@ const ProductConfigurator = () => {
       id: "embroidery" as const,
       label: "Broderie",
       icon: Type,
-      complete: configuration.embroidery.length > 0,
+      complete: configuration.embroideries.some(e => e.length > 0),
     },
     {
       id: "summary" as const,
@@ -416,7 +416,7 @@ const ProductConfigurator = () => {
 
           // Superposer la broderie si présente
           if (
-            configuration.embroidery &&
+            configuration.embroideries.some(e => e) &&
             configuration.product.embroideryZone &&
             productContainerRef.current
           ) {
@@ -464,8 +464,8 @@ const ProductConfigurator = () => {
       configuration: {
         fabricName: configuration.fabric.name,
         fabricColor: configuration.fabric.baseColor,
-        embroidery: configuration.embroidery || undefined,
-        embroideryColor: configuration.embroidery ? configuration.embroideryColor : undefined,
+        embroidery: configuration.embroideries.filter(Boolean).join(", ") || undefined,
+        embroideryColor: configuration.embroideries.some(e => e) ? configuration.embroideryColor : undefined,
         size: configuration.size || undefined,
         selectedColor: configuration.selectedColor || undefined,
         selectedColorName: configuration.selectedColor
@@ -729,7 +729,7 @@ const ProductConfigurator = () => {
   }, [
     configuration.product,
     configuration.fabric,
-    configuration.embroidery,
+    configuration.embroideries,
     configuration.embroideryColor,
     configuration.selectedColor,
   ]);
