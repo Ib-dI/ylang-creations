@@ -173,7 +173,7 @@ export function ProductCard({
               {product.category}
             </p>
             <Link href={`/produits/${product.id}`}>
-              <h3 className="font-display text-ylang-charcoal hover:text-ylang-rose line-clamp-2 text-lg tracking-tight transition-colors duration-300">
+              <h3 className="font-display text-ylang-charcoal hover:text-ylang-rose line-clamp-2 text-lg tracking-tight transition-colors duration-300 truncate">
                 {product.name}
               </h3>
             </Link>

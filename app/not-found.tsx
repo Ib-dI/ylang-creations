@@ -256,7 +256,7 @@ export default function NotFound() {
         {/* Description */}
         <motion.p
           variants={fadeUp}
-          className="font-body mb-10 max-w-[28rem] text-sm leading-relaxed"
+          className="font-body mb-10 max-w-md text-sm leading-relaxed"
           style={{ color: "rgba(25,25,28,0.5)" }}
         >
           Le fil qui vous a mené ici ne conduit nulle part. La page recherchée a

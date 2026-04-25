@@ -164,7 +164,7 @@ export async function POST(request: Request) {
       updatedAt: now,
     });
 
-    revalidateTag("products", "max");
+    revalidateTag("products");
 
     return NextResponse.json({ success: true, id });
   } catch (error) {

@@ -427,7 +427,7 @@ export default function CheckoutPage() {
                     Paiement 100% sécurisé
                   </h3>
                   <p className="text-ylang-charcoal/60 text-sm">
-                    Vos données sont chiffrées et protégées par Stripe
+                    Vos données sont chiffrées et protégées par SumUp
                   </p>
                 </div>
               </div>

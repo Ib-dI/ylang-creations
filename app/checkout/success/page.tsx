@@ -47,9 +47,10 @@ function SuccessContent() {
   const { clearCart } = useCartStore();
 
   useEffect(() => {
-    // Générer un numéro de commande côté client uniquement
-    setOrderNumber(`YC${Date.now().toString().slice(-8)}`);
-  }, []);
+    if (sessionId) {
+      setOrderNumber(`YC${sessionId.slice(0, 8).toUpperCase()}`);
+    }
+  }, [sessionId]);
 
   useEffect(() => {
     async function fetchSession() {

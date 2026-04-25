@@ -1,18 +1,16 @@
 import ProductDetails from "@/components/product/product-details";
 import { CatalogProduct } from "@/data/products";
 import { product as productTable } from "@/db/schema";
-import { getReviews, type ReviewWithUser } from "@/lib/actions/reviews";
+import { getReviews } from "@/lib/actions/reviews";
 import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { and, eq, ne } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-// Helper to format DB product to frontend format
 function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
   const parsedImages = (p.images as string[] | null) ?? [];
 
@@ -49,7 +47,6 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
 
-  // 1. Fetch product from DB
   const [dbProduct] = await db
     .select()
     .from(productTable)
@@ -62,54 +59,22 @@ export default async function Page({ params }: PageProps) {
 
   const product = formatProduct(dbProduct);
 
-  // 2. Fetch similar products (same category, excluding current)
-  const similarDbProducts = await db
-    .select()
-    .from(productTable)
-    .where(
-      and(
-        eq(productTable.category, dbProduct.category),
-        ne(productTable.id, dbProduct.id),
-      ),
-    )
-    .limit(4);
+  const [similarDbProducts, { reviews, averageRating, totalReviews }, supabase] =
+    await Promise.all([
+      db
+        .select()
+        .from(productTable)
+        .where(
+          and(
+            eq(productTable.category, dbProduct.category),
+            ne(productTable.id, dbProduct.id),
+          ),
+        )
+        .limit(4),
+      getReviews(product.id),
+      createClient(),
+    ]);
 
-  const similarProducts = similarDbProducts.map(formatProduct);
-
-  // 3. Fetch reviews
-  const { reviews, averageRating, totalReviews } = await getReviews(product.id);
-
-  // 5. Render client component
-  return (
-    <Suspense>
-      <ProductDetailsWrapper
-        product={product}
-        similarProducts={similarProducts}
-        reviews={reviews}
-        averageRating={averageRating}
-        totalReviews={totalReviews}
-      />
-    </Suspense>
-  );
-}
-
-interface ProductDetailsWrapperProps {
-  product: CatalogProduct;
-  similarProducts: CatalogProduct[];
-  reviews: ReviewWithUser[];
-  averageRating: number;
-  totalReviews: number;
-}
-
-async function ProductDetailsWrapper({
-  product,
-  similarProducts,
-  reviews,
-  averageRating,
-  totalReviews,
-}: ProductDetailsWrapperProps) {
-  // dynamic getUser() inside Suspense
-  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -117,7 +82,7 @@ async function ProductDetailsWrapper({
   return (
     <ProductDetails
       product={product}
-      similarProducts={similarProducts}
+      similarProducts={similarDbProducts.map(formatProduct)}
       reviews={reviews}
       averageRating={averageRating}
       totalReviews={totalReviews}

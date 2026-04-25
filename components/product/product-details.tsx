@@ -75,11 +75,6 @@ export default function ProductDetails({
       ? product.images
       : [product.image];
 
-  // Scroll to top on first mount (fix Suspense scroll restoration)
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, []);
-
   // Spring-based slide transition (same as hero-section)
   const x = selectedImage * 100;
   const xSpring = useSpring(x, { bounce: 0 });
