@@ -154,7 +154,7 @@ export async function PATCH(
 
     await db.update(product).set(updateData).where(eq(product.id, id));
 
-    revalidateTag("products");
+    revalidateTag("products", "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -243,7 +243,7 @@ export async function DELETE(
     // 4. Supprimer le produit
     await db.delete(product).where(eq(product.id, id));
 
-    revalidateTag("products");
+    revalidateTag("products", "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {

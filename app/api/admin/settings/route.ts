@@ -148,7 +148,7 @@ export async function POST(request: Request) {
       await db.update(settings).set(values).where(eq(settings.id, SETTINGS_ID));
     }
 
-    revalidateTag("settings");
+    revalidateTag("settings", "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {
