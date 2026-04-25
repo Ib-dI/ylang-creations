@@ -422,28 +422,25 @@ const ProductConfigurator = () => {
           ) {
             const container = productContainerRef.current;
             const allCanvases = container.querySelectorAll<HTMLCanvasElement>("canvas");
-            // Premier canvas = produit, second = EmbroideryPreview
-            const embCanvas = allCanvases.length > 1 ? allCanvases[1] : null;
+            // allCanvases[0] = produit, allCanvases[1..n] = EmbroideryPreview (un par nom brodé)
+            const embCanvases = allCanvases.length > 1
+              ? Array.from(allCanvases).slice(1)
+              : [];
 
-            if (embCanvas) {
+            if (embCanvases.length > 0) {
               const containerRect = container.getBoundingClientRect();
               const scaleX = canvas.width / containerRect.width;
               const scaleY = canvas.height / containerRect.height;
 
-              const zone = configuration.product.embroideryZone;
-              const centerX = zone.x * canvas.width;
-              const centerY = zone.y * canvas.height;
+              for (const embCanvas of embCanvases) {
+                const embRect = embCanvas.getBoundingClientRect();
+                const destX = (embRect.left - containerRect.left) * scaleX;
+                const destY = (embRect.top - containerRect.top) * scaleY;
+                const destW = embRect.width * scaleX;
+                const destH = embRect.height * scaleY;
 
-              // Taille affichée de la broderie (après CSS scale), convertie en coords naturelles
-              const embRect = embCanvas.getBoundingClientRect();
-              const embNatW = embRect.width * scaleX;
-              const embNatH = embRect.height * scaleY;
-
-              compositeCtx.save();
-              compositeCtx.translate(centerX, centerY);
-              compositeCtx.rotate((zone.rotation * Math.PI) / 180);
-              compositeCtx.drawImage(embCanvas, -embNatW / 2, -embNatH / 2, embNatW, embNatH);
-              compositeCtx.restore();
+                compositeCtx.drawImage(embCanvas, destX, destY, destW, destH);
+              }
             }
           }
 
@@ -774,7 +771,7 @@ const ProductConfigurator = () => {
           >
             <canvas ref={canvasRef} className="h-auto w-full" />
 
-            {configuration.embroidery &&
+            {configuration.embroideries.some(e => e) &&
               configuration.product?.embroideryZone && (
                 <div
                   className="pointer-events-none absolute flex items-center justify-center"
@@ -785,14 +782,12 @@ const ProductConfigurator = () => {
                     overflow: "visible",
                   }}
                 >
-                  {configuration.embroidery && configuration.product?.embroideryZone && (
-                      <EmbroideryZoneOverlay
-                        text={configuration.embroidery}
-                        threadColor={configuration.embroideryColor}
-                        zone={configuration.product.embroideryZone}
-                        containerRef={productContainerRef}
-                      />
-                    )}
+                  <EmbroideryZoneOverlay
+                    texts={configuration.embroideries.filter(Boolean)}
+                    threadColor={configuration.embroideryColor}
+                    zone={configuration.product.embroideryZone}
+                    containerRef={productContainerRef}
+                  />
                 </div>
               )}
 
