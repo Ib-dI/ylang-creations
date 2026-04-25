@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart, Scissors, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import * as React from "react";
 
 const values = [
   {
@@ -34,21 +33,11 @@ const stats = [
   { number: "100%", label: "Made in France" },
 ];
 
-export function CraftsmanshipSection() {
-  const [craftsmanshipImage, setCraftsmanshipImage] = React.useState(
-    "/images/atelier.png"
-  );
+interface CraftsmanshipSectionProps {
+  craftsmanshipImage?: string;
+}
 
-  React.useEffect(() => {
-    fetch("/api/settings")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.craftsmanshipImage) {
-          setCraftsmanshipImage(data.craftsmanshipImage);
-        }
-      })
-      .catch(console.error);
-  }, []);
+export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png" }: CraftsmanshipSectionProps) {
 
   return (
     <section className="section-padding overflow-hidden bg-linear-to-b from-ylang-terracotta/50 to-ylang-terracotta/40">

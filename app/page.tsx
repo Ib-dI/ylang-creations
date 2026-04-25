@@ -157,16 +157,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Sections avec lazy loading via Suspense */}
-      <Suspense
-        fallback={
-          <div className="bg-ylang-cream flex h-96 items-center justify-center">
-            <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
-          </div>
-        }
-      >
-        <CraftsmanshipSection />
-      </Suspense>
+      <CraftsmanshipSection craftsmanshipImage={settings?.craftsmanshipImage || "/images/atelier.png"} />
 
       <Suspense
         fallback={
