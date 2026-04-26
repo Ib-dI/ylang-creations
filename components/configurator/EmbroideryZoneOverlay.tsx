@@ -9,6 +9,8 @@ interface EmbroideryZone {
   maxWidth: number;
   rotation: number;
   fontSize: number;
+  nameSpacing?: number;
+  multiNameEnabled?: boolean;
 }
 
 interface Props {
@@ -55,7 +57,7 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
   // Réduction du double padding entre les canvases empilés :
   // Chaque EmbroideryPreview a PY=12px en haut et en bas → 24px entre deux lignes.
   // On applique un margin-top négatif en px de référence (le wrapper scale() s'en charge visuellement).
-  const lineGap = -(PY_TOP * 1.5); // px de référence, PAS multiplié par scale
+  const lineGap = zone.nameSpacing ?? -(PY_TOP * 3);
 
   if (!texts.length) return null;
 

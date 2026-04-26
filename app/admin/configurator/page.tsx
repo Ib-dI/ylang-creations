@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { Loader2, Plus, Edit, Trash2, Eye, EyeOff, Search, ChevronDown, LayoutGrid, List, Palette, Crosshair, RotateCcw, Type, Maximize2, Package } from "lucide-react";
 import { toast } from "sonner";
+import EmbroideryZoneOverlay from "@/components/configurator/EmbroideryZoneOverlay";
 
 type Fabric = {
   id: string;
@@ -20,12 +21,14 @@ type Fabric = {
 };
 
 type EmbroideryZone = {
-  x: number;        // 0–1 (fraction de la largeur)
-  y: number;        // 0–1 (fraction de la hauteur)
-  maxWidth: number; // 0–1 (fraction de la largeur)
-  rotation: number; // degrés
-  fontSize: number; // pixels à l'échelle naturelle
+  x: number;
+  y: number;
+  maxWidth: number;
+  rotation: number;
+  fontSize: number;
   alignment: "center" | "left" | "right";
+  nameSpacing?: number;
+  multiNameEnabled?: boolean;
 };
 
 type ConfigProduct = {
@@ -104,35 +107,18 @@ export default function ConfiguratorAdmin() {
   // Broderie tab
   const [embroideryProduct, setEmbroideryProduct] = useState<ConfigProduct | null>(null);
   const [embroideryZone, setEmbroideryZone] = useState<EmbroideryZone>({
-    x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center",
+    x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center", multiNameEnabled: true, nameSpacing: -36,
   });
   const [previewText, setPreviewText] = useState("Ylang");
   const [isSavingEmbroidery, setIsSavingEmbroidery] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const [imageScale, setImageScale] = useState(1);
 
   const openEmbroideryEditor = useCallback((product: ConfigProduct) => {
     setEmbroideryProduct(product);
     setEmbroideryZone(product.embroideryZone ?? {
-      x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center",
+      x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center", multiNameEnabled: true, nameSpacing: -36,
     });
   }, []);
-
-  useEffect(() => {
-    if (!embroideryProduct || !imageContainerRef.current) return;
-    const img = imageContainerRef.current.querySelector("img");
-    if (!img) return;
-    const compute = () => {
-      const w = imageContainerRef.current?.getBoundingClientRect().width ?? 0;
-      const natural = img.naturalWidth || 500;
-      setImageScale(w / natural);
-    };
-    img.addEventListener("load", compute);
-    compute();
-    const ro = new ResizeObserver(compute);
-    ro.observe(imageContainerRef.current);
-    return () => { ro.disconnect(); img.removeEventListener("load", compute); };
-  }, [embroideryProduct]);
 
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -1102,21 +1088,14 @@ export default function ConfiguratorAdmin() {
                     </div>
                   </div>
 
-                  {/* Aperçu texte broderie */}
+                  {/* Aperçu broderie — rendu identique au configurateur client */}
                   {previewText && (
-                    <div
-                      className="pointer-events-none absolute whitespace-nowrap font-bold text-ylang-rose drop-shadow-sm"
-                      style={{
-                        left: `${embroideryZone.x * 100}%`,
-                        top: `${embroideryZone.y * 100}%`,
-                        transform: `translate(-50%, -50%) rotate(${embroideryZone.rotation}deg)`,
-                        fontSize: `${embroideryZone.fontSize * imageScale}px`,
-                        maxWidth: `${embroideryZone.maxWidth * 100}%`,
-                        textAlign: embroideryZone.alignment,
-                      }}
-                    >
-                      {previewText}
-                    </div>
+                    <EmbroideryZoneOverlay
+                      texts={(embroideryZone.multiNameEnabled ?? true) ? [previewText, previewText] : [previewText]}
+                      threadColor="#E91E8C"
+                      zone={embroideryZone}
+                      containerRef={imageContainerRef}
+                    />
                   )}
 
                   {/* Zone max-width indicator */}
@@ -1218,7 +1197,7 @@ export default function ConfiguratorAdmin() {
                   </div>
 
                   {/* Alignement */}
-                  <div>
+                  <div className="mb-4">
                     <label className="mb-2 block text-xs font-semibold text-ylang-charcoal/60">Alignement</label>
                     <div className="flex gap-2">
                       {(["left", "center", "right"] as const).map(align => (
@@ -1235,6 +1214,50 @@ export default function ConfiguratorAdmin() {
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="mb-3 border-t border-ylang-beige/60 pt-4">
+                    <h4 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-ylang-charcoal/30">Plusieurs noms</h4>
+
+                    {/* Multi-noms actif/inactif */}
+                    <div className="mb-3">
+                      <label className="mb-2 block text-xs font-semibold text-ylang-charcoal/60">Fonctionnalité multi-noms</label>
+                      <div className="flex gap-2">
+                        {([true, false] as const).map(val => (
+                          <button
+                            key={String(val)}
+                            onClick={() => setEmbroideryZone(prev => ({ ...prev, multiNameEnabled: val }))}
+                            className={`flex-1 rounded-lg border py-1.5 text-xs font-bold transition-colors ${
+                              (embroideryZone.multiNameEnabled ?? true) === val
+                                ? 'border-ylang-rose bg-ylang-rose text-white'
+                                : 'border-gray-200 bg-white text-ylang-charcoal/60 hover:border-ylang-rose/40'
+                            }`}
+                          >
+                            {val ? "Activé" : "Désactivé"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Espacement des noms */}
+                    {(embroideryZone.multiNameEnabled ?? true) && (
+                      <div>
+                        <div className="mb-1 flex items-center justify-between">
+                          <label className="text-xs font-semibold text-ylang-charcoal/60">Espacement des noms</label>
+                          <span className="text-xs font-bold text-ylang-rose">{embroideryZone.nameSpacing ?? -36}px</span>
+                        </div>
+                        <input
+                          type="range" min="-60" max="20" step="1"
+                          value={embroideryZone.nameSpacing ?? -36}
+                          onChange={e => setEmbroideryZone(prev => ({ ...prev, nameSpacing: Number(e.target.value) }))}
+                          className="w-full accent-ylang-rose"
+                        />
+                        <div className="mt-0.5 flex justify-between text-[9px] text-ylang-charcoal/30">
+                          <span>Serré</span>
+                          <span>Espacé</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

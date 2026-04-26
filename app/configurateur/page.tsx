@@ -33,12 +33,14 @@ import {
 } from "react";
 
 interface EmbroideryZone {
-  x: number; // Position X en pourcentage (0-100)
-  y: number; // Position Y en pourcentage (0-100)
-  maxWidth: number; // Largeur max en pourcentage (0-1)
-  rotation: number; // Rotation en degrés
-  fontSize: number; // Taille de police
-  alignment: "center" | "left" | "right"; // Alignement du texte
+  x: number;
+  y: number;
+  maxWidth: number;
+  rotation: number;
+  fontSize: number;
+  alignment: "center" | "left" | "right";
+  nameSpacing?: number;
+  multiNameEnabled?: boolean;
 }
 
 interface Product {
@@ -773,22 +775,12 @@ const ProductConfigurator = () => {
 
             {configuration.embroideries.some(e => e) &&
               configuration.product?.embroideryZone && (
-                <div
-                  className="pointer-events-none absolute flex items-center justify-center"
-                  style={{
-                    left: `${configuration.product.embroideryZone.x * 100}%`,
-                    top: `${configuration.product.embroideryZone.y * 100}%`,
-                    transform: `translate(-50%, -50%) rotate(${configuration.product.embroideryZone.rotation}deg)`,
-                    overflow: "visible",
-                  }}
-                >
-                  <EmbroideryZoneOverlay
-                    texts={configuration.embroideries.filter(Boolean)}
-                    threadColor={configuration.embroideryColor}
-                    zone={configuration.product.embroideryZone}
-                    containerRef={productContainerRef}
-                  />
-                </div>
+                <EmbroideryZoneOverlay
+                  texts={configuration.embroideries.filter(Boolean)}
+                  threadColor={configuration.embroideryColor}
+                  zone={configuration.product.embroideryZone}
+                  containerRef={productContainerRef}
+                />
               )}
 
             {isProcessing && (
@@ -1162,12 +1154,14 @@ const ProductConfigurator = () => {
                         <label className="text-ylang-charcoal text-base font-bold">
                           Noms à broder
                         </label>
-                        <span className="text-ylang-charcoal/40 text-xs font-medium">
-                          {configuration.embroideries.length} / 3
-                        </span>
+                        {(configuration.product?.embroideryZone?.multiNameEnabled !== false) && (
+                          <span className="text-ylang-charcoal/40 text-xs font-medium">
+                            {configuration.embroideries.length} / 3
+                          </span>
+                        )}
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         {configuration.embroideries.map((name, index) => (
                           <div key={index} className="flex items-center gap-2">
                             <div className="relative flex-1">
@@ -1214,7 +1208,8 @@ const ProductConfigurator = () => {
                         ))}
                       </div>
 
-                      {configuration.embroideries.length < 3 &&
+                      {(configuration.product?.embroideryZone?.multiNameEnabled !== false) &&
+                        configuration.embroideries.length < 3 &&
                         configuration.embroideries[configuration.embroideries.length - 1].length > 0 && (
                         <button
                           type="button"

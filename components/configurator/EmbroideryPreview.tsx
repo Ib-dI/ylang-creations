@@ -1,8 +1,59 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const FONT_FOLDER = "/fonts/moonlight";
+
+// Cache module-level : toutes les instances partagent le même chargement
+let _fontCache: FontFiles | null = null;
+let _fontLoadPromise: Promise<FontFiles> | null = null;
+
+async function loadFontsShared(folder: string): Promise<FontFiles> {
+  if (_fontCache) return _fontCache;
+  if (_fontLoadPromise) return _fontLoadPromise;
+
+  _fontLoadPromise = (async () => {
+    const mRes = await fetch(`${folder}/manifest.json`);
+    if (!mRes.ok) throw new Error(`manifest.json introuvable dans ${folder}`);
+    const raw = await mRes.json();
+
+    let filenames: string[] = [];
+    let prefix = "";
+    if (Array.isArray(raw)) {
+      filenames = raw;
+    } else if (typeof raw === "object" && raw !== null) {
+      const keys = Object.keys(raw).sort((a, b) => parseFloat(a) - parseFloat(b));
+      const firstKey = keys[0];
+      if (firstKey) { filenames = raw[firstKey]; prefix = `${firstKey}/`; }
+    }
+    if (!filenames.length) throw new Error("Aucun fichier dans le manifest.");
+
+    const newFonts: FontFiles = {};
+    await Promise.all(filenames.map(async (filename: string) => {
+      if (!filename.toLowerCase().endsWith(".exp")) return;
+      let letter = "";
+      const lowerFile = filename.toLowerCase();
+      for (const [key, val] of Object.entries(SYMBOL_MAP)) {
+        if (lowerFile.startsWith(key.toLowerCase())) { letter = val; break; }
+      }
+      if (!letter) {
+        const firstChar = filename.charAt(0);
+        if (firstChar.match(/[a-zA-Z0-9]/)) letter = firstChar;
+      }
+      if (!letter) return;
+      try {
+        const res = await fetch(`${folder}/${prefix}${filename}`);
+        if (!res.ok) return;
+        newFonts[letter] = parseEXP(await res.arrayBuffer());
+      } catch (e) { console.warn(`Failed to load ${filename}`, e); }
+    }));
+
+    _fontCache = newFonts;
+    return newFonts;
+  })();
+
+  return _fontLoadPromise;
+}
 
 type LetterAdj = { offsetY: number; advanceX: number; leftBearing: number };
 
@@ -197,58 +248,16 @@ export interface EmbroideryPreviewProps {
 export default function EmbroideryPreview({
   text, threadColor, className="", targetHeight=130,
 }: EmbroideryPreviewProps) {
-  const [fontFiles, setFontFiles] = useState<FontFiles>({});
+  const [fontFiles, setFontFiles] = useState<FontFiles>(_fontCache ?? {});
   const [errorMsg, setErrorMsg] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const loadFont = useCallback(async (folder: string) => {
-    setErrorMsg("");
-    try {
-      const mRes = await fetch(`${folder}/manifest.json`);
-      if (!mRes.ok) throw new Error(`manifest.json introuvable dans ${folder}`);
-      const raw = await mRes.json();
-
-      let filenames: string[] = [];
-      let prefix = "";
-
-      if (Array.isArray(raw)) {
-        filenames = raw;
-      } else if (typeof raw === "object" && raw !== null) {
-        const keys = Object.keys(raw).sort((a,b)=>parseFloat(a)-parseFloat(b));
-        const firstKey = keys[0];
-        if (firstKey) { filenames = raw[firstKey]; prefix = `${firstKey}/`; }
-      }
-
-      if (!filenames.length) throw new Error("Aucun fichier dans le manifest.");
-
-      const newFonts: FontFiles = {};
-      await Promise.all(filenames.map(async (filename: string) => {
-        if (!filename.toLowerCase().endsWith(".exp")) return;
-        let letter = "";
-        const lowerFile = filename.toLowerCase();
-        for (const [key, val] of Object.entries(SYMBOL_MAP)) {
-          if (lowerFile.startsWith(key.toLowerCase())) { letter=val; break; }
-        }
-        if (!letter) {
-          const firstChar = filename.charAt(0);
-          if (firstChar.match(/[a-zA-Z0-9]/)) letter = firstChar;
-        }
-        if (!letter) return;
-        try {
-          const res = await fetch(`${folder}/${prefix}${filename}`);
-          if (!res.ok) return;
-          newFonts[letter] = parseEXP(await res.arrayBuffer());
-        } catch(e) { console.warn(`Failed to load ${filename}`, e); }
-      }));
-
-      if (!Object.keys(newFonts).length) throw new Error("Aucun fichier EXP valide chargé.");
-      setFontFiles(newFonts);
-    } catch(e: unknown) {
-      setErrorMsg(e instanceof Error ? e.message : "Erreur inconnue");
-    }
+  useEffect(() => {
+    if (_fontCache) { setFontFiles(_fontCache); return; }
+    loadFontsShared(FONT_FOLDER)
+      .then(fonts => setFontFiles(fonts))
+      .catch(e => setErrorMsg(e instanceof Error ? e.message : "Erreur inconnue"));
   }, []);
-
-  useEffect(() => { loadFont(FONT_FOLDER); }, [loadFont]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
