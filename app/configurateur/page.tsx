@@ -840,7 +840,7 @@ const ProductConfigurator = () => {
                     {configuration.product.name}
                   </p>
                   <p className="text-ylang-charcoal/50 truncate text-xs">
-                    Tissu : <span className="text-ylang-rose font-medium">{configuration.fabric.name}</span>
+                    Tissu : <span className="text-ylang-rose font-semibold">{configuration.fabric.name}</span>
                   </p>
                 </div>
               </div>
@@ -849,16 +849,18 @@ const ProductConfigurator = () => {
             {/* Progress bar and Header */}
             <div className="mb-4">
               <div className="mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <p className="text-ylang-charcoal/30 text-xs font-semibold tracking-widest uppercase">
-                    Étape {currentTabIndex + 1} / {tabs.length}
-                  </p>
-                  <h3 className="text-ylang-charcoal text-xs font-bold">
+                <div className="flex bg-ylang-beige transition-all duration-300 py-1 px-2 items-center gap-2">
+                  <div className="border-r pr-2 border-ylang-rose/30">
+                    <p className="text-ylang-rose text-xs font-semibold tracking-widest uppercase">
+                      Étape {currentTabIndex + 1} / {tabs.length}
+                    </p>
+                  </div>
+                  <h3 className="text-ylang-charcoal/90 text-xs font-medium">
                     {tabs[currentTabIndex].label}
                   </h3>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-ylang-rose bg-ylang-rose/10 rounded-md px-2 py-0.5 text-sm font-black">
+                <div className="flex items-center gap-2 py-2">
+                  <span className="text-ylang-rose bg-ylang-rose/20 rounded-md px-2 py-0.5 text-sm font-black">
                     {Math.round(((currentTabIndex + 1) / tabs.length) * 100)}%
                   </span>
                 </div>
