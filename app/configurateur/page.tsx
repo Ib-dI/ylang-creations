@@ -32,77 +32,33 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-
-interface EmbroideryZone {
-  x: number;
-  y: number;
-  maxWidth: number;
-  rotation: number;
-  fontSize: number;
-  alignment: "center" | "left" | "right";
-  nameSpacing?: number;
-  multiNameEnabled?: boolean;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  basePrice: number;
-  weight: number; // Weight in grams
-  icon: string;
-  baseImage: string;
-  maskImage: string;
-  colorMaskImage?: string;
-  embroideryZone: EmbroideryZone;
-  sizes?: string[];
-  defaultSize?: string | null;
-}
-
-interface Fabric {
-  id: string;
-  name: string;
-  price: number;
-  baseColor: string; // Used for fallback or cart display
-  image: string; // Texture image path
-  category?: string; // Explicit category relationship
-}
-
-interface FabricCategory {
-  id: string; // prefix
-  title: string;
-  description: string;
-  order: number;
-}
-
-interface Configuration {
-  product: Product | null;
-  fabric: Fabric | null;
-  size: string | null;
-  embroideries: string[];
-  embroideryColor: string;
-  selectedColor: string | null;
-}
+import type {
+  ConfigurateurConfiguration,
+  ConfigurateurFabric,
+  ConfigurateurFabricCategory,
+  ConfigurateurProduct,
+  EmbroideryZone,
+} from "@/types/configurateur-page";
 
 interface SeeAllDialogProps {
   title: string;
   description: string;
-  fabrics: Fabric[];
-  configuration: Configuration;
-  setConfiguration: Dispatch<SetStateAction<Configuration>>;
+  fabrics: ConfigurateurFabric[];
+  configuration: ConfigurateurConfiguration;
+  setConfiguration: Dispatch<SetStateAction<ConfigurateurConfiguration>>;
 }
 
 interface FabricCategoryProps {
   title: string;
   description: string;
   prefix: string; // "coton", "vichy", "jersey", etc.
-  fabrics: Fabric[];
-  configuration: Configuration;
-  setConfiguration: Dispatch<SetStateAction<Configuration>>;
+  fabrics: ConfigurateurFabric[];
+  configuration: ConfigurateurConfiguration;
+  setConfiguration: Dispatch<SetStateAction<ConfigurateurConfiguration>>;
 }
 
 interface FabricGridItemProps {
-  fabric: Fabric;
+  fabric: ConfigurateurFabric;
   isSelected: boolean;
   onSelect: () => void;
 }
@@ -236,9 +192,9 @@ function SeeAllDialog({
 const ProductConfigurator = () => {
   // --- Data Definitions ---
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [fabrics, setFabrics] = useState<Fabric[]>([]);
-  const [categories, setCategories] = useState<FabricCategory[]>([]);
+  const [products, setProducts] = useState<ConfigurateurProduct[]>([]);
+  const [fabrics, setFabrics] = useState<ConfigurateurFabric[]>([]);
+  const [categories, setCategories] = useState<ConfigurateurFabricCategory[]>([]);
   const [productColors, setProductColors] = useState<{ name: string; hex: string }[]>([]);
   const [embroideryColors, setEmbroideryColors] = useState<{ name: string; hex: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -249,9 +205,9 @@ const ProductConfigurator = () => {
     "product" | "fabric" | "embroidery" | "summary"
   >("product");
 
-  const [configuration, setConfiguration] = useState<Configuration>({
-    product: null as unknown as Product, // Will be set after load
-    fabric: null as unknown as Fabric, // Will be set after load
+  const [configuration, setConfiguration] = useState<ConfigurateurConfiguration>({
+    product: null as unknown as ConfigurateurProduct, // Will be set after load
+    fabric: null as unknown as ConfigurateurFabric, // Will be set after load
     size: null,
     embroideries: [""],
     embroideryColor: "#D4AF37", // Sera écrasé après le chargement des couleurs
@@ -307,7 +263,7 @@ const ProductConfigurator = () => {
 
         if (initialProductId && loadedProducts.length > 0) {
           const foundProduct = loadedProducts.find(
-            (p: Product) =>
+            (p: ConfigurateurProduct) =>
               p.id.toLowerCase() === initialProductId.toLowerCase() ||
               p.name.toLowerCase().includes(initialProductId.toLowerCase()),
           );
