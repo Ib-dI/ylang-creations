@@ -139,7 +139,7 @@ async function handlePOST(request: Request): Promise<Response> {
       await db.update(settings).set(values).where(eq(settings.id, SETTINGS_ID));
     }
 
-    revalidateTag("settings");
+    revalidateTag("settings", "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {
