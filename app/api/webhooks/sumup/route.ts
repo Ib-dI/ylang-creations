@@ -1,142 +1,134 @@
 import { order, product } from "@/db/schema";
 import { db } from "@/lib/db";
 import { getSumupHeaders, SUMUP_API_URL } from "@/lib/sumup";
+import type { CartItem } from "@/types/cart";
 import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
+interface VerifiedCheckout {
+  status: string;
+  checkout_reference: string;
+  amount: number;
+  transactions?: Array<{ transaction_code: string }>;
+}
+
+async function verifyPaymentWithSumup(
+  checkoutId: string,
+): Promise<VerifiedCheckout | null> {
+  const response = await fetch(`${SUMUP_API_URL}/checkouts/${checkoutId}`, {
+    method: "GET",
+    headers: getSumupHeaders(),
+  });
+  if (!response.ok) return null;
+  return response.json() as Promise<VerifiedCheckout>;
+}
+
+async function markOrderPaid(
+  orderId: string,
+  transactionCode: string | null,
+): Promise<void> {
+  await db
+    .update(order)
+    .set({
+      status: "paid",
+      sumupTransactionId: transactionCode,
+      updatedAt: new Date(),
+    })
+    .where(eq(order.id, orderId));
+}
+
+async function decrementStock(items: CartItem[]): Promise<void> {
+  for (const item of items) {
+    if (!item.productId) continue;
+    await db
+      .update(product)
+      .set({
+        stock: sql`GREATEST(${product.stock} - ${item.quantity}, 0)`,
+        updatedAt: new Date(),
+      })
+      .where(eq(product.id, item.productId));
+  }
+}
+
+async function sendAdminOrderEmail(
+  orderId: string,
+  amount: number,
+): Promise<void> {
+  const orderNumber = `YC${orderId.slice(0, 8).toUpperCase()}`;
+  const adminEmail = process.env.ADMIN_EMAIL || "contact@ylang-creations.fr";
+
+  await resend.emails.send({
+    from: "Ylang Créations <contact@ylang-creations.fr>",
+    to: adminEmail,
+    subject: `Nouvelle commande ! (${orderNumber})`,
+    html: `<p>Nouvelle commande <strong>${orderNumber}</strong> reçue via SumUp. Montant : ${amount} EUR.</p>`,
+  });
+}
+
+async function markOrderCancelled(orderId: string): Promise<void> {
+  await db
+    .update(order)
+    .set({ status: "cancelled", updatedAt: new Date() })
+    .where(eq(order.id, orderId));
+}
+
 export async function POST(req: Request) {
   try {
-    console.log("📥 [SumUp Webhook] Received webhook event");
-
     const body = await req.json();
-    console.log("📥 [SumUp Webhook] Body:", JSON.stringify(body, null, 2));
-
     const checkoutId = body.id;
 
     if (!checkoutId) {
-      console.warn("⚠️ [SumUp Webhook] Missing checkout ID in payload");
       return new NextResponse("Invalid payload", { status: 400 });
     }
 
-    // Always fetch the latest checkout status from SumUp API to avoid spoofing
-    const sumupResponse = await fetch(
-      `${SUMUP_API_URL}/checkouts/${checkoutId}`,
-      {
-        method: "GET",
-        headers: getSumupHeaders(),
-      },
-    );
-
-    if (!sumupResponse.ok) {
-      console.error("❌ [SumUp Webhook] Failed to verify checkout with SumUp");
+    const verified = await verifyPaymentWithSumup(checkoutId);
+    if (!verified) {
       return new NextResponse("Verification failed", { status: 400 });
     }
 
-    const verifiedCheckout = await sumupResponse.json();
-    const verifiedStatus = verifiedCheckout.status;
-    const verifiedOrderReference = verifiedCheckout.checkout_reference; // This is our local order.id
+    const { status, checkout_reference: orderId } = verified;
 
-    console.log(
-      `🔍 [SumUp Webhook] Verified status for ${checkoutId}: ${verifiedStatus}`,
-    );
-
-    if (verifiedStatus === "PAID") {
-      // Find the order in our database
+    if (status === "PAID") {
       const existingOrderResult = await db
         .select()
         .from(order)
-        .where(eq(order.id, verifiedOrderReference))
+        .where(eq(order.id, orderId))
         .limit(1);
 
       if (existingOrderResult.length === 0) {
-        console.error(
-          `❌ [SumUp Webhook] Order not found for reference: ${verifiedOrderReference}`,
-        );
         return new NextResponse("Order not found", { status: 404 });
       }
 
       const existingOrder = existingOrderResult[0];
 
-      // Idempotency check
       if (existingOrder.status !== "pending") {
-        console.log(
-          `⚠️ [SumUp Webhook] Order ${verifiedOrderReference} is already processed (status: ${existingOrder.status})`,
-        );
         return new NextResponse("Already processed", { status: 200 });
       }
 
-      console.log(
-        `✅ [SumUp Webhook] Processing payment for order ${verifiedOrderReference}`,
-      );
+      const transactionCode =
+        verified.transactions?.[0]?.transaction_code ?? null;
 
-      // 1. Update order status
-      await db
-        .update(order)
-        .set({
-          status: "paid",
-          sumupTransactionId:
-            verifiedCheckout.transactions?.[0]?.transaction_code || null,
-          updatedAt: new Date(),
-        })
-        .where(eq(order.id, verifiedOrderReference));
+      await markOrderPaid(orderId, transactionCode);
 
-      // 2. Decrement stock for all items
-      const items = existingOrder.items as any[];
-      if (Array.isArray(items)) {
-        for (const item of items) {
-          if (item.productId) {
-            console.log(
-              `📦 [SumUp Webhook] Decrementing stock for product ${item.productId} by ${item.quantity}`,
-            );
-            await db
-              .update(product)
-              .set({
-                stock: sql`GREATEST(${product.stock} - ${item.quantity}, 0)`,
-                updatedAt: new Date(),
-              })
-              .where(eq(product.id, item.productId));
-          }
-        }
+      if (Array.isArray(existingOrder.items)) {
+        await decrementStock(existingOrder.items as CartItem[]);
       }
 
-      // 3. Send confirmation emails
       try {
-        const orderNumber = `YC${verifiedOrderReference.slice(0, 8).toUpperCase()}`;
-        const adminEmail =
-          process.env.ADMIN_EMAIL || "contact@ylang-creations.fr";
-
-        await resend.emails.send({
-          from: "Ylang Créations <contact@ylang-creations.fr>",
-          to: adminEmail,
-          subject: `Nouvelle commande ! (${orderNumber})`,
-          html: `<p>Nouvelle commande <strong>${orderNumber}</strong> reçue via SumUp. Montant : ${verifiedCheckout.amount} EUR.</p>`,
-        });
-
-        console.log("✅ [SumUp Webhook] Admin email sent successfully");
+        await sendAdminOrderEmail(orderId, verified.amount);
       } catch (emailError) {
-        console.error("❌ [SumUp Webhook] Error sending emails:", emailError);
-        // Don't fail the webhook because of email errors
+        console.error("[SumUp Webhook] Error sending email:", emailError);
       }
-    } else if (
-      verifiedStatus === "FAILED" ||
-      verifiedStatus === "CANCELLED"
-    ) {
-      console.log(
-        `❌ [SumUp Webhook] Payment failed or cancelled for order ${verifiedOrderReference}`,
-      );
-
-      await db
-        .update(order)
-        .set({ status: "cancelled", updatedAt: new Date() })
-        .where(eq(order.id, verifiedOrderReference));
+    } else if (status === "FAILED" || status === "CANCELLED") {
+      await markOrderCancelled(orderId);
     }
 
     return new NextResponse("Webhook processed successfully", { status: 200 });
   } catch (error) {
-    console.error("❌ [SumUp Webhook] Unexpected error:", error);
+    console.error("[SumUp Webhook] Unexpected error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
