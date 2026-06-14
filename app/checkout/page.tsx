@@ -69,18 +69,8 @@ export default function CheckoutPage() {
     setError(null);
 
     try {
-      // Transformer les items du panier pour le checkout
-      const checkoutItems = items.map((item) => ({
-        productId: item.productId,
-        name: item.productName,
-        price: item.price,
-        quantity: item.quantity,
-        weight: item.weight,
-        image: item.thumbnail,
-        configuration: item.configuration,
-      }));
-
-      const result = await createCheckoutSession(checkoutItems);
+      // Pass items directly to checkout session (already CartItem type)
+      const result = await createCheckoutSession(items);
 
       if (result.success && result.url) {
         // Here result.url is actually the checkout ID returned by our new API

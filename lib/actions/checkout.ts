@@ -326,7 +326,7 @@ export async function getCheckoutSession(sessionId: string) {
         amountTotal: Math.round(checkoutSession.amount * 100), // convert to cents for frontend consistency
         paymentStatus: checkoutSession.status, // "PAID", "PENDING", "FAILED" etc.
         lineItems: parsedItems.map((item) => ({
-          name: item.name,
+          name: item.productName,
           quantity: item.quantity,
           amount: Math.round(item.price * item.quantity * 100),
         })),
