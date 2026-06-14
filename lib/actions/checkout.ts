@@ -12,6 +12,7 @@ import { db } from "@/lib/db";
 import { getSumupHeaders, SUMUP_API_URL } from "@/lib/sumup";
 import { calculateShippingRate } from "@/lib/shipping";
 import { createClient } from "@/utils/supabase/server";
+import type { CartItem } from "@/types/cart";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 
@@ -30,16 +31,6 @@ const UCP_METADATA = {
 };
 
 // Types
-interface CartItem {
-  productId: string;
-  name: string;
-  price: number;
-  quantity: number;
-  weight?: number;
-  image?: string;
-  configuration?: any;
-}
-
 interface CheckoutResult {
   success: boolean;
   url?: string;
@@ -324,7 +315,7 @@ export async function getCheckoutSession(sessionId: string) {
       return { success: false, error: "Commande non trouvée" };
     }
 
-    const parsedItems = (orderDetails[0].items as any[]) || [];
+    const parsedItems = (orderDetails[0].items as CartItem[]) || [];
 
     return {
       success: true,
