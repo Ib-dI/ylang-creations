@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 
 const SETTINGS_ID = "main-settings";
 
-export async function GET() {
+async function handleGET(): Promise<Response> {
   try {
     const result = await db
       .select()
@@ -63,6 +63,7 @@ export async function GET() {
     );
   }
 }
+export const GET = withAdminAuth(handleGET);
 
 async function handlePOST(request: Request): Promise<Response> {
   try {
