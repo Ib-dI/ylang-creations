@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 
 const SETTINGS_ID = "main-settings";
 
-async function handleGET(): Promise<Response> {
+async function handleGET(_request: Request): Promise<Response> {
   try {
     const result = await db
       .select()
