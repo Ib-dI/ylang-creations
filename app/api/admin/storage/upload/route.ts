@@ -1,5 +1,6 @@
 // app/api/admin/storage/upload/route.ts
-import { createClient, supabaseAdmin } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
+import { supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 // Types de fichiers autorisés
@@ -12,22 +13,11 @@ const ALLOWED_MIME_TYPES = [
 ];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request): Promise<Response> {
   try {
-    // 1. Vérifier l'authentification ET le rôle admin
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    console.log("✅ Utilisateur authentifié via withAdminAuth");
 
-    if (!user || user.app_metadata?.role !== "admin") {
-      console.error("❌ Accès non autorisé pour upload");
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
-    console.log("✅ Utilisateur authentifié:", user.email);
-
-    // 2. Récupérer le fichier et le chemin
+    // Récupérer le fichier et le chemin
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const path = formData.get("path") as string;
@@ -43,7 +33,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // 3. Validation du type de fichier
+    // Validation du type de fichier
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
       console.error("❌ Type de fichier non autorisé:", file.type);
       return NextResponse.json(
@@ -55,7 +45,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // 4. Validation de la taille du fichier
+    // Validation de la taille du fichier
     if (file.size > MAX_FILE_SIZE) {
       console.error("❌ Fichier trop volumineux:", file.size);
       return NextResponse.json(
@@ -64,7 +54,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // 5. Validation du chemin (éviter les attaques de traversée de répertoire)
+    // Validation du chemin (éviter les attaques de traversée de répertoire)
     const sanitizedPath = path.replace(/\.\./g, "").replace(/\/\//g, "/");
     if (sanitizedPath !== path) {
       console.error("❌ Chemin suspect détecté:", path);
@@ -81,11 +71,11 @@ export async function POST(request: Request) {
       path: sanitizedPath,
     });
 
-    // 3. Convertir le fichier en buffer
+    // Convertir le fichier en buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // 6. Upload vers Supabase Storage
+    // Upload vers Supabase Storage
     const { data, error } = await supabaseAdmin.storage
       .from("products")
       .upload(sanitizedPath, buffer, {
@@ -104,7 +94,7 @@ export async function POST(request: Request) {
 
     console.log("✅ Upload successful:", data);
 
-    // 5. Obtenir l'URL publique
+    // Obtenir l'URL publique
     const { data: publicUrlData } = supabaseAdmin.storage
       .from("products")
       .getPublicUrl(data.path);
@@ -124,26 +114,11 @@ export async function POST(request: Request) {
     );
   }
 }
+export const POST = withAdminAuth(handlePOST);
 
-// Bonus: Route DELETE pour supprimer les images
-export async function DELETE(request: Request) {
+// Route DELETE pour supprimer les images
+async function handleDELETE(request: Request): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user) {
-      console.log("❌ DELETE: No user found");
-      return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-    }
-
-    if (user.app_metadata?.role !== "admin") {
-      console.log("❌ DELETE: User is not admin", user.app_metadata?.role);
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const { searchParams } = new URL(request.url);
     const path = searchParams.get("path");
 
@@ -177,3 +152,4 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+export const DELETE = withAdminAuth(handleDELETE);

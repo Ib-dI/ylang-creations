@@ -1,23 +1,13 @@
 import { customer, order, product } from "@/db/schema";
 import { db } from "@/lib/db";
-import { createClient } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request): Promise<Response> {
   try {
-    // 1. Authentification & Autorisation
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const { resetProducts } = await request.json();
 
-    // 2. Transaction pour tout effacer en une fois
+    // Transaction pour tout effacer en une fois
     await db.transaction(async (tx) => {
       // Supprimer toutes les commandes
       await tx.delete(order);
@@ -46,3 +36,4 @@ export async function POST(request: Request) {
     );
   }
 }
+export const POST = withAdminAuth(handlePOST);

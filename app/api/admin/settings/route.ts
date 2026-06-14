@@ -1,7 +1,7 @@
 import { settings } from "@/db/schema";
 import { db } from "@/lib/db";
 import { formatZodErrors, settingsSchema } from "@/lib/validations";
-import { createClient } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
@@ -64,18 +64,8 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const body = await request.json();
 
     // Validation avec Zod
@@ -159,3 +149,4 @@ export async function POST(request: Request) {
     );
   }
 }
+export const POST = withAdminAuth(handlePOST);

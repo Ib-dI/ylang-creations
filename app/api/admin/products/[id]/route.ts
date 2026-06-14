@@ -1,28 +1,19 @@
 import { product, review } from "@/db/schema";
 import { db } from "@/lib/db";
 import { formatZodErrors, updateProductSchema } from "@/lib/validations";
-import { createClient, supabaseAdmin } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
+import { supabaseAdmin } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 // GET single product
-export async function GET(
+async function handleGET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  context?: { params: Promise<Record<string, string>> }
+): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
-    const { id } = await params;
+    const { id } = await context!.params;
 
     const products = await db
       .select()
@@ -67,24 +58,15 @@ export async function GET(
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+export const GET = withAdminAuth(handleGET);
 
 // PATCH update product
-export async function PATCH(
+async function handlePATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  context?: { params: Promise<Record<string, string>> }
+): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
-    const { id } = await params;
+    const { id } = await context!.params;
     const body = await request.json();
 
     // Validation avec Zod
@@ -162,24 +144,15 @@ export async function PATCH(
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+export const PATCH = withAdminAuth(handlePATCH);
 
 // DELETE product
-export async function DELETE(
+async function handleDELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  context?: { params: Promise<Record<string, string>> }
+): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
-    const { id } = await params;
+    const { id } = await context!.params;
 
     // 1. Récupérer le produit pour avoir la liste des images
     const products = await db
@@ -251,3 +224,4 @@ export async function DELETE(
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+export const DELETE = withAdminAuth(handleDELETE);

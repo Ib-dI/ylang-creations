@@ -1,17 +1,9 @@
-import { createClient, supabaseAdmin } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
+import { supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
-export async function POST() {
+async function handlePOST(): Promise<Response> {
   try {
-    // Vérification authentification ET rôle admin
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
     const { data: buckets, error: listError } =
       await supabaseAdmin.storage.listBuckets();
 
@@ -84,3 +76,4 @@ export async function POST() {
     );
   }
 }
+export const POST = withAdminAuth(handlePOST);

@@ -1,23 +1,12 @@
 import { customer, order } from "@/db/schema";
 import { db } from "@/lib/db";
-import { createClient } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 // GET all orders
-export async function GET(request: Request) {
+async function handleGET(request: Request): Promise<Response> {
   try {
-    // Check admin authentication
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     // Get query params
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
@@ -116,3 +105,4 @@ export async function GET(request: Request) {
     );
   }
 }
+export const GET = withAdminAuth(handleGET);

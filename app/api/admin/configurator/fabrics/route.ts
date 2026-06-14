@@ -1,6 +1,7 @@
 import { configuratorFabric } from "@/db/schema";
 import { db } from "@/lib/db";
-import { createClient, supabaseAdmin } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
+import { supabaseAdmin } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -26,17 +27,10 @@ export async function GET(request: Request) {
 }
 
 // Admin POST: Add a new fabric
-export async function POST(request: Request) {
+async function handlePOST(request: Request): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const body = await request.json();
-    
+
     if (!body.id || !body.name || !body.baseColor || !body.image || !body.category) {
       return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
     }
@@ -60,20 +54,14 @@ export async function POST(request: Request) {
     );
   }
 }
+export const POST = withAdminAuth(handlePOST);
 
 // Admin PUT: Update a fabric
-export async function PUT(request: Request) {
+async function handlePUT(request: Request): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    
+
     if (!id) {
       return NextResponse.json({ error: "ID manquant" }, { status: 400 });
     }
@@ -101,20 +89,14 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Erreur lors de la mise à jour du tissu" }, { status: 500 });
   }
 }
+export const PUT = withAdminAuth(handlePUT);
 
 // Admin DELETE: Remove a fabric
-export async function DELETE(request: Request) {
+async function handleDELETE(request: Request): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    
+
     if (!id) {
        return NextResponse.json({ error: "ID manquant" }, { status: 400 });
     }
@@ -146,3 +128,4 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Erreur lors de la suppression du tissu" }, { status: 500 });
   }
 }
+export const DELETE = withAdminAuth(handleDELETE);

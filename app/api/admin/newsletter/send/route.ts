@@ -6,21 +6,12 @@ import {
   newsletterCampaignSchema,
   validateRequest,
 } from "@/lib/validations";
-import { createClient } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const body = await request.json();
     const validation = validateRequest(newsletterCampaignSchema, body);
 
@@ -61,3 +52,4 @@ export async function POST(request: Request) {
     );
   }
 }
+export const POST = withAdminAuth(handlePOST);

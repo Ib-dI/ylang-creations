@@ -1,15 +1,8 @@
 import { configuratorColor } from "@/db/schema";
 import { db } from "@/lib/db";
-import { createClient } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { eq, and } from "drizzle-orm";
 import { NextResponse } from "next/server";
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.app_metadata?.role !== "admin") return null;
-  return user;
-}
 
 // GET: List colors (optionally filtered by type and/or active)
 export async function GET(request: Request) {
@@ -37,11 +30,8 @@ export async function GET(request: Request) {
 }
 
 // POST: Create a new color
-export async function POST(request: Request) {
+async function handlePOST(request: Request): Promise<Response> {
   try {
-    const user = await requireAdmin();
-    if (!user) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-
     const body = await request.json();
     const { id, name, hex, type, order, isActive } = body;
 
@@ -67,13 +57,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Erreur lors de la création de la couleur" }, { status: 500 });
   }
 }
+export const POST = withAdminAuth(handlePOST);
 
 // PUT: Update a color
-export async function PUT(request: Request) {
+async function handlePUT(request: Request): Promise<Response> {
   try {
-    const user = await requireAdmin();
-    if (!user) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID manquant" }, { status: 400 });
@@ -94,13 +82,11 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Erreur lors de la mise à jour" }, { status: 500 });
   }
 }
+export const PUT = withAdminAuth(handlePUT);
 
 // DELETE: Delete a color
-export async function DELETE(request: Request) {
+async function handleDELETE(request: Request): Promise<Response> {
   try {
-    const user = await requireAdmin();
-    if (!user) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "ID manquant" }, { status: 400 });
@@ -112,3 +98,4 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Erreur lors de la suppression" }, { status: 500 });
   }
 }
+export const DELETE = withAdminAuth(handleDELETE);

@@ -1,27 +1,17 @@
 import { customer, order } from "@/db/schema";
 import { db } from "@/lib/db";
 import { formatZodErrors, updateOrderSchema } from "@/lib/validations";
-import { createClient } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 // GET single order
-export async function GET(
+async function handleGET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  context?: { params: Promise<Record<string, string>> }
+): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
-    const { id } = await params;
+    const { id } = await context!.params;
 
     const orders = await db
       .select({
@@ -101,24 +91,15 @@ export async function GET(
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+export const GET = withAdminAuth(handleGET);
 
 // PATCH update order
-export async function PATCH(
+async function handlePATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  context?: { params: Promise<Record<string, string>> }
+): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
-    const { id } = await params;
+    const { id } = await context!.params;
     const body = await request.json();
 
     // Validation avec Zod
@@ -149,3 +130,4 @@ export async function PATCH(
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+export const PATCH = withAdminAuth(handlePATCH);

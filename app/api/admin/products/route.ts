@@ -2,25 +2,14 @@ import { product } from "@/db/schema";
 import { db } from "@/lib/db";
 import { centsToEuros, eurosToCents } from "@/lib/currency";
 import { createProductSchema, formatZodErrors } from "@/lib/validations";
-import { createClient } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { desc } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 // GET all products
-export async function GET(request: Request) {
+async function handleGET(request: Request): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      console.error("❌ Accès non autorisé pour GET /api/admin/products");
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
     const search = searchParams.get("search");
@@ -86,21 +75,11 @@ export async function GET(request: Request) {
     );
   }
 }
+export const GET = withAdminAuth(handleGET);
 
 // POST create new product
-export async function POST(request: Request) {
+async function handlePOST(request: Request): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      console.error("❌ Accès non autorisé pour POST /api/admin/products");
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const body = await request.json();
 
     // Validation avec Zod
@@ -135,7 +114,7 @@ export async function POST(request: Request) {
     const slug = name
       .toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[̀-ͯ]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
@@ -176,3 +155,4 @@ export async function POST(request: Request) {
     );
   }
 }
+export const POST = withAdminAuth(handlePOST);

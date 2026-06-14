@@ -1,21 +1,12 @@
 import { customer, order } from "@/db/schema";
 import { db } from "@/lib/db";
-import { createClient, supabaseAdmin } from "@/utils/supabase/server";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
+import { supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 // GET all users
-export async function GET(request: Request) {
+async function handleGET(request: Request): Promise<Response> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Vérification authentification ET rôle admin
-    if (!user || user.app_metadata?.role !== "admin") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-    }
-
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
 
@@ -89,3 +80,4 @@ export async function GET(request: Request) {
     );
   }
 }
+export const GET = withAdminAuth(handleGET);
