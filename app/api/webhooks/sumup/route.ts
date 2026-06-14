@@ -1,16 +1,11 @@
 import { order, product } from "@/db/schema";
 import { db } from "@/lib/db";
+import { getSumupHeaders, SUMUP_API_URL } from "@/lib/sumup";
 import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
-const sumupApiUrl = "https://api.sumup.com/v0.1";
-
-const sumupHeaders = {
-  Authorization: `Bearer ${process.env.SUMUP_SECRET_KEY}`,
-  "Content-Type": "application/json",
-};
 
 export async function POST(req: Request) {
   try {
@@ -28,10 +23,10 @@ export async function POST(req: Request) {
 
     // Always fetch the latest checkout status from SumUp API to avoid spoofing
     const sumupResponse = await fetch(
-      `${sumupApiUrl}/checkouts/${checkoutId}`,
+      `${SUMUP_API_URL}/checkouts/${checkoutId}`,
       {
         method: "GET",
-        headers: sumupHeaders,
+        headers: getSumupHeaders(),
       },
     );
 

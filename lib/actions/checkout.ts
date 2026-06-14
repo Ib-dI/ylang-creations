@@ -9,23 +9,15 @@ import {
   user as userTable,
 } from "@/db/schema";
 import { db } from "@/lib/db";
+import { getSumupHeaders, SUMUP_API_URL } from "@/lib/sumup";
+import { calculateShippingRate } from "@/lib/shipping";
 import { createClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
-const sumupApiUrl = "https://api.sumup.com/v0.1";
-
-if (!process.env.SUMUP_SECRET_KEY) {
-  throw new Error("SUMUP_SECRET_KEY is not defined");
-}
 
 if (!process.env.SUMUP_MERCHANT_CODE) {
   throw new Error("SUMUP_MERCHANT_CODE is not defined");
 }
-
-const sumupHeaders = {
-  Authorization: `Bearer ${process.env.SUMUP_SECRET_KEY}`,
-  "Content-Type": "application/json",
-};
 
 const UCP_METADATA = {
   version: "2026-01-11",
@@ -46,21 +38,6 @@ interface CartItem {
   weight?: number;
   image?: string;
   configuration?: any;
-}
-
-/**
- * Calcule les frais de livraison Colissimo à domicile 2026
- * en fonction du poids total du colis (en grammes).
- */
-function calculateColissimoHomeRate(weightGrams: number): number {
-  if (weightGrams <= 250) return 5.49;
-  if (weightGrams <= 500) return 7.59;
-  if (weightGrams <= 750) return 9.29;
-  if (weightGrams <= 1000) return 9.59;
-  if (weightGrams <= 2000) return 11.19;
-  if (weightGrams <= 5000) return 17.39;
-  if (weightGrams <= 10000) return 25.29;
-  return 39.59; // jusqu'à 30 kg
 }
 
 interface CheckoutResult {
@@ -228,7 +205,7 @@ export async function createCheckoutSession(
     // Fallback sur la valeur DB si aucun poids défini
     const shippingFeeValue =
       totalWeight > 0
-        ? calculateColissimoHomeRate(totalWeight)
+        ? calculateShippingRate(totalWeight)
         : (s?.shippingFee ?? 990) / 100;
 
     // 4. Get or create local customer
@@ -273,9 +250,9 @@ export async function createCheckoutSession(
       description: `Commande sur Ylang Créations - ${items.length} article(s)`,
     };
 
-    const sumupResponse = await fetch(`${sumupApiUrl}/checkouts`, {
+    const sumupResponse = await fetch(`${SUMUP_API_URL}/checkouts`, {
       method: "POST",
-      headers: sumupHeaders,
+      headers: getSumupHeaders(),
       body: JSON.stringify(sumupPayload),
     });
 
@@ -321,9 +298,9 @@ export async function getCheckoutSession(sessionId: string) {
       return { success: false, error: "Non authentifié" };
     }
 
-    const sumupResponse = await fetch(`${sumupApiUrl}/checkouts/${sessionId}`, {
+    const sumupResponse = await fetch(`${SUMUP_API_URL}/checkouts/${sessionId}`, {
       method: "GET",
-      headers: sumupHeaders,
+      headers: getSumupHeaders(),
     });
 
     if (!sumupResponse.ok) {
