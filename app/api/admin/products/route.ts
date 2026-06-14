@@ -1,5 +1,6 @@
 import { product } from "@/db/schema";
 import { db } from "@/lib/db";
+import { centsToEuros } from "@/lib/currency";
 import { createProductSchema, formatZodErrors } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/server";
 import { desc } from "drizzle-orm";
@@ -35,8 +36,8 @@ export async function GET(request: Request) {
       name: p.name,
       slug: p.slug,
       description: p.description,
-      price: p.price / 100,
-      compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
+      price: centsToEuros(p.price),
+      compareAtPrice: p.compareAtPrice ? centsToEuros(p.compareAtPrice) : null,
       category: p.category,
       subcategory: p.subcategory,
       images: (p.images as string[] | null) ?? [],

@@ -1,5 +1,6 @@
 import { product } from "@/db/schema";
 import { db } from "@/lib/db";
+import { centsToEuros } from "@/lib/currency";
 import { and, asc, desc, eq, like, or, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { NextResponse } from "next/server";
@@ -87,7 +88,7 @@ async function getCachedProducts(params: {
       id: p.id,
       name: p.name,
       category: p.category,
-      price: p.price / 100,
+      price: centsToEuros(p.price),
       image: parsedImages[0] || "/images/placeholder.jpg",
       images: parsedImages,
       description: p.description,
@@ -103,7 +104,7 @@ async function getCachedProducts(params: {
       sizes: parsedSizes,
       defaultSize: p.defaultSize ?? parsedSizes[0] ?? null,
       slug: p.slug,
-      compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
+      compareAtPrice: p.compareAtPrice ? centsToEuros(p.compareAtPrice) : null,
       weight: p.weight ?? 0,
     };
   });
