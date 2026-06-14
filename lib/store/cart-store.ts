@@ -2,6 +2,7 @@ import type { CartItem } from "@/types/cart";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { MAX_WEIGHT_GRAMS } from "@/lib/constants";
+import { calculateShippingRate } from "@/lib/shipping";
 
 interface CartStore {
   items: CartItem[];
@@ -26,21 +27,6 @@ interface CartStore {
   isOverWeightLimit: () => boolean;
   getShipping: () => number;
   getFinalPrice: () => number;
-}
-
-/**
- * Calcule les frais de livraison Colissimo à domicile 2026
- * en fonction du poids total du colis (en grammes).
- */
-function calculateColissimoHomeRate(weightGrams: number): number {
-  if (weightGrams <= 250) return 5.49;
-  if (weightGrams <= 500) return 7.59;
-  if (weightGrams <= 750) return 9.29;
-  if (weightGrams <= 1000) return 9.59;
-  if (weightGrams <= 2000) return 11.19;
-  if (weightGrams <= 5000) return 17.39;
-  if (weightGrams <= 10000) return 25.29;
-  return 39.59; // jusqu'à 30 kg
 }
 
 export const useCartStore = create<CartStore>()(
@@ -160,7 +146,7 @@ export const useCartStore = create<CartStore>()(
         if (totalWeight === 0 && get().items.length > 0) {
           return 9.59;
         }
-        return calculateColissimoHomeRate(totalWeight);
+        return calculateShippingRate(totalWeight);
       },
 
       getFinalPrice: () => {
