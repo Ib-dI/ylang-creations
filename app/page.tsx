@@ -8,12 +8,28 @@ import { product as productTable } from "@/db/schema";
 import { getCachedSettings } from "@/lib/actions/settings";
 import { db } from "@/lib/db";
 import { and, desc, eq } from "drizzle-orm";
+
+type HeroSlide = {
+  id: string;
+  bgClass: string;
+  title: string;
+  subtitle: string;
+  cta: string;
+  link: string;
+  image: string;
+};
+
+type Testimonial = {
+  image: string;
+  id?: string;
+  name?: string;
+};
 import { Loader2 } from "lucide-react";
 import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
 
 // Fonction de formatage réutilisable
-function formatProduct(p: any, thirtyDaysAgo: Date): CatalogProduct {
+function formatProduct(p: typeof productTable.$inferSelect, thirtyDaysAgo: Date): CatalogProduct {
   const parsedImages = (p.images as string[] | null) ?? [];
 
   interface ParsedOptions {
@@ -114,17 +130,17 @@ async function TestimonialsData() {
   const settings = result[0];
   const testimonials = settings?.testimonials ?? [];
 
-  return <TestimonialsSection testimonials={testimonials as any[]} />;
+  return <TestimonialsSection testimonials={testimonials as Testimonial[]} />;
 }
 
 export default async function Home() {
   const result = await getCachedSettings();
   const settings = result[0];
 
-  let heroSlides: any[] = [];
+  let heroSlides: HeroSlide[] = [];
   try {
     if (settings?.heroSlides) {
-      heroSlides = (settings.heroSlides as any[]) ?? [];
+      heroSlides = (settings.heroSlides as HeroSlide[]) ?? [];
     }
   } catch (err) {
     console.error("Error reading heroSlides:", err);
