@@ -1,5 +1,6 @@
 import { configuratorFabric, configuratorFabricCategory } from "@/db/schema";
 import { db } from "@/lib/db";
+import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -20,7 +21,7 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request): Promise<Response> {
   try {
     const body = await request.json();
     const { id, title, description, order, isActive } = body;
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+async function handlePUT(request: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -59,7 +60,7 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
 
     if (body.title !== undefined) updateData.title = body.title;
     if (body.description !== undefined) updateData.description = body.description;
@@ -91,7 +92,7 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+async function handleDELETE(request: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -128,3 +129,7 @@ export async function DELETE(request: Request) {
     );
   }
 }
+
+export const POST = withAdminAuth(handlePOST);
+export const PUT = withAdminAuth(handlePUT);
+export const DELETE = withAdminAuth(handleDELETE);
