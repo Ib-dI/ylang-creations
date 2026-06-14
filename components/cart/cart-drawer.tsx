@@ -33,8 +33,6 @@ export function CartDrawer() {
     getTotalWeight,
   } = useCartStore();
 
-  const MAX_WEIGHT_GRAMS = 30000;
-
   useEffect(() => {
     refreshWeights();
   }, []);

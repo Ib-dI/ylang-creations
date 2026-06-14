@@ -1,6 +1,7 @@
 import type { CartItem } from "@/types/cart";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { MAX_WEIGHT_GRAMS } from "@/lib/constants";
 
 interface CartStore {
   items: CartItem[];
@@ -26,8 +27,6 @@ interface CartStore {
   getShipping: () => number;
   getFinalPrice: () => number;
 }
-
-export const MAX_WEIGHT_GRAMS = 30000;
 
 /**
  * Calcule les frais de livraison Colissimo à domicile 2026

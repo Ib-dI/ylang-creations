@@ -18,6 +18,7 @@ import {
   ShoppingBag,
   Type,
 } from "lucide-react";
+import { EMBROIDERY_PRICE_CENTS } from "@/lib/constants";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
@@ -341,7 +342,7 @@ const ProductConfigurator = () => {
   const totalPrice = () => {
     let total = configuration.product?.basePrice || 0;
     total += configuration.fabric?.price || 0;
-    if (configuration.embroideries.some(e => e.length > 0)) total += 1500;
+    if (configuration.embroideries.some(e => e.length > 0)) total += EMBROIDERY_PRICE_CENTS;
     return total;
   };
 
