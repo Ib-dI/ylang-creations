@@ -1,6 +1,6 @@
 import { product } from "@/db/schema";
 import { db } from "@/lib/db";
-import { centsToEuros } from "@/lib/currency";
+import { centsToEuros, eurosToCents } from "@/lib/currency";
 import { createProductSchema, formatZodErrors } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/server";
 import { desc } from "drizzle-orm";
@@ -147,8 +147,8 @@ export async function POST(request: Request) {
       name,
       slug: `${slug}-${id.slice(0, 8)}`,
       description: description || null,
-      price: Math.round(price * 100),
-      compareAtPrice: compareAtPrice ? Math.round(compareAtPrice * 100) : null,
+      price: eurosToCents(price),
+      compareAtPrice: compareAtPrice ? eurosToCents(compareAtPrice) : null,
       category,
       subcategory: subcategory || null,
       images: images ?? null,
