@@ -152,13 +152,10 @@ export default async function Home() {
       <HeroSection initialSlides={heroSlides} />
 
       {/* Featured Products avec Suspense pour streaming */}
-      <section className="bg-ylang-terracotta/50 py-12 sm:py-16 lg:py-24">
+      <section className="py-20 lg:py-32" style={{ background: "var(--color-paper)" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-center lg:mb-12">
-            <p className="font-abramo text-ylang-rose mb-3 text-sm font-semibold tracking-widest uppercase">
-              Collections printemps
-            </p>
-            <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-4xl lg:text-5xl">
+            <h2 className="font-display text-ylang-charcoal mb-4 text-4xl lg:text-5xl font-semibold tracking-tight">
               Nos créations phares
             </h2>
             <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl text-lg">
