@@ -78,13 +78,10 @@ export function ProductCard({
                 loading={priority ? "eager" : "lazy"}
                 decoding="async"
                 quality={75}
-                className="origin-center object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                className="origin-center object-cover transition-opacity duration-500 group-hover:opacity-90"
                 sizes="(max-width: 1024px) 48vw, 24vw"
               />
             </div>
-
-            {/* Overlay élégant au hover */}
-            <div className="absolute inset-0 bg-linear-to-t from-white/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
             {/* Thumbnails si plusieurs images */}
             {images.length > 1 && (
@@ -110,24 +107,23 @@ export function ProductCard({
           </div>
         </Link>
 
-        {/* Badges - Animation CSS pure */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1.5 transition-all duration-300 group-hover:opacity-0 sm:top-4 sm:left-4 sm:gap-2">
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1 sm:top-4 sm:left-4">
           {product.new && (
-            <div
-              className="bg-ylang-terracotta text-charcoal/80 rounded-full px-2 py-1 text-[10px] font-medium tracking-wider uppercase shadow-lg sm:px-3 sm:py-1.5 sm:text-xs"
-              style={{
-                animation:
-                  "scaleRotate 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s both",
-              }}
+            <span
+              className="text-[10px] tracking-[0.14em] uppercase"
+              style={{ fontFamily: "var(--font-brand)", color: "var(--color-paper)", background: "var(--color-ink)", padding: "2px 8px" }}
             >
-              Nouveauté
-            </div>
+              Nouveau
+            </span>
           )}
           {product.customizable && (
-            <div className="bg-ylang-yellow text-charcoal/80 flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-medium tracking-wider uppercase shadow-md sm:px-3 sm:py-1.5 sm:text-xs">
-              <Wand2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+            <span
+              className="text-[10px] tracking-[0.14em] uppercase"
+              style={{ fontFamily: "var(--font-brand)", color: "var(--color-ink)", background: "var(--color-paper-2)", padding: "2px 8px" }}
+            >
               Sur mesure
-            </div>
+            </span>
           )}
         </div>
 
@@ -153,7 +149,7 @@ export function ProductCard({
             isWishlisted
               ? "bg-ylang-terracotta/50 border-ylang-terracotta"
               : "border-white/90 bg-white/90",
-            "group/heart absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border shadow-lg transition-transform duration-300 hover:scale-110 sm:top-4 sm:right-4 sm:h-10 sm:w-10",
+            "group/heart absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border transition-opacity duration-200 hover:opacity-80 sm:top-4 sm:right-4 sm:h-10 sm:w-10",
           )}
         >
           <Heart
@@ -167,9 +163,12 @@ export function ProductCard({
         </button>
 
         {/* Infos produit */}
-        <div className="bg-ylang-beige space-y-1.5 p-2.5 sm:p-3">
+        <div className="space-y-1.5 p-2.5 sm:p-3" style={{ background: "var(--color-paper-2)" }}>
           <div>
-            <p className="font-abramo text-ylang-rose mb-0.5 text-xs font-semibold tracking-widest uppercase">
+            <p
+              className="mb-0.5 text-[10px] tracking-[0.18em] uppercase"
+              style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+            >
               {product.category}
             </p>
             <Link href={`/produits/${product.id}`}>
@@ -215,23 +214,8 @@ export function ProductCard({
       {/* Animations CSS dans un style tag */}
       <style jsx>{`
         @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes scaleRotate {
-          0% {
-            transform: scale(0) rotate(-180deg);
-          }
-          100% {
-            transform: scale(1) rotate(0deg);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
