@@ -416,7 +416,7 @@ function CollectionsContent() {
   ]);
 
   return (
-    <div className="bg-ylang-terracotta/50 min-h-screen py-12 sm:py-16 lg:py-24">
+    <div className="min-h-screen py-12 sm:py-16 lg:py-24" style={{ background: "var(--color-paper)" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -424,10 +424,16 @@ function CollectionsContent() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 text-center lg:mb-12"
         >
-          <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
+          <p
+            className="mb-3 text-[11px] tracking-[0.2em] uppercase font-semibold"
+            style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+          >
             Nos Collections
           </p>
-          <h1 className="text-ylang-charcoal font-abramo-script mb-4 text-4xl lg:text-5xl">
+          <h1
+            className="mb-4 text-4xl font-semibold tracking-tight lg:text-6xl"
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+          >
             {searchTerm
               ? searchTerm.charAt(0).toUpperCase() + searchTerm.slice(1)
               : selectedCategory === "Tout"
@@ -453,7 +459,7 @@ function CollectionsContent() {
                 placeholder="Rechercher une création..."
                 value={searchTerm}
                 onChange={(e) => updateSearchUrl(e.target.value)}
-                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal border-ylang-rose w-full rounded-2xl border bg-white py-3.5 pr-12 pl-12 transition-all outline-none placeholder:text-gray-400 focus:ring-4"
+                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal border-ylang-rose w-full rounded-none border bg-white py-3.5 pr-12 pl-12 transition-all outline-none placeholder:text-gray-400 focus:ring-4"
               />
               {searchTerm && (
                 <button
@@ -469,7 +475,7 @@ function CollectionsContent() {
               {/* Bouton filtres Desktop/Mobile */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`font-body border-ylang-rose flex items-center justify-center gap-2.5 rounded-2xl border bg-white px-6 py-3.5 text-sm font-medium transition-all ${
+                className={`font-body border-ylang-rose flex items-center justify-center gap-2.5 rounded-none border bg-white px-6 py-3.5 text-sm font-medium transition-all ${
                   showFilters
                     ? "border-ylang-rose bg-ylang-rose/60 text-ylang-white"
                     : "text-ylang-charcoal"
