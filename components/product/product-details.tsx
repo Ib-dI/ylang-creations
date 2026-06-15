@@ -96,7 +96,7 @@ export default function ProductDetails({
   };
 
   return (
-    <div className="bg-ylang-terracotta/30 section-padding min-h-screen">
+    <div className="section-padding min-h-screen" style={{ background: "var(--color-paper)" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="font-body text-ylang-charcoal/60 mb-4 flex items-center text-sm lg:mb-8">
@@ -115,11 +115,11 @@ export default function ProductDetails({
         </nav>
 
         {/* Contenu principal */}
-        <div className="mb-8 grid gap-8 lg:mb-16 lg:grid-cols-2 lg:gap-12">
+        <div className="mb-8 grid gap-8 lg:mb-16 lg:grid-cols-[3fr_2fr] lg:gap-12">
           {/* Galerie d'images */}
           <div className="space-y-3 lg:space-y-4">
             {/* Image principale */}
-            <div className="bg-ylang-beige/30 relative aspect-square overflow-hidden rounded-2xl shadow-(--shadow-card)">
+            <div className="relative aspect-square overflow-hidden" style={{ background: "var(--color-paper-3)" }}>
               <motion.div style={{ x: xPct }} className="flex h-full">
                 {productImages.map((img, i) => (
                   <div key={i} className="relative h-full w-full shrink-0">
@@ -227,7 +227,10 @@ export default function ProductDetails({
               <p className="text-ylang-rose font-abramo text-md mb-2 font-semibold tracking-widest uppercase">
                 {product.category}
               </p>
-              <h1 className="font-display text-ylang-charcoal mb-3 text-2xl lg:mb-4 lg:text-4xl">
+              <h1
+                className="mb-2 text-3xl font-semibold tracking-tight lg:text-4xl xl:text-5xl"
+                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+              >
                 {product.name}
               </h1>
 
@@ -238,7 +241,10 @@ export default function ProductDetails({
                     À partir de
                   </p>
                   <div className="flex items-baseline gap-3">
-                    <p className="font-display text-ylang-rose text-3xl font-semibold lg:text-4xl">
+                    <p
+                      className="text-2xl font-semibold"
+                      style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+                    >
                       {product.price}€
                     </p>
                     {product.compareAtPrice &&
@@ -335,9 +341,10 @@ export default function ProductDetails({
 
             {/* Bouton Ajouter au panier */}
             <Button
-              variant="primary"
+              variant="maison"
               size="lg"
               className="w-full"
+              style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
               onClick={() => {
                 const item: CartItem = {
                   id: `${product.id}-standard-${selectedSize ?? "unique"}-${Date.now()}`,
