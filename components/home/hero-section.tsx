@@ -1,112 +1,229 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { motion, MotionConfig, useMotionTemplate, useSpring, useReducedMotion, Variants } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const DEFAULT_SLIDES = [
-  { id: "1", bgClass: "from-ylang-rose to-ylang-terracotta", title: "Chaque création naît de vos désirs", subtitle: "Personnalisez chaque détail pour un univers unique", cta: "Créer maintenant", link: "/configurateur", image: "" },
-  { id: "2", bgClass: "from-ylang-terracotta to-ylang-sage", title: "Savoir-faire artisanal français", subtitle: "Une confection soignée pour le confort et la sécurité de bébé", cta: "Découvrir l'atelier", link: "/a-propos", image: "" },
-  { id: "3", bgClass: "from-ylang-sage to-ylang-rose", title: "Nouvelle Collection Printemps", subtitle: "Des couleurs douces et des matières naturelles", cta: "Voir la collection", link: "/collections?filter=new", image: "" },
-];
-
-const contentVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: 0.3 + i * 0.1, type: "spring", stiffness: 150, damping: 25 } }),
-  exit: { opacity: 0, y: -20, transition: { duration: 0.2 } }
+type Slide = {
+  id: string;
+  title: string;
+  subtitle: string;
+  cta: string;
+  link: string;
+  image: string;
+  bgClass?: string;
 };
 
-export function HeroSection({ initialSlides }: { initialSlides?: typeof DEFAULT_SLIDES }) {
+const DEFAULT_SLIDES: Slide[] = [
+  {
+    id: "1",
+    title: "Chaque création naît de vos désirs",
+    subtitle: "Personnalisez chaque détail pour un univers unique",
+    cta: "Sur mesure",
+    link: "/configurateur",
+    image: "",
+  },
+  {
+    id: "2",
+    title: "Savoir-faire artisanal français",
+    subtitle: "Une confection soignée pour le confort de bébé",
+    cta: "L'atelier",
+    link: "/a-propos",
+    image: "",
+  },
+  {
+    id: "3",
+    title: "Nouvelle Collection Printemps",
+    subtitle: "Des couleurs douces et des matières naturelles",
+    cta: "La collection",
+    link: "/collections?filter=new",
+    image: "",
+  },
+];
+
+export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
   const [index, setIndex] = useState(0);
   const slides = initialSlides?.length ? initialSlides : DEFAULT_SLIDES;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const shouldReduce = useReducedMotion();
-
-  const x = index * 100;
-  const xSpring = useSpring(x, { bounce: 0 });
-  const xPct = useMotionTemplate`-${xSpring}%`;
-
-  useEffect(() => { xSpring.set(x); }, [x, xSpring]);
+  const slide = slides[index];
 
   const resetTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (slides.length <= 1) return;
-    timerRef.current = setInterval(() => setIndex(i => (i + 1) % slides.length), 8000);
+    timerRef.current = setInterval(
+      () => setIndex((i) => (i + 1) % slides.length),
+      8000,
+    );
   }, [slides.length]);
-
-  const paginate = useCallback((delta: number) => {
-    setIndex(i => (i + delta + slides.length) % slides.length);
-    resetTimer();
-  }, [slides.length, resetTimer]);
 
   useEffect(() => {
     resetTimer();
-    return () => { timerRef.current && clearInterval(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [resetTimer]);
 
+  const go = useCallback(
+    (i: number) => {
+      setIndex(i);
+      resetTimer();
+    },
+    [resetTimer],
+  );
+
+  const dur = shouldReduce ? 0 : 0.55;
+  const ease = [0.16, 1, 0.3, 1] as const;
+
+  const imgFade = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: dur, ease },
+  };
+
+  const textBlock = (delay = 0) => ({
+    initial: { opacity: 0, y: shouldReduce ? 0 : 14 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0 },
+    transition: { duration: shouldReduce ? 0 : 0.45, delay: shouldReduce ? 0 : delay, ease },
+  });
+
   return (
-    <MotionConfig transition={{ type: "spring", bounce: 0 }}>
-      <section className="group relative h-[600px] w-full overflow-hidden lg:h-[700px]">
-        <motion.div style={{ x: xPct }} className="flex h-full">
-          {slides.map((slide, i) => (
-            <div
-              key={slide.id}
-              className={`relative h-full w-full flex-shrink-0 ${slide.image ? "" : `bg-gradient-to-br ${slide.bgClass}`}`}
+    <section
+      aria-label="Présentation Ylang Créations"
+      className="relative grid overflow-hidden lg:grid-cols-2"
+      style={{ minHeight: "calc(100svh - 88px)", background: "var(--color-paper)" }}
+    >
+      {/* ── Colonne texte (gauche) ── */}
+      <div className="flex flex-col justify-center px-8 py-20 sm:px-12 lg:px-16 xl:px-20 order-2 lg:order-1">
+        <AnimatePresence mode="wait">
+          <motion.div key={slide.id} className="max-w-lg">
+
+            {/* Eyebrow */}
+            <motion.p
+              {...textBlock(0)}
+              className="mb-7 text-[11px] uppercase tracking-[0.22em]"
+              style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
             >
-              {slide.image && (
-                <Image src={slide.image} alt={slide.title} fill priority={i === 0} quality={90} sizes="100vw" className="object-cover" />
-              )}
-              <div className="absolute inset-0 bg-black/20" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-white">
-                <motion.h1 custom={0} variants={contentVariants} initial={false} animate={i === index ? "visible" : "hidden"}
-                  className="font-abramo-script mb-6 max-w-5xl text-4xl md:text-6xl lg:text-7xl leading-tight drop-shadow-2xl">
-                  {slide.title}
-                </motion.h1>
-                <motion.p custom={1} variants={contentVariants} initial={false} animate={i === index ? "visible" : "hidden"}
-                  className="mb-10 max-w-2xl text-lg md:text-xl font-light drop-shadow-lg">
-                  {slide.subtitle}
-                </motion.p>
-                <motion.div custom={2} variants={contentVariants} initial={false} animate={i === index ? "visible" : "hidden"}>
-                  <Link href={slide.link}>
-                    <Button variant="luxury" size="lg" className="px-10 py-6 text-lg uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95">
-                      {slide.cta}
-                    </Button>
-                  </Link>
-                </motion.div>
-              </div>
-            </div>
-          ))}
-        </motion.div>
+              Ylang Créations — Artisan Mahorais
+            </motion.p>
 
+            {/* H1 — Bricolage Grotesque, jamais en script */}
+            <motion.h1
+              {...textBlock(0.06)}
+              className="mb-5 font-semibold leading-[1.06] tracking-tight
+                         text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.75rem]"
+              style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+            >
+              {slide.title}
+            </motion.h1>
+
+            {/* Sous-titre — Abramo Script uniquement ici, en accent décoratif */}
+            <motion.p
+              {...textBlock(0.12)}
+              className="mb-10 text-xl leading-relaxed"
+              style={{ fontFamily: "var(--font-accent)", color: "var(--color-accent)" }}
+            >
+              {slide.subtitle}
+            </motion.p>
+
+            {/* CTA — lien texte soulignée, pas de bouton massif */}
+            <motion.div {...textBlock(0.18)}>
+              <Link
+                href={slide.link}
+                className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.14em]"
+                style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
+              >
+                <span
+                  className="border-b pb-px transition-all duration-300"
+                  style={{ borderColor: "var(--color-accent)" }}
+                >
+                  {slide.cta}
+                </span>
+                <span
+                  className="translate-x-0 transition-transform duration-300 group-hover:translate-x-1"
+                  aria-hidden
+                >
+                  →
+                </span>
+              </Link>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Dots de navigation */}
         {slides.length > 1 && (
-          <>
-            <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-between px-4 lg:px-8">
-              <button onClick={() => paginate(-1)}
-                className="pointer-events-auto rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition group-hover:opacity-100 group-hover:translate-x-0 hover:bg-white/20 -translate-x-4 transition-all duration-300"
-                aria-label="Diapositive précédente">
-                <ChevronLeft className="h-6 w-6 lg:h-10 lg:w-10" strokeWidth={1.5} />
-              </button>
-              <button onClick={() => paginate(1)}
-                className="pointer-events-auto rounded-full bg-white/10 p-3 text-white/50 opacity-0 backdrop-blur-sm transition group-hover:opacity-100 group-hover:translate-x-0 hover:bg-white/20 translate-x-4 transition-all duration-300"
-                aria-label="Diapositive suivante">
-                <ChevronRight className="h-6 w-6 lg:h-10 lg:w-10" strokeWidth={1.5} />
-              </button>
-            </div>
-
-            <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-4">
-              {slides.map((_, i) => (
-                <button key={i} onClick={() => paginate(i - index)}
-                  className={`h-1.5 rounded-full transition-all duration-500 ${i === index ? "w-12 bg-white" : "w-4 bg-white/40 hover:w-6 hover:bg-white/60"}`}
-                  role="tablist"
-                  aria-label="Navigation des diapositives" />
-              ))}
-            </div>
-          </>
+          <div className="mt-14 flex items-center gap-3" role="tablist" aria-label="Navigation des diapositives">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                role="tab"
+                aria-selected={i === index}
+                aria-label={`Diapositive ${i + 1}`}
+                onClick={() => go(i)}
+                className="h-px transition-all duration-500 focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{
+                  width: i === index ? "2.5rem" : "1rem",
+                  background: i === index ? "var(--color-accent)" : "var(--color-ink-2)",
+                  border: "none",
+                  cursor: "pointer",
+                  outlineColor: "var(--color-accent)",
+                }}
+              />
+            ))}
+          </div>
         )}
-      </section>
-    </MotionConfig>
+      </div>
+
+      {/* ── Colonne image (droite) ── */}
+      <div
+        className="relative h-[56vw] lg:h-auto order-1 lg:order-2"
+        style={{ background: "var(--color-paper-3)" }}
+      >
+        <AnimatePresence mode="wait">
+          {slide.image ? (
+            <motion.div
+              key={slide.id + "-img"}
+              {...imgFade}
+              className="absolute inset-0"
+            >
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                priority
+                quality={90}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key={slide.id + "-fallback"}
+              {...imgFade}
+              className="absolute inset-0 flex items-end p-8"
+              style={{
+                background:
+                  "linear-gradient(145deg, var(--color-paper-3) 0%, var(--color-accent-light) 100%)",
+              }}
+            >
+              <p
+                aria-hidden
+                className="text-6xl leading-none lg:text-8xl"
+                style={{
+                  fontFamily: "var(--font-accent)",
+                  color: "var(--color-ink)",
+                  opacity: 0.12,
+                }}
+              >
+                Ylang
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
   );
 }

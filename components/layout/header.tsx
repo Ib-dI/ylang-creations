@@ -17,9 +17,7 @@ import { type Session } from "@supabase/supabase-js";
 import {
   ChevronDown,
   ChevronRight,
-  Facebook,
   Heart,
-  Instagram,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -394,33 +392,11 @@ export function Header() {
           isScrolled && "shadow-[0_2px_20px_rgba(0,0,0,0.08)]",
         )}
       >
-        {/* Barre Social Media */}
-        <div className="bg-ylang-charcoal/90 px-4 py-1.5 sm:px-6 lg:px-8 border-b border-ylang-beige">
-          <div className="mx-auto flex max-w-7xl items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <a
-                href="https://www.instagram.com/ylang_creations/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="text-white/80 transition-colors hover:text-ylang-rose"
-              >
-                <Instagram className="h-3.5 w-3.5" />
-              </a>
-              <a
-                href="https://www.facebook.com/ylangcreations/?ref=_xav_ig_profile_page_web#"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-                className="text-white/80 transition-colors hover:text-ylang-rose"
-              >
-                <Facebook className="h-3.5 w-3.5" />
-              </a>
-            </div>
-            <p className="font-body text-[10px] font-medium tracking-widest text-white uppercase sm:text-[12px]">
-              Livraison offerte dès {freeShippingThreshold}€ d&apos;achat
-            </p>
-          </div>
+        {/* Barre d'annonce */}
+        <div className="border-b px-4 py-2 sm:px-6 lg:px-8" style={{ background: "var(--color-paper-2)", borderColor: "var(--color-ink-2)" }}>
+          <p className="text-center font-medium uppercase tracking-[0.18em] text-[10px] sm:text-[11px]" style={{ fontFamily: "var(--font-body)", color: "var(--color-ink-3)" }}>
+            Livraison offerte dès {freeShippingThreshold}&nbsp;€ d&apos;achat · France métropolitaine
+          </p>
         </div>
 
         {/* Barre principale */}
@@ -1121,7 +1097,7 @@ export function Header() {
         }
 
         .animate-scale-in {
-          animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+          animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
       `}</style>
     </>

@@ -1,33 +1,21 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Facebook, Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 
-// Navigation principale (synchronisée avec header.tsx)
-const mainNavigation = [
-  { name: "Créations", href: "/collections" },
-  { name: "Créations sur mesure", href: "/configurateur", featured: true },
-  { name: "Nouvelle collection", href: "/collections?filter=new" },
-  { name: "La marque", href: "/a-propos" },
-  { name: "Contact", href: "/contact" },
-];
-
-// Catégories boutique (synchronisées avec megaMenuCategories du header)
 const footerLinks = {
   shop: [
     { name: "La Chambre", href: "/collections?category=chambre" },
     { name: "La Toilette", href: "/collections?category=toilette" },
-    {
-      name: "Linge de naissance",
-      href: "/collections?category=linge-naissance",
-    },
+    { name: "Linge de naissance", href: "/collections?category=linge-naissance" },
     { name: "Accessoires", href: "/collections?category=accessoires" },
-    { name: "Bagageries/Promenade", href: "/collections?category=bagageries" },
+    { name: "Bagageries & Promenade", href: "/collections?category=bagageries" },
     { name: "Les Jeux", href: "/collections?category=jeux" },
+    { name: "Créations sur mesure", href: "/configurateur" },
+    { name: "Nouvelle collection", href: "/collections?filter=new" },
   ],
   company: [
     { name: "La marque", href: "/a-propos" },
@@ -51,19 +39,16 @@ const footerLinks = {
   ],
 };
 
+const trustLabels = [
+  "Fabrication française",
+  "Tissus biologiques certifiés",
+  "Confection artisanale",
+  "Personnalisation illimitée",
+];
+
 const socialLinks = [
-  {
-    name: "Instagram",
-    icon: Instagram,
-    href: "https://www.instagram.com/ylang_creations/",
-    color: "hover:text-pink-600",
-  },
-  {
-    name: "Facebook",
-    icon: Facebook,
-    href: "https://www.facebook.com/ylangcreations/?ref=_xav_ig_profile_page_web#",
-    color: "hover:text-blue-600",
-  },
+  { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/ylang_creations/" },
+  { name: "Facebook", icon: Facebook, href: "https://www.facebook.com/ylangcreations/?ref=_xav_ig_profile_page_web#" },
 ];
 
 export function Footer() {
@@ -76,19 +61,15 @@ export function Footer() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
     try {
       const res = await fetch("/api/newsletter/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         if (res.status === 409) {
-          // Déjà inscrit : on affiche le succès quand même
           setIsSubscribed(true);
           setEmail("");
           setTimeout(() => setIsSubscribed(false), 5000);
@@ -97,7 +78,6 @@ export function Footer() {
         }
         return;
       }
-
       setIsSubscribed(true);
       setEmail("");
       setTimeout(() => setIsSubscribed(false), 5000);
@@ -109,77 +89,47 @@ export function Footer() {
   };
 
   return (
-    <footer className="from-ylang-beige to-ylang-beige border-ylang-beige/50 border-t bg-linear-to-b">
-      {/* Certifications / Trust badges */}
-      <div className="border-ylang-beige/50 mt-4 border-t pt-8">
-        <div className="grid grid-cols-2 items-center justify-items-center gap-6 md:grid-cols-4">
-          <div className="text-center">
-            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full border">
-              <span className="text-2xl">🇫🇷</span>
-            </div>
-            <p className="font-body text-ylang-charcoal/60 text-xs">
-              Fabrication
-              <br />
-              française
-            </p>
-          </div>
+    <footer style={{ background: "var(--color-paper-2)" }}>
 
-          <div className="text-center">
-            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full border">
-              <span className="text-2xl">🌿</span>
-            </div>
-            <p className="font-body text-ylang-charcoal/60 text-xs">
-              Tissus
-              <br />
-              biologiques
-            </p>
-          </div>
+      {/* ── Newsletter — bloc éditorial d'ouverture ── */}
+      <div style={{ borderBottom: "var(--rule-hair)" }}>
+        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-24">
+          <div className="grid gap-14 lg:grid-cols-[1fr_380px] lg:items-end">
 
-          <div className="text-center">
-            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full border">
-              <span className="text-2xl">✂️</span>
-            </div>
-            <p className="font-body text-ylang-charcoal/60 text-xs">
-              Confection
-              <br />
-              artisanale
-            </p>
-          </div>
-
-          <div className="text-center">
-            <div className="bg-ylang-terracotta/30 border-ylang-rose/50 mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full border">
-              <span className="text-2xl">💫</span>
-            </div>
-            <p className="font-body text-ylang-charcoal/60 text-xs">
-              Personnalisation
-              <br />
-              illimitée
-            </p>
-          </div>
-        </div>
-      </div>
-      {/* Newsletter Section */}
-      <div className="border-ylang-beige/50 border-b">
-        <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8 lg:py-16">
-          <div className="grid items-center gap-8 lg:grid-cols-2">
-            {/* Texte */}
-            <div className="text-center lg:text-left">
-              <h3 className="font-abramo-script text-ylang-charcoal mb-3 text-3xl lg:text-5xl">
-                Rejoignez notre univers
-              </h3>
-              <p className="font-body text-ylang-charcoal/60 mx-auto max-w-xl text-lg lg:mx-0">
-                Recevez en avant-première nos nouvelles créations, inspirations
-                et offres exclusives
+            {/* Titre éditorial */}
+            <div>
+              <p
+                className="mb-5 text-[11px] uppercase tracking-[0.2em]"
+                style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+              >
+                Restez dans notre univers
+              </p>
+              <h2
+                className="mb-4 font-semibold leading-[1.06] tracking-tight text-4xl lg:text-5xl xl:text-[3.5rem]"
+                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+              >
+                Nouvelles créations,<br />inspirations exclusives
+              </h2>
+              {/* Abramo Script — accent décoratif uniquement, pas un titre */}
+              <p
+                className="text-xl leading-relaxed"
+                style={{ fontFamily: "var(--font-accent)", color: "var(--color-accent)" }}
+              >
+                En avant-première, pour nos abonnés seulement
               </p>
             </div>
 
-            {/* Form Newsletter */}
+            {/* Formulaire */}
             <div>
-              <form
-                onSubmit={handleNewsletter}
-                className="flex flex-col gap-3 sm:flex-row"
-              >
-                <div className="flex-1">
+              {isSubscribed ? (
+                <p
+                  className="text-sm"
+                  style={{ fontFamily: "var(--font-body)", color: "var(--color-accent-green)" }}
+                >
+                  Merci — vous êtes inscrit.
+                </p>
+              ) : (
+                <form onSubmit={handleNewsletter} className="space-y-4">
                   <Input
                     type="email"
                     placeholder="votre@email.fr"
@@ -187,85 +137,154 @@ export function Footer() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={isLoading}
-                    className="bg-ylang-cream w-full rounded-none border-ylang-rose/30 py-6"
+                    className="w-full rounded-none border-0 border-b bg-transparent py-5 text-sm
+                               focus-visible:ring-0 placeholder:opacity-40"
+                    style={{
+                      borderColor: "var(--color-ink-2)",
+                      fontFamily: "var(--font-body)",
+                      color: "var(--color-ink)",
+                    }}
                   />
-                </div>
-                <Button
-                  type="submit"
-                  variant={isSubscribed ? "secondary" : "primary"}
-                  disabled={isLoading}
-                  className="whitespace-nowrap sm:w-auto"
-                >
-                  {isLoading ? "..." : isSubscribed ? "✓ Inscrit !" : "S'inscrire"}
-                </Button>
-              </form>
-              {error && (
-                <p className="text-ylang-rose mt-2 text-sm">{error}</p>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.14em]
+                               transition-opacity duration-200 disabled:opacity-40"
+                    style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
+                  >
+                    <span
+                      className="border-b pb-px"
+                      style={{ borderColor: "var(--color-accent)" }}
+                    >
+                      {isLoading ? "Envoi…" : "S'inscrire"}
+                    </span>
+                    <span
+                      className="translate-x-0 transition-transform duration-300 group-hover:translate-x-1"
+                      aria-hidden
+                    >
+                      →
+                    </span>
+                  </button>
+                  {error && (
+                    <p
+                      className="text-xs"
+                      style={{ fontFamily: "var(--font-body)", color: "var(--color-accent)" }}
+                    >
+                      {error}
+                    </p>
+                  )}
+                  <p
+                    className="text-xs opacity-40"
+                    style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
+                  >
+                    Désinscription possible à tout moment.
+                  </p>
+                </form>
               )}
-              <p className="font-body text-ylang-charcoal/40 mt-3 text-xs">
-                En vous inscrivant, vous acceptez de recevoir nos communications. Désinscription possible à tout moment.
-              </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Footer Content */}
-      <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8 lg:py-16">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5 lg:gap-12">
-          {/* Colonne 1 : Branding */}
-          <div className="lg:col-span-2">
-            <Link
-              href="/"
-              className="group mb-6 inline-flex items-center space-x-3"
-            >
+      {/* ── Trust strip — labels texte, sans emoji ── */}
+      <div style={{ borderBottom: "var(--rule-soft)" }}>
+        <div className="mx-auto max-w-7xl px-6 py-5 lg:px-8">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            {trustLabels.map((label, i) => (
+              <React.Fragment key={label}>
+                <span
+                  className="text-[10px] uppercase tracking-[0.2em]"
+                  style={{ fontFamily: "var(--font-brand)", color: "var(--color-ink-3)" }}
+                >
+                  {label}
+                </span>
+                {i < trustLabels.length - 1 && (
+                  <span aria-hidden className="opacity-30" style={{ color: "var(--color-ink)" }}>
+                    ·
+                  </span>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── 3 colonnes ── */}
+      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-20">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-16">
+
+          {/* Col 1 — Brand + social */}
+          <div>
+            <Link href="/" className="mb-8 inline-block">
               <Image
                 src="/logo/ylang créations_long.png"
-                alt="Logo"
-                width={200}
-                height={200}
-                // className="h-12 w-12"
+                alt="Ylang Créations"
+                width={160}
+                height={40}
+                className="h-auto w-auto"
               />
             </Link>
-
-            <p className="font-body text-ylang-charcoal/60 mb-6 leading-relaxed">
-              Créations textiles sur mesure pour bébés et décoration
-              d'intérieur. Savoir-faire artisanal français, tissus premium et
-              personnalisation illimitée.
+            <p
+              className="mb-8 text-sm leading-relaxed"
+              style={{ fontFamily: "var(--font-body)", color: "var(--color-ink-3)" }}
+            >
+              Créations textiles sur mesure pour bébés et enfants. Savoir-faire artisanal, tissus premium certifiés et personnalisation illimitée.
             </p>
-            {/* Social Links */}
+            <div className="flex items-center gap-5">
+              {socialLinks.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <a
+                    key={s.name}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.name}
+                    className="opacity-50 transition-opacity duration-200 hover:opacity-100
+                               focus-visible:outline-2 focus-visible:outline-offset-4"
+                    style={{ color: "var(--color-ink)", outlineColor: "var(--color-accent)" }}
+                  >
+                    <Icon className="h-4 w-4" strokeWidth={1.5} />
+                  </a>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Colonne 2 : Boutique */}
+          {/* Col 2 — Boutique & Marque */}
           <div>
-            <h4 className="font-abramo text-ylang-rose/90 mb-4 text-lg font-semibold tracking-tight">
+            <p
+              className="mb-6 text-[11px] uppercase tracking-[0.18em]"
+              style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+            >
               Boutique
-            </h4>
-            <ul className="space-y-3">
+            </p>
+            <ul className="mb-10 space-y-3">
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose inline-block text-sm transition-all duration-300 hover:translate-x-1"
+                    className="text-sm opacity-60 transition-opacity duration-200 hover:opacity-100"
+                    style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
                   >
                     {link.name}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
-
-          {/* Colonne 3 : À propos */}
-          <div>
-            <h4 className="font-abramo text-ylang-rose/90 mb-4 text-lg font-semibold tracking-tight">
-              À propos
-            </h4>
+            <p
+              className="mb-6 text-[11px] uppercase tracking-[0.18em]"
+              style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+            >
+              La marque
+            </p>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose inline-block text-sm transition-all duration-300 hover:translate-x-1"
+                    className="text-sm opacity-60 transition-opacity duration-200 hover:opacity-100"
+                    style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
                   >
                     {link.name}
                   </Link>
@@ -274,17 +293,21 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Colonne 4 : Aide */}
+          {/* Col 3 — Aide */}
           <div>
-            <h4 className="font-abramo text-ylang-rose/90 mb-4 text-lg font-semibold tracking-tight">
+            <p
+              className="mb-6 text-[11px] uppercase tracking-[0.18em]"
+              style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+            >
               Aide & Infos
-            </h4>
+            </p>
             <ul className="space-y-3">
               {footerLinks.help.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose inline-block text-sm transition-all duration-300 hover:translate-x-1"
+                    className="text-sm opacity-60 transition-opacity duration-200 hover:opacity-100"
+                    style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
                   >
                     {link.name}
                   </Link>
@@ -295,31 +318,30 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-ylang-beige/50 bg-ylang-beige/30 border-t">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            {/* Copyright */}
-            <p className="font-body text-ylang-charcoal/60 text-center text-sm md:text-left">
-              ©{" "}
-              <React.Suspense fallback={<span>2026</span>}>
-                {new Date().getFullYear()}
-              </React.Suspense>{" "}
-              Ylang Créations. Tous droits réservés.
+      {/* ── Barre légale ── */}
+      <div style={{ borderTop: "var(--rule-soft)" }}>
+        <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+            <p
+              className="text-xs opacity-50"
+              style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
+            >
+              © {new Date().getFullYear()} Ylang Créations. Tous droits réservés.
             </p>
-
-            {/* Legal Links */}
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              {footerLinks.legal.map((link, index) => (
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
+              {footerLinks.legal.map((link, i) => (
                 <React.Fragment key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-body text-ylang-charcoal/60 hover:text-ylang-rose text-xs transition-colors"
+                    className="text-[11px] opacity-40 transition-opacity duration-200 hover:opacity-80"
+                    style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
                   >
                     {link.name}
                   </Link>
-                  {index < footerLinks.legal.length - 1 && (
-                    <span className="text-ylang-charcoal/30">•</span>
+                  {i < footerLinks.legal.length - 1 && (
+                    <span aria-hidden className="opacity-20" style={{ color: "var(--color-ink)" }}>
+                      ·
+                    </span>
                   )}
                 </React.Fragment>
               ))}
