@@ -32,7 +32,7 @@
   --color-ylang-green: #7aa769;
 
   /* Typography */
-  --font-family-display: "Bricolage Grotesque", serif;
+  --font-family-display: var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
   --font-family-body: "Inter", sans-serif;
   --font-family-abramo-script: "Abramo Script", serif;
   --font-family-abramo: "Abramo", serif;
