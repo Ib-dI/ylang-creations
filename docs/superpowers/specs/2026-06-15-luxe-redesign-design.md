@@ -12,7 +12,7 @@
 ### Typographie
 | Rôle | Police | Usage |
 |---|---|---|
-| Display (H1, H2) | **Abramo** (serif custom) | Tous les titres de section et de page |
+| Display (H1, H2) | **Cormorant Garamond** (Google Fonts, SemiBold 600) | Tous les titres H1/H2. Haute contraste, optiquement calibrée display. Chargée via `next/font/google`. |
 | Accent décoratif | Abramo Script | Taglines isolées, citations, jamais sur un heading |
 | Corps | Inter 400/500 | Tout le texte courant |
 | Brand / Eyebrow | Abramo (regular) | Labels uppercase, eyebrows 11px |
@@ -58,8 +58,8 @@
 ### Section craftsmanship
 - Fond : `--color-paper-2` (supprime le terracotta/40)
 - H2 → Abramo serif `text-5xl lg:text-6xl`
-- Stats (`1500+`, `6 ans`, `4.9/5`, `100%`) → **supprimées** (métriques non vérifiables)
-- Remplacement : citation éditoriale en Abramo Script, `text-2xl`, centrée
+- Stats (`1500+`, `6 ans`, `4.9/5`, `100%`) → **conservées** mais traitement visuel repensé : données texte élégantes, pas de cercles/trophées. À remplacer par les vraies valeurs.
+- Citation éditoriale en Abramo Script, `text-2xl`, centrée, en complément
 - Images : coins droits, suppression `rounded-2xl shadow-2xl`
 
 ### Section "Comment ça marche"
@@ -107,15 +107,15 @@
 - H1 produit → Abramo serif `text-4xl lg:text-5xl`
 - Prix → Abramo serif `text-2xl`, `--color-ink`
 - Description → Inter `text-base`, `line-height: 1.8`
-- Bouton "Ajouter au panier" : pleine largeur, fond `--color-ink`, texte `--color-paper`, uppercase 12px `tracking-widest`, transition opacity uniquement
+- Bouton "Ajouter au panier" : `variant="maison"` (nouveau variant Button), pleine largeur, fond `--color-ink`, texte `--color-paper`, uppercase 12px `tracking-widest`, transition opacity uniquement — aucun scale, aucun shimmer
 - Section "Vous aimerez aussi" → même traitement que la grille Collections
 
 ---
 
 ## 5. Page À propos
 
-- Toutes les occurrences `font-abramo-script` sur H1/H2 → Abramo serif
-- Hero de page : grand titre Abramo serif pleine largeur, fond `--color-paper-2`
+- Toutes les occurrences `font-abramo-script` sur H1/H2 → Cormorant Garamond
+- Hero de page : grand titre Cormorant Garamond pleine largeur, fond `--color-paper-2`
 - Citations et pull-quotes : Abramo Script conservée, `text-2xl`, centrée, `--color-accent`
 - Suppression de tous les fonds colorés des sections
 - Layout éditorial : alternance image-texte gauche/droite entre les sections
@@ -124,30 +124,39 @@
 
 ## 6. Configurateur
 
-- Logique métier : inchangée
-- Affinements visuels uniquement :
-  - Fond global → `--color-paper`
-  - Labels de step → Abramo serif
-  - Boutons → fond `--color-ink`, texte `--color-paper`, uppercase, transition opacity
-  - Step indicator → tirets fins Inter 11px, pas de pills colorés
+**Hors scope de cette refonte.** Traité dans une itération dédiée pour éviter tout risque de régression sur le canvas et la logique de sélection tissu.
 
 ---
 
-## Fichiers concernés
+## 7. Composant Button — nouveau variant `maison`
+
+Ajout d'un variant sans toucher aux variants existants (pas de régression hors scope) :
+
+```
+maison: fond var(--color-ink) · texte var(--color-paper) · uppercase · tracking-widest
+        hover: opacity 80% uniquement · aucun scale · aucun shimmer · aucun gradient
+```
+
+Pages refondues → `variant="maison"`. Pages hors scope → variants existants inchangés.
+
+---
+
+## 8. Fichiers concernés
 
 | Fichier | Changements |
 |---|---|
-| `app/globals.css` | `--font-display` → Abramo, section padding |
-| `app/page.tsx` | Eyebrow supprimé, fonds nettoyés |
-| `components/home/craftsmanship-section.tsx` | Fond, stats → citation, coins droits |
-| `components/home/how-it-works-section.tsx` | Fond, blur supprimés |
-| `components/home/testimonials-section.tsx` | stamp-card → cadre simple, hover supprimé |
-| `components/home/hero-section.tsx` | H1 → Abramo serif |
-| `app/collections/page.tsx` | Header, filtres, grille |
-| `components/product/product-card.tsx` | Coins droits, hover opacity |
-| `app/produits/[slug]/page.tsx` | Layout split, typographie |
-| `app/a-propos/page.tsx` | Tous les font-abramo-script → Abramo serif |
-| `app/configurateur/page.tsx` | Affinements visuels |
+| `app/layout.tsx` | Chargement Cormorant Garamond via `next/font/google` |
+| `app/globals.css` | `--font-display` → Cormorant Garamond, section padding `8rem`/`4rem` |
+| `components/ui/button.tsx` | Ajout variant `maison` |
+| `components/home/hero-section.tsx` | H1 → Cormorant Garamond |
+| `components/home/craftsmanship-section.tsx` | Fond paper-2, stats conservées, coins droits |
+| `components/home/how-it-works-section.tsx` | Fond paper, blur-3xl supprimés |
+| `components/home/testimonials-section.tsx` | stamp-card → `1px solid var(--rule-hair)`, hover supprimé |
+| `app/page.tsx` | Eyebrow coloré supprimé, fonds nettoyés |
+| `app/collections/page.tsx` | Header H1 Cormorant, filtres texte, grille 3 col |
+| `components/product/product-card.tsx` | Coins droits, hover opacity, badge texte |
+| `components/product/product-details.tsx` | Layout 60/40, Cormorant sur H1/prix, variant maison |
+| `app/a-propos/page.tsx` | Fond global supprimé, tous font-abramo-script → Cormorant, blur-3xl supprimés |
 
 ---
 
