@@ -185,7 +185,7 @@ export default function AProposPage() {
                   />
                 ) : (
                   /* Placeholder gradient si pas d'image */
-                  <div className="from-ylang-rose/30 via-ylang-beige to-ylang-sage/30 absolute inset-0 flex items-center justify-center bg-linear-to-br">
+                  <div className="bg-ylang-beige/50 absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
                       <Scissors className="text-ylang-rose mx-auto mb-4 h-16 w-16" />
                       <p className="font-display text-ylang-charcoal text-xl">

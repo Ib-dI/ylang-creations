@@ -313,7 +313,7 @@ export default function ProductDetails({
 
             {/* CTA Personnaliser */}
             {product.customizable && (
-              <div className="from-ylang-rose/10 to-ylang-terracotta/10 border-ylang-rose/20 rounded-2xl border bg-linear-to-r p-5 lg:p-6">
+              <div className="bg-ylang-rose/10 border-ylang-rose/20 rounded-2xl border p-5 lg:p-6">
                 <div className="mb-3 flex items-start gap-4 lg:mb-4">
                   <div className="bg-ylang-rose/20 rounded-xl p-3">
                     <Palette className="text-ylang-rose h-6 w-6" />
@@ -463,7 +463,7 @@ export default function ProductDetails({
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="border-ylang-rose/10 to-ylang-beige/10 relative mb-8 overflow-hidden rounded-3xl border bg-linear-to-b from-white p-6 shadow-sm lg:mb-16 lg:p-10"
+          className="border-ylang-rose/10 relative mb-8 overflow-hidden rounded-3xl border bg-white p-6 shadow-sm lg:mb-16 lg:p-10"
         >
           {/* Decorative element */}
           <div className="bg-ylang-rose/5 absolute -top-10 -right-10 h-40 w-40 rounded-full blur-3xl" />
