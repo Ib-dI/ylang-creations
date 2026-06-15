@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ZoomIn } from "lucide-react";
+import { X } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
 
@@ -25,10 +25,7 @@ export function TestimonialsSection({
   );
 
   return (
-    <section className="section-padding from-ylang-terracotta/40 relative overflow-hidden bg-linear-to-b to-ylang-rose/40 py-20">
-      {/* Decoration */}
-      <div className="bg-ylang-rose/5 absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" />
-
+    <section className="relative overflow-hidden py-20" style={{ background: "var(--color-paper-2)" }}>
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -37,10 +34,13 @@ export function TestimonialsSection({
           viewport={{ once: true }}
           className="mb-16 text-center"
         >
-          <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
+          <p
+            className="mb-3 text-[11px] tracking-[0.2em] uppercase font-semibold"
+            style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+          >
             Vos retours en images
           </p>
-          <h2 className="text-ylang-charcoal font-abramo-script mb-6 font-serif text-4xl lg:text-5xl">
+          <h2 className="text-ylang-charcoal font-display mb-6 font-semibold tracking-tight text-4xl lg:text-5xl">
             Ils adorent Ylang Créations
           </h2>
           <p className="text-ylang-charcoal/60 mx-auto max-w-2xl">
@@ -55,33 +55,25 @@ export function TestimonialsSection({
               key={testimonial.id || index}
               onClick={() => setSelectedImage(testimonial.image)}
               className="group relative mb-10 cursor-zoom-in break-inside-avoid"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.05 }}
-              whileHover={{ scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
+              transition={{ duration: 0.6, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
             >
-              {/* stamp-card reçoit maintenant DIRECTEMENT le masque dentelé ET le drop-shadow */}
-              <div className="stamp-card transition-all duration-300 group-hover:scale-105">
-                <div className="stamp-inner">
-                  <Image
-                    src={testimonial.image}
-                    alt={
-                      testimonial.name || "Témoignage client Ylang Créations"
-                    }
-                    width={400}
-                    height={600}
-                    className="z-100 block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  />
-
-                  {/* Overlay zoom */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 transition-opacity duration-300 group-hover:opacity-50">
-                    <div className="text-ylang-rose scale-90 rounded-full bg-white/90 p-3 transition-transform duration-300 group-hover:scale-100">
-                      <ZoomIn size={20} />
-                    </div>
-                  </div>
-                </div>
+              <div
+                className="overflow-hidden transition-opacity duration-300 group-hover:opacity-90"
+                style={{ border: "var(--rule-hair)" }}
+              >
+                <Image
+                  src={testimonial.image}
+                  alt={
+                    testimonial.name || "Témoignage client Ylang Créations"
+                  }
+                  width={400}
+                  height={600}
+                  className="block h-auto w-full object-cover"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                />
               </div>
             </motion.div>
           ))}
