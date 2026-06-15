@@ -45,18 +45,18 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section className="section-padding relative overflow-hidden bg-ylang-terracotta/40">
-      {/* Décorations d'arrière-plan */}
-      <div className="absolute top-20 right-0 h-96 w-96 rounded-full bg-ylang-sage/10 blur-3xl" />
-      <div className="absolute bottom-20 left-0 h-96 w-96 rounded-full bg-ylang-rose/10 blur-3xl" />
+    <section className="section-padding overflow-hidden" style={{ background: "var(--color-paper)" }}>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16 text-center animate-fade-in-up">
-          <p className="font-abramo font-semibold text-ylang-rose mb-3 text-sm uppercase tracking-widest">
+          <p
+            className="mb-3 text-[11px] tracking-[0.2em] uppercase font-semibold"
+            style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+          >
             Simple et intuitif
           </p>
-          <h2 className="font-abramo-script text-ylang-charcoal mb-6 text-3xl lg:text-5xl">
+          <h2 className="font-display text-ylang-charcoal mb-6 text-3xl lg:text-5xl font-semibold tracking-tight">
             Comment ça marche ?
           </h2>
           <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl text-lg">
@@ -75,27 +75,31 @@ export function HowItWorksSection() {
                 className="group relative animate-fade-in-up"
                 style={{ animationDelay: `${0.2 + index * 0.2}s` }}
               >
-                {/* Connecting Line (desktop only) */}
-                {index < steps.length - 1 && (
-                  <div className="absolute top-20 left-full z-0 hidden h-0.5 w-full -translate-x-1/2 bg-linear-to-r from-ylang-rose/50 to-transparent lg:block" />
-                )}
-
                 {/* Card */}
-                <div className="relative h-full aspect-4/5 rounded-2xl bg-ylang-beige p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-xs">
+                <div
+                  className="relative h-full aspect-4/5 p-8"
+                  style={{ background: "var(--color-paper-2)", border: "var(--rule-hair)" }}
+                >
                   {/* Number Badge */}
-                  <div className="absolute -top-4 -right-4 flex h-16 w-16 items-center justify-center rounded-full bg-ylang-rose shadow-xs">
-                    <span className="font-display text-2xl font-bold text-white">
+                  <div
+                    className="absolute -top-4 -right-4 flex h-16 w-16 items-center justify-center"
+                    style={{ background: "var(--color-ink)" }}
+                  >
+                    <span
+                      className="text-2xl font-semibold"
+                      style={{ fontFamily: "var(--font-display)", color: "var(--color-paper)" }}
+                    >
                       {step.number}
                     </span>
                   </div>
 
                   {/* Icon */}
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-ylang-terracotta/20 transition-transform duration-300 group-hover:scale-110">
-                    <Icon className="text-ylang-rose h-8 w-8" />
+                  <div className="mb-6 flex h-16 w-16 items-center justify-center">
+                    <Icon className="h-8 w-8" style={{ color: "var(--color-accent)" }} />
                   </div>
 
                   {/* Content */}
-                  <h3 className="font-abramo-script text-ylang-charcoal mb-4 text-5xl">
+                  <h3 className="font-display text-ylang-charcoal mb-4 text-xl font-semibold tracking-tight">
                     {step.title}
                   </h3>
                   <p className="font-body text-ylang-charcoal/70 mb-6 leading-relaxed">
