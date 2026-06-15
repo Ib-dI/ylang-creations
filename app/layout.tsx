@@ -1,7 +1,7 @@
 import { ClientLayoutWrapper } from "@/components/layout/client-layout-wrapper";
 import FontPreloader from "@/components/layout/font-preloader";
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Inter, Playfair_Display } from "next/font/google";
+import { Bricolage_Grotesque, Cormorant_Garamond, Inter, Playfair_Display } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 
@@ -25,6 +25,14 @@ const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
   display: "swap",
   preload: false, // Pas critique, charge en différé
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant-garamond",
+  subsets: ["latin"],
+  weight: ["600"],
+  display: "swap",
+  preload: true,
 });
 
 import { getCachedSettings } from "@/lib/actions/settings";
@@ -119,7 +127,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${playfairDisplay.variable} ${bricolageGrotesque.variable} font-body bg-ylang-cream antialiased`}
+        className={`${inter.variable} ${playfairDisplay.variable} ${bricolageGrotesque.variable} ${cormorantGaramond.variable} font-body bg-ylang-cream antialiased`}
       >
         <Suspense>
           <ClientLayoutWrapper>{children}</ClientLayoutWrapper>

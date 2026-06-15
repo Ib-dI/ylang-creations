@@ -38,6 +38,10 @@ const buttonVariants = cva(
           "text-ylang-rose underline-offset-4 hover:underline",
           "hover:text-ylang-charcoal transition-colors",
         ],
+        maison: [
+          "rounded-none uppercase tracking-[0.14em] text-xs",
+          "transition-opacity duration-300 hover:opacity-75",
+        ],
       },
       size: {
         default: "h-12 px-8 py-3",

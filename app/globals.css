@@ -39,8 +39,8 @@
   --font-family-rouge-script: "Rouge Script", serif;
 
   /* Spacing Premium */
-  --spacing-section: 6rem;
-  --spacing-section-mobile: 3rem;
+  --spacing-section: 8rem;
+  --spacing-section-mobile: 4rem;
 
   /* Border Radius */
   --radius-sm: 0.25rem;
@@ -67,10 +67,40 @@
   --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── Hallmark OKLCH tokens ───────────────────────────────────────────── */
+:root {
+  --color-paper:        oklch(98% 0.005 80);
+  --color-paper-2:      oklch(96% 0.010 80);
+  --color-paper-3:      oklch(93% 0.010 80);
+  --color-ink:          oklch(12% 0.005 280);
+  --color-ink-2:        oklch(81% 0.020 18);
+  --color-ink-3:        oklch(50% 0.012 18);
+  --color-accent:       oklch(58% 0.070 28);
+  --color-accent-light: oklch(77% 0.040 18);
+  --color-accent-gold:  oklch(84% 0.070 70);
+  --color-accent-green: oklch(66% 0.100 140);
+  --font-display:       var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
+  --font-body:          "Inter", sans-serif;
+  --font-accent:        "Abramo Script", serif;
+  --font-brand:         "Abramo", serif;
+  --ease-out:           cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:            cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out:        cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast:           150ms;
+  --dur-base:           300ms;
+  --dur-slow:           500ms;
+  --dur-reveal:         600ms;
+  --rule-hair:          1px solid oklch(81% 0.020 18 / 0.3);
+  --rule-soft:          1px solid oklch(81% 0.020 18 / 0.15);
+}
+
+/* ── Base reset ──────────────────────────────────────────────────────── */
+html, body { overflow-x: clip; }
+
 /* Custom Classes Premium */
 .font-display {
-  font-family: var(--font-family-display);
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
 
 .font-body {
