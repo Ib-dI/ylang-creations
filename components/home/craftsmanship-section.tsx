@@ -40,14 +40,17 @@ interface CraftsmanshipSectionProps {
 export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png" }: CraftsmanshipSectionProps) {
 
   return (
-    <section className="section-padding overflow-hidden bg-linear-to-b from-ylang-terracotta/50 to-ylang-terracotta/40">
+    <section className="section-padding overflow-hidden" style={{ background: "var(--color-paper-2)" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16 text-center animate-fade-in-up">
-          <p className="font-abramo font-semibold text-ylang-rose mb-3 text-sm tracking-widest uppercase">
+          <p
+            className="mb-3 text-[11px] tracking-[0.2em] uppercase font-semibold"
+            style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+          >
             Excellence artisanale
           </p>
-          <h2 className="font-abramo-script text-ylang-charcoal mb-6 text-4xl lg:text-5xl">
+          <h2 className="font-display text-ylang-charcoal mb-6 text-4xl lg:text-5xl font-semibold tracking-tight">
             Un savoir-faire d'exception
           </h2>
           <p className="font-body text-ylang-charcoal/60 mx-auto max-w-3xl text-lg leading-relaxed">
@@ -65,8 +68,8 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
             style={{ animationDelay: '0.2s' }}
           >
             {/* Image principale */}
-            <div className="relative aspect-4/5 overflow-hidden rounded-2xl shadow-2xl">
-              <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-ylang-beige to-ylang-cream">
+            <div className="relative aspect-4/5 overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-center" style={{ background: "var(--color-paper-3)" }}>
                 <Image
                   src={craftsmanshipImage}
                   alt="Atelier Ylang Créations"
@@ -78,33 +81,6 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
               </div>
             </div>
 
-            {/* Image flottante secondaire */}
-            <div 
-              className="absolute -right-8 -bottom-8 hidden aspect-square w-2/5 overflow-hidden rounded-xl border-4 border-white shadow-xl lg:block animate-scale-in"
-              style={{ animationDelay: '0.5s' }}
-            >
-              <div className="bg-ylang-rose/20 absolute inset-0 flex items-center justify-center">
-                <span className="text-4xl">🧵</span>
-              </div>
-            </div>
-
-            {/* Badge Made in France */}
-            <div 
-              className="absolute top-6 left-6 rounded-xl bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm animate-fade-in"
-              style={{ animationDelay: '0.7s' }}
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🇫🇷</span>
-                <div>
-                  <p className="font-body text-ylang-charcoal/60 text-xs">
-                    Fièrement
-                  </p>
-                  <p className="font-display text-ylang-charcoal text-sm font-semibold">
-                    Made in France
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Texte & Valeurs */}
@@ -113,7 +89,10 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
             style={{ animationDelay: '0.3s' }}
           >
             <div>
-              <h3 className="font-abramo font-semibold text-ylang-charcoal mb-4 text-3xl">
+              <h3
+                className="font-semibold mb-4 text-3xl tracking-tight"
+                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+              >
                 L'excellence au service de vos émotions
               </h3>
               <p className="font-body text-ylang-charcoal/70 mb-4 leading-relaxed">
@@ -132,17 +111,17 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
 
             {/* Values Cards */}
             <div className="space-y-4">
-              {values.map((value, index) => (
+              {values.map((value) => (
                 <div
                   key={value.title}
-                  className="flex gap-4 rounded-xl border border-ylang-terracotta/30 bg-ylang-terracotta/30 p-4 transition-shadow duration-300 animate-slide-in-left"
-                  style={{ animationDelay: `${0.5 + index * 0.15}s` }}
+                  className="flex gap-4 p-4"
+                  style={{ borderBottom: "var(--rule-hair)" }}
                 >
-                  <div className="bg-ylang-rose/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
-                    <value.icon className="text-ylang-rose h-6 w-6" />
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center">
+                    <value.icon className="h-6 w-6" style={{ color: "var(--color-accent)" }} />
                   </div>
                   <div>
-                    <h4 className="font-abramo-script text-ylang-charcoal mb-1 text-3xl">
+                    <h4 className="font-display text-ylang-charcoal mb-1 text-base font-semibold tracking-tight">
                       {value.title}
                     </h4>
                     <p className="font-body text-ylang-charcoal/60 text-sm">
@@ -169,17 +148,16 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
         </div>
 
         {/* Stats Bar */}
-        <div 
-          className="grid grid-cols-2 gap-8 rounded-2xl border border-ylang-terracotta/30 bg-ylang-terracotta/30 p-8 md:grid-cols-4 animate-fade-in-up"
-          style={{ animationDelay: '0.4s' }}
+        <div
+          className="grid grid-cols-2 gap-8 p-8 md:grid-cols-4"
+          style={{ borderTop: "var(--rule-hair)" }}
         >
-          {stats.map((stat, index) => (
-            <div
-              key={stat.label}
-              className="text-center animate-scale-in"
-              style={{ animationDelay: `${0.6 + index * 0.1}s` }}
-            >
-              <p className="font-display text-ylang-rose mb-2 text-4xl font-bold lg:text-5xl">
+          {stats.map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p
+                className="mb-2 text-4xl font-semibold lg:text-5xl"
+                style={{ fontFamily: "var(--font-display)", color: "var(--color-accent)" }}
+              >
                 {stat.number}
               </p>
               <p className="font-body text-ylang-charcoal/60 text-sm">
@@ -258,7 +236,7 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
         }
 
         .animate-scale-in {
-          animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+          animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         .animate-fade-in {
