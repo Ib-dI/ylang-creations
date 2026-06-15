@@ -107,15 +107,9 @@ export default function AProposPage() {
   }, []);
 
   return (
-    <div className="bg-ylang-terracotta/30 min-h-screen">
+    <div className="min-h-screen" style={{ background: "var(--color-paper)" }}>
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-32">
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="bg-ylang-rose/10 absolute -top-40 -right-40 h-80 w-80 rounded-full blur-3xl" />
-          <div className="bg-ylang-sage/20 absolute -bottom-40 -left-40 h-80 w-80 rounded-full blur-3xl" />
-        </div>
-
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -125,17 +119,19 @@ export default function AProposPage() {
           >
             <motion.p
               variants={fadeInUp}
-              className="text-ylang-rose font-abramo mb-4 text-sm font-semibold tracking-widest uppercase"
+              className="mb-4 text-[11px] tracking-[0.2em] uppercase"
+              style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
             >
               Notre Histoire
             </motion.p>
             <motion.h1
               variants={fadeInUp}
-              className="font-abramo-script text-ylang-charcoal mb-6 text-4xl lg:text-6xl"
+              className="mb-6 text-4xl font-semibold tracking-tight lg:text-6xl"
+              style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
             >
               Élégance, raffinement
               <br />
-              <span className="text-ylang-terracotta">& personnalisation</span>
+              <span style={{ color: "var(--color-accent)" }}>& personnalisation</span>
             </motion.h1>
             <motion.p
               variants={fadeInUp}
@@ -225,7 +221,7 @@ export default function AProposPage() {
                 <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
                   L'histoire d'Ylang
                 </p>
-                <h2 className="font-abramo-script text-ylang-charcoal mb-6 text-3xl lg:text-4xl">
+                <h2 className="mb-6 text-3xl font-semibold tracking-tight lg:text-4xl" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
                   Une passion née du quotidien maternel
                 </h2>
               </div>
@@ -282,7 +278,7 @@ export default function AProposPage() {
       </section>
 
       {/* Timeline Section */}
-      <section className="bg-ylang-terracotta/20 py-20 lg:py-28">
+      <section className="py-20 lg:py-28" style={{ background: "var(--color-paper-2)" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -293,7 +289,7 @@ export default function AProposPage() {
             <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
               Notre parcours
             </p>
-            <h2 className="font-abramo-script text-ylang-charcoal text-3xl lg:text-4xl">
+            <h2 className="text-3xl font-semibold tracking-tight lg:text-4xl" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
               Une aventure humaine
             </h2>
           </motion.div>
@@ -359,7 +355,7 @@ export default function AProposPage() {
             <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
               Nos engagements
             </p>
-            <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-3xl lg:text-4xl">
+            <h2 className="mb-4 text-3xl font-semibold tracking-tight lg:text-4xl" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
               Nos valeurs
             </h2>
             <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl">
@@ -395,7 +391,7 @@ export default function AProposPage() {
       </section>
 
       {/* Oeko-Tex Section */}
-      <section className="from-ylang-sage/20 via-ylang-cream to-ylang-beige/30 bg-linear-to-br py-20 lg:py-28">
+      <section className="py-20 lg:py-28" style={{ background: "var(--color-paper-2)" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <motion.div
@@ -476,9 +472,10 @@ export default function AProposPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-ylang-terracotta/40 text-charcoal/90 rounded-3xl bg-linear-to-br p-12 text-center lg:p-20"
+            className="rounded-3xl p-12 text-center lg:p-20"
+            style={{ background: "var(--color-paper-2)" }}
           >
-            <h2 className="font-abramo-script mb-6 text-3xl lg:text-4xl">
+            <h2 className="mb-6 text-3xl font-semibold tracking-tight lg:text-4xl" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
               Notre concept
             </h2>
             <p className="font-body mx-auto max-w-3xl text-lg leading-relaxed opacity-90 lg:text-xl">
