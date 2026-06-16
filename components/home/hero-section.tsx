@@ -73,27 +73,25 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
     [resetTimer],
   );
 
-  const dur = shouldReduce ? 0 : 0.55;
-  const ease = [0.16, 1, 0.3, 1] as const;
+  const ease = [0.25, 0.1, 0.25, 1] as const;
 
   const imgFade = {
     initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
-    transition: { duration: dur, ease },
+    animate: { opacity: 1, transition: { duration: shouldReduce ? 0 : 0.55, ease } },
+    exit: { opacity: 0, transition: { duration: shouldReduce ? 0 : 0.55, ease } },
   };
 
+  // opacity-only per spec — no translateY
   const textBlock = (delay = 0) => ({
-    initial: { opacity: 0, y: shouldReduce ? 0 : 14 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0 },
-    transition: { duration: shouldReduce ? 0 : 0.45, delay: shouldReduce ? 0 : delay, ease },
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { duration: shouldReduce ? 0 : 0.4, delay: shouldReduce ? 0 : delay, ease } },
+    exit: { opacity: 0, transition: { duration: shouldReduce ? 0 : 0.15, ease } },
   });
 
   return (
     <section
       aria-label="Présentation Ylang Créations"
-      className="relative grid overflow-hidden lg:grid-cols-2"
+      className="relative grid overflow-hidden lg:grid-cols-[2fr_3fr]"
       style={{ minHeight: "calc(100svh - 88px)", background: "var(--color-paper)" }}
     >
       {/* ── Colonne texte (gauche) ── */}
@@ -182,7 +180,7 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
         className="relative h-[56vw] lg:h-auto order-1 lg:order-2"
         style={{ background: "var(--color-paper-3)" }}
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
           {slide.image ? (
             <motion.div
               key={slide.id + "-img"}
@@ -195,7 +193,7 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
                 fill
                 priority
                 quality={90}
-                sizes="(max-width: 1024px) 100vw, 50vw"
+                sizes="(max-width: 1024px) 100vw, 60vw"
                 className="object-cover"
               />
             </motion.div>

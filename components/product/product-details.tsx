@@ -409,7 +409,7 @@ export default function ProductDetails({
                     Livraison offerte
                   </p>
                   <p className="font-body text-ylang-charcoal/60 text-xs">
-                    Dès {freeShippingThreshold}€ d'achat
+                    Dès {freeShippingThreshold}€ d&apos;achat
                   </p>
                 </div>
               </div>
@@ -460,45 +460,47 @@ export default function ProductDetails({
 
         {/* Description détaillée */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="border-ylang-rose/10 relative mb-8 overflow-hidden rounded-3xl border bg-white p-6 shadow-sm lg:mb-16 lg:p-10"
+          className="mb-8 lg:mb-16"
+          style={{ borderTop: "var(--rule-hair)", borderBottom: "var(--rule-hair)", padding: "2.5rem 0" }}
         >
-          {/* Decorative element */}
-          <div className="bg-ylang-rose/5 absolute -top-10 -right-10 h-40 w-40 rounded-full blur-3xl" />
-
-          <div className="relative grid gap-10 lg:grid-cols-[1fr_350px]">
+          <div className="grid gap-10 lg:grid-cols-[1fr_350px]">
             <div>
-              <h2 className="font-display text-ylang-charcoal mb-6 text-2xl tracking-tight lg:text-3xl">
+              <h2
+                className="mb-6 text-2xl tracking-tight lg:text-3xl"
+                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+              >
                 Description détaillée
               </h2>
-              <div className="prose prose-ylang max-w-none">
-                <p className="font-body text-ylang-charcoal/80 leading-relaxed">
-                  {product.longDescription}
-                </p>
-              </div>
+              <p className="font-body leading-relaxed" style={{ color: "var(--color-ink)", opacity: 0.8 }}>
+                {product.longDescription}
+              </p>
             </div>
 
-            <div className="bg-ylang-beige/20 rounded-2xl p-6 lg:p-8">
-              <h3 className="font-display text-ylang-charcoal mb-6 text-xl">
+            <div style={{ background: "var(--color-paper-2)", padding: "1.5rem 2rem" }}>
+              <h3
+                className="mb-6 text-xl"
+                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+              >
                 Caractéristiques
               </h3>
               <ul className="space-y-4">
                 {product.features?.map((feature, idx) => (
-                  <motion.li
+                  <li
                     key={idx}
-                    initial={{ opacity: 0, x: 10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    viewport={{ once: true }}
-                    className="font-body text-ylang-charcoal/80 flex items-start gap-4 text-sm"
+                    className="font-body flex items-start gap-4 text-sm"
+                    style={{ color: "var(--color-ink)", opacity: 0.8 }}
                   >
-                    <div className="bg-ylang-rose/10 text-ylang-rose mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
-                      <Check className="h-3 w-3" />
+                    <div
+                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center"
+                      style={{ background: "var(--color-ink)" }}
+                    >
+                      <Check className="h-3 w-3" style={{ color: "var(--color-paper)" }} />
                     </div>
                     <span>{feature}</span>
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
             </div>

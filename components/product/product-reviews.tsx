@@ -73,25 +73,37 @@ export function ProductReviews({
       {/* Header & Stats */}
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <div className="text-ylang-rose font-abramo mb-1 flex items-center gap-2 text-xs font-semibold tracking-widest uppercase">
+          <div
+            className="mb-1 flex items-center gap-2 text-xs tracking-widest uppercase"
+            style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+          >
             <MessageSquare className="h-3 w-3" />
             <span>Témoignages</span>
           </div>
-          <h2 className="font-abramo-script text-ylang-charcoal text-3xl lg:text-5xl">
-            L'avis de nos clients
+          <h2
+            className="text-3xl tracking-tight lg:text-5xl"
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+          >
+            L&apos;avis de nos clients
           </h2>
         </div>
 
-        <div className="border-ylang-beige/50 flex items-center gap-6 rounded-2xl border bg-white/50 p-4 shadow-sm backdrop-blur-sm">
+        <div
+          className="flex items-center gap-6"
+          style={{ border: "var(--rule-hair)", padding: "1rem 1.5rem" }}
+        >
           <div className="text-center">
-            <span className="font-display text-ylang-charcoal block text-3xl font-bold">
+            <span
+              className="block text-3xl font-bold"
+              style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+            >
               {averageRating.toFixed(1)}
             </span>
-            <span className="font-body text-ylang-charcoal/40 text-[10px] font-medium tracking-tighter uppercase">
+            <span className="font-body text-[10px] font-medium tracking-tighter uppercase" style={{ color: "var(--color-ink)", opacity: 0.4 }}>
               Note moyenne
             </span>
           </div>
-          <div className="bg-ylang-beige/50 h-10 w-px" />
+          <div style={{ width: "1px", height: "2.5rem", background: "var(--rule-soft)" }} />
           <div className="space-y-1">
             <div className="flex items-center gap-0.5">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -105,7 +117,7 @@ export function ProductReviews({
                 />
               ))}
             </div>
-            <p className="font-body text-ylang-charcoal/60 text-xs">
+            <p className="font-body text-xs" style={{ color: "var(--color-ink)", opacity: 0.6 }}>
               Basé sur {totalReviews} avis authentiques
             </p>
           </div>
@@ -115,10 +127,14 @@ export function ProductReviews({
       <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr]">
         {/* Formulaire d'avis */}
         <div className="h-fit space-y-6">
-          <div className="border-ylang-beige/50 relative overflow-hidden rounded-3xl border bg-white p-8 shadow-sm">
-            <div className="bg-ylang-rose/5 absolute -top-10 -left-10 h-32 w-32 rounded-full blur-2xl" />
-
-            <h3 className="font-display text-ylang-charcoal relative mb-6 text-xl">
+          <div
+            className="relative p-8"
+            style={{ background: "var(--color-paper-2)", border: "var(--rule-hair)" }}
+          >
+            <h3
+              className="relative mb-6 text-xl"
+              style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+            >
               Partagez votre expérience
             </h3>
 
@@ -126,15 +142,16 @@ export function ProductReviews({
               <form onSubmit={handleSubmit} className="relative space-y-6">
                 <fieldset>
                   <div className="mb-3 flex items-center gap-3">
-                    <legend className="font-body text-ylang-charcoal/60 text-xs font-medium tracking-wide uppercase">
+                    <legend className="font-body text-xs font-medium tracking-wide uppercase" style={{ color: "var(--color-ink)", opacity: 0.6 }}>
                       Quelle est votre note ?
                     </legend>
                     {activeRatingLabel && (
                       <motion.span
                         key={activeRatingLabel}
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="font-body text-ylang-rose text-xs font-semibold"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="font-body text-xs font-semibold"
+                        style={{ color: "var(--color-accent)" }}
                       >
                         {activeRatingLabel}
                       </motion.span>
@@ -150,21 +167,15 @@ export function ProductReviews({
                         onMouseEnter={() => setHoverRating(star)}
                         onMouseLeave={() => setHoverRating(0)}
                         onClick={() => setRating(star)}
-                        className="group relative transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/50 focus-visible:ring-offset-1 rounded"
+                        className="relative focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/50 focus-visible:ring-offset-1 transition-opacity hover:opacity-80"
                       >
                         <Star
                           className={`h-10 w-10 transition-colors duration-300 ${
                             star <= (hoverRating || rating)
                               ? "fill-yellow-400 text-yellow-400"
                               : "text-gray-200"
-                          } ${star <= hoverRating ? "drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]" : ""}`}
+                          }`}
                         />
-                        {star === rating && (
-                          <motion.div
-                            layoutId="selected-star"
-                            className="absolute -inset-1 rounded-full bg-yellow-400/10 blur-sm"
-                          />
-                        )}
                       </button>
                     ))}
                   </div>
@@ -174,7 +185,8 @@ export function ProductReviews({
                   <div className="mb-2 flex items-center justify-between">
                     <label
                       htmlFor="review-comment"
-                      className="font-body text-ylang-charcoal/60 text-xs font-medium tracking-wide uppercase"
+                      className="font-body text-xs font-medium tracking-wide uppercase"
+                      style={{ color: "var(--color-ink)", opacity: 0.6 }}
                     >
                       Votre témoignage
                     </label>
@@ -182,8 +194,9 @@ export function ProductReviews({
                       className={`font-body text-xs tabular-nums transition-colors ${
                         comment.length >= MAX_COMMENT_LENGTH
                           ? "text-red-400"
-                          : "text-ylang-charcoal/30"
+                          : ""
                       }`}
+                      style={comment.length < MAX_COMMENT_LENGTH ? { color: "var(--color-ink)", opacity: 0.3 } : undefined}
                     >
                       {comment.length}/{MAX_COMMENT_LENGTH}
                     </span>
@@ -195,14 +208,16 @@ export function ProductReviews({
                       setComment(e.target.value.slice(0, MAX_COMMENT_LENGTH))
                     }
                     placeholder="Qu'avez-vous particulièrement aimé ?"
-                    className="border-ylang-beige/50 bg-ylang-beige/5 font-body ring-ylang-rose/20 focus:border-ylang-rose/30 min-h-[120px] resize-none p-4 transition-all focus:bg-white focus:ring-4"
+                    className="font-body min-h-[120px] resize-none p-4 transition-all"
+                    style={{ background: "var(--color-paper)", border: "var(--rule-hair)" }}
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  variant="primary"
+                  variant="maison"
                   className="w-full"
+                  style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
                   disabled={isPending || rating === 0}
                 >
                   {isPending ? (
@@ -216,13 +231,13 @@ export function ProductReviews({
                 </Button>
               </form>
             ) : (
-              <div className="bg-ylang-beige/10 rounded-2xl p-8 text-center">
-                <p className="font-body text-ylang-charcoal/80 mb-4">
+              <div className="p-8 text-center" style={{ background: "var(--color-paper-3)" }}>
+                <p className="font-body mb-4" style={{ color: "var(--color-ink)", opacity: 0.8 }}>
                   Votre avis compte pour nous. Connectez-vous pour rejoindre la
                   communauté.
                 </p>
                 <Link href="/sign-in">
-                  <Button variant="secondary">
+                  <Button variant="maison" style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}>
                     Se connecter
                   </Button>
                 </Link>
@@ -238,12 +253,16 @@ export function ProductReviews({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="border-ylang-beige/50 rounded-3xl border border-dashed bg-white/30 p-12 text-center"
+                className="p-12 text-center"
+                style={{ border: "1px dashed var(--color-ink)", opacity: 0.25 }}
               >
-                <div className="bg-ylang-beige/20 text-ylang-charcoal/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                  <Star className="h-8 w-8" />
+                <div
+                  className="mx-auto mb-4 flex h-16 w-16 items-center justify-center"
+                  style={{ background: "var(--color-paper-2)" }}
+                >
+                  <Star className="h-8 w-8" style={{ color: "var(--color-ink)", opacity: 0.2 }} />
                 </div>
-                <p className="font-display text-ylang-charcoal/40 text-lg">
+                <p className="text-lg" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)", opacity: 0.4 }}>
                   Soyez la première personne à sublimer ce produit avec votre
                   avis
                 </p>
@@ -254,14 +273,15 @@ export function ProductReviews({
                   <motion.article
                     key={review.id}
                     aria-label={`Avis de ${review.user?.name ?? "Client Anonyme"}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="group border-ylang-beige/30 relative overflow-hidden rounded-3xl border bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: idx * 0.07 }}
+                    className="p-6"
+                    style={{ background: "var(--color-paper-2)", border: "var(--rule-hair)" }}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="ring-ylang-rose/10 relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl ring-4">
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden" style={{ background: "var(--color-paper-3)" }}>
                           {review.user?.image ? (
                             <Image
                               src={review.user.image}
@@ -270,16 +290,19 @@ export function ProductReviews({
                               className="object-cover"
                             />
                           ) : (
-                            <div className="bg-ylang-beige/20 flex h-full w-full items-center justify-center">
-                              <User className="text-ylang-rose/40 h-6 w-6" />
+                            <div className="flex h-full w-full items-center justify-center">
+                              <User className="h-6 w-6" style={{ color: "var(--color-ink)", opacity: 0.3 }} />
                             </div>
                           )}
                         </div>
                         <div>
-                          <p className="font-display text-ylang-charcoal font-medium">
+                          <p
+                            className="font-medium"
+                            style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+                          >
                             {review.user?.name || "Client Anonyme"}
                           </p>
-                          <p className="font-body text-ylang-charcoal/30 text-[10px] font-medium tracking-tight uppercase">
+                          <p className="font-body text-[10px] font-medium tracking-tight uppercase" style={{ color: "var(--color-ink)", opacity: 0.3 }}>
                             {new Date(review.createdAt).toLocaleDateString(
                               "fr-FR",
                               {
@@ -291,7 +314,7 @@ export function ProductReviews({
                           </p>
                         </div>
                       </div>
-                      <div className="bg-ylang-beige/10 flex items-center gap-1 rounded-full px-3 py-1">
+                      <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
@@ -306,7 +329,7 @@ export function ProductReviews({
                     </div>
                     {review.comment && (
                       <div className="mt-4">
-                        <p className="font-body text-ylang-charcoal/80 leading-relaxed">
+                        <p className="font-body leading-relaxed" style={{ color: "var(--color-ink)", opacity: 0.8 }}>
                           {review.comment}
                         </p>
                       </div>
