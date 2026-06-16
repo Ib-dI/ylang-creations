@@ -108,7 +108,7 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
               Ylang Créations — Artisan Mahorais
             </motion.p>
 
-            {/* H1 — Bricolage Grotesque, jamais en script */}
+            {/* H1 — Adobe Garamond Pro, jamais en script */}
             <motion.h1
               {...textBlock(0.06)}
               className="mb-5 font-semibold leading-[1.06] tracking-tight

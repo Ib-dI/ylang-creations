@@ -1,3 +1,6 @@
+@import url("https://use.typekit.net/jqx3men.css");
+
+
 @font-face {
   font-family: "Abramo";
   src: url("/fonts/abramo-regular.woff2") format("woff2");
@@ -32,7 +35,7 @@
   --color-ylang-green: #7aa769;
 
   /* Typography */
-  --font-family-display: var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
+  --font-family-display: "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
   --font-family-body: "Inter", sans-serif;
   --font-family-abramo-script: "Abramo Script", serif;
   --font-family-abramo: "Abramo", serif;
@@ -79,7 +82,7 @@
   --color-accent-light: oklch(77% 0.040 18);
   --color-accent-gold:  oklch(84% 0.070 70);
   --color-accent-green: oklch(66% 0.100 140);
-  --font-display:       var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
+  --font-display:       "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
   --font-body:          "Inter", sans-serif;
   --font-accent:        "Abramo Script", serif;
   --font-brand:         "Abramo", serif;

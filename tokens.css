@@ -22,7 +22,7 @@
   --color-accent-green: oklch(66% 0.100 140);  /* #7aa769 vert */
 
   /* ── Fonts ── */
-  --font-display: var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
+  --font-display: "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
   --font-body:    "Inter", sans-serif;
   --font-accent:  "Abramo Script", serif;
   --font-brand:   "Abramo", serif;
