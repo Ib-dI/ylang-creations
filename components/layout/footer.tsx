@@ -209,9 +209,9 @@ export function Footer() {
         </div>
       </div>
 
-      {/* ── 3 colonnes ── */}
+      {/* ── 4 colonnes — Brand | Boutique | La marque | Aide ── */}
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-20">
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-16">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_1fr_1fr_1fr] lg:gap-10">
 
           {/* Col 1 — Brand + social */}
           <div>
@@ -251,7 +251,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Col 2 — Boutique & Marque */}
+          {/* Col 2 — Boutique */}
           <div>
             <p
               className="mb-6 text-[11px] uppercase tracking-[0.18em]"
@@ -259,7 +259,7 @@ export function Footer() {
             >
               Boutique
             </p>
-            <ul className="mb-10 space-y-3">
+            <ul className="space-y-3">
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link
@@ -272,6 +272,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Col 3 — La marque */}
+          <div>
             <p
               className="mb-6 text-[11px] uppercase tracking-[0.18em]"
               style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
@@ -293,7 +297,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Col 3 — Aide */}
+          {/* Col 4 — Aide */}
           <div>
             <p
               className="mb-6 text-[11px] uppercase tracking-[0.18em]"
