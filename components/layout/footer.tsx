@@ -99,21 +99,20 @@ export function Footer() {
             {/* Titre éditorial */}
             <div>
               <p
-                className="mb-5 text-[11px] uppercase tracking-[0.2em]"
+                className="mb-5 text-xs uppercase font-semibold tracking-[0.2em]"
                 style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
               >
                 Restez dans notre univers
               </p>
               <h2
-                className="mb-4 font-semibold leading-[1.06] tracking-tight text-4xl lg:text-5xl xl:text-[3.5rem]"
-                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+                className="mb-4 font-semibold leading-[1.06] tracking-tight"
+                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)", fontSize: "var(--text-headline)" }}
               >
                 Nouvelles créations,<br />inspirations exclusives
               </h2>
-              {/* Abramo Script — accent décoratif uniquement, pas un titre */}
               <p
-                className="text-xl leading-relaxed"
-                style={{ fontFamily: "var(--font-accent)", color: "var(--color-accent)" }}
+                className="type-title"
+                style={{ color: "var(--color-accent)" }}
               >
                 En avant-première, pour nos abonnés seulement
               </p>
@@ -138,7 +137,7 @@ export function Footer() {
                     required
                     disabled={isLoading}
                     className="w-full rounded-none border-0 border-b bg-transparent py-5 text-sm
-                               focus-visible:ring-0 placeholder:opacity-40"
+                              focus-visible:ring-0 placeholder:opacity-40"
                     style={{
                       borderColor: "var(--color-ink-2)",
                       fontFamily: "var(--font-body)",
@@ -149,7 +148,7 @@ export function Footer() {
                     type="submit"
                     disabled={isLoading}
                     className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.14em]
-                               transition-opacity duration-200 disabled:opacity-40"
+                              transition-opacity duration-200 disabled:opacity-40"
                     style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
                   >
                     <span
@@ -193,7 +192,7 @@ export function Footer() {
             {trustLabels.map((label, i) => (
               <React.Fragment key={label}>
                 <span
-                  className="text-[10px] uppercase tracking-[0.2em]"
+                  className="text-sm uppercase tracking-[0.2em] font-semibold"
                   style={{ fontFamily: "var(--font-brand)", color: "var(--color-ink-3)" }}
                 >
                   {label}
@@ -254,7 +253,7 @@ export function Footer() {
           {/* Col 2 — Boutique */}
           <div>
             <p
-              className="mb-6 text-[11px] uppercase tracking-[0.18em]"
+              className="mb-6 text-xs uppercase font-semibold tracking-[0.18em]"
               style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
             >
               Boutique
@@ -277,7 +276,7 @@ export function Footer() {
           {/* Col 3 — La marque */}
           <div>
             <p
-              className="mb-6 text-[11px] uppercase tracking-[0.18em]"
+              className="mb-6 text-xs uppercase font-semibold tracking-[0.18em]"
               style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
             >
               La marque
@@ -300,7 +299,7 @@ export function Footer() {
           {/* Col 4 — Aide */}
           <div>
             <p
-              className="mb-6 text-[11px] uppercase tracking-[0.18em]"
+              className="mb-6 text-xs uppercase font-semibold tracking-[0.18em]"
               style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
             >
               Aide & Infos
@@ -337,7 +336,7 @@ export function Footer() {
                 <React.Fragment key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[11px] opacity-40 transition-opacity duration-200 hover:opacity-80"
+                    className="text-xs opacity-40 transition-opacity duration-200 hover:opacity-80"
                     style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
                   >
                     {link.name}

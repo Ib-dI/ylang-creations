@@ -102,27 +102,26 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
             {/* Eyebrow */}
             <motion.p
               {...textBlock(0)}
-              className="mb-7 text-[11px] uppercase tracking-[0.22em]"
+              className="mb-7 text-xs uppercase font-semibold tracking-[0.22em]"
               style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
             >
               Ylang Créations — Artisan Mahorais
             </motion.p>
 
-            {/* H1 — Adobe Garamond Pro, jamais en script */}
+            {/* H1 — Adobe Garamond Pro, regular italic */}
             <motion.h1
               {...textBlock(0.06)}
-              className="mb-5 font-semibold leading-[1.06] tracking-tight
-                         text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.75rem]"
-              style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+              className="mb-5 type-display text-4xl"
+              style={{ color: "var(--color-ink)", fontFamily: "var(--font-display)" }}
             >
               {slide.title}
             </motion.h1>
 
-            {/* Sous-titre — Abramo Script uniquement ici, en accent décoratif */}
+            {/* Sous-titre — Inter uppercase */}
             <motion.p
               {...textBlock(0.12)}
-              className="mb-10 text-xl leading-relaxed"
-              style={{ fontFamily: "var(--font-accent)", color: "var(--color-accent)" }}
+              className="mb-10 type-overline leading-relaxed"
+              style={{ fontSize: "var(--text-caption)", color: "var(--color-ink-2)" }}
             >
               {slide.subtitle}
             </motion.p>

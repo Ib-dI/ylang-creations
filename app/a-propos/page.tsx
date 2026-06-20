@@ -144,7 +144,7 @@ export default function AProposPage() {
             </motion.p>
             <motion.p
               variants={fadeInUp}
-              className="font-abramo-script text-ylang-rose mt-6 text-xl"
+              className="font-abramo-script mt-6 text-3xl" style={{ color: "var(--color-accent)" }}
             >
               Avec amour, Mélissa
             </motion.p>

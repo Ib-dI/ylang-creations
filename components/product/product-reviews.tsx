@@ -74,7 +74,7 @@ export function ProductReviews({
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <div
-            className="mb-1 flex items-center gap-2 text-xs tracking-widest uppercase"
+            className="mb-1 flex items-center gap-2 text-xs font-semibold tracking-widest uppercase"
             style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
           >
             <MessageSquare className="h-3 w-3" />

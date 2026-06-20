@@ -1360,7 +1360,7 @@ const ProductConfigurator = () => {
                             />
                             <div>
                               {configuration.embroideries.filter(Boolean).map((name, i) => (
-                                <p key={i} className="font-abramo-script text-ylang-charcoal text-xl leading-tight">
+                                <p key={i} className="font-abramo-script text-3xl leading-tight" style={{ color: "var(--color-ink)" }}>
                                   {name}
                                 </p>
                               ))}
@@ -1586,7 +1586,7 @@ const ProductConfigurator = () => {
                             />
                           </div>
                         </div>
-                        <p className="text-ylang-charcoal mb-1 text-2xl font-abramo-script">{product.name}</p>
+                        <p className="font-abramo-script mb-1 text-3xl" style={{ color: "var(--color-ink)" }}>{product.name}</p>
                         <p className="text-ylang-rose text-sm font-black">
                           À partir de {(product.basePrice / 100).toFixed(2)}€
                         </p>

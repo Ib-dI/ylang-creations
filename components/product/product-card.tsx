@@ -111,7 +111,7 @@ export function ProductCard({
         <div className="absolute top-3 left-3 flex flex-col gap-1 sm:top-4 sm:left-4">
           {product.new && (
             <span
-              className="text-[10px] tracking-[0.14em] uppercase"
+              className="text-xs font-semibold tracking-[0.14em] uppercase"
               style={{ fontFamily: "var(--font-brand)", color: "var(--color-paper)", background: "var(--color-ink)", padding: "2px 8px" }}
             >
               Nouveau
@@ -119,7 +119,7 @@ export function ProductCard({
           )}
           {product.customizable && (
             <span
-              className="text-[10px] tracking-[0.14em] uppercase"
+              className="text-xs font-semibold tracking-[0.14em] uppercase"
               style={{ fontFamily: "var(--font-brand)", color: "var(--color-ink)", background: "var(--color-paper-2)", padding: "2px 8px" }}
             >
               Sur mesure
@@ -166,7 +166,7 @@ export function ProductCard({
         <div className="space-y-1.5 p-2.5 sm:p-3" style={{ background: "var(--color-paper-2)" }}>
           <div>
             <p
-              className="mb-0.5 text-[10px] tracking-[0.18em] uppercase"
+              className="mb-0.5 text-xs font-semibold tracking-[0.18em] uppercase"
               style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
             >
               {product.category}

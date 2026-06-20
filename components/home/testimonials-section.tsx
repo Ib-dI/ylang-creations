@@ -35,12 +35,12 @@ export function TestimonialsSection({
           className="mb-16 text-center"
         >
           <p
-            className="mb-3 text-[11px] tracking-[0.2em] uppercase font-semibold"
+            className="mb-3 text-xs tracking-[0.2em] uppercase font-semibold"
             style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
           >
             Vos retours en images
           </p>
-          <h2 className="text-ylang-charcoal font-display mb-6 font-semibold tracking-tight text-4xl lg:text-5xl">
+          <h2 className="text-ylang-charcoal font-display mb-6 font-semibold tracking-tight" style={{ fontSize: "var(--text-headline)" }}>
             Ils adorent Ylang Créations
           </h2>
           <p className="text-ylang-charcoal/60 mx-auto max-w-2xl">

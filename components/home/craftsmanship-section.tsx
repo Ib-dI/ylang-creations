@@ -45,18 +45,18 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
         {/* Header */}
         <div className="mb-16 text-center animate-fade-in-up">
           <p
-            className="mb-3 text-[11px] tracking-[0.2em] uppercase font-semibold"
+            className="mb-3 text-xs tracking-[0.2em] uppercase font-semibold"
             style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
           >
             Excellence artisanale
           </p>
-          <h2 className="font-display text-ylang-charcoal mb-6 text-4xl lg:text-5xl font-semibold tracking-tight">
-            Un savoir-faire d'exception
+          <h2 className="font-display text-ylang-charcoal mb-6 font-semibold tracking-tight" style={{ fontSize: "var(--text-headline)" }}>
+            Un savoir-faire d&apos;exception
           </h2>
-          <p className="font-body text-ylang-charcoal/60 mx-auto max-w-3xl text-lg leading-relaxed">
+          <p className="font-body text-ylang-charcoal/60 mx-auto max-w-3xl text-md leading-relaxed">
             Depuis notre atelier Mahorais/Réunion, nous créons des pièces
             textiles uniques alliant tradition artisanale et innovation. Chaque
-            création est le fruit d'un travail minutieux et passionné.
+            création est le fruit d&apos;un travail minutieux et passionné.
           </p>
         </div>
 
@@ -90,18 +90,18 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
           >
             <div>
               <h3
-                className="font-semibold mb-4 text-3xl tracking-tight"
+                className="font-semibold mb-4 tracking-tight text-2xl"
                 style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
               >
-                L'excellence au service de vos émotions
+                L&apos;excellence au service de vos émotions
               </h3>
-              <p className="font-body text-ylang-charcoal/70 mb-4 leading-relaxed">
-                Chaque pièce Ylang Créations naît d'une rencontre entre votre
+              <p className="font-body text-ylang-charcoal/70 text-sm mb-4 leading-relaxed">
+                Chaque pièce Ylang Créations naît d&apos;une rencontre entre votre
                 vision et notre expertise. Nous sélectionnons avec soin les plus
                 beaux tissus biologiques et les transformons en créations
                 uniques qui accompagneront les moments précieux de votre vie.
               </p>
-              <p className="font-body text-ylang-charcoal/70 leading-relaxed">
+              <p className="font-body text-ylang-charcoal/70 leading-relaxed text-sm">
                 Notre atelier Ylang Créations perpétue un savoir-faire
                 traditionnel tout en intégrant des techniques modernes de
                 personnalisation pour vous offrir une expérience sur mesure
@@ -121,7 +121,7 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
                     <value.icon className="h-6 w-6" style={{ color: "var(--color-accent)" }} />
                   </div>
                   <div>
-                    <h4 className="font-display text-ylang-charcoal mb-1 text-base font-semibold tracking-tight">
+                    <h4 className="font-display text-ylang-charcoal mb-1 text-lg font-semibold tracking-tight">
                       {value.title}
                     </h4>
                     <p className="font-body text-ylang-charcoal/60 text-sm">
@@ -155,8 +155,8 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <p
-                className="mb-2 text-4xl font-semibold lg:text-5xl"
-                style={{ fontFamily: "var(--font-display)", color: "var(--color-accent)" }}
+                className="mb-2 font-semibold"
+                style={{ fontFamily: "var(--font-display)", color: "var(--color-accent)", fontSize: "var(--text-headline)" }}
               >
                 {stat.number}
               </p>

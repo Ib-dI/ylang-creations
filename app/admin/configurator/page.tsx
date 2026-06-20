@@ -716,7 +716,7 @@ export default function ConfiguratorAdmin() {
                       <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${category.isActive ? 'bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.6)]' : 'bg-gray-300'}`} />
                       <div>
                         <div className="flex items-center gap-2.5">
-                          <h2 className="font-abramo-script text-2xl text-ylang-charcoal sm:text-3xl">{category.title}</h2>
+                          <h2 className="font-abramo-script text-3xl" style={{ color: "var(--color-ink)" }}>{category.title}</h2>
                           <span className="rounded-full bg-ylang-charcoal/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ylang-charcoal/40">{category.id}</span>
                         </div>
                         {category.description && <p className="mt-0.5 text-sm text-ylang-charcoal/50">{category.description}</p>}

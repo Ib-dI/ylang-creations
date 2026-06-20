@@ -530,7 +530,7 @@ export function ContactClient({ settings }: { settings: any }) {
               strokeWidth={1.5}
               className="text-ylang-rose mx-auto mb-6 h-10 w-10 opacity-80"
             />
-            <h2 className="font-abramo-script mb-4 text-2xl lg:text-3xl">
+            <h2 className="type-headline mb-4" style={{ color: "var(--color-ink)" }}>
               Prêt à créer quelque chose d'unique ?
             </h2>
             <p className="font-body text-ylang-charcoal/70 mx-auto mb-8 max-w-xl opacity-90">

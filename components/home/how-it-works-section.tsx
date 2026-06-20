@@ -51,15 +51,15 @@ export function HowItWorksSection() {
         {/* Header */}
         <div className="mb-16 text-center animate-fade-in-up">
           <p
-            className="mb-3 text-[11px] tracking-[0.2em] uppercase font-semibold"
+            className="mb-3 text-xs tracking-[0.2em] uppercase font-semibold"
             style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
           >
             Simple et intuitif
           </p>
-          <h2 className="font-display text-ylang-charcoal mb-6 text-3xl lg:text-5xl font-semibold tracking-tight">
+          <h2 className="font-display text-ylang-charcoal/81 mb-6 text-3xl lg:text-5xl font-semibold tracking-tight">
             Comment ça marche ?
           </h2>
-          <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl text-lg">
+          <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl text-md">
             Créez votre produit unique en 3 étapes simples. Notre configurateur
             vous guide à chaque instant.
           </p>
@@ -99,10 +99,10 @@ export function HowItWorksSection() {
                   </div>
 
                   {/* Content */}
-                  <h3 className="font-display text-ylang-charcoal mb-4 text-xl font-semibold tracking-tight">
+                  <h3 className="font-display text-ylang-charcoal mb-4 text-2xl font-semibold tracking-tight">
                     {step.title}
                   </h3>
-                  <p className="font-body text-ylang-charcoal/70 mb-6 leading-relaxed">
+                  <p className="font-body text-ylang-charcoal/70 mb-6 text-md leading-relaxed">
                     {step.description}
                   </p>
 
@@ -134,9 +134,7 @@ export function HowItWorksSection() {
               Commencer ma création
             </Link>
           </Button>
-          <p className="font-body text-ylang-charcoal/60 mt-4 text-sm">
-            ✨ Aucun engagement • Aperçu gratuit • Paiement sécurisé
-          </p>
+          
         </div>
       </div>
 

@@ -394,8 +394,8 @@ export function Header() {
       >
         {/* Barre d'annonce */}
         <div className="border-b px-4 py-2 sm:px-6 lg:px-8" style={{ background: "var(--color-paper-2)", borderColor: "var(--color-ink-2)" }}>
-          <p className="text-center font-medium uppercase tracking-[0.18em] text-[10px] sm:text-[11px]" style={{ fontFamily: "var(--font-body)", color: "var(--color-ink-3)" }}>
-            Livraison offerte dès {freeShippingThreshold}&nbsp;€ d&apos;achat · France métropolitaine
+          <p className="text-center font-medium uppercase tracking-[0.18em] text-[10px] sm:text-md" style={{ fontFamily: "var(--font-body)", color: "var(--color-ink-3)" }}>
+            Livraison offerte dès {freeShippingThreshold}&nbsp;€ d&apos;achat
           </p>
         </div>
 
@@ -630,7 +630,7 @@ export function Header() {
             <div className="flex gap-12">
               {/* Navigation Principale */}
               <div className="border-ylang-terracotta shrink-0 border-r pr-8">
-                <h3 className="text-ylang-rose font-abramo mb-6 text-md font-semibold tracking-widest uppercase">
+                <h3 className="text-ylang-rose font-abramo mb-6 text-xs font-semibold tracking-widest uppercase">
                   Menu
                 </h3>
                 <ul className="space-y-2">
@@ -707,7 +707,7 @@ export function Header() {
                             {/* @ts-ignore */}
                             {category.sections.map((section) => (
                               <div key={section.title} className="space-y-2">
-                                <h4 className="border-ylang-beige font-body border-b pb-1 text-[9px] font-bold tracking-wider text-gray-400 uppercase">
+                                <h4 className="border-ylang-beige font-body border-b pb-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
                                   {section.title}
                                 </h4>
                                 <ul className="grid grid-cols-2 gap-1">

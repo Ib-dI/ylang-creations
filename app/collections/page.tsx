@@ -274,7 +274,7 @@ function CollectionsContent() {
 
   // Filtrage et tri des produits avec recherche améliorée
   const filteredProducts = useMemo(() => {
-    let filtered = products.filter((product) => {
+    const filtered = products.filter((product) => {
       const searchLower = searchTerm.toLowerCase();
 
       // Mots significatifs du terme de recherche (ex: "Gigoteuse légère 0/3" → ["gigoteuse", "legere"])
@@ -425,7 +425,7 @@ function CollectionsContent() {
           className="mb-8 text-center lg:mb-12"
         >
           <p
-            className="mb-3 text-[11px] tracking-[0.2em] uppercase font-semibold"
+            className="mb-3 text-xs tracking-[0.2em] uppercase font-semibold"
             style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
           >
             Nos Collections
@@ -442,7 +442,7 @@ function CollectionsContent() {
           </h1>
           <p className="text-ylang-charcoal/60 font-body mx-auto max-w-2xl text-lg">
             Découvrez notre univers de textile personnalisé pour bébé et
-            décoration d'intérieur
+            décoration d&apos;intérieur
           </p>
         </motion.div>
 

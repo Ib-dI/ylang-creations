@@ -224,12 +224,12 @@ export default function ProductDetails({
           <div className="space-y-5 lg:space-y-6">
             {/* En-tête */}
             <div>
-              <p className="text-ylang-rose font-abramo text-md mb-2 font-semibold tracking-widest uppercase">
+              <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>
                 {product.category}
               </p>
               <h1
-                className="mb-2 text-3xl font-semibold tracking-tight lg:text-4xl xl:text-5xl"
-                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+                className="mb-2 type-headline"
+                style={{ color: "var(--color-ink)" }}
               >
                 {product.name}
               </h1>
@@ -242,8 +242,8 @@ export default function ProductDetails({
                   </p>
                   <div className="flex items-baseline gap-3">
                     <p
-                      className="text-2xl font-semibold"
-                      style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+                      className="type-title"
+                      style={{ color: "var(--color-ink)" }}
                     >
                       {product.price}€
                     </p>
@@ -405,10 +405,10 @@ export default function ProductDetails({
                   <Truck className="text-ylang-charcoal h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-display text-ylang-charcoal text-sm">
+                  <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
                     Livraison offerte
                   </p>
-                  <p className="font-body text-ylang-charcoal/60 text-xs">
+                  <p className="type-caption" style={{ color: "var(--color-ink-2)" }}>
                     Dès {freeShippingThreshold}€ d&apos;achat
                   </p>
                 </div>
@@ -418,10 +418,10 @@ export default function ProductDetails({
                   <Shield className="text-ylang-charcoal h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-display text-ylang-charcoal text-sm">
+                  <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
                     Paiement sécurisé
                   </p>
-                  <p className="font-body text-ylang-charcoal/60 text-xs">
+                  <p className="type-caption" style={{ color: "var(--color-ink-2)" }}>
                     Cryptage SSL
                   </p>
                 </div>
@@ -431,10 +431,10 @@ export default function ProductDetails({
                   <Package className="text-ylang-charcoal h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-display text-ylang-charcoal text-sm">
+                  <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
                     Fait main
                   </p>
-                  <p className="font-body text-ylang-charcoal/60 text-xs">
+                  <p className="type-caption" style={{ color: "var(--color-ink-2)" }}>
                     Artisanat français
                   </p>
                 </div>
@@ -445,10 +445,10 @@ export default function ProductDetails({
                     <Wand2 className="text-ylang-charcoal h-5 w-5" />
                   </div>
                   <div>
-                    <p className="font-display text-ylang-charcoal text-sm">
+                    <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
                       Sur mesure
                     </p>
-                    <p className="font-body text-ylang-charcoal/60 text-xs">
+                    <p className="type-caption" style={{ color: "var(--color-ink-2)" }}>
                       100% personnalisable
                     </p>
                   </div>
@@ -469,8 +469,8 @@ export default function ProductDetails({
           <div className="grid gap-10 lg:grid-cols-[1fr_350px]">
             <div>
               <h2
-                className="mb-6 text-2xl tracking-tight lg:text-3xl"
-                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+                className="mb-6 type-headline"
+                style={{ color: "var(--color-ink)" }}
               >
                 Description détaillée
               </h2>
@@ -481,8 +481,8 @@ export default function ProductDetails({
 
             <div style={{ background: "var(--color-paper-2)", padding: "1.5rem 2rem" }}>
               <h3
-                className="mb-6 text-xl"
-                style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+                className="mb-6 type-title"
+                style={{ color: "var(--color-ink)" }}
               >
                 Caractéristiques
               </h3>
@@ -527,10 +527,10 @@ export default function ProductDetails({
               viewport={{ once: true }}
               className="mb-6 text-center lg:mb-8"
             >
-              <p className="text-ylang-rose font-body mb-3 text-sm tracking-widest uppercase">
+              <p className="type-overline mb-3" style={{ color: "var(--color-accent)" }}>
                 Inspirations
               </p>
-              <h2 className="font-display text-ylang-charcoal mb-2 text-3xl lg:text-4xl">
+              <h2 className="type-headline mb-2" style={{ color: "var(--color-ink)" }}>
                 Vous aimerez aussi
               </h2>
               <p className="font-body text-ylang-charcoal/60">

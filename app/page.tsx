@@ -158,7 +158,7 @@ export default async function Home() {
             <h2 className="font-display text-ylang-charcoal mb-4 text-4xl lg:text-5xl font-semibold tracking-tight">
               Nos créations phares
             </h2>
-            <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl text-lg">
+            <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl text-md leading-relaxed">
               Découvrez notre sélection de produits personnalisables pour créer
               un univers unique
             </p>

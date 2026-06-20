@@ -21,7 +21,7 @@ export function PremiumLoader({
         <div className="absolute h-32 w-32 rounded-full border border-ylang-rose/10" />
         
         {/* Spinning Accent Ring */}
-        <div className="border-ylang-rose absolute h-28 w-28 animate-[spin_4s_linear_infinite] rounded-full border-t-2 border-r-2 opacity-40 shadow-sm" />
+        <div className="absolute h-28 w-28 animate-[spin_4s_linear_infinite] rounded-full" style={{ border: "1px solid transparent", background: "conic-gradient(from 0deg, transparent 70%, oklch(58% 0.070 28 / 0.5) 100%) border-box" }} />
 
         {/* The Ylang Flower */}
         <svg
@@ -76,7 +76,7 @@ export function PremiumLoader({
 
       {/* Text Content */}
       <div className="flex flex-col items-center gap-1.5 text-center">
-        <h2 className="font-family-abramo-script text-ylang-charcoal text-xl tracking-[0.2em]">
+        <h2 className="type-overline" style={{ color: "var(--color-ink)" }}>
           {title}
         </h2>
         <div className="h-px w-8 bg-ylang-rose/30 my-1" />
