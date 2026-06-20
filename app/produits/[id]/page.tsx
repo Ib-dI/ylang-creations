@@ -14,7 +14,7 @@ interface PageProps {
 function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
   const parsedImages = (p.images as string[] | null) ?? [];
 
-  let parsedOptions: {
+  const parsedOptions: {
     features?: string[];
     longDescription?: string;
     customizable?: boolean;

@@ -55,15 +55,6 @@
   --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.12);
 
-  /* Shadcn UI Colors fallback */
-  --color-primary: var(--color-ylang-rose);
-  --color-popover: #ffffff;
-  --color-popover-foreground: var(--color-ylang-charcoal);
-  --color-muted: var(--color-ylang-beige);
-  --color-muted-foreground: #666666;
-  --color-border: #e5e5e5;
-  --color-accent: var(--color-ylang-cream);
-  --color-accent-foreground: var(--color-ylang-charcoal);
 
   /* Transitions */
   --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -82,7 +73,7 @@
   --color-accent-light: oklch(77% 0.040 18);
   --color-accent-gold:  oklch(84% 0.070 70);
   --color-accent-green: oklch(66% 0.100 140);
-  --font-display:       "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
+  --font-display:        "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
   --font-body:          "Inter", sans-serif;
   --font-accent:        "Abramo Script", serif;
   --font-brand:         "Abramo", serif;
@@ -101,8 +92,12 @@
 html, body { overflow-x: clip; }
 
 /* Custom Classes Premium */
-.font-display {
+/* ── Essai Adobe Garamond Pro Bold Italic ── */
+.font-display,
+[style*="--font-display"] {
   font-family: var(--font-display);
+  font-weight: 700;
+  font-style: italic;
   letter-spacing: -0.01em;
 }
 
