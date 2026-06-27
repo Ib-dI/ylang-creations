@@ -117,9 +117,44 @@ export default function ProductDetails({
         {/* Contenu principal */}
         <div className="mb-8 grid gap-8 lg:mb-16 lg:grid-cols-[3fr_2fr] lg:gap-12">
           {/* Galerie d'images */}
-          <div className="space-y-3 lg:space-y-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:gap-4">
+            {/* Thumbnails — colonne à gauche sur desktop, rangée sous l'image sur mobile */}
+            <div className="order-2 lg:order-1 flex flex-row lg:flex-col gap-2 lg:w-[76px] shrink-0 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:h-[min(75vh,720px)]">
+              {productImages.map((img, idx) => (
+                <motion.button
+                  key={idx}
+                  whileHover={{ y: -3 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSelectedImage(idx)}
+                  aria-label={`Voir l'image ${idx + 1}`}
+                  aria-pressed={selectedImage === idx}
+                  className={`relative aspect-square shrink-0 w-16 lg:w-full overflow-hidden rounded-lg border-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50 ${
+                    selectedImage === idx
+                      ? "border-ylang-rose"
+                      : "border-transparent hover:border-ylang-rose/40"
+                  }`}
+                >
+                  <Image
+                    src={img}
+                    alt={`Vue ${idx + 1}`}
+                    fill
+                    sizes="(max-width: 1024px) 64px, 76px"
+                    className={`object-cover transition-transform duration-500 ${
+                      selectedImage === idx ? "scale-110" : "scale-100"
+                    }`}
+                  />
+                  {selectedImage === idx && (
+                    <motion.div
+                      layoutId="active-thumb"
+                      className="ring-ylang-rose/20 absolute inset-0 ring-2 ring-inset"
+                    />
+                  )}
+                </motion.button>
+              ))}
+            </div>
+
             {/* Image principale */}
-            <div className="relative aspect-square overflow-hidden" style={{ background: "var(--color-paper-3)" }}>
+            <div className="order-1 lg:order-2 relative flex-1 aspect-[3/4] lg:aspect-auto lg:h-[min(75vh,720px)] overflow-hidden" style={{ background: "var(--color-paper-3)" }}>
               <motion.div style={{ x: xPct }} className="flex h-full">
                 {productImages.map((img, i) => (
                   <div key={i} className="relative h-full w-full shrink-0">
@@ -177,46 +212,6 @@ export default function ProductDetails({
               >
                 <ZoomIn className="text-ylang-charcoal h-5 w-5" />
               </motion.button>
-            </div>
-
-            {/* Thumbnails */}
-            <div
-              className="grid gap-3 lg:gap-4"
-              style={{
-                gridTemplateColumns: `repeat(${Math.min(productImages.length, 6)}, 1fr)`,
-              }}
-            >
-              {productImages.map((img, idx) => (
-                <motion.button
-                  key={idx}
-                  whileHover={{ y: -3 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedImage(idx)}
-                  aria-label={`Voir l'image ${idx + 1}`}
-                  aria-pressed={selectedImage === idx}
-                  className={`relative aspect-square overflow-hidden rounded-lg border-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50 ${
-                    selectedImage === idx
-                      ? "border-ylang-rose"
-                      : "border-transparent hover:border-ylang-rose/40"
-                  }`}
-                >
-                  <Image
-                    src={img}
-                    alt={`Vue ${idx + 1}`}
-                    fill
-                    sizes="(max-width: 1024px) 25vw, 10vw"
-                    className={`object-cover transition-transform duration-500 ${
-                      selectedImage === idx ? "scale-110" : "scale-100"
-                    }`}
-                  />
-                  {selectedImage === idx && (
-                    <motion.div
-                      layoutId="active-thumb"
-                      className="ring-ylang-rose/20 absolute inset-0 ring-2 ring-inset"
-                    />
-                  )}
-                </motion.button>
-              ))}
             </div>
           </div>
 
