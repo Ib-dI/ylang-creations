@@ -56,7 +56,7 @@ export function HowItWorksSection() {
           >
             Simple et intuitif
           </p>
-          <h2 className="font-display text-ylang-charcoal/81 mb-6 text-3xl lg:text-5xl font-semibold tracking-tight">
+          <h2 className="font-display text-ylang-charcoal mb-6 text-3xl lg:text-5xl font-semibold tracking-tight">
             Comment ça marche ?
           </h2>
           <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl text-md">

@@ -1,5 +1,52 @@
 @import url("https://use.typekit.net/jqx3men.css");
 
+@font-face {
+  font-family: "The Seasons";
+  src: url("/fonts/The.Seasons/The Seasons Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "The Seasons";
+  src: url("/fonts/The.Seasons/The Seasons Light Italic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "The Seasons";
+  src: url("/fonts/The.Seasons/The Seasons Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "The Seasons";
+  src: url("/fonts/The.Seasons/The Seasons Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "The Seasons";
+  src: url("/fonts/The.Seasons/The Seasons Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "The Seasons";
+  src: url("/fonts/The.Seasons/The Seasons Bold Italic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
 
 @font-face {
   font-family: "Abramo";
@@ -35,7 +82,7 @@
   --color-ylang-green: #7aa769;
 
   /* Typography */
-  --font-family-display: "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
+  --font-family-display: "The Seasons", "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
   --font-family-body: "Inter", sans-serif;
   --font-family-abramo-script: "Abramo Script", serif;
   --font-family-abramo: "Abramo", serif;
@@ -81,7 +128,7 @@
   --color-accent-light: oklch(77% 0.040 18);
   --color-accent-gold:  oklch(84% 0.070 70);
   --color-accent-green: oklch(66% 0.100 140);
-  --font-display:        "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
+  --font-display:        "The Seasons", "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
   --font-body:          "Inter", sans-serif;
   --font-accent:        "Abramo Script", serif;
   --font-brand:         "Abramo", serif;
@@ -104,8 +151,8 @@ html, body { overflow-x: clip; }
 .font-display,
 [style*="--font-display"] {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-style: italic;
+  font-weight: 400;
+  font-style: normal;
   letter-spacing: -0.01em;
 }
 
@@ -127,7 +174,7 @@ html, body { overflow-x: clip; }
   font-family: var(--font-display);
   font-size: var(--text-display);
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   line-height: 1.0;
   letter-spacing: -0.02em;
 }
@@ -136,7 +183,7 @@ html, body { overflow-x: clip; }
   font-family: var(--font-display);
   font-size: var(--text-headline);
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
@@ -145,7 +192,7 @@ html, body { overflow-x: clip; }
   font-family: var(--font-display);
   font-size: var(--text-title);
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   line-height: 1.2;
   letter-spacing: -0.02em;
 }
