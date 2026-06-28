@@ -1,92 +1,122 @@
-import { Edit3, Heart, Palette, Scissors } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Comment personnaliser ",
-  description:
-    "Découvrez comment personnaliser vos créations textiles pour un cadeau unique et mémorable.",
+  title: "Comment personnaliser — Ylang Créations",
+  description: "Découvrez comment personnaliser vos créations textiles pour un cadeau unique et mémorable.",
 };
 
+const steps = [
+  {
+    n: "01",
+    title: "Choisissez votre article",
+    description:
+      "Parcourez nos collections et sélectionnez l'article que vous souhaitez personnaliser (gigoteuse, couverture, protège carnet, etc.).",
+  },
+  {
+    n: "02",
+    title: "Sélectionnez vos tissus",
+    description:
+      "Choisissez parmi notre sélection de gazes de coton, tissus motifs et doublures premium pour créer votre harmonie parfaite.",
+  },
+  {
+    n: "03",
+    title: "Ajoutez une broderie",
+    description:
+      "Indiquez le prénom ou le mot doux à broder. Choisissez la police et la couleur du fil pour une touche personnelle.",
+  },
+  {
+    n: "04",
+    title: "Nous confectionnons",
+    description:
+      "Dès validation, notre atelier artisanal à la Réunion lance la confection de votre pièce unique avec le plus grand soin.",
+  },
+];
+
 export default function CustomizationPage() {
-  const steps = [
-    {
-      title: "Choisissez votre article",
-      description:
-        "Parcourez nos collections et sélectionnez l'article que vous souhaitez personnaliser (gigoteuse, couverture, protège carnet, etc.).",
-      icon: Scissors,
-    },
-    {
-      title: "Sélectionnez vos tissus",
-      description:
-        "Choisissez parmi notre sélection de gazes de coton, tissus motifs et doublures premium pour créer votre harmonie parfaite.",
-      icon: Palette,
-    },
-    {
-      title: "Ajoutez une broderie",
-      description:
-        "Indiquez le prénom ou le mot doux à broder. Choisissez la police et la couleur du fil pour une touche personnelle.",
-      icon: Edit3,
-    },
-    {
-      title: "Nous confectionnons",
-      description:
-        "Dès validation, notre atelier artisanal à la Réunion lance la confection de votre pièce unique avec le plus grand soin.",
-      icon: Heart,
-    },
-  ];
-
   return (
-    <div className="overflow-hidden bg-ylang-terracotta/50 px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-12 text-center">
-          <h1 className="font-abramo-script text-4xl text-gray-900 sm:text-4xl">
-            Comment Personnaliser
-          </h1>
-          <div className="bg-ylang-rose mx-auto mt-4 h-1 w-20 rounded"></div>
-          <p className="font-body mt-6 text-lg text-gray-600">
-            Chez Ylang Créations, chaque pièce est unique. Découvrez les étapes
-            pour créer un article qui vous ressemble.
-          </p>
-        </div>
+    <div className="space-y-16">
 
-        <div className="space-y-16">
-          <div className="grid gap-8 md:grid-cols-2">
-            {steps.map((step, index) => (
-              <div
-                key={index}
-                className="bg-ylang-beige/10 border-ylang-beige/30 relative rounded-2xl border p-8 transition-transform hover:-translate-y-1"
-              >
-                <div className="bg-ylang-rose absolute -top-4 -left-4 flex h-8 w-8 items-center justify-center rounded-full font-bold text-white">
-                  {index + 1}
-                </div>
-                <div className="text-ylang-rose mb-4">
-                  <step.icon size={32} />
-                </div>
-                <h3 className="font-display mb-2 text-xl font-bold text-gray-900">
-                  {step.title}
-                </h3>
-                <p className="font-body text-gray-600">{step.description}</p>
-              </div>
-            ))}
-          </div>
+      <div>
+        <p className="type-overline mb-5" style={{ color: "var(--color-accent)" }}>
+          Processus de personnalisation
+        </p>
+        <h2
+          className="mb-4"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "var(--text-title)",
+            fontWeight: 400,
+            color: "var(--color-ink)",
+          }}
+        >
+          Créer une pièce qui vous ressemble
+        </h2>
+        <p className="font-body text-base leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
+          Chez Ylang Créations, chaque pièce est unique. Voici les étapes pour créer un article à votre image.
+        </p>
+      </div>
 
-          <section className="bg-ylang-charcoal rounded-3xl p-10 text-center text-white">
-            <h2 className="font-abramo text-ylang-beige mb-4 text-3xl">
-              Besoin d'une création sur mesure ?
-            </h2>
-            <p className="font-body text-ylang-beige/80 mx-auto mb-8 max-w-2xl">
-              Si vous ne trouvez pas votre bonheur dans notre configurateur,
-              nous pouvons réaliser des projets spécifiques hors catalogue.
-            </p>
-            <a
-              href="/contact"
-              className="bg-ylang-rose hover:bg-ylang-rose/90 inline-block rounded-full px-8 py-3 font-semibold text-white transition-colors"
+      {/* Étapes */}
+      <div>
+        {steps.map((step) => (
+          <div
+            key={step.n}
+            className="grid gap-4 py-8 sm:grid-cols-[56px_1fr]"
+            style={{ borderTop: "var(--rule-soft)" }}
+          >
+            <span
+              className="font-body text-sm font-medium shrink-0"
+              style={{ color: "var(--color-accent)" }}
             >
-              Contactez-nous
-            </a>
-          </section>
+              {step.n}
+            </span>
+            <div>
+              <h3 className="mb-2 font-body font-medium" style={{ color: "var(--color-ink)" }}>
+                {step.title}
+              </h3>
+              <p className="font-body text-sm leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
+                {step.description}
+              </p>
+            </div>
+          </div>
+        ))}
+        <div style={{ borderTop: "var(--rule-soft)" }} />
+      </div>
+
+      {/* CTA sur mesure */}
+      <div
+        className="py-12 px-8 lg:px-12"
+        style={{ background: "var(--color-paper-2)", borderTop: "var(--rule-hair)", borderBottom: "var(--rule-hair)" }}
+      >
+        <p className="type-overline mb-4" style={{ color: "var(--color-accent)" }}>
+          Projet hors catalogue
+        </p>
+        <h3
+          className="mb-3"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "var(--text-title)",
+            fontWeight: 400,
+            color: "var(--color-ink)",
+          }}
+        >
+          Besoin d'une création sur mesure ?
+        </h3>
+        <p className="font-body text-sm leading-relaxed mb-8" style={{ color: "var(--color-ink-3)" }}>
+          Si vous ne trouvez pas votre bonheur dans notre configurateur, nous pouvons réaliser des projets spécifiques hors catalogue.
+        </p>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link href="/configurateur">
+            <Button variant="luxury" size="lg">Ouvrir le configurateur</Button>
+          </Link>
+          <Link href="/contact">
+            <Button variant="secondary" size="lg">Nous contacter</Button>
+          </Link>
         </div>
       </div>
+
     </div>
   );
 }

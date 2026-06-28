@@ -1,107 +1,135 @@
-import { Thermometer, Waves, Wind, ZapOff } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Entretien des Produits",
-  description:
-    "Conseils pour prendre soin de vos créations Ylang et assurer leur longévité.",
+  title: "Entretien des produits — Ylang Créations",
+  description: "Conseils pour prendre soin de vos créations Ylang et assurer leur longévité.",
 };
 
+const tips = [
+  {
+    label: "Lavage",
+    title: "Doux à 30°C",
+    detail: "Lavage en machine à 30°C maximum en cycle délicat pour préserver les fibres et les couleurs.",
+  },
+  {
+    label: "Séchage",
+    title: "À l'air libre",
+    detail: "Privilégiez le séchage à plat à l'air libre. Le sèche-linge est déconseillé pour la gaze de coton.",
+  },
+  {
+    label: "Repassage",
+    title: "Fer doux",
+    detail: "Repassage à fer doux si nécessaire. La gaze de coton gagne en douceur et en aspect gaufré sans repassage.",
+  },
+  {
+    label: "Blanchiment",
+    title: "Interdit",
+    detail: "L'utilisation de chlore ou de produits blanchissants est strictement interdite.",
+  },
+];
+
+const materials = [
+  {
+    title: "Double gaze de coton",
+    detail:
+      "La gaze de coton s'adoucit au fil des lavages. Elle n'a pas besoin d'être repassée pour garder son bel aspect froissé naturel.",
+  },
+  {
+    title: "Broderies",
+    detail:
+      "Pour protéger les broderies personnalisées, nous recommandons de laver l'article sur l'envers ou dans un filet de protection.",
+  },
+  {
+    title: "Articles avec ouatine",
+    detail:
+      "Pour les gigoteuses et couvertures, redonnez du gonflant après lavage en secouant doucement l'article avant de le faire sécher.",
+  },
+];
+
 export default function MaintenancePage() {
-  const tips = [
-    {
-      title: "Lavage Doux",
-      description:
-        "Lavage en machine à 30°C maximum en cycle délicat pour préserver les fibres et les couleurs.",
-      icon: Waves,
-    },
-    {
-      title: "Séchage à l'air",
-      description:
-        "Privilégiez le séchage à l'air libre à plat. Le sèche-linge est déconseillé pour la gaze de coton.",
-      icon: Wind,
-    },
-    {
-      title: "Repassage",
-      description:
-        "Repassage à fer doux si nécessaire. La gaze de coton gagne en douceur et en aspect gaufré sans repassage.",
-      icon: Thermometer,
-    },
-    {
-      title: "Blanchiment",
-      description:
-        "L'utilisation de chlore ou de produits blanchissants est strictement interdite.",
-      icon: ZapOff,
-    },
-  ];
-
   return (
-    <div className="overflow-hidden bg-ylang-terracotta/50 px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-12 text-center">
-          <h1 className="font-abramo-script text-5xl text-gray-900 sm:text-4xl">
-            Entretien de vos Créations
-          </h1>
-          <div className="bg-ylang-rose mx-auto mt-4 h-1 w-20 rounded"></div>
-          <p className="font-body mt-6 text-lg text-gray-600">
-            Nos produits sont confectionnés avec des tissus délicats. Voici nos
-            conseils pour les garder beaux et doux longtemps.
-          </p>
-        </div>
+    <div className="space-y-16">
 
-        <div className="grid gap-8 md:grid-cols-2">
-          {tips.map((tip, index) => (
+      {/* Instructions générales */}
+      <section>
+        <p className="type-overline mb-5" style={{ color: "var(--color-accent)" }}>
+          Instructions de lavage
+        </p>
+        <h2
+          className="mb-4"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "var(--text-title)",
+            fontWeight: 400,
+            color: "var(--color-ink)",
+          }}
+        >
+          Prendre soin de vos créations
+        </h2>
+        <p className="font-body text-base leading-relaxed mb-8" style={{ color: "var(--color-ink-3)" }}>
+          Nos produits sont confectionnés avec des tissus délicats. Voici nos conseils pour les garder beaux et doux longtemps.
+        </p>
+
+        <div>
+          {tips.map((tip) => (
             <div
-              key={index}
-              className="bg-ylang-beige/20 border-ylang-beige/20 flex gap-6 rounded-2xl border p-8"
+              key={tip.label}
+              className="grid gap-3 py-5 sm:grid-cols-[120px_120px_1fr]"
+              style={{ borderTop: "var(--rule-soft)" }}
             >
-              <div className="bg-ylang-rose/10 text-ylang-rose h-fit shrink-0 rounded-xl p-4">
-                <tip.icon size={28} />
-              </div>
-              <div>
-                <h3 className="font-display mb-2 text-xl font-bold text-gray-900">
-                  {tip.title}
-                </h3>
-                <p className="font-body text-gray-600">{tip.description}</p>
-              </div>
+              <p
+                className="font-body text-xs uppercase tracking-wider"
+                style={{ color: "var(--color-ink-3)" }}
+              >
+                {tip.label}
+              </p>
+              <p className="font-body text-sm font-medium" style={{ color: "var(--color-ink)" }}>
+                {tip.title}
+              </p>
+              <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                {tip.detail}
+              </p>
             </div>
           ))}
+          <div style={{ borderTop: "var(--rule-soft)" }} />
         </div>
+      </section>
 
-        <section className="mt-16">
-          <h2 className="font-abramo mb-6 text-2xl font-semibold text-gray-900">
-            Conseils spécifiques par matière
-          </h2>
-          <div className="space-y-6">
-            <div className="border-ylang-rose border-l-4 pl-6">
-              <h3 className="mb-2 font-bold text-gray-900">
-                Double gaze de coton
-              </h3>
-              <p className="font-body text-gray-600">
-                La gaze de coton s'adoucit au fil des lavages. Elle n'a pas
-                besoin d'être repassée pour garder son bel aspect froissé
-                naturel.
+      {/* Par matière */}
+      <section style={{ borderTop: "var(--rule-hair)", paddingTop: "4rem" }}>
+        <p className="type-overline mb-5" style={{ color: "var(--color-accent)" }}>
+          Conseils par matière
+        </p>
+        <h2
+          className="mb-8"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "var(--text-title)",
+            fontWeight: 400,
+            color: "var(--color-ink)",
+          }}
+        >
+          Spécificités des matériaux
+        </h2>
+        <div>
+          {materials.map((m) => (
+            <div
+              key={m.title}
+              className="py-6"
+              style={{ borderTop: "var(--rule-soft)" }}
+            >
+              <p className="font-body text-sm font-medium mb-2" style={{ color: "var(--color-ink)" }}>
+                {m.title}
+              </p>
+              <p className="font-body text-sm leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
+                {m.detail}
               </p>
             </div>
-            <div className="border-ylang-rose border-l-4 pl-6">
-              <h3 className="mb-2 font-bold text-gray-900">Broderies</h3>
-              <p className="font-body text-gray-600">
-                Pour protéger les broderies personnalisées, nous recommandons de
-                laver l'article sur l'envers ou dans un filet de protection.
-              </p>
-            </div>
-            <div className="border-ylang-rose border-l-4 pl-6">
-              <h3 className="mb-2 font-bold text-gray-900">
-                Articles avec ouatine
-              </h3>
-              <p className="font-body text-gray-600">
-                Pour les gigoteuses et couvertures, redonnez du gonflant après
-                lavage en secouant doucement l'article avant de le faire sécher.
-              </p>
-            </div>
-          </div>
-        </section>
-      </div>
+          ))}
+          <div style={{ borderTop: "var(--rule-soft)" }} />
+        </div>
+      </section>
+
     </div>
   );
 }
