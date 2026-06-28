@@ -1,49 +1,29 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import {
-  CheckCircle,
-  Clock,
-  Facebook,
-  Instagram,
-  Mail,
-  MapPin,
-  Send,
-  Sparkles,
-} from "lucide-react";
+import { CheckCircle, ChevronDown, Clock, Facebook, Instagram, Mail, MapPin, Send } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-// Animation variants
 const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const staggerContainer = {
+const stagger = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15 },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
 };
 
-// Fallback Contact info data
 const fallbackContactInfo = [
-  // {
-  //   icon: Phone,
-  //   label: "Téléphone",
-  //   value: "*********",
-  //   href: "tel:#",
-  //   description: "Du lundi au vendredi, 9h-18h",
-  // },
   {
     icon: Mail,
     label: "Email",
     value: "ylang.creations@gmail.com",
     href: "mailto:ylang.creations@gmail.com",
-    description: "Réponse sous 24–48 h",
+    description: "Réponse sous 24–48 h",
   },
   {
     icon: MapPin,
@@ -54,24 +34,11 @@ const fallbackContactInfo = [
   },
 ];
 
-// Social links
 const socialLinks = [
-  {
-    name: "Instagram",
-    icon: Instagram,
-    href: "https://www.instagram.com/ylang.creations/",
-    color:
-      "hover:bg-gradient-to-br hover:from-purple-500 hover:via-pink-500 hover:to-orange-400",
-  },
-  {
-    name: "Facebook",
-    icon: Facebook,
-    href: "https://www.facebook.com/ylangcreations/",
-    color: "hover:bg-blue-600",
-  },
+  { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/ylang_creations/" },
+  { name: "Facebook", icon: Facebook, href: "https://www.facebook.com/ylangcreations/" },
 ];
 
-// FAQ data
 const faqItems = [
   {
     question: "Quels sont les délais de confection ?",
@@ -95,7 +62,11 @@ const faqItems = [
   },
 ];
 
-export function ContactClient({ settings }: { settings: any }) {
+interface ContactSettings {
+  contactEmail?: string | null;
+}
+
+export function ContactClient({ settings }: { settings: ContactSettings | null }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -107,17 +78,7 @@ export function ContactClient({ settings }: { settings: any }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  // Compute dynamic contact info
   const contactInfo = [
-    // {
-    //   icon: Phone,
-    //   label: "Téléphone",
-    //   value: settings?.contactPhone || fallbackContactInfo[0].value,
-    //   href: settings?.contactPhone
-    //     ? `tel:${settings.contactPhone.replace(/\s/g, "")}`
-    //     : fallbackContactInfo[0].href,
-    //   description: fallbackContactInfo[0].description,
-    // },
     {
       icon: Mail,
       label: "Email",
@@ -139,14 +100,9 @@ export function ContactClient({ settings }: { settings: any }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Simulation d'envoi
     await new Promise((resolve) => setTimeout(resolve, 1500));
-
     setIsSubmitting(false);
     setIsSubmitted(true);
-
-    // Reset form after 5 seconds
     setTimeout(() => {
       setIsSubmitted(false);
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
@@ -154,97 +110,90 @@ export function ContactClient({ settings }: { settings: any }) {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="bg-ylang-terracotta/30 min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-28">
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="bg-ylang-rose/10 absolute -top-40 -right-40 h-80 w-80 rounded-full blur-3xl" />
-          <div className="bg-ylang-sage/20 absolute -bottom-40 -left-40 h-80 w-80 rounded-full blur-3xl" />
-        </div>
+    <div style={{ background: "var(--color-paper)" }}>
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="text-center"
-          >
-            <motion.p
-              variants={fadeInUp}
-              className="text-ylang-rose font-abramo mb-4 text-sm font-semibold tracking-widest uppercase"
-            >
+      {/* Hero */}
+      <section className="py-24 lg:py-36" style={{ borderBottom: "var(--rule-hair)" }}>
+        <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
+          <motion.div initial="hidden" animate="visible" variants={stagger}>
+            <motion.p variants={fadeInUp} className="mb-8 font-abramo tracking-[0.22em] text-sm font-bold" style={{fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}>
               Contactez-nous
             </motion.p>
             <motion.h1
               variants={fadeInUp}
-              className="font-abramo-script text-ylang-charcoal mb-6 text-4xl lg:text-5xl"
+              className="mb-8 font-display"
+              style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: "var(--color-ink)" }}
             >
               Parlons de votre projet
             </motion.h1>
             <motion.p
               variants={fadeInUp}
-              className="font-body text-ylang-charcoal/70 mx-auto max-w-2xl text-lg"
+              className="font-body mx-auto max-w-xl text-base leading-relaxed"
+              style={{ color: "var(--color-ink-3)" }}
             >
-              Une question, un projet personnalisé ou simplement envie d'en
-              savoir plus ? Nous sommes là pour vous accompagner dans la
-              création de pièces uniques.
+              Une question, un projet personnalisé ou simplement envie d&apos;en savoir plus ?
+              Nous sommes là pour vous accompagner dans la création de pièces uniques.
             </motion.p>
           </motion.div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="pb-20 lg:pb-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-5 lg:gap-16">
-            {/* Contact Form */}
+      {/* Formulaire + Coordonnées */}
+      <section className="py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-20 lg:grid-cols-5">
+
+            {/* Formulaire */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="lg:col-span-3"
             >
-              <div className="rounded-3xl bg-white p-8 shadow-xs lg:p-10">
-                <div className="mb-8">
-                  <h2 className="font-display text-ylang-charcoal mb-2 text-2xl font-bold">
+              <div className="space-y-10" style={{ borderTop: "var(--rule-hair)", paddingTop: "2.5rem" }}>
+                <div>
+                  <p className="type-overline mb-4" style={{ color: "var(--color-accent)" }}>
+                    Formulaire
+                  </p>
+                  <h2
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "var(--text-title)",
+                      fontWeight: 400,
+                      color: "var(--color-ink)",
+                    }}
+                  >
                     Envoyez-nous un message
                   </h2>
-                  <p className="font-body text-ylang-charcoal/60">
-                    Remplissez le formulaire ci-dessous et nous vous répondrons
-                    dans les plus brefs délais.
-                  </p>
                 </div>
 
                 {isSubmitted ? (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center justify-center py-12 text-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="py-16 text-center"
                   >
-                    <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-                      <CheckCircle className="h-10 w-10 text-green-600" />
-                    </div>
-                    <h3 className="font-display text-ylang-charcoal mb-2 text-xl font-bold">
-                      Message envoyé !
-                    </h3>
-                    <p className="font-body text-ylang-charcoal/60">
-                      Merci pour votre message. Nous vous répondrons sous
-                      24–48 h.
+                    <CheckCircle
+                      className="mx-auto mb-6 h-10 w-10"
+                      style={{ color: "var(--color-accent)" }}
+                      strokeWidth={1}
+                    />
+                    <p className="font-body font-medium mb-1" style={{ color: "var(--color-ink)" }}>
+                      Message envoyé
+                    </p>
+                    <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                      Nous vous répondrons sous 24–48 h.
                     </p>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form onSubmit={handleSubmit} className="space-y-8">
                     <div className="grid gap-6 sm:grid-cols-2">
-                      {/* Name */}
                       <Input
                         id="name"
                         name="name"
@@ -254,8 +203,6 @@ export function ContactClient({ settings }: { settings: any }) {
                         onChange={handleChange}
                         placeholder="Votre nom…"
                       />
-
-                      {/* Email */}
                       <Input
                         type="email"
                         id="email"
@@ -264,13 +211,11 @@ export function ContactClient({ settings }: { settings: any }) {
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        spellCheck={false}
                         placeholder="votre@email.com…"
                       />
                     </div>
 
                     <div className="grid gap-6 sm:grid-cols-2">
-                      {/* Phone */}
                       <Input
                         type="tel"
                         id="phone"
@@ -280,12 +225,11 @@ export function ContactClient({ settings }: { settings: any }) {
                         onChange={handleChange}
                         placeholder="+262 6XX XX XX XX…"
                       />
-
-                      {/* Subject */}
                       <div>
                         <label
                           htmlFor="subject"
-                          className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
+                          className="font-body mb-2 block text-sm"
+                          style={{ color: "var(--color-ink-3)" }}
                         >
                           Sujet *
                         </label>
@@ -295,13 +239,12 @@ export function ContactClient({ settings }: { settings: any }) {
                           required
                           value={formData.subject}
                           onChange={handleChange}
-                          className="font-body border-ylang-beige bg-ylang-cream/50 text-ylang-charcoal focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border px-4 py-3 transition-[border-color,box-shadow,transform] focus:ring-2 focus:outline-none"
+                          className="font-body w-full border-0 border-b bg-transparent py-3 text-sm focus:outline-none"
+                          style={{ borderColor: "var(--color-ink-2)", color: "var(--color-ink)" }}
                         >
                           <option value="">Choisir un sujet</option>
                           <option value="devis">Demande de devis</option>
-                          <option value="personnalisation">
-                            Personnalisation
-                          </option>
+                          <option value="personnalisation">Personnalisation</option>
                           <option value="commande">Suivi de commande</option>
                           <option value="question">Question générale</option>
                           <option value="autre">Autre</option>
@@ -309,11 +252,11 @@ export function ContactClient({ settings }: { settings: any }) {
                       </div>
                     </div>
 
-                    {/* Message */}
                     <div>
                       <label
                         htmlFor="message"
-                        className="font-body text-ylang-charcoal mb-2 block text-sm font-semibold"
+                        className="font-body mb-2 block text-sm"
+                        style={{ color: "var(--color-ink-3)" }}
                       >
                         Message *
                       </label>
@@ -324,12 +267,12 @@ export function ContactClient({ settings }: { settings: any }) {
                         rows={5}
                         value={formData.message}
                         onChange={handleChange}
-                        className="font-body border-ylang-beige bg-ylang-cream/50 text-ylang-charcoal placeholder:text-ylang-charcoal/40 focus:border-ylang-rose focus:ring-ylang-rose/20 w-full resize-none rounded-xl border px-4 py-3 transition-[border-color,box-shadow,transform] focus:ring-2 focus:outline-none"
+                        className="font-body w-full resize-none border-b bg-transparent py-3 text-sm focus:outline-none placeholder:opacity-40"
+                        style={{ borderColor: "var(--color-ink-2)", color: "var(--color-ink)" }}
                         placeholder="Décrivez votre projet, vos envies…"
                       />
                     </div>
 
-                    {/* Submit Button */}
                     <Button
                       type="submit"
                       variant="luxury"
@@ -354,200 +297,204 @@ export function ContactClient({ settings }: { settings: any }) {
               </div>
             </motion.div>
 
-            {/* Contact Info Sidebar */}
+            {/* Sidebar */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="space-y-8 lg:col-span-2"
+              className="space-y-12 lg:col-span-2"
             >
-              {/* Contact Cards */}
-              <div className="space-y-4">
-                {contactInfo.map((info, index) => (
-                  <motion.div
-                    key={info.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    {info.href ? (
+              {/* Coordonnées */}
+              <div style={{ borderTop: "var(--rule-hair)", paddingTop: "2.5rem" }}>
+                <p className="type-overline mb-6" style={{ color: "var(--color-accent)" }}>
+                  Coordonnées
+                </p>
+                <div>
+                  {contactInfo.map((info) =>
+                    info.href ? (
                       <a
+                        key={info.label}
                         href={info.href}
-                        className="group flex items-start gap-4 rounded-2xl bg-white p-6 shadow-xs transition-all hover:-translate-y-1 hover:shadow-sm"
+                        className="flex items-start gap-4 py-5 transition-opacity hover:opacity-70"
+                        style={{ borderBottom: "var(--rule-soft)" }}
                       >
-                        <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors">
-                          <info.icon className="text-ylang-rose h-6 w-6 transition-colors group-hover:text-white" />
-                        </div>
+                        <info.icon
+                          className="mt-0.5 h-4 w-4 shrink-0"
+                          style={{ color: "var(--color-accent)" }}
+                          strokeWidth={1.5}
+                        />
                         <div>
-                          <p className="font-body text-ylang-charcoal/60 text-sm">
+                          <p className="font-body mb-1 text-xs uppercase tracking-wider" style={{ color: "var(--color-ink-3)" }}>
                             {info.label}
                           </p>
-                          <p className="font-display text-ylang-charcoal font-semibold">
+                          <p className="font-body text-sm" style={{ color: "var(--color-ink)" }}>
                             {info.value}
                           </p>
-                          <p className="font-body text-ylang-charcoal/50 mt-1 text-xs">
+                          <p className="font-body mt-0.5 text-xs" style={{ color: "var(--color-ink-3)" }}>
                             {info.description}
                           </p>
                         </div>
                       </a>
                     ) : (
-                      <div className="flex items-start gap-4 rounded-2xl bg-white p-6 shadow-xs">
-                        <div className="bg-ylang-yellow/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
-                          <info.icon className="text-ylang-yellow h-6 w-6" />
-                        </div>
+                      <div
+                        key={info.label}
+                        className="flex items-start gap-4 py-5"
+                        style={{ borderBottom: "var(--rule-soft)" }}
+                      >
+                        <info.icon
+                          className="mt-0.5 h-4 w-4 shrink-0"
+                          style={{ color: "var(--color-accent)" }}
+                          strokeWidth={1.5}
+                        />
                         <div>
-                          <p className="font-body text-ylang-charcoal/60 text-sm">
+                          <p className="font-body mb-1 text-xs uppercase tracking-wider" style={{ color: "var(--color-ink-3)" }}>
                             {info.label}
                           </p>
-                          <p className="font-display text-ylang-charcoal font-semibold">
+                          <p className="font-body text-sm" style={{ color: "var(--color-ink)" }}>
                             {info.value}
                           </p>
-                          <p className="font-body text-ylang-charcoal/50 mt-1 text-xs">
+                          <p className="font-body mt-0.5 text-xs" style={{ color: "var(--color-ink-3)" }}>
                             {info.description}
                           </p>
                         </div>
                       </div>
-                    )}
-                  </motion.div>
-                ))}
+                    ),
+                  )}
+                </div>
               </div>
 
-              {/* Social Links */}
-              <div className="rounded-2xl bg-white p-6 shadow-xs">
-                <h3 className="font-display text-ylang-charcoal mb-4 text-lg font-semibold">
-                  Suivez-nous
-                </h3>
-                <div className="flex gap-3">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.name}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`bg-ylang-beige text-ylang-charcoal flex h-12 w-12 items-center justify-center rounded-xl transition-all hover:text-white ${social.color}`}
-                    >
-                      <social.icon className="h-5 w-5" />
-                    </a>
-                  ))}
-                </div>
-                <p className="font-body text-ylang-charcoal/50 mt-4 text-sm">
-                  Rejoignez notre communauté pour découvrir nos dernières
-                  créations !
+              {/* Réseaux + Délai */}
+              <div>
+                <p className="type-overline mb-6" style={{ color: "var(--color-accent)" }}>
+                  Réseaux sociaux
                 </p>
-              </div>
-
-              {/* Response Time */}
-              <div className="from-ylang-rose/10 to-ylang-terracotta/10 rounded-2xl bg-linear-to-br p-6">
-                <div className="mb-3 flex items-center gap-3">
-                  <Clock className="text-ylang-rose h-5 w-5" />
-                  <h3 className="font-display text-ylang-charcoal font-semibold">
-                    Temps de réponse
-                  </h3>
+                <div className="flex items-center gap-5 mb-8">
+                  {socialLinks.map((s) => {
+                    const Icon = s.icon;
+                    return (
+                      <a
+                        key={s.name}
+                        href={s.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={s.name}
+                        className="opacity-50 transition-opacity duration-200 hover:opacity-100"
+                        style={{ color: "var(--color-ink)" }}
+                      >
+                        <Icon className="h-4 w-4" strokeWidth={1.5} />
+                      </a>
+                    );
+                  })}
                 </div>
-                <p className="font-body text-ylang-charcoal/70 text-sm">
-                  Nous nous efforçons de répondre à toutes les demandes sous
-                  <strong className="text-ylang-charcoal"> 24/48 h</strong>
-                </p>
+                <div className="flex items-start gap-3">
+                  <Clock
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    style={{ color: "var(--color-ink-3)" }}
+                    strokeWidth={1.5}
+                  />
+                  <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                    Réponse sous{" "}
+                    <strong style={{ color: "var(--color-ink)" }}>24–48 h</strong> — du lundi au vendredi
+                  </p>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="bg-ylang-terracotta/20 py-20 lg:py-28">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
+      {/* FAQ */}
+      <section
+        className="py-24 lg:py-32"
+        style={{ background: "var(--color-paper-2)", borderTop: "var(--rule-hair)" }}
+      >
+        <div className="mx-auto max-w-4xl px-6 lg:px-8">
+          <div className="mb-16">
+            <p className="type-overline mb-6" style={{ color: "var(--color-accent)" }}>
               FAQ
             </p>
-            <h2 className="font-abramo-script text-ylang-charcoal mb-4 text-3xl">
+            <h2
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "var(--text-headline)",
+                fontWeight: 400,
+                letterSpacing: "-0.02em",
+                color: "var(--color-ink)",
+              }}
+            >
               Questions fréquentes
             </h2>
-            <p className="font-body text-ylang-charcoal/60">
-              Retrouvez les réponses aux questions les plus courantes
-            </p>
-          </motion.div>
+          </div>
 
-          <div className="space-y-4">
+          <div>
             {faqItems.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="border-ylang-beige bg-ylang-cream/50 overflow-hidden rounded-2xl border"
-              >
+              <div key={index} style={{ borderTop: "var(--rule-soft)" }}>
                 <button
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="flex w-full items-center justify-between p-6 text-left"
+                  className="flex w-full items-center justify-between py-6 text-left"
                 >
-                  <span className="font-display text-ylang-charcoal pr-4 font-semibold">
+                  <span className="font-body pr-8 text-base" style={{ color: "var(--color-ink)" }}>
                     {item.question}
                   </span>
-                  <span
-                    className={`bg-ylang-rose/10 text-ylang-rose flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-transform ${
-                      openFaq === index ? "rotate-45" : ""
-                    }`}
-                  >
-                    +
-                  </span>
+                  <ChevronDown
+                    className={`h-4 w-4 shrink-0 transition-transform duration-300 ${openFaq === index ? "rotate-180" : ""}`}
+                    style={{ color: "var(--color-ink-3)" }}
+                    strokeWidth={1.5}
+                  />
                 </button>
-                {openFaq === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    className="px-6 pb-6"
-                  >
-                    <p className="font-body text-ylang-charcoal/70 leading-relaxed">
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateRows: openFaq === index ? "1fr" : "0fr",
+                    transition: "grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                >
+                  <div className="overflow-hidden">
+                    <p
+                      className="font-body pb-6 text-sm leading-relaxed"
+                      style={{ color: "var(--color-ink-3)" }}
+                    >
                       {item.answer}
                     </p>
-                  </motion.div>
-                )}
-              </motion.div>
+                  </div>
+                </div>
+              </div>
             ))}
+            <div style={{ borderTop: "var(--rule-soft)" }} />
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* CTA */}
+      <section className="py-24 lg:py-32" style={{ borderTop: "var(--rule-hair)" }}>
+        <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="from-ylang-rose/10 to-ylang-terracotta/10 text-ylang-charcoal rounded-3xl bg-linear-to-br p-12 text-center lg:p-16"
+            className="space-y-8"
           >
-            <Sparkles
-              strokeWidth={1.5}
-              className="text-ylang-rose mx-auto mb-6 h-10 w-10 opacity-80"
-            />
-            <h2 className="type-headline mb-4" style={{ color: "var(--color-ink)" }}>
-              Prêt à créer quelque chose d'unique ?
+            <h2
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "var(--text-headline)",
+                fontWeight: 400,
+                letterSpacing: "-0.02em",
+                color: "var(--color-ink)",
+              }}
+            >
+              Prêt à créer quelque chose d&apos;unique ?
             </h2>
-            <p className="font-body text-ylang-charcoal/70 mx-auto mb-8 max-w-xl opacity-90">
-              Découvrez notre configurateur pour imaginer votre création sur
-              mesure ou explorez nos collections pour trouver l'inspiration.
+            <p className="font-body mx-auto max-w-lg text-base" style={{ color: "var(--color-ink-3)" }}>
+              Découvrez notre configurateur pour imaginer votre création sur mesure ou
+              explorez nos collections pour trouver l&apos;inspiration.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link href="/configurateur">
-                <Button variant="secondary" size="lg" className="">
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  Créer sur mesure
-                </Button>
+                <Button variant="luxury" size="lg">Créer sur mesure</Button>
               </Link>
               <Link href="/collections">
-                <Button variant="luxury" size="lg" className="">
-                  Voir les collections
-                </Button>
+                <Button variant="secondary" size="lg">Voir les collections</Button>
               </Link>
             </div>
           </motion.div>

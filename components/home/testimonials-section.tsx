@@ -49,12 +49,12 @@ export function TestimonialsSection({
         </motion.div>
 
         {/* Masonry Layout Grid */}
-        <div className="columns-1 gap-10 p-4 sm:columns-2 lg:columns-4">
+        <div className="columns-1 gap-1 sm:columns-2 sm:gap-2 lg:columns-4 lg:gap-3">
           {testimonialsList.map((testimonial, index) => (
             <motion.div
               key={testimonial.id || index}
               onClick={() => setSelectedImage(testimonial.image)}
-              className="group relative mb-10 cursor-zoom-in break-inside-avoid"
+              className="group relative mb-1 cursor-zoom-in break-inside-avoid sm:mb-2 lg:mb-3"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -105,6 +105,7 @@ export function TestimonialsSection({
               onClick={(e) => e.stopPropagation()}
             >
               {/* Image zoomée sans effet timbre */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={selectedImage}
                 alt="Zoom témoignage"

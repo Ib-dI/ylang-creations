@@ -35,7 +35,7 @@ import * as React from "react";
 // Navigation principales
 const mainNavigation = [
   { name: "LA BOUTIQUE", href: "/collections", hasMegaMenu: true },
-  { name: "Créations sur mesure", href: "/configurateur", featured: true },
+  { name: "Sur mesure", href: "/configurateur", featured: true },
   { name: "Nouvelle collection", href: "/collections?filter=new" },
   { name: "La marque", href: "/a-propos" },
   { name: "Contact", href: "/contact" },
@@ -282,6 +282,7 @@ export function Header() {
   const [expandedCategory, setExpandedCategory] = React.useState<string | null>(
     null,
   );
+  const categoryRefs = React.useRef<Map<string, HTMLButtonElement>>(new Map());
 
   // Store hooks
   const cartCount = useCartStore((state) => state.getTotalItems());
@@ -342,6 +343,12 @@ export function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Bloquer le scroll arrière-plan quand le mega menu est ouvert
+  React.useEffect(() => {
+    document.documentElement.style.overflow = isMegaMenuOpen ? "hidden" : "";
+    return () => { document.documentElement.style.overflow = ""; };
+  }, [isMegaMenuOpen]);
 
   // Click outside effect
   React.useEffect(() => {
@@ -412,9 +419,8 @@ export function Header() {
                 aria-expanded={isMegaMenuOpen}
                 className={cn(
                   "flex h-10 w-10 items-center justify-center transition-all duration-300 rounded-full sm:rounded-none lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
-                  "text-ylang-white bg-white/20 backdrop-blur-sm hover:bg-white/80 hover:text-ylang-rose",
-                  isMegaMenuOpen &&
-                    "bg-white/80 hover:bg-white/80 text-ylang-rose ",
+                  "hover:text-ylang-rose hover:bg-white/80",
+                  isMegaMenuOpen ? "text-ylang-rose bg-white/80" : "text-ylang-white bg-white/20",
                 )}
               >
                 {isMegaMenuOpen ? (
@@ -431,7 +437,7 @@ export function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Rechercher"
-                className="text-ylang-white hover:text-ylang-rose flex transform items-center justify-center rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:hidden"
+                className="text-ylang-white hover:text-ylang-rose flex items-center justify-center rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80 sm:hidden"
               >
                 <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
               </button>
@@ -460,7 +466,7 @@ export function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Rechercher"
-                className="text-ylang-white hover:text-ylang-rose hidden transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 sm:block"
+                className="text-ylang-white hover:text-ylang-rose hidden rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80 sm:block"
               >
                 <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
               </button>
@@ -472,7 +478,7 @@ export function Header() {
                   <DropdownMenuTrigger asChild>
                     <button
                       aria-label="Mon compte"
-                      className="text-ylang-charcoal hover:border-ylang-rose focus:ring-ylang-rose/20 h-9 w-9 transform overflow-hidden rounded-full border border-transparent bg-white/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80 focus:ring-2 focus:outline-none"
+                      className="text-ylang-charcoal hover:border-ylang-rose focus:ring-ylang-rose/20 h-9 w-9 overflow-hidden rounded-full border border-ylang-beige/60 transition-all duration-300 hover:border-ylang-rose/50 focus:ring-2 focus:outline-none"
                     >
                       {session.user.user_metadata?.avatar_url ? (
                         <div className="relative h-full w-full">
@@ -574,7 +580,7 @@ export function Header() {
                 <button
                   onClick={() => router.push("/sign-in")}
                   aria-label="Se connecter"
-                  className="text-ylang-white hover:text-ylang-rose transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
+                  className="text-ylang-white hover:text-ylang-rose rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
                 >
                   <User className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
                 </button>
@@ -584,7 +590,7 @@ export function Header() {
               <button
                 onClick={() => useWishlistStore.getState().openWishlist()}
                 aria-label="Ma liste d'envies"
-                className="text-ylang-white hover:text-ylang-rose relative transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
+                className="text-ylang-white hover:text-ylang-rose relative rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
               >
                 <Heart className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
                 <AnimatedBadge count={wishlistCount} />
@@ -594,7 +600,7 @@ export function Header() {
               <button
                 onClick={() => useCartStore.getState().openCart()}
                 aria-label="Mon panier"
-                className="text-ylang-white hover:text-ylang-rose group relative transform rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/80"
+                className="text-ylang-white hover:text-ylang-rose group relative rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
               >
                 <ShoppingBag
                   className="h-4 w-4 lg:h-5 lg:w-5"
@@ -619,81 +625,90 @@ export function Header() {
         <div className="via-ylang-beige h-px bg-linear-to-r from-transparent to-transparent" />
       </header>
 
-      {/* Mega Menu Desktop - Optimisé sans framer-motion */}
+      {/* Mega Menu Desktop */}
       {isMegaMenuOpen && (
         <div
           ref={desktopMegaMenuRef}
-          className="bg-ylang-beige/90 animate-fade-in-down fixed top-20 right-0 left-0 z-40 hidden shadow-2xl backdrop-blur-sm lg:block"
-          style={{ animation: "fadeInDown 0.3s ease-out" }}
+          className="animate-fade-in-down fixed top-20 right-0 left-0 z-40 hidden lg:flex"
+          style={{ height: "calc(100vh - 5rem)", boxShadow: "0 12px 48px rgba(0,0,0,0.12)", animation: "fadeInDown 0.25s ease-out" }}
         >
-          <div className="mx-auto max-w-7xl px-8 py-10">
-            <div className="flex gap-12">
-              {/* Navigation Principale */}
-              <div className="border-ylang-terracotta shrink-0 border-r pr-8">
-                <h3 className="text-ylang-rose font-abramo mb-6 text-xs font-semibold tracking-widest uppercase">
-                  Menu
-                </h3>
-                <ul className="space-y-2">
-                  {mainNavigation.map((item) => {
-                    const isActive = pathname === item.href;
-                    return (
-                      <li key={item.name}>
-                        <Link
-                          href={item.href}
-                          onClick={closeMegaMenu}
-                          className={cn(
-                            "group flex items-center justify-between rounded-lg p-2 text-lg font-light tracking-wide transition-all duration-300",
-                            isActive
-                              ? "text-ylang-rose bg-ylang-terracotta/10 font-medium"
-                              : "text-ylang-charcoal hover:text-ylang-rose hover:bg-ylang-terracotta/10 hover:translate-x-2",
-                          )}
-                        >
-                          <span>
-                            {item.name}
-                            {item.featured ? (
-                              <span className="ml-2 text-sm">✨</span>
-                            ) : null}
-                          </span>
-                          <ChevronRight
-                            className={cn(
-                              "h-4 w-4 opacity-0 transition-all duration-300 group-hover:opacity-100",
-                              isActive && "text-ylang-rose opacity-100",
-                            )}
-                          />
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
+          {/* ── Colonne éditoriale gauche 40% ── */}
+          <div className="flex w-[40%] shrink-0 flex-col overflow-hidden bg-ylang-beige px-14 py-10">
+            <p className="type-overline mb-10" style={{ color: "var(--color-ink-3)" }}>
+              La boutique
+            </p>
+            <nav className="space-y-0">
+              {mainNavigation.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={closeMegaMenu}
+                    className={cn(
+                      "group flex items-center justify-between py-3 text-[1.65rem] font-light tracking-wide transition-all duration-200",
+                      isActive ? "text-ylang-rose" : "hover:text-ylang-rose hover:pl-1",
+                    )}
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      color: isActive ? undefined : "var(--color-ink)",
+                      borderBottom: "var(--rule-soft)",
+                    }}
+                  >
+                    <span>{item.name}</span>
+                    <ChevronRight
+                      className={cn(
+                        "h-4 w-4 shrink-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
+                        isActive && "opacity-100 text-ylang-rose",
+                      )}
+                    />
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
 
-              {/* Grille Catégories */}
-              <div className="grow">
-                <div className="grid grid-cols-5 gap-12">
-                  <div className="col-span-4 grid grid-cols-4 gap-x-8 gap-y-10">
-                    {megaMenuCategories.map((category) => (
-                      <div key={category.title} className="space-y-4">
-                        <Link
-                          href={category.href}
-                          onClick={closeMegaMenu}
-                          className="group block"
-                        >
-                          <h3 className="text-ylang-rose font-abramo text-sm font-bold tracking-wider transition-colors">
+          {/* ── Colonne catégories droite 60% ── */}
+          <div className="relative w-[60%] overflow-hidden bg-ylang-cream">
+            {/* Image d'ambiance en fond */}
+            <div className="absolute inset-0">
+              <Image
+                src="/images/products/ensemble.jpg"
+                alt=""
+                fill
+                className="object-cover opacity-[0.07]"
+                sizes="60vw"
+                aria-hidden="true"
+              />
+            </div>
+
+            <div className="relative h-full overflow-y-auto px-12 py-10">
+              <p className="type-overline mb-8" style={{ color: "var(--color-ink-3)" }}>
+                Nos créations
+              </p>
+              <div className="grid grid-cols-4 gap-x-8 gap-y-8">
+                {megaMenuCategories.map((category) => {
+                  const isChambre = category.title === "LA CHAMBRE";
+
+                  if (isChambre) {
+                    return (
+                      <div key={category.title} className="col-span-2 space-y-4">
+                        {/* Titre */}
+                        <Link href={category.href} onClick={closeMegaMenu} className="group block">
+                          <p className="type-overline transition-colors group-hover:text-ylang-rose" style={{ color: "var(--color-accent)" }}>
                             {category.title}
-                          </h3>
-                          {category.subtitle && (
-                            <span className="text-ylang-rose mt-1 block text-[10px] font-medium italic">
-                              {category.subtitle}
-                            </span>
-                          )}
+                          </p>
                         </Link>
-                        <ul className="space-y-2">
+
+                        {/* Items en grille 2 colonnes */}
+                        <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5">
                           {category.items.map((item) => (
                             <li key={item.name}>
                               <Link
                                 href={item.href}
                                 onClick={closeMegaMenu}
-                                className="text-ylang-charcoal/70 hover:text-ylang-rose hover:bg-ylang-terracotta/10 font-body block text-xs transition-colors duration-200"
+                                className="font-body block text-sm font-light transition-colors duration-200 hover:text-ylang-rose hover:underline underline-offset-4"
+                                style={{ color: "var(--color-ink-3)" }}
                               >
                                 {item.name}
                               </Link>
@@ -701,328 +716,221 @@ export function Header() {
                           ))}
                         </ul>
 
-                        {/* @ts-ignore - sections added in data */}
-                        {category.sections && (
-                          <div className="space-y-4 pt-2">
-                            {/* @ts-ignore */}
-                            {category.sections.map((section) => (
-                              <div key={section.title} className="space-y-2">
-                                <h4 className="border-ylang-beige font-body border-b pb-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-                                  {section.title}
-                                </h4>
-                                <ul className="grid grid-cols-2 gap-1">
-                                  {section.items.map((item: any) => (
-                                    <li key={item.name}>
-                                      <Link
-                                        href={item.href}
-                                        onClick={closeMegaMenu}
-                                        className="text-ylang-charcoal/60 hover:text-ylang-rose hover:bg-ylang-beige font-body block rounded-sm px-1 py-0.5 text-[10px] transition-colors"
-                                      >
-                                        {item.name}
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        {/* Sections gigoteuses côte à côte */}
+                        <div className="grid grid-cols-2 gap-x-6 pt-2" style={{ borderTop: "var(--rule-soft)" }}>
+                          {category.sections?.map((section) => (
+                            <div key={section.title} className="space-y-1.5">
+                              <p
+                                className="font-body pb-1 text-[10px] font-semibold tracking-wider uppercase"
+                                style={{ color: "var(--color-ink-3)", borderBottom: "var(--rule-soft)" }}
+                              >
+                                {section.title}
+                              </p>
+                              <ul className="space-y-1">
+                                {section.items.map((item) => (
+                                  <li key={item.name}>
+                                    <Link
+                                      href={item.href}
+                                      onClick={closeMegaMenu}
+                                      className="font-body block text-sm font-light transition-colors duration-200 hover:text-ylang-rose hover:underline underline-offset-4"
+                                      style={{ color: "var(--color-ink-3)" }}
+                                    >
+                                      {item.name}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  }
 
-                  {/* Produit Vedette - Touche Premium */}
-                  {/* <div className="border-ylang-beige/50 col-span-1 border-l pl-8">
-                    <div className="group relative overflow-hidden rounded-2xl">
-                      <div className="aspect-3/4overflow-hidden">
-                        <Image
-                          src="/images/products/gigoteuse.jpg"
-                          alt="Nouveauté ylang"
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                        <div className="from-ylang-charcoal/60 absolute inset-0 bg-linear-to-t to-transparent" />
-                      </div>
-                      <div className="absolute right-4 bottom-4 left-4 text-white">
-                        <p className="font-body text-[10px] font-medium tracking-widest uppercase">
-                          Must-have
+                  return (
+                    <div key={category.title} className="min-w-0 space-y-3 overflow-hidden">
+                      <Link href={category.href} onClick={closeMegaMenu} className="group block">
+                        <p className="type-overline break-words transition-colors group-hover:text-ylang-rose" style={{ color: "var(--color-accent)" }}>
+                          {category.title}
                         </p>
-                        <h4 className="font-heading mt-1 text-lg leading-tight font-bold">
-                          Gigoteuse <br />
-                          sur-mesure
-                        </h4>
-                        <Link
-                          href="/configurateur"
-                          onClick={closeMegaMenu}
-                          className="hover:text-ylang-rose mt-3 inline-flex items-center text-xs font-semibold underline underline-offset-4 transition-colors"
-                        >
-                          Configurer la mienne
-                        </Link>
-                      </div>
+                        {category.subtitle && (
+                          <span className="mt-0.5 block text-[10px] italic" style={{ color: "var(--color-ink-3)" }}>
+                            {category.subtitle}
+                          </span>
+                        )}
+                      </Link>
+                      <ul className="space-y-1.5">
+                        {category.items.slice(0, 5).map((item) => (
+                          <li key={item.name}>
+                            <Link
+                              href={item.href}
+                              onClick={closeMegaMenu}
+                              className="font-body block text-sm font-light transition-colors duration-200 hover:text-ylang-rose hover:underline underline-offset-4"
+                              style={{ color: "var(--color-ink-3)" }}
+                            >
+                              {item.name}
+                            </Link>
+                          </li>
+                        ))}
+                        {category.items.length > 5 && (
+                          <li>
+                            <Link
+                              href={category.href}
+                              onClick={closeMegaMenu}
+                              className="text-[11px] font-medium text-ylang-rose hover:underline underline-offset-4"
+                            >
+                              Voir tout →
+                            </Link>
+                          </li>
+                        )}
+                      </ul>
                     </div>
-
-                    <div className="bg-ylang-beige/50 mt-8 rounded-xl p-4">
-                      <h4 className="text-ylang-charcoal font-heading text-xs font-bold tracking-wider uppercase">
-                        Atelier Ylang
-                      </h4>
-                      <p className="text-ylang-charcoal/60 mt-1 text-[10px] leading-relaxed">
-                        Chaque pièce est imaginée et confectionnée avec amour à
-                        Lyon.
-                      </p>
-                    </div>
-                  </div> */}
-                </div>
+                  );
+                })}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Mobile Menu - Optimisé */}
+      {/* Mobile Menu */}
       {isMegaMenuOpen && (
         <div
           ref={mobileMenuRef}
-          className="bg-ylang-cream/98 border-ylang-beige animate-fade-in fixed top-16 right-0 left-0 z-40 max-h-[calc(100vh-64px)] overflow-y-auto border-b shadow-2xl backdrop-blur-lg lg:hidden"
-          style={{ animation: "fadeIn 0.3s ease-out" }}
+          className="animate-fade-in fixed top-16 right-0 left-0 z-40 overflow-y-auto lg:hidden"
+          style={{ height: "calc(100vh - 4rem)", animation: "fadeIn 0.25s ease-out", boxShadow: "0 12px 48px rgba(0,0,0,0.12)" }}
         >
-          <nav className="px-4 py-6">
-            {/* Recherche Mobile */}
-            <div className="mb-6">
-              <button
-                onClick={() => {
-                  closeMegaMenu();
-                  setIsSearchOpen(true);
-                }}
-                className="border-ylang-beige text-ylang-charcoal/60 hover:border-ylang-rose/50 mt-4 flex w-full items-center gap-3 rounded-xl border bg-white/80 px-4 py-3 transition-all duration-300 hover:bg-white"
-              >
-                <Search className="h-5 w-5" strokeWidth={1.5} />
-                <span className="font-body text-sm">
-                  Rechercher un produit...
-                </span>
-              </button>
-            </div>
-
-            {/* Navigation principale */}
-            <div className="border-ylang-beige mb-6 space-y-3 border-b pb-6">
-              {mainNavigation.map((item, index) => (
-                <div
-                  key={item.href}
-                  style={{
-                    animation: `slideInLeft 0.3s ease-out ${index * 0.05}s both`,
-                  }}
-                >
+          {/* Section nav principale — bg-ylang-beige */}
+          <div className="bg-ylang-beige px-6 py-8">
+            <p className="type-overline mb-6" style={{ color: "var(--color-ink-3)" }}>
+              La boutique
+            </p>
+            <nav>
+              {mainNavigation.map((item) => {
+                const isActive = pathname === item.href;
+                return (
                   <Link
+                    key={item.name}
                     href={item.href}
                     onClick={closeMegaMenu}
                     className={cn(
-                      "font-body block rounded-lg px-4 py-3 text-base transition-all duration-300",
-                      pathname === item.href
-                        ? "bg-ylang-rose font-medium text-white"
-                        : "text-ylang-charcoal hover:bg-ylang-beige",
-                      item.featured && "border-ylang-rose border-2",
+                      "flex items-center justify-between py-4 text-2xl font-light transition-colors duration-200",
+                      isActive ? "text-ylang-rose" : "hover:text-ylang-rose",
                     )}
-                  >
-                    {item.name}
-                    {item.featured ? (
-                      <span className="ml-2 text-xs">✨</span>
-                    ) : null}
-                  </Link>
-                </div>
-              ))}
-            </div>
-
-            {/* Catégories */}
-            <div className="space-y-2">
-              <h4 className="text-ylang-charcoal/50 font-body mb-4 px-4 text-xs font-semibold tracking-widest uppercase">
-                Nos créations par catégorie
-              </h4>
-              {megaMenuCategories.map((category, index) => (
-                <div
-                  key={category.title}
-                  style={{
-                    animation: `slideInLeft 0.3s ease-out ${(mainNavigation.length + index) * 0.05}s both`,
-                  }}
-                >
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExpandedCategory(
-                        expandedCategory === category.title
-                          ? null
-                          : category.title,
-                      );
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      color: isActive ? undefined : "var(--color-ink)",
+                      borderBottom: "var(--rule-soft)",
                     }}
-                    className="text-ylang-charcoal hover:bg-ylang-beige/50 flex w-full items-center justify-between rounded-lg px-4 py-3 transition-colors"
                   >
-                    <span className="font-body text-sm font-medium">
-                      {category.title}
-                      {category.subtitle && (
-                        <span className="text-ylang-rose ml-2 text-[10px] italic">
-                          {category.subtitle}
-                        </span>
-                      )}
-                    </span>
-                    <ChevronDown
-                      className={cn(
-                        "h-4 w-4 transition-transform duration-200",
-                        expandedCategory === category.title && "rotate-180",
-                      )}
-                      strokeWidth={1.5}
-                    />
-                  </button>
+                    <span>{item.name}</span>
+                    <ChevronRight className="h-4 w-4 shrink-0 opacity-50" strokeWidth={1} />
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
 
-                  {expandedCategory === category.title && (
-                    <div className="animate-slide-down overflow-hidden">
-                      <div className="bg-ylang-beige/30 ml-4 space-y-1 rounded-lg px-4 py-2">
-                        {category.items.map((item) => (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            onClick={closeMegaMenu}
-                            className="text-ylang-charcoal/80 hover:text-ylang-rose font-body flex items-center py-2 text-sm transition-colors"
-                          >
-                            <ChevronRight
-                              className="mr-2 h-3 w-3"
-                              strokeWidth={1.5}
-                            />
-                            {item.name}
-                          </Link>
-                        ))}
+          {/* Section catégories — bg-ylang-cream */}
+          <div className="bg-ylang-cream px-6 py-8">
+            <p className="type-overline mb-6" style={{ color: "var(--color-ink-3)" }}>
+              Nos créations
+            </p>
+            <div>
+              {megaMenuCategories.map((category) => {
+                const isOpen = expandedCategory === category.title;
+                return (
+                  <div key={category.title}>
+                    <button
+                      ref={(el) => {
+                        if (el) categoryRefs.current.set(category.title, el);
+                        else categoryRefs.current.delete(category.title);
+                      }}
+                      onClick={() => {
+                        const opening = !isOpen;
+                        setExpandedCategory(opening ? category.title : null);
+                        if (opening) {
+                          requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                              const btn = categoryRefs.current.get(category.title);
+                              const container = mobileMenuRef.current;
+                              if (btn && container) {
+                                const containerRect = container.getBoundingClientRect();
+                                const btnRect = btn.getBoundingClientRect();
+                                container.scrollTo({
+                                  top: container.scrollTop + (btnRect.top - containerRect.top) - 16,
+                                  behavior: "smooth",
+                                });
+                              }
+                            });
+                          });
+                        }
+                      }}
+                      className="flex w-full items-center justify-between py-3 transition-colors"
+                      style={{ borderBottom: "var(--rule-soft)" }}
+                    >
+                      <span
+                        className="type-overline transition-colors duration-200"
+                        style={{ color: isOpen ? "var(--color-ylang-rose)" : "var(--color-accent)" }}
+                      >
+                        {category.title}
+                      </span>
+                      <ChevronDown
+                        className={cn("h-4 w-4 shrink-0 transition-transform duration-300", isOpen && "rotate-180")}
+                        style={{ color: "var(--color-ink-3)" }}
+                        strokeWidth={1.5}
+                      />
+                    </button>
 
-                        {/* @ts-ignore */}
-                        {category.sections &&
-                          /* @ts-ignore */
-                          category.sections.map((section) => (
-                            <div
-                              key={section.title}
-                              className="mt-4 first:mt-2"
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateRows: isOpen ? "1fr" : "0fr",
+                        transition: "grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      }}
+                    >
+                      <div className="overflow-hidden">
+                        <div className="space-y-2 py-4 pl-2">
+                          {category.items.map((item) => (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              onClick={closeMegaMenu}
+                              className="font-body block py-1.5 text-sm font-light transition-colors hover:text-ylang-rose hover:underline underline-offset-4"
+                              style={{ color: "var(--color-ink-3)" }}
                             >
-                              <h5 className="text-ylang-charcoal/40 font-body px-2 pb-1 text-[10px] font-bold tracking-wider uppercase">
+                              {item.name}
+                            </Link>
+                          ))}
+                          {category.sections?.map((section) => (
+                            <div key={section.title} className="mt-4 space-y-2">
+                              <p
+                                className="font-body pb-1 text-[10px] font-semibold tracking-wider uppercase"
+                                style={{ color: "var(--color-ink-3)", borderBottom: "var(--rule-soft)" }}
+                              >
                                 {section.title}
-                              </h5>
-                              <div className="grid grid-cols-2 gap-1">
-                                {section.items.map((item: any) => (
-                                  <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    onClick={closeMegaMenu}
-                                    className="text-ylang-charcoal/70 hover:text-ylang-rose font-body rounded-md px-2 py-2 text-xs transition-colors hover:bg-white"
-                                  >
-                                    {item.name}
-                                  </Link>
-                                ))}
-                              </div>
+                              </p>
+                              {section.items.map((item) => (
+                                <Link
+                                  key={item.name}
+                                  href={item.href}
+                                  onClick={closeMegaMenu}
+                                  className="font-body block py-1 text-sm font-light transition-colors hover:text-ylang-rose hover:underline underline-offset-4"
+                                  style={{ color: "var(--color-ink-3)" }}
+                                >
+                                  {item.name}
+                                </Link>
+                              ))}
                             </div>
                           ))}
+                        </div>
                       </div>
                     </div>
-                  )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
-
-            {/* Actions Mobile */}
-            <div className="border-ylang-beige mt-6 space-y-3 border-t pt-6">
-              <Button
-                onClick={() => {
-                  router.push("/configurateur");
-                  closeMegaMenu();
-                }}
-                variant="luxury"
-                className="w-full"
-              >
-                ✨ Créer sur mesure
-              </Button>
-
-              <div className="grid grid-cols-4 gap-2">
-                <button
-                  onClick={() => {
-                    closeMegaMenu();
-                    setIsSearchOpen(true);
-                  }}
-                  aria-label="Rechercher"
-                  className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
-                >
-                  <Search
-                    className="text-ylang-charcoal mb-1 h-5 w-5"
-                    strokeWidth={1.5}
-                  />
-                  <span className="text-ylang-charcoal text-xs">Recherche</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    closeMegaMenu();
-                    useWishlistStore.getState().openWishlist();
-                  }}
-                  aria-label="Mes favoris"
-                  className="bg-ylang-beige/50 hover:bg-ylang-beige relative flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
-                >
-                  <Heart
-                    className="text-ylang-charcoal mb-1 h-5 w-5"
-                    strokeWidth={1.5}
-                  />
-                  <span className="text-ylang-charcoal text-xs">Favoris</span>
-                  {wishlistCount > 0 && (
-                    <span className="bg-ylang-beige absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-ylang-rose">
-                      {wishlistCount}
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => {
-                    closeMegaMenu();
-                    useCartStore.getState().openCart();
-                  }}
-                  aria-label="Mon panier"
-                  className="bg-ylang-beige/50 hover:bg-ylang-beige relative flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
-                >
-                  <ShoppingBag
-                    className="text-ylang-charcoal mb-1 h-5 w-5"
-                    strokeWidth={1.5}
-                  />
-                  <span className="text-ylang-charcoal text-xs">Panier</span>
-                  {cartCount > 0 && (
-                    <span className="bg-ylang-beige absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full text-xs text-ylang-rose">
-                      {cartCount}
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => {
-                    closeMegaMenu();
-                    if (!session) {
-                      router.push("/sign-in");
-                    } else if (session.user.app_metadata?.role === "admin") {
-                      router.push("/admin");
-                    } else {
-                      router.push("/profil");
-                    }
-                  }}
-                  aria-label={session ? "Mon compte" : "Se connecter"}
-                  className="bg-ylang-beige/50 hover:bg-ylang-beige flex flex-col items-center justify-center rounded-lg p-4 transition-colors"
-                >
-                  {session?.user.user_metadata?.avatar_url ? (
-                    <img
-                      src={session.user.user_metadata.avatar_url}
-                      alt="Profile"
-                      className="mb-1 h-5 w-5 rounded-full object-cover"
-                    />
-                  ) : (
-                    <User
-                      className="text-ylang-charcoal mb-1 h-5 w-5"
-                      strokeWidth={1.5}
-                    />
-                  )}
-                  <span className="text-ylang-charcoal text-xs">
-                    {session ? "Compte" : "Connexion"}
-                  </span>
-                </button>
-              </div>
-            </div>
-          </nav>
+          </div>
         </div>
       )}
 

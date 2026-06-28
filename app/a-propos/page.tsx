@@ -2,89 +2,65 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import {
-  Award,
-  Baby,
-  Heart,
-  Leaf,
-  MapPin,
-  Scissors,
-  Shield,
-  Users,
-  Wand2,
-} from "lucide-react";
+import { MapPin, Scissors } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// Animation variants
 const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const staggerContainer = {
+const stagger = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.2 },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
 };
 
-// Timeline data
 const timeline = [
   {
     year: "2019",
     title: "Naissance à Mayotte",
     description:
       "Ylang Créations voit le jour à Mayotte, devenant la première entreprise du territoire spécialisée dans la puériculture et la confection textile sur mesure.",
-    icon: Baby,
   },
   {
-    year: "2019-2024",
+    year: "2019–2024",
     title: "6 années d'expertise",
     description:
       "Développement du savoir-faire artisanal et création de centaines de pièces uniques pour les familles de l'île aux parfums.",
-    icon: Award,
   },
   {
     year: "2025",
     title: "Cap vers la Réunion",
     description:
       "Forte de son expertise, la marque s'installe à la Réunion pour conquérir de nouveaux horizons tout en préservant son identité artisanale.",
-    icon: MapPin,
   },
 ];
 
-// Values data
 const values = [
   {
-    icon: Heart,
     title: "Fait avec amour",
     description:
       "Chaque création est inspirée par le quotidien d'une maman de 4 enfants. L'amour maternel guide chaque point de couture.",
   },
   {
-    icon: Scissors,
     title: "Artisanat français",
     description:
       "Entièrement fait main dans notre atelier, chaque pièce est unique et confectionnée avec le plus grand soin.",
   },
   {
-    icon: Leaf,
     title: "Éco-responsable",
     description:
       "Nous privilégions des tissus certifiés Oeko-Tex et coton bio, garantis sans substances nocives pour la santé.",
   },
   {
-    icon: Shield,
     title: "Qualité premium",
     description:
       "Sélection rigoureuse des matières premières pour vous garantir des créations durables et de haute qualité.",
   },
 ];
 
-// Stats data
 const stats = [
   { value: "2019", label: "Fondée en" },
   { value: "6+", label: "Années d'expertise" },
@@ -99,35 +75,32 @@ export default function AProposPage() {
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.aboutImage) {
-          setAboutImage(data.aboutImage);
-        }
+        if (data?.aboutImage) setAboutImage(data.aboutImage);
       })
       .catch(console.error);
   }, []);
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-paper)" }}>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-32">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="text-center"
-          >
-            <motion.p
-              variants={fadeInUp}
-              className="mb-4 text-[11px] tracking-[0.2em] uppercase"
-              style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
-            >
+    <div style={{ background: "var(--color-paper)" }}>
+
+      {/* Hero */}
+      <section className="py-24 lg:py-36" style={{ borderBottom: "var(--rule-hair)" }}>
+        <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
+          <motion.div initial="hidden" animate="visible" variants={stagger}>
+            <motion.p variants={fadeInUp} className="type-overline mb-8" style={{ color: "var(--color-accent)" }}>
               Notre Histoire
             </motion.p>
             <motion.h1
               variants={fadeInUp}
-              className="mb-6 text-4xl font-semibold tracking-tight lg:text-6xl"
-              style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+              className="mb-8"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "var(--text-display)",
+                fontWeight: 400,
+                lineHeight: 1.0,
+                letterSpacing: "-0.02em",
+                color: "var(--color-ink)",
+              }}
             >
               Élégance, raffinement
               <br />
@@ -135,47 +108,38 @@ export default function AProposPage() {
             </motion.h1>
             <motion.p
               variants={fadeInUp}
-              className="font-body text-ylang-charcoal/70 mx-auto max-w-2xl text-lg lg:text-xl"
+              className="font-body mx-auto max-w-2xl text-lg"
+              style={{ color: "var(--color-ink-3)" }}
             >
-              Ylang Créations vous propose des services premium de confection
-              textile, de décoration d'intérieur et d'aménagement personnalisés.
-              Des prestations qui vous ressemblent et qui s'adaptent à vos
-              envies.
+              Ylang Créations vous propose des services premium de confection textile,
+              de décoration d'intérieur et d'aménagement personnalisés.
             </motion.p>
             <motion.p
               variants={fadeInUp}
-              className="font-abramo-script mt-6 text-3xl" style={{ color: "var(--color-accent)" }}
+              className="font-abramo-script mt-8 text-3xl"
+              style={{ color: "var(--color-accent)" }}
             >
               Avec amour, Mélissa
             </motion.p>
-            <motion.div
-              variants={fadeInUp}
-              className="flex w-full items-center justify-center"
-            >
-              <Image
-                width={200}
-                height={200}
-                src={"/Illustrations/Porte Jouet 3.png"}
-                alt="Illustration de la marque Ylang Créations"
-              />
-            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Story Section */}
-      <section className="py-20 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-12">
-            {/* Image */}
+      {/* Histoire */}
+      <section className="py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid items-center gap-16 lg:grid-cols-2">
+
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative"
+              transition={{ duration: 0.7 }}
             >
-              <div className="bg-ylang-beige relative aspect-4/5 overflow-hidden rounded-3xl shadow-xs">
+              <div
+                className="relative aspect-4/5 overflow-hidden"
+                style={{ background: "var(--color-paper-2)" }}
+              >
                 {aboutImage ? (
                   <Image
                     src={aboutImage}
@@ -184,278 +148,271 @@ export default function AProposPage() {
                     className="object-cover"
                   />
                 ) : (
-                  /* Placeholder gradient si pas d'image */
-                  <div className="bg-ylang-beige/50 absolute inset-0 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <Scissors className="text-ylang-rose mx-auto mb-4 h-16 w-16" />
-                      <p className="font-display text-ylang-charcoal text-xl">
-                        Mélissa
-                      </p>
-                      <p className="font-body text-ylang-charcoal/60 text-sm">
-                        Fondatrice
+                      <Scissors
+                        className="mx-auto mb-4 h-12 w-12"
+                        style={{ color: "var(--color-accent)" }}
+                        strokeWidth={1}
+                      />
+                      <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                        Mélissa · Fondatrice
                       </p>
                     </div>
                   </div>
                 )}
               </div>
-              {/* Decorative badge */}
-              <div className="absolute -right-6 -bottom-6 rounded-2xl bg-white p-6 shadow-xs">
-                <p className="font-display text-ylang-rose text-3xl font-bold">
-                  2019
-                </p>
-                <p className="font-body text-ylang-charcoal/60 text-sm">
-                  Maison fondée
-                </p>
-              </div>
             </motion.div>
 
-            {/* Content */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="space-y-6"
+              transition={{ duration: 0.7 }}
+              className="space-y-8"
             >
               <div>
-                <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
+                <p className="type-overline mb-6" style={{ color: "var(--color-accent)" }}>
                   L'histoire d'Ylang
                 </p>
-                <h2 className="mb-6 text-3xl font-semibold tracking-tight lg:text-4xl" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
+                <h2
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "var(--text-headline)",
+                    fontWeight: 400,
+                    lineHeight: 1.1,
+                    letterSpacing: "-0.02em",
+                    color: "var(--color-ink)",
+                  }}
+                >
                   Une passion née du quotidien maternel
                 </h2>
               </div>
 
-              <div className="font-body text-ylang-charcoal/80 space-y-4 leading-relaxed">
+              <div className="space-y-4 text-base leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
                 <p>
-                  <strong className="text-ylang-charcoal">
-                    Ylang Créations
-                  </strong>{" "}
-                  est une marque française fondée en 2019, spécialisée dans la
-                  création et la confection d'articles de puériculture pour bébé
-                  et parents.
+                  <strong style={{ color: "var(--color-ink)" }}>Ylang Créations</strong> est une
+                  marque française fondée en 2019, spécialisée dans la création et la confection
+                  d'articles de puériculture pour bébé et parents.
                 </p>
                 <p>
-                  Une entreprise dont chaque création est inspirée par le
-                  quotidien d'une
-                  <strong className="text-ylang-charcoal">
-                    {" "}
-                    maman de 4 enfants
-                  </strong>
-                  . "Ylang", un hommage aux aïeux de sa fondatrice et
-                  "Créations" pour de multiples confections totalement uniques.
+                  Une entreprise dont chaque création est inspirée par le quotidien d'une{" "}
+                  <strong style={{ color: "var(--color-ink)" }}>maman de 4 enfants</strong>.
+                  "Ylang", un hommage aux aïeux de sa fondatrice et "Créations" pour de multiples
+                  confections totalement uniques.
                 </p>
                 <p>
-                  Créée à{" "}
-                  <strong className="text-ylang-charcoal">Mayotte</strong>,
-                  Ylang Créations fût la première entreprise du territoire
-                  spécialisée dans le domaine de la puériculture, proposant une
-                  offre de confection textile sur mesure et personnalisée.
+                  Créée à <strong style={{ color: "var(--color-ink)" }}>Mayotte</strong>, Ylang
+                  Créations fût la première entreprise du territoire spécialisée dans la
+                  puériculture, proposant une offre de confection textile sur mesure et
+                  personnalisée.
                 </p>
                 <p>
-                  Après 6 années passées sur l'île et forte de ses compétences
-                  et de son savoir-faire, l'entreprise poursuit son activité à
-                  la conquête d'un nouveau territoire :
-                  <strong className="text-ylang-rose">
-                    {" "}
-                    l'île de la Réunion
-                  </strong>
-                  .
+                  Après 6 années passées sur l'île et forte de ses compétences et de son
+                  savoir-faire, l'entreprise poursuit son activité à la conquête d'un nouveau
+                  territoire :{" "}
+                  <strong style={{ color: "var(--color-accent)" }}>l'île de la Réunion</strong>.
                 </p>
               </div>
 
-              <div className="flex items-center gap-4 pt-4">
-                <div className="flex items-center gap-2">
-                  <MapPin className="text-ylang-rose h-5 w-5" />
-                  <span className="font-body text-ylang-charcoal/70">
-                    Mayotte → La Réunion
-                  </span>
-                </div>
+              <div className="flex items-center gap-2 pt-2">
+                <MapPin className="h-4 w-4 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
+                <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                  Mayotte → La Réunion
+                </span>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Timeline Section */}
-      <section className="py-20 lg:py-28" style={{ background: "var(--color-paper-2)" }}>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-16 text-center"
-          >
-            <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
+      {/* Parcours */}
+      <section
+        className="py-24 lg:py-32"
+        style={{ background: "var(--color-paper-2)", borderTop: "var(--rule-hair)", borderBottom: "var(--rule-hair)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-20">
+            <p className="type-overline mb-6" style={{ color: "var(--color-accent)" }}>
               Notre parcours
             </p>
-            <h2 className="text-3xl font-semibold tracking-tight lg:text-4xl" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
+            <h2
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "var(--text-headline)",
+                fontWeight: 400,
+                letterSpacing: "-0.02em",
+                color: "var(--color-ink)",
+              }}
+            >
               Une aventure humaine
             </h2>
-          </motion.div>
+          </div>
 
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="bg-ylang-beige absolute top-0 bottom-0 left-1/2 hidden w-0.5 -translate-x-1/2 lg:block" />
-
-            <div className="space-y-12 lg:space-y-24">
-              {timeline.map((item, index) => (
-                <motion.div
-                  key={item.year}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.2 }}
-                  className={`relative flex flex-col items-center gap-8 lg:flex-row ${
-                    index % 2 === 1 ? "lg:flex-row-reverse" : ""
-                  }`}
+          <div>
+            {timeline.map((item, index) => (
+              <motion.div
+                key={item.year}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.12 }}
+                className="grid gap-6 py-10 lg:grid-cols-[200px_1fr]"
+                style={{ borderTop: "var(--rule-soft)" }}
+              >
+                <p
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "var(--text-title)",
+                    fontWeight: 400,
+                    color: "var(--color-accent)",
+                  }}
                 >
-                  {/* Content */}
-                  <div className="flex-1 lg:text-right">
-                    <div
-                      className={`bg-ylang-cream rounded-2xl p-8 shadow-xs ${
-                        index % 2 === 1 ? "lg:text-left" : "lg:text-right"
-                      }`}
-                    >
-                      <p className="font-display text-ylang-rose mb-2 text-2xl font-bold">
-                        {item.year}
-                      </p>
-                      <h3 className="font-display text-ylang-charcoal mb-3 text-xl">
-                        {item.title}
-                      </h3>
-                      <p className="font-body text-ylang-charcoal/70">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Icon */}
-                  <div className="bg-ylang-yellow relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xs">
-                    <item.icon className="h-7 w-7 text-white" />
-                  </div>
-
-                  {/* Empty space for alignment */}
-                  <div className="hidden flex-1 lg:block" />
-                </motion.div>
-              ))}
-            </div>
+                  {item.year}
+                </p>
+                <div>
+                  <h3 className="mb-2 font-body font-medium" style={{ color: "var(--color-ink)" }}>
+                    {item.title}
+                  </h3>
+                  <p className="font-body text-sm leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
+                    {item.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+            <div style={{ borderTop: "var(--rule-soft)" }} />
           </div>
         </div>
       </section>
 
-      {/* Values Section */}
-      <section id="engagements" className="py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-16 text-center"
-          >
-            <p className="text-ylang-rose font-abramo mb-3 text-sm font-semibold tracking-widest uppercase">
+      {/* Valeurs */}
+      <section id="engagements" className="py-24 lg:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-20">
+            <p className="type-overline mb-6" style={{ color: "var(--color-accent)" }}>
               Nos engagements
             </p>
-            <h2 className="mb-4 text-3xl font-semibold tracking-tight lg:text-4xl" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
+            <h2
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "var(--text-headline)",
+                fontWeight: 400,
+                letterSpacing: "-0.02em",
+                color: "var(--color-ink)",
+              }}
+            >
               Nos valeurs
             </h2>
-            <p className="font-body text-ylang-charcoal/60 mx-auto max-w-2xl">
-              Nous accordons une importance primordiale au bien-être et à la
-              santé de nos consommateurs. Chaque décision est guidée par ces
-              valeurs fondamentales.
-            </p>
-          </motion.div>
+          </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2">
             {values.map((value, index) => (
               <motion.div
                 key={value.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="group rounded-2xl bg-white p-8 transition-all duration-300 hover:-translate-y-2"
+                className="py-8 sm:px-8"
+                style={{
+                  borderTop: "var(--rule-soft)",
+                  borderLeft: index % 2 === 1 ? "var(--rule-soft)" : undefined,
+                }}
               >
-                <div className="bg-ylang-rose/10 group-hover:bg-ylang-terracotta mb-6 flex h-14 w-14 items-center justify-center rounded-xl transition-colors">
-                  <value.icon className="text-ylang-terracotta h-7 w-7 transition-colors group-hover:text-white" />
-                </div>
-                <h3 className="font-abramo text-ylang-charcoal mb-3 text-lg font-semibold">
+                <h3 className="mb-3 font-body font-medium" style={{ color: "var(--color-ink)" }}>
                   {value.title}
                 </h3>
-                <p className="font-body text-ylang-charcoal/60 text-sm leading-relaxed">
+                <p className="font-body text-sm leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
                   {value.description}
                 </p>
               </motion.div>
             ))}
+            <div className="col-span-full" style={{ borderTop: "var(--rule-soft)" }} />
           </div>
         </div>
       </section>
 
-      {/* Oeko-Tex Section */}
-      <section className="py-20 lg:py-28" style={{ background: "var(--color-paper-2)" }}>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+      {/* Oeko-Tex + Stats */}
+      <section
+        className="py-24 lg:py-32"
+        style={{ background: "var(--color-paper-2)", borderTop: "var(--rule-hair)", borderBottom: "var(--rule-hair)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid items-start gap-20 lg:grid-cols-2">
+
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="space-y-6"
+              className="space-y-8"
             >
-              <div className="bg-ylang-green inline-flex items-center gap-2 rounded-full px-4 py-2">
-                <Leaf className="text-ylang-charcoal h-5 w-5" />
-                <span className="font-body text-ylang-charcoal text-sm font-medium">
-                  Démarche éco-responsable
-                </span>
-              </div>
-
-              <h2 className="font-display text-ylang-charcoal text-3xl font-bold lg:text-4xl">
+              <p className="type-overline" style={{ color: "var(--color-accent)" }}>
+                Démarche éco-responsable
+              </p>
+              <h2
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "var(--text-headline)",
+                  fontWeight: 400,
+                  letterSpacing: "-0.02em",
+                  color: "var(--color-ink)",
+                }}
+              >
                 Certification Oeko-Tex
               </h2>
-
-              <div className="font-body text-ylang-charcoal/80 space-y-4 leading-relaxed">
+              <div className="space-y-4 text-base leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
                 <p>
                   Nous privilégions des tissus garantis{" "}
-                  <strong className="text-ylang-charcoal">100% Oeko-Tex</strong>{" "}
-                  et en{" "}
-                  <strong className="text-ylang-charcoal">coton bio</strong>.
+                  <strong style={{ color: "var(--color-ink)" }}>100% Oeko-Tex</strong> et en{" "}
+                  <strong style={{ color: "var(--color-ink)" }}>coton bio</strong>.
                 </p>
                 <p>
-                  <strong className="text-ylang-charcoal">
-                    C'est quoi Oeko-Tex ?
-                  </strong>
+                  <strong style={{ color: "var(--color-ink)" }}>C'est quoi Oeko-Tex ?</strong>
                   <br />
-                  C'est la certification attribuée aux produits qui ne
-                  présentent, lors du contrôle, aucune substance chimique ou
-                  nocive pour la santé.
+                  C'est la certification attribuée aux produits qui ne présentent, lors du contrôle,
+                  aucune substance chimique ou nocive pour la santé.
                 </p>
               </div>
-
-              <div className="rounded-xl bg-white/80 p-6 backdrop-blur-sm">
-                <h3 className="font-display text-ylang-charcoal mb-3 text-lg">
+              <div className="pt-6" style={{ borderTop: "var(--rule-soft)" }}>
+                <h3 className="mb-3 font-body font-medium" style={{ color: "var(--color-ink)" }}>
                   Pourquoi choisir Ylang Créations ?
                 </h3>
-                <p className="font-body text-ylang-charcoal/70">
-                  Nous choisir, c'est la garantie de s'offrir des produits
-                  sains, de qualité premium, à notre image et qui respectent
-                  l'environnement.
+                <p className="font-body text-sm leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
+                  Nous choisir, c'est la garantie de s'offrir des produits sains, de qualité
+                  premium, à notre image et qui respectent l'environnement.
                 </p>
               </div>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
+              initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="grid grid-cols-2 gap-6"
+              className="grid grid-cols-2"
             >
               {stats.map((stat, index) => (
                 <div
                   key={stat.label}
-                  className="rounded-2xl bg-white p-6 text-center shadow-xs"
+                  className="px-8 py-10 text-center"
+                  style={{
+                    borderTop: index >= 2 ? "var(--rule-soft)" : undefined,
+                    borderLeft: index % 2 === 1 ? "var(--rule-soft)" : undefined,
+                  }}
                 >
-                  <p className="font-display text-ylang-rose text-3xl font-bold lg:text-4xl">
+                  <p
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "var(--text-headline)",
+                      fontWeight: 400,
+                      color: "var(--color-accent)",
+                    }}
+                  >
                     {stat.value}
                   </p>
-                  <p className="font-body text-ylang-charcoal/60 mt-2 text-sm">
+                  <p
+                    className="mt-2 font-body text-xs uppercase tracking-wider"
+                    style={{ color: "var(--color-ink-3)" }}
+                  >
                     {stat.label}
                   </p>
                 </div>
@@ -465,73 +422,68 @@ export default function AProposPage() {
         </div>
       </section>
 
-      {/* Concept Section */}
-      <section className="py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Concept */}
+      <section className="py-24 lg:py-32">
+        <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-3xl p-12 text-center lg:p-20"
-            style={{ background: "var(--color-paper-2)" }}
+            className="space-y-8"
           >
-            <h2 className="mb-6 text-3xl font-semibold tracking-tight lg:text-4xl" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
-              Notre concept
-            </h2>
-            <p className="font-body mx-auto max-w-3xl text-lg leading-relaxed opacity-90 lg:text-xl">
-              Partager notre savoir-faire et proposer à notre clientèle des
-              prestations haut de gamme qui leur ressemblent. Vous nous confiez
-              vos projets, vos envies et vos attentes. En sélectionnant avec le
-              plus grand soin nos matières premières, nous vous garantissons des
-              créations de qualité, artisanales et entièrement fait main.
+            <div>
+              <p className="type-overline mb-6" style={{ color: "var(--color-accent)" }}>
+                Notre concept
+              </p>
+              <h2
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "var(--text-headline)",
+                  fontWeight: 400,
+                  letterSpacing: "-0.02em",
+                  color: "var(--color-ink)",
+                }}
+              >
+                Partager notre savoir-faire
+              </h2>
+            </div>
+            <p className="font-body mx-auto max-w-2xl text-base leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
+              Vous nous confiez vos projets, vos envies et vos attentes. En sélectionnant avec le
+              plus grand soin nos matières premières, nous vous garantissons des créations de
+              qualité, artisanales et entièrement fait main.
             </p>
-
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
               <Link href="/collections">
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="text-ylang-terracotta hover:text-charcoal bg-white"
-                >
-                  Découvrir nos créations
-                </Button>
+                <Button variant="secondary" size="lg">Découvrir nos créations</Button>
               </Link>
               <Link href="/configurateur">
-                <Button
-                  variant="luxury"
-                  size="lg"
-                  className="border-white text-white hover:bg-white/10"
-                >
-                  <Wand2 className="mr-2 h-5 w-5" />
-                  Créer sur mesure
-                </Button>
+                <Button variant="luxury" size="lg">Créer sur mesure</Button>
               </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Contact CTA */}
-      <section className="py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* CTA Contact */}
+      <section
+        className="py-20"
+        style={{ background: "var(--color-paper-2)", borderTop: "var(--rule-hair)" }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center"
           >
-            <Users className="text-ylang-rose mx-auto mb-6 h-12 w-12" />
-            <h2 className="font-display text-ylang-charcoal mb-4 text-2xl font-bold lg:text-3xl">
+            <p className="mb-2 font-body text-base font-medium" style={{ color: "var(--color-ink)" }}>
               Une question ? Un projet ?
-            </h2>
-            <p className="font-body text-ylang-charcoal/60 mx-auto mb-8 max-w-xl">
-              N'hésitez pas à nous contacter pour discuter de votre projet
-              personnalisé. Nous serons ravies de vous accompagner.
+            </p>
+            <p className="font-body mb-8 text-sm" style={{ color: "var(--color-ink-3)" }}>
+              N'hésitez pas à nous contacter pour discuter de votre projet personnalisé.
             </p>
             <Link href="/contact">
-              <Button variant="luxury" size="lg">
-                Nous contacter
-              </Button>
+              <Button variant="luxury" size="lg">Nous contacter</Button>
             </Link>
           </motion.div>
         </div>
