@@ -52,24 +52,17 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Debounce query for API calls
   const [debouncedQuery, setDebouncedQuery] = React.useState(query);
 
   React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 500);
+    const timer = setTimeout(() => setDebouncedQuery(query), 500);
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Load recent searches and popular products
   React.useEffect(() => {
     const stored = localStorage.getItem("ylang-recent-searches");
-    if (stored) {
-      setRecentSearches(JSON.parse(stored));
-    }
+    if (stored) setRecentSearches(JSON.parse(stored));
 
-    // Fetch popular products
     const fetchPopular = async () => {
       try {
         const res = await fetch("/api/products?featured=true&limit=3");
@@ -84,14 +77,12 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     fetchPopular();
   }, []);
 
-  // Focus input when modal opens
   React.useEffect(() => {
     if (isOpen && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
-  // Search effect
   React.useEffect(() => {
     const fetchResults = async () => {
       if (debouncedQuery.length >= 2) {
@@ -114,11 +105,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         setResults([]);
       }
     };
-
     fetchResults();
   }, [debouncedQuery]);
 
-  // Close with Escape
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -128,10 +117,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   }, [onClose]);
 
   const saveSearch = (searchTerm: string) => {
-    const updated = [
-      searchTerm,
-      ...recentSearches.filter((s) => s !== searchTerm),
-    ].slice(0, 5);
+    const updated = [searchTerm, ...recentSearches.filter((s) => s !== searchTerm)].slice(0, 5);
     setRecentSearches(updated);
     localStorage.setItem("ylang-recent-searches", JSON.stringify(updated));
   };
@@ -178,149 +164,172 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             onClick={onClose}
-            className="bg-ylang-charcoal/60 fixed inset-0 z-50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/40"
           />
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-0 z-60 flex items-start justify-center p-0 pt-0 sm:p-4 sm:pt-20 lg:pt-24"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ type: "tween", duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-60 flex items-start justify-center p-0 sm:p-4 sm:pt-20 lg:pt-24"
           >
-            <div className="bg-ylang-cream flex h-full w-full flex-col overflow-hidden border-ylang-beige shadow-2xl sm:h-auto sm:max-w-3xl sm:rounded-2xl sm:border">
-              {/* Search Input Area */}
-              <div className="border-ylang-beige sticky top-0 z-10 flex items-center border-b bg-white/50 px-4 py-3 backdrop-blur-md sm:px-6 sm:py-4">
-                <Search className="text-ylang-charcoal/40 h-5 w-5 shrink-0" />
-                <form
-                  onSubmit={handleSearchSubmit}
-                  className="flex flex-1 items-center"
-                >
+            <div
+              className="flex h-full w-full flex-col overflow-hidden sm:h-auto sm:max-w-2xl"
+              style={{ background: "var(--color-paper)", boxShadow: "0 8px 60px rgba(0,0,0,0.12)" }}
+            >
+              {/* Search Input */}
+              <div
+                className="sticky top-0 z-10 flex items-center gap-3 px-5 py-4"
+                style={{ background: "var(--color-paper)", borderBottom: "var(--rule-hair)" }}
+              >
+                <Search className="h-4 w-4 shrink-0" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+                <form onSubmit={handleSearchSubmit} className="flex flex-1 items-center">
                   <input
                     ref={inputRef}
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Rechercher..."
-                    className="text-ylang-charcoal font-body placeholder:text-ylang-charcoal/40 flex-1 bg-transparent px-3 py-2 text-base focus:outline-none sm:px-4 sm:text-lg"
-                    style={{ WebkitAppearance: "none" }}
+                    placeholder="Rechercher une création…"
+                    className="flex-1 bg-transparent font-body text-base outline-none placeholder:opacity-40"
+                    style={{ color: "var(--color-ink)", WebkitAppearance: "none" }}
                   />
                 </form>
-
-                <div className="flex items-center gap-1 sm:gap-2">
+                <div className="flex items-center gap-2">
                   {query && (
                     <button
                       type="button"
                       onClick={() => setQuery("")}
-                      className="hover:bg-ylang-beige rounded-full p-2 transition-colors"
+                      className="transition-opacity hover:opacity-50"
+                      style={{ color: "var(--color-ink-3)" }}
                       aria-label="Effacer la recherche"
                     >
-                      <X className="text-ylang-charcoal/60 h-4 w-4" />
+                      <X className="h-4 w-4" strokeWidth={1.5} />
                     </button>
                   )}
                   <button
                     type="button"
                     onClick={onClose}
-                    className="bg-ylang-rose/10 hover:bg-ylang-rose/20 flex h-9 w-9 items-center justify-center rounded-full transition-colors sm:h-10 sm:w-10"
+                    className="transition-opacity hover:opacity-50"
+                    style={{ color: "var(--color-ink)" }}
                     aria-label="Fermer la recherche"
                   >
-                    <X className="text-ylang-rose h-5 w-5" strokeWidth={2.5} />
+                    <X className="h-5 w-5" strokeWidth={1.5} />
                   </button>
                 </div>
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto pb-safe">
+              <div className="flex-1 overflow-y-auto">
                 {isLoading ? (
                   <div className="flex h-40 items-center justify-center">
-                    <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
                   </div>
                 ) : results.length > 0 ? (
-                  /* Résultats de recherche */
-                  <div className="p-4">
-                    <p className="text-ylang-charcoal/60 font-body mb-3 px-2 text-sm">
-                      {results.length} résultat{results.length > 1 ? "s" : ""}{" "}
-                      pour "{query}"
+                  /* Résultats */
+                  <div className="px-5 py-4">
+                    <p className="font-body mb-4 text-xs" style={{ color: "var(--color-ink-3)" }}>
+                      {results.length} résultat{results.length > 1 ? "s" : ""} pour « {query} »
                     </p>
-                    <div className="space-y-2">
+                    <div>
                       {results.map((product) => (
                         <button
                           key={product.id}
                           onClick={() => handleProductClick(product)}
-                          className="hover:bg-ylang-beige/50 group flex w-full items-center gap-4 rounded-xl p-3 text-left transition-all"
+                          className="group flex w-full items-center gap-4 py-4 text-left transition-opacity hover:opacity-70"
+                          style={{ borderBottom: "var(--rule-soft)" }}
                         >
-                          <div className="bg-ylang-beige relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
+                          {/* Thumbnail */}
+                          <div
+                            className="relative h-14 w-12 shrink-0 overflow-hidden"
+                            style={{ background: "var(--color-paper-2)" }}
+                          >
                             <img
                               src={product.image}
                               alt={product.name}
-                              className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                              className="h-full w-full object-cover"
                             />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h4 className="font-display text-ylang-charcoal group-hover:text-ylang-rose truncate transition-colors">
+                            <h4
+                              className="truncate font-body text-sm font-medium"
+                              style={{ color: "var(--color-ink)" }}
+                            >
                               {product.name}
                             </h4>
-                            <p className="text-ylang-charcoal/60 font-body text-sm">
+                            <p className="font-body text-xs mt-0.5" style={{ color: "var(--color-ink-3)" }}>
                               {product.category}
                             </p>
                           </div>
                           <div className="shrink-0 text-right">
-                            <p className="font-display text-ylang-rose font-semibold">
-                              {product.price}€
+                            <p
+                              style={{
+                                fontFamily: "var(--font-display)",
+                                fontWeight: 400,
+                                color: "var(--color-accent)",
+                              }}
+                            >
+                              {product.price} €
                             </p>
                             {product.customizable && (
-                              <span className="text-ylang-sage font-body inline-flex items-center gap-1 text-xs">
-                                <Sparkles className="h-3 w-3" />
+                              <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
                                 Personnalisable
                               </span>
                             )}
                           </div>
-                          <ArrowRight className="text-ylang-charcoal/30 group-hover:text-ylang-rose h-4 w-4 transition-all group-hover:translate-x-1" />
+                          <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
                         </button>
                       ))}
                     </div>
 
-                    {/* Voir tous les résultats */}
+                    {/* Voir tous */}
                     <button
                       onClick={() => handleQuickSearch(query)}
-                      className="bg-ylang-rose/10 text-ylang-rose font-body hover:bg-ylang-rose mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-medium transition-all hover:text-white"
+                      className="mt-4 flex w-full items-center justify-center gap-2 py-4 font-body text-sm transition-opacity hover:opacity-70"
+                      style={{ borderTop: "var(--rule-soft)", color: "var(--color-ink)" }}
                     >
                       Voir tous les résultats
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} />
                     </button>
                   </div>
                 ) : query.length >= 2 ? (
                   /* Aucun résultat */
-                  <div className="p-8 text-center">
-                    <div className="bg-ylang-beige mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                      <Search className="text-ylang-charcoal/30 h-8 w-8" />
-                    </div>
-                    <p className="font-display text-ylang-charcoal mb-2">
-                      Aucun résultat pour "{query}"
+                  <div className="px-5 py-16 text-center">
+                    <Search className="mx-auto mb-5 h-8 w-8" style={{ color: "var(--color-ink-3)" }} strokeWidth={1} />
+                    <p
+                      className="mb-2"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 400,
+                        color: "var(--color-ink)",
+                      }}
+                    >
+                      Aucun résultat pour « {query} »
                     </p>
-                    <p className="text-ylang-charcoal/60 font-body text-sm">
-                      Essayez avec d'autres mots-clés ou explorez nos
-                      suggestions
+                    <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                      Essayez avec d&apos;autres mots-clés ou explorez nos suggestions
                     </p>
                   </div>
                 ) : (
-                  /* État initial : suggestions et récents */
-                  <div className="space-y-6 p-4">
+                  /* État initial */
+                  <div className="px-5 py-6 space-y-8">
                     {/* Recherches récentes */}
                     {recentSearches.length > 0 && (
                       <div>
-                        <div className="mb-3 flex items-center justify-between px-2">
+                        <div className="mb-4 flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Clock className="text-ylang-charcoal/40 h-4 w-4" />
-                            <span className="text-ylang-charcoal/60 font-body text-sm">
-                              Recherches récentes
+                            <Clock className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+                            <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+                              Récentes
                             </span>
                           </div>
                           <button
                             onClick={clearAllRecentSearches}
-                            className="text-ylang-charcoal/40 hover:text-ylang-rose font-body text-xs transition-colors"
+                            className="font-body text-xs transition-opacity hover:opacity-50"
+                            style={{ color: "var(--color-ink-3)" }}
                           >
                             Tout effacer
                           </button>
@@ -329,11 +338,13 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           {recentSearches.map((term) => (
                             <div
                               key={term}
-                              className="bg-ylang-beige/50 hover:bg-ylang-beige group relative flex items-center gap-1 rounded-full pr-2 transition-all"
+                              className="flex items-center gap-1"
+                              style={{ border: "var(--rule-soft)" }}
                             >
                               <button
                                 onClick={() => handleQuickSearch(term)}
-                                className="text-ylang-charcoal font-body py-2 pl-4 text-sm"
+                                className="font-body py-1.5 pl-3 text-sm transition-opacity hover:opacity-70"
+                                style={{ color: "var(--color-ink)" }}
                               >
                                 {term}
                               </button>
@@ -342,10 +353,11 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                   e.stopPropagation();
                                   removeRecentSearch(term);
                                 }}
-                                className="text-ylang-charcoal/30 hover:text-ylang-rose hover:bg-ylang-rose/10 rounded-full p-1 transition-all"
+                                className="px-2 py-1.5 transition-opacity hover:opacity-50"
+                                style={{ color: "var(--color-ink-3)" }}
                                 aria-label={`Supprimer ${term}`}
                               >
-                                <X className="h-3 w-3" />
+                                <X className="h-3 w-3" strokeWidth={1.5} />
                               </button>
                             </div>
                           ))}
@@ -353,12 +365,12 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       </div>
                     )}
 
-                    {/* Suggestions populaires */}
+                    {/* Suggestions */}
                     <div>
-                      <div className="mb-3 flex items-center gap-2 px-2">
-                        <TrendingUp className="text-ylang-charcoal/40 h-4 w-4" />
-                        <span className="text-ylang-charcoal/60 font-body text-sm">
-                          Suggestions populaires
+                      <div className="mb-4 flex items-center gap-2">
+                        <TrendingUp className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+                        <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+                          Suggestions
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -366,7 +378,8 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           <button
                             key={term}
                             onClick={() => handleQuickSearch(term)}
-                            className="border-ylang-beige text-ylang-charcoal font-body hover:border-ylang-rose hover:text-ylang-rose rounded-full border px-4 py-2 text-sm transition-all"
+                            className="font-body px-4 py-2 text-sm transition-opacity hover:opacity-70"
+                            style={{ border: "var(--rule-soft)", color: "var(--color-ink)" }}
                           >
                             {term}
                           </button>
@@ -374,39 +387,60 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       </div>
                     </div>
 
-                    {/* Produits populaires (Featured) */}
+                    {/* Produits populaires */}
                     {popularProducts.length > 0 && (
-                      <div>
-                        <div className="mb-3 flex items-center gap-2 px-2">
-                          <Sparkles className="text-ylang-rose h-4 w-4" />
-                          <span className="text-ylang-charcoal/60 font-body text-sm">
-                            Produits populaires
+                      <div style={{ borderTop: "var(--rule-hair)", paddingTop: "1.5rem" }}>
+                        <div className="mb-4 flex items-center gap-2">
+                          <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+                          <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+                            Populaires
                           </span>
                         </div>
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                          {popularProducts.map((product) => (
+                        <div className="grid grid-cols-1 gap-0 sm:grid-cols-3">
+                          {popularProducts.map((product, i) => (
                             <button
                               key={product.id}
                               onClick={() => handleProductClick(product)}
-                              className="group bg-ylang-beige/30 hover:bg-ylang-beige/60 flex flex-col items-center rounded-xl p-4 transition-all"
+                              className="group flex flex-col items-center py-5 text-center transition-opacity hover:opacity-70 sm:py-4"
+                              style={{
+                                borderLeft: i > 0 ? "var(--rule-soft)" : undefined,
+                                borderTop: "var(--rule-soft)",
+                              }}
                             >
-                              <div className="relative mb-3 h-20 w-20 overflow-hidden rounded-lg">
+                              <div
+                                className="relative mb-3 h-16 w-14 overflow-hidden"
+                                style={{ background: "var(--color-paper-2)" }}
+                              >
                                 <img
                                   src={product.image}
                                   alt={product.name}
-                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                  className="h-full w-full object-cover"
                                 />
                                 {product.new && (
-                                  <span className="bg-ylang-rose absolute top-1 right-1 rounded-full px-1.5 py-0.5 text-[10px] text-white">
+                                  <span
+                                    className="absolute top-1 right-1 px-1.5 py-0.5 font-body text-[10px]"
+                                    style={{ background: "var(--color-paper)", color: "var(--color-accent)" }}
+                                  >
                                     Nouveau
                                   </span>
                                 )}
                               </div>
-                              <h4 className="font-display text-ylang-charcoal group-hover:text-ylang-rose line-clamp-2 text-center text-sm transition-colors">
+                              <h4
+                                className="line-clamp-2 font-body text-xs font-medium leading-snug"
+                                style={{ color: "var(--color-ink)" }}
+                              >
                                 {product.name}
                               </h4>
-                              <p className="text-ylang-rose font-display mt-1 font-semibold">
-                                {product.price}€
+                              <p
+                                className="mt-1"
+                                style={{
+                                  fontFamily: "var(--font-display)",
+                                  fontWeight: 400,
+                                  color: "var(--color-accent)",
+                                  fontSize: "var(--text-title)",
+                                }}
+                              >
+                                {product.price} €
                               </p>
                             </button>
                           ))}
