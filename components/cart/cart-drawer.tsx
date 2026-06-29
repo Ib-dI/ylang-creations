@@ -3,16 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store/cart-store";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  ArrowRight,
-  Minus,
-  Package,
-  Plus,
-  ShoppingBag,
-  Trash2,
-  X,
-  AlertTriangle,
-} from "lucide-react";
+import { AlertTriangle, ArrowRight, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -46,8 +37,9 @@ export function CartDrawer() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             onClick={closeCart}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/40"
           />
         )}
       </AnimatePresence>
@@ -59,62 +51,90 @@ export function CartDrawer() {
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed top-0 right-0 bottom-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl"
+            transition={{ type: "tween", duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed top-0 right-0 bottom-0 z-50 flex w-full max-w-md flex-col"
+            style={{ background: "var(--color-paper)", boxShadow: "-4px 0 40px rgba(0,0,0,0.10)" }}
           >
             {/* Header */}
-            <div className="border-ylang-beige flex items-center justify-between border-b p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#b76e79]/10">
-                  <ShoppingBag className="h-5 w-5 text-[#b76e79]" />
-                </div>
-                <div>
-                  <h2 className="font-display text-ylang-charcoal text-xl font-bold">
-                    Votre panier
-                  </h2>
-                  <p className="text-ylang-charcoal/60 text-sm">
-                    {getTotalItems()} article{getTotalItems() > 1 ? "s" : ""}
-                  </p>
-                </div>
+            <div
+              className="flex items-center justify-between px-8 py-6"
+              style={{ borderBottom: "var(--rule-hair)" }}
+            >
+              <div>
+                <p className="type-overline mb-1" style={{ color: "var(--color-accent)" }}>
+                  Votre sélection
+                </p>
+                <h2
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "var(--text-title)",
+                    fontWeight: 400,
+                    color: "var(--color-ink)",
+                  }}
+                >
+                  Panier
+                </h2>
               </div>
-              <button
-                onClick={closeCart}
-                className="hover:bg-ylang-beige flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <div className="flex items-center gap-4">
+                <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                  {getTotalItems()} article{getTotalItems() > 1 ? "s" : ""}
+                </span>
+                <button
+                  onClick={closeCart}
+                  className="flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-60"
+                  style={{ color: "var(--color-ink)" }}
+                  aria-label="Fermer"
+                >
+                  <X className="h-4 w-4" strokeWidth={1.5} />
+                </button>
+              </div>
             </div>
 
             {/* Items */}
-            <div className="bg-ylang-terracotta/50 flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto px-8 py-6">
               {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
-                  <div className="bg-ylang-beige mb-4 flex h-20 w-20 items-center justify-center rounded-full">
-                    <Package className="text-ylang-charcoal/40 h-10 w-10" />
-                  </div>
-                  <p className="font-display text-ylang-charcoal mb-2 text-lg">
+                  <ShoppingBag
+                    className="mb-6 h-10 w-10"
+                    style={{ color: "var(--color-ink-3)" }}
+                    strokeWidth={1}
+                  />
+                  <p
+                    className="mb-2"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "var(--text-title)",
+                      fontWeight: 400,
+                      color: "var(--color-ink)",
+                    }}
+                  >
                     Votre panier est vide
                   </p>
-                  <p className="text-ylang-charcoal/60 mb-6 text-sm">
-                    Commencez à créer votre produit unique
+                  <p className="font-body mb-8 text-sm" style={{ color: "var(--color-ink-3)" }}>
+                    Commencez par explorer nos créations
                   </p>
-                  <Button variant="primary" onClick={closeCart} asChild>
-                    <Link href="/configurateur">Créer mon produit</Link>
+                  <Button variant="luxury" onClick={closeCart} asChild>
+                    <Link href="/collections">Découvrir les collections</Link>
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {items.map((item) => (
+                <div>
+                  {items.map((item, index) => (
                     <motion.div
                       key={item.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: -100 }}
-                      className="bg-ylang-cream rounded-2xl p-4"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0, x: -40 }}
+                      transition={{ duration: 0.2 }}
+                      className="py-5"
+                      style={{ borderBottom: "var(--rule-soft)" }}
                     >
                       <div className="flex gap-4">
                         {/* Thumbnail */}
-                        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
+                        <div
+                          className="relative h-20 w-16 shrink-0 overflow-hidden"
+                          style={{ background: "var(--color-paper-2)" }}
+                        >
                           {item.thumbnail ? (
                             <img
                               src={item.thumbnail}
@@ -122,77 +142,80 @@ export function CartDrawer() {
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <span className="text-3xl">🛏️</span>
+                            <div className="flex h-full w-full items-center justify-center">
+                              <ShoppingBag className="h-5 w-5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1} />
+                            </div>
                           )}
                         </div>
 
                         {/* Info */}
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-display text-ylang-charcoal mb-1 font-semibold">
+                          <h3
+                            className="mb-1 font-body text-sm font-medium leading-tight"
+                            style={{ color: "var(--color-ink)" }}
+                          >
                             {item.productName}
                           </h3>
-                          <p className="text-ylang-charcoal/60 mb-1 text-xs">
-                            Tissu: {item.configuration.fabricName}
-                          </p>
-                          {item.configuration.size && (
-                            <p className="text-ylang-charcoal/60 mb-1 text-xs">
-                              Taille: {item.configuration.size}
+                          <div className="space-y-0.5">
+                            <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                              {item.configuration.fabricName}
                             </p>
-                          )}
-                          {item.configuration.selectedColor && (
-                            <div className="mb-1 flex items-center gap-1.5">
-                              <div
-                                className="h-3 w-3 shrink-0 rounded-full border border-black/10 shadow-sm"
-                                style={{ backgroundColor: item.configuration.selectedColor }}
-                              />
-                              <span className="text-ylang-charcoal/60 text-xs">
-                                {item.configuration.selectedColorName ?? item.configuration.selectedColor}
-                              </span>
-                            </div>
-                          )}
-                          {item.configuration.embroidery && (
-                            <p className="text-ylang-charcoal/60 mb-1 text-xs">
-                              Broderie: "{item.configuration.embroidery}"
-                            </p>
-                          )}
+                            {item.configuration.size && (
+                              <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                                Taille {item.configuration.size}
+                              </p>
+                            )}
+                            {item.configuration.embroidery && (
+                              <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                                « {item.configuration.embroidery} »
+                              </p>
+                            )}
+                          </div>
                         </div>
 
                         {/* Delete */}
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-red-500 transition-colors hover:bg-red-50"
+                          className="flex h-6 w-6 shrink-0 items-center justify-center transition-opacity hover:opacity-50"
+                          style={{ color: "var(--color-ink-3)" }}
+                          aria-label="Supprimer"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <X className="h-3.5 w-3.5" strokeWidth={1.5} />
                         </button>
                       </div>
 
                       {/* Quantity & Price */}
                       <div className="mt-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity - 1)
-                            }
-                            className="hover:bg-ylang-beige flex h-8 w-8 items-center justify-center rounded-lg bg-white transition-colors"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            className="font-body text-sm transition-opacity hover:opacity-50"
+                            style={{ color: "var(--color-ink-3)" }}
                           >
-                            <Minus className="h-4 w-4" />
+                            <Minus className="h-3 w-3" strokeWidth={1.5} />
                           </button>
-                          <span className="text-ylang-charcoal w-8 text-center font-medium">
+                          <span className="font-body text-sm w-4 text-center" style={{ color: "var(--color-ink)" }}>
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity + 1)
-                            }
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
                             disabled={isOverWeightLimit()}
-                            className="hover:bg-ylang-beige disabled:text-ylang-charcoal/20 flex h-8 w-8 items-center justify-center rounded-lg bg-white transition-colors"
+                            className="font-body text-sm transition-opacity hover:opacity-50 disabled:opacity-20"
+                            style={{ color: "var(--color-ink-3)" }}
                           >
-                            <Plus className="h-4 w-4" />
+                            <Plus className="h-3 w-3" strokeWidth={1.5} />
                           </button>
                         </div>
 
-                        <p className="font-display text-xl font-bold text-[#b76e79]">
-                          {(item.price * item.quantity).toFixed(2)}€
+                        <p
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "var(--text-title)",
+                            fontWeight: 400,
+                            color: "var(--color-accent)",
+                          }}
+                        >
+                          {(item.price * item.quantity).toFixed(2)} €
                         </p>
                       </div>
                     </motion.div>
@@ -203,38 +226,45 @@ export function CartDrawer() {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-ylang-beige bg-ylang-cream border-t p-6">
-                <div className="mb-4 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-ylang-charcoal/70">Sous-total</span>
-                    <span className="text-ylang-charcoal font-medium">
-                      {getTotalPrice().toFixed(2)}€
+              <div
+                className="px-8 py-6"
+                style={{ background: "var(--color-paper-2)", borderTop: "var(--rule-hair)" }}
+              >
+                <div className="mb-6 space-y-3">
+                  <div className="flex justify-between">
+                    <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                      Sous-total
+                    </span>
+                    <span className="font-body text-sm" style={{ color: "var(--color-ink)" }}>
+                      {getTotalPrice().toFixed(2)} €
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-ylang-charcoal/70">Livraison</span>
-                    <span className="text-ylang-charcoal font-medium">
-                      {getShipping() === 0 ? (
-                        <span className="text-green-600">Offerte</span>
-                      ) : (
-                        `${getShipping().toFixed(2)}€`
-                      )}
+                  <div className="flex justify-between">
+                    <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                      Livraison
+                    </span>
+                    <span className="font-body text-sm" style={{ color: getShipping() === 0 ? "var(--color-accent-green)" : "var(--color-ink)" }}>
+                      {getShipping() === 0 ? "Offerte" : `${getShipping().toFixed(2)} €`}
                     </span>
                   </div>
                   {getTotalPrice() < freeShippingThreshold && (
-                    <p className="text-ylang-charcoal/60 text-xs">
-                      Plus que{" "}
-                      {(freeShippingThreshold - getTotalPrice()).toFixed(2)}€
-                      pour la livraison offerte
+                    <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                      Plus que {(freeShippingThreshold - getTotalPrice()).toFixed(2)} € pour la livraison offerte
                     </p>
                   )}
-
-                  <div className="flex justify-between border-t border-[#e8dcc8] pt-3">
-                    <span className="font-display text-ylang-charcoal font-bold">
+                  <div className="flex justify-between pt-4" style={{ borderTop: "var(--rule-soft)" }}>
+                    <span className="font-body text-sm font-medium" style={{ color: "var(--color-ink)" }}>
                       Total
                     </span>
-                    <span className="font-display text-2xl font-bold text-[#b76e79]">
-                      {getFinalPrice().toFixed(2)}€
+                    <span
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "var(--text-title)",
+                        fontWeight: 400,
+                        color: "var(--color-accent)",
+                      }}
+                    >
+                      {getFinalPrice().toFixed(2)} €
                     </span>
                   </div>
                 </div>
@@ -245,13 +275,17 @@ export function CartDrawer() {
                     animate={{ opacity: 1, height: "auto" }}
                     className="mb-4 overflow-hidden"
                   >
-                    <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
-                      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
-                      <div className="space-y-1 text-left">
-                        <p className="text-sm font-bold leading-tight">Limite de poids (30kg) dépassée</p>
-                        <p className="text-[11px] leading-relaxed opacity-90">
-                          Votre colis pèse actuellement {(getTotalWeight() / 1000).toFixed(1)}kg. 
-                          Merci de diviser votre commande en deux ou plusieurs envois s'il vous plaît.
+                    <div
+                      className="flex items-start gap-3 p-4"
+                      style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }}
+                    >
+                      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
+                      <div>
+                        <p className="font-body text-sm font-medium mb-0.5" style={{ color: "var(--color-ink)" }}>
+                          Limite de poids dépassée
+                        </p>
+                        <p className="font-body text-xs leading-relaxed" style={{ color: "var(--color-ink-3)" }}>
+                          Votre colis pèse {(getTotalWeight() / 1000).toFixed(1)} kg (max 30 kg). Merci de diviser votre commande.
                         </p>
                       </div>
                     </div>
@@ -269,7 +303,7 @@ export function CartDrawer() {
                   {!isOverWeightLimit() ? (
                     <Link href="/checkout">
                       Passer commande
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                      <ArrowRight className="ml-2 h-4 w-4" strokeWidth={1.5} />
                     </Link>
                   ) : (
                     <span>Commande trop lourde</span>
@@ -278,7 +312,8 @@ export function CartDrawer() {
 
                 <button
                   onClick={closeCart}
-                  className="text-ylang-charcoal/60 hover:text-ylang-charcoal mt-3 w-full text-sm transition-colors"
+                  className="mt-4 w-full font-body text-sm transition-opacity hover:opacity-60"
+                  style={{ color: "var(--color-ink-3)" }}
                 >
                   Continuer mes achats
                 </button>

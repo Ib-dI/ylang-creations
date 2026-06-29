@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { AnimatePresence, motion } from "framer-motion";
-import { Heart, ShoppingBag, Sparkles, Trash2, X } from "lucide-react";
+import { ArrowRight, Heart, ShoppingBag, Sparkles, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -41,8 +41,9 @@ export function WishlistDrawer() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             onClick={closeWishlist}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/40"
           />
         )}
       </AnimatePresence>
@@ -54,65 +55,91 @@ export function WishlistDrawer() {
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed top-0 right-0 bottom-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl"
+            transition={{ type: "tween", duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed top-0 right-0 bottom-0 z-50 flex w-full max-w-md flex-col"
+            style={{ background: "var(--color-paper)", boxShadow: "-4px 0 40px rgba(0,0,0,0.10)" }}
           >
             {/* Header */}
-            <div className="border-ylang-beige flex items-center justify-between border-b p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#b76e79]/10">
-                  <Heart className="h-5 w-5 text-[#b76e79]" />
-                </div>
-                <div>
-                  <h2 className="font-display text-ylang-charcoal text-xl font-bold">
-                    Mes favoris
-                  </h2>
-                  <p className="text-ylang-charcoal/60 text-sm">
-                    {getTotalItems()} article{getTotalItems() > 1 ? "s" : ""}
-                  </p>
-                </div>
+            <div
+              className="flex items-center justify-between px-8 py-6"
+              style={{ borderBottom: "var(--rule-hair)" }}
+            >
+              <div>
+                <p className="type-overline mb-1" style={{ color: "var(--color-accent)" }}>
+                  Votre sélection
+                </p>
+                <h2
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "var(--text-title)",
+                    fontWeight: 400,
+                    color: "var(--color-ink)",
+                  }}
+                >
+                  Favoris
+                </h2>
               </div>
-              <button
-                onClick={closeWishlist}
-                className="hover:bg-ylang-beige flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <div className="flex items-center gap-4">
+                <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                  {getTotalItems()} article{getTotalItems() > 1 ? "s" : ""}
+                </span>
+                <button
+                  onClick={closeWishlist}
+                  className="flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-60"
+                  style={{ color: "var(--color-ink)" }}
+                  aria-label="Fermer"
+                >
+                  <X className="h-4 w-4" strokeWidth={1.5} />
+                </button>
+              </div>
             </div>
 
             {/* Items */}
-            <div className="bg-ylang-terracotta/50 flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto px-8 py-6">
               {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
-                  <div className="bg-ylang-beige mb-4 flex h-20 w-20 items-center justify-center rounded-full">
-                    <Heart className="text-ylang-charcoal/40 h-10 w-10" />
-                  </div>
-                  <p className="font-display text-ylang-charcoal mb-2 text-lg">
+                  <Heart
+                    className="mb-6 h-10 w-10"
+                    style={{ color: "var(--color-ink-3)" }}
+                    strokeWidth={1}
+                  />
+                  <p
+                    className="mb-2"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "var(--text-title)",
+                      fontWeight: 400,
+                      color: "var(--color-ink)",
+                    }}
+                  >
                     Aucun favori
                   </p>
-                  <p className="text-ylang-charcoal/60 mb-6 text-sm">
+                  <p className="font-body mb-8 text-sm" style={{ color: "var(--color-ink-3)" }}>
                     Découvrez nos créations et ajoutez vos coups de cœur
                   </p>
-                  <Button variant="primary" onClick={closeWishlist} asChild>
+                  <Button variant="luxury" onClick={closeWishlist} asChild>
                     <Link href="/collections">Découvrir les collections</Link>
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div>
                   {items.map((item) => (
                     <motion.div
                       key={item.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: -100 }}
-                      className="bg-ylang-cream rounded-2xl p-4"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0, x: -40 }}
+                      transition={{ duration: 0.2 }}
+                      className="py-5"
+                      style={{ borderBottom: "var(--rule-soft)" }}
                     >
                       <div className="flex gap-4">
                         {/* Thumbnail */}
                         <Link
                           href={`/produits/${item.productId}`}
                           onClick={closeWishlist}
-                          className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white"
+                          className="relative h-20 w-16 shrink-0 overflow-hidden"
+                          style={{ background: "var(--color-paper-2)" }}
                         >
                           {item.image ? (
                             <Image
@@ -123,63 +150,79 @@ export function WishlistDrawer() {
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center">
-                              <span className="text-3xl">🛏️</span>
+                              <Heart className="h-5 w-5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1} />
                             </div>
                           )}
                         </Link>
 
                         {/* Info */}
                         <div className="min-w-0 flex-1">
-                          <p className="text-ylang-charcoal/50 font-abramo mb-1 text-xs font-semibold tracking-wider uppercase">
-                            {item.category}
-                          </p>
+                          {item.category && (
+                            <p className="type-overline mb-1" style={{ color: "var(--color-ink-3)" }}>
+                              {item.category}
+                            </p>
+                          )}
                           <Link
                             href={`/produits/${item.productId}`}
                             onClick={closeWishlist}
+                            className="transition-opacity hover:opacity-70"
                           >
-                            <h3 className="font-display text-ylang-charcoal mb-1 font-semibold transition-colors hover:text-[#b76e79]">
+                            <h3
+                              className="mb-1 font-body text-sm font-medium leading-tight"
+                              style={{ color: "var(--color-ink)" }}
+                            >
                               {item.name}
                             </h3>
                           </Link>
-                          <p className="font-display text-lg font-bold text-[#b76e79]">
-                            {item.price}€
+                          <p
+                            style={{
+                              fontFamily: "var(--font-display)",
+                              fontSize: "var(--text-title)",
+                              fontWeight: 400,
+                              color: "var(--color-accent)",
+                            }}
+                          >
+                            {item.price} €
                           </p>
                         </div>
 
                         {/* Delete */}
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-red-500 transition-colors hover:bg-red-50"
+                          className="flex h-6 w-6 shrink-0 items-center justify-center transition-opacity hover:opacity-50"
+                          style={{ color: "var(--color-ink-3)" }}
+                          aria-label="Retirer des favoris"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <X className="h-3.5 w-3.5" strokeWidth={1.5} />
                         </button>
                       </div>
 
                       {/* Actions */}
-                      <div className="mt-4 flex gap-2">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          className="flex-1"
+                      <div className="mt-4 flex gap-3">
+                        <button
                           onClick={() => handleAddToCart(item)}
+                          className="flex flex-1 items-center justify-center gap-2 py-2.5 font-body text-sm transition-opacity hover:opacity-70"
+                          style={{
+                            border: "var(--rule-soft)",
+                            color: "var(--color-ink)",
+                          }}
                         >
-                          <ShoppingBag className="mr-2 h-4 w-4" />
+                          <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.5} />
                           Ajouter au panier
-                        </Button>
+                        </button>
                         {item.customizable && (
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            asChild
+                          <Link
+                            href={`/configurateur?product=${item.productId}`}
                             onClick={closeWishlist}
+                            className="flex items-center gap-1.5 px-4 py-2.5 font-body text-sm transition-opacity hover:opacity-70"
+                            style={{
+                              background: "var(--color-paper-2)",
+                              color: "var(--color-ink-3)",
+                            }}
                           >
-                            <Link
-                              href={`/configurateur?product=${item.productId}`}
-                            >
-                              <Sparkles className="mr-1 h-4 w-4" />
-                              Personnaliser
-                            </Link>
-                          </Button>
+                            <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />
+                            Personnaliser
+                          </Link>
                         )}
                       </div>
                     </motion.div>
@@ -190,7 +233,10 @@ export function WishlistDrawer() {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-ylang-beige bg-ylang-cream border-t p-6">
+              <div
+                className="px-8 py-6"
+                style={{ background: "var(--color-paper-2)", borderTop: "var(--rule-hair)" }}
+              >
                 <Button
                   variant="luxury"
                   className="w-full"
@@ -199,14 +245,15 @@ export function WishlistDrawer() {
                   onClick={closeWishlist}
                 >
                   <Link href="/collections">
-                    Continuer mes découvertes
-                    <Heart className="ml-2 h-5 w-5" />
+                    Découvrir d'autres créations
+                    <ArrowRight className="ml-2 h-4 w-4" strokeWidth={1.5} />
                   </Link>
                 </Button>
 
                 <button
                   onClick={closeWishlist}
-                  className="text-ylang-charcoal/60 hover:text-ylang-charcoal mt-3 w-full text-sm transition-colors"
+                  className="mt-4 w-full font-body text-sm transition-opacity hover:opacity-60"
+                  style={{ color: "var(--color-ink-3)" }}
                 >
                   Fermer
                 </button>
