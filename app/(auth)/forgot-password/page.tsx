@@ -1,8 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -22,80 +21,101 @@ export default function ForgotPasswordPage() {
       redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset-password`,
     });
 
+    setLoading(false);
     if (error) {
       setMessage({ type: "error", text: error.message });
-      setLoading(false);
     } else {
       setMessage({
         type: "success",
         text: "Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.",
       });
-      setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F9F6F3] px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-xs">
-        <div className="flex flex-col items-center">
-          <div className="relative h-24 w-24">
-            <Image
-              src="/logo/ylang créations_6.png"
-              alt="Ylang Créations"
-              fill
-              className="object-contain"
-            />
+    <div
+      className="flex min-h-screen items-center justify-center px-4 py-16"
+      style={{ background: "var(--color-paper)" }}
+    >
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="mb-10 flex flex-col items-center">
+          <div className="relative mb-8 h-16 w-16">
+            <Image src="/logo/ylang créations_6.png" alt="Ylang Créations" fill className="object-contain" />
           </div>
-          <h2 className="font-abramo-script mt-6 text-center text-4xl tracking-tight text-[#1A1A1A]">
+          <p className="type-overline mb-3" style={{ color: "var(--color-accent)" }}>
+            Espace client
+          </p>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "var(--text-headline)",
+              fontWeight: 400,
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+              color: "var(--color-ink)",
+            }}
+          >
             Mot de passe oublié
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-500">
+          </h1>
+          <p className="mt-3 font-body text-sm text-center" style={{ color: "var(--color-ink-3)" }}>
             Entrez votre email pour recevoir un lien de réinitialisation
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleResetPassword}>
-          <div className="space-y-4">
-            <div>
-              <Input
-                type="email"
-                required
-                className=""
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {message && (
-            <div
-              className={`text-center text-sm ${
-                message.type === "success" ? "text-green-600" : "text-red-500"
-              }`}
-            >
+        {/* Message */}
+        {message && (
+          <div
+            className="mb-6 flex items-start gap-3 px-4 py-3"
+            style={{ background: "var(--color-paper-2)", border: "var(--rule-soft)" }}
+            role="alert"
+          >
+            {message.type === "success" ? (
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
+            ) : (
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
+            )}
+            <p className="font-body text-sm" style={{ color: "var(--color-ink)" }}>
               {message.text}
-            </div>
-          )}
+            </p>
+          </div>
+        )}
 
-          <div>
-            <Button
-              type="submit"
+        {/* Form */}
+        <form onSubmit={handleResetPassword} className="space-y-8">
+          <div style={{ borderBottom: "var(--rule-soft)" }}>
+            <input
+              type="email"
+              required
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
-              className="group bg-ylang-rose focus-visible:outline-ylang-rose relative flex w-full justify-center rounded-lg px-3 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8D5E50] focus-visible:outline-2 focus-visible:outline-offset-2"
-            >
-              {loading ? "Envoi..." : "Envoyer le lien"}
-            </Button>
+              className="w-full bg-transparent py-3 font-body text-base outline-none placeholder:opacity-40 disabled:opacity-40"
+              style={{ color: "var(--color-ink)" }}
+            />
           </div>
-          <div className="text-center text-sm">
-            <Link
-              href="/sign-in"
-              className="text-ylang-rose font-medium hover:text-[#8D5E50]"
-            >
-              Retour à la connexion
-            </Link>
-          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-4 font-body text-sm tracking-widest uppercase transition-opacity hover:opacity-80 disabled:opacity-40"
+            style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
+          >
+            {loading ? "Envoi…" : "Envoyer le lien"}
+          </button>
         </form>
+
+        {/* Back link */}
+        <p className="mt-8 text-center font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+          <Link
+            href="/sign-in"
+            className="transition-opacity hover:opacity-70"
+            style={{ color: "var(--color-ink)", borderBottom: "1px solid var(--color-accent)" }}
+          >
+            Retour à la connexion
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -1,9 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
-import { Eye, EyeOff } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -13,10 +11,7 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -24,110 +19,122 @@ export default function ResetPasswordPage() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setMessage({
-        type: "error",
-        text: "Les mots de passe ne correspondent pas.",
-      });
+      setMessage({ type: "error", text: "Les mots de passe ne correspondent pas." });
       return;
     }
 
     setLoading(true);
     setMessage(null);
 
-    const { error } = await supabase.auth.updateUser({
-      password: password,
-    });
+    const { error } = await supabase.auth.updateUser({ password });
 
+    setLoading(false);
     if (error) {
       setMessage({ type: "error", text: error.message });
-      setLoading(false);
     } else {
-      setMessage({
-        type: "success",
-        text: "Mot de passe mis à jour avec succès !",
-      });
-      setLoading(false);
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
+      setMessage({ type: "success", text: "Mot de passe mis à jour avec succès !" });
+      setTimeout(() => router.push("/"), 2000);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F9F6F3] px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-xs">
-        <div className="flex flex-col items-center">
-          <div className="relative h-24 w-24">
-            <Image
-              src="/logo/ylang créations_6.png"
-              alt="Ylang Créations"
-              fill
-              className="object-contain"
-            />
+    <div
+      className="flex min-h-screen items-center justify-center px-4 py-16"
+      style={{ background: "var(--color-paper)" }}
+    >
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="mb-10 flex flex-col items-center">
+          <div className="relative mb-8 h-16 w-16">
+            <Image src="/logo/ylang créations_6.png" alt="Ylang Créations" fill className="object-contain" />
           </div>
-          <h2 className="font-abramo-script mt-6 text-center text-4xl tracking-tight text-[#1A1A1A]">
+          <p className="type-overline mb-3" style={{ color: "var(--color-accent)" }}>
+            Espace client
+          </p>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "var(--text-headline)",
+              fontWeight: 400,
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+              color: "var(--color-ink)",
+            }}
+          >
             Nouveau mot de passe
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-500">
+          </h1>
+          <p className="mt-3 font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
             Entrez votre nouveau mot de passe
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleUpdatePassword}>
-          <div className="space-y-4">
-            <div className="relative">
-              <Input
+        {/* Message */}
+        {message && (
+          <div
+            className="mb-6 flex items-start gap-3 px-4 py-3"
+            style={{ background: "var(--color-paper-2)", border: "var(--rule-soft)" }}
+            role="alert"
+          >
+            {message.type === "success" ? (
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
+            ) : (
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
+            )}
+            <p className="font-body text-sm" style={{ color: "var(--color-ink)" }}>
+              {message.text}
+            </p>
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleUpdatePassword} className="space-y-8">
+          <div className="space-y-6">
+            {/* New password */}
+            <div className="flex items-center" style={{ borderBottom: "var(--rule-soft)" }}>
+              <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="pr-10"
                 placeholder="Nouveau mot de passe"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                className="flex-1 bg-transparent py-3 font-body text-base outline-none placeholder:opacity-40 disabled:opacity-40"
+                style={{ color: "var(--color-ink)" }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="hover:text-ylang-rose absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-colors"
+                className="pl-2 transition-opacity hover:opacity-60"
+                style={{ color: "var(--color-ink-3)" }}
+                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
               >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" strokeWidth={1.5} /> : <Eye className="h-4 w-4" strokeWidth={1.5} />}
               </button>
             </div>
 
-            <div className="relative">
-              <Input
+            {/* Confirm password */}
+            <div style={{ borderBottom: "var(--rule-soft)" }}>
+              <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="pr-10"
                 placeholder="Confirmer le mot de passe"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
+                className="w-full bg-transparent py-3 font-body text-base outline-none placeholder:opacity-40 disabled:opacity-40"
+                style={{ color: "var(--color-ink)" }}
               />
             </div>
           </div>
 
-          {message && (
-            <div
-              className={`text-center text-sm ${
-                message.type === "success" ? "text-green-600" : "text-red-500"
-              }`}
-            >
-              {message.text}
-            </div>
-          )}
-
-          <div>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="group bg-ylang-rose focus-visible:outline-ylang-rose relative flex w-full justify-center rounded-lg px-3 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8D5E50] focus-visible:outline-2 focus-visible:outline-offset-2"
-            >
-              {loading ? "Mise à jour..." : "Mettre à jour le mot de passe"}
-            </Button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-4 font-body text-sm tracking-widest uppercase transition-opacity hover:opacity-80 disabled:opacity-40"
+            style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
+          >
+            {loading ? "Mise à jour…" : "Mettre à jour le mot de passe"}
+          </button>
         </form>
       </div>
     </div>
