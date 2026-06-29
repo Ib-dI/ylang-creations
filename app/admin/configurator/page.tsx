@@ -558,12 +558,8 @@ export default function ConfiguratorAdmin() {
   if (isLoading) {
     return (
       <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
-        <div className="relative h-14 w-14">
-          <div className="absolute inset-0 rounded-full border-4 border-ylang-beige" />
-          <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-ylang-rose" />
-          <Palette className="absolute inset-0 m-auto h-5 w-5 text-ylang-rose/50" />
-        </div>
-        <p className="text-sm font-medium text-ylang-charcoal/40">Chargement du configurateur…</p>
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+        <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>Chargement du configurateur…</p>
       </div>
     );
   }
@@ -571,52 +567,52 @@ export default function ConfiguratorAdmin() {
   return (
     <div>
       {/* ── Header ────────────────────────────────────────────── */}
-      <div className="mb-6 overflow-hidden rounded-3xl bg-ylang-rose/50">
-        <div className="flex flex-col justify-between gap-4 p-6 sm:flex-row sm:items-center sm:p-8">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-ylang-rose/20 ring-2 ring-ylang-rose/30">
-              <Palette className="h-6 w-6 text-ylang-rose" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">Configurateur</h1>
-              <p className="text-sm text-white/70">Tissus · Produits · Broderie · Palettes</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-ylang-beige/15 px-3 py-1 text-xs font-semibold text-white/60 ring-1 ring-white/10">{fabrics.length} tissus</span>
-            <span className="rounded-full bg-ylang-rose/20 px-3 py-1 text-xs font-bold text-ylang-rose ring-1 ring-ylang-rose/30">{fabrics.filter(f => f.isActive).length} actifs</span>
-            <span className="rounded-full bg-ylang-beige/15 px-3 py-1 text-xs font-semibold text-white/60 ring-1 ring-white/10">{products.length} produits</span>
-            <span className="rounded-full bg-ylang-beige/15 px-3 py-1 text-xs font-semibold text-white/60 ring-1 ring-white/10">{colors.length} couleurs</span>
-          </div>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>Administration</p>
+          <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.75rem", color: "var(--color-ink)" }}>Configurateur</h1>
+          <p className="font-body mt-1 text-sm" style={{ color: "var(--color-ink-3)" }}>Tissus · Produits · Broderie · Palettes</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {[
+            { label: `${fabrics.length} tissus` },
+            { label: `${fabrics.filter(f => f.isActive).length} actifs` },
+            { label: `${products.length} produits` },
+            { label: `${colors.length} couleurs` },
+          ].map(({ label }) => (
+            <span key={label} className="inline-flex items-center gap-1.5 px-2.5 py-1 font-body text-xs" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+              {label}
+            </span>
+          ))}
         </div>
       </div>
 
       {/* ── Tabs ──────────────────────────────────────────────── */}
-      <div className="mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-ylang-beige bg-white p-1 shadow-sm">
-        <button
-          className={`flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${activeTab === 'fabrics' ? 'bg-ylang-rose text-white shadow-sm' : 'text-ylang-charcoal/50 hover:bg-ylang-beige/60 hover:text-ylang-charcoal'}`}
-          onClick={() => { setActiveTab('fabrics'); setSearchQuery(""); setSelectedCategory(null); }}>
-          Tissus & Catégories
-        </button>
-        <button
-          className={`flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${activeTab === 'products' ? 'bg-ylang-rose text-white shadow-sm' : 'text-ylang-charcoal/50 hover:bg-ylang-beige/60 hover:text-ylang-charcoal'}`}
-          onClick={() => { setActiveTab('products'); setSearchQuery(""); setSelectedCategory(null); }}>
-          Produits
-          <span className={`rounded-full px-1.5 py-0.5 text-[10px] transition-all ${activeTab === 'products' ? 'bg-white/20' : 'bg-ylang-beige text-ylang-charcoal/50'}`}>{products.length}</span>
-        </button>
-        <button
-          className={`flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${activeTab === 'broderie' ? 'bg-ylang-rose text-white shadow-sm' : 'text-ylang-charcoal/50 hover:bg-ylang-beige/60 hover:text-ylang-charcoal'}`}
-          onClick={() => { setActiveTab('broderie'); setSearchQuery(""); setSelectedCategory(null); }}>
-          <Crosshair className="h-3.5 w-3.5" />
-          Broderie
-        </button>
-        <button
-          className={`flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${activeTab === 'palettes' ? 'bg-ylang-rose text-white shadow-sm' : 'text-ylang-charcoal/50 hover:bg-ylang-beige/60 hover:text-ylang-charcoal'}`}
-          onClick={() => { setActiveTab('palettes'); setSearchQuery(""); setSelectedCategory(null); }}>
-          <Palette className="h-3.5 w-3.5" />
-          Palettes
-          <span className={`rounded-full px-1.5 py-0.5 text-[10px] transition-all ${activeTab === 'palettes' ? 'bg-white/20' : 'bg-ylang-beige text-ylang-charcoal/50'}`}>{colors.length}</span>
-        </button>
+      <div className="mb-6 flex overflow-x-auto" style={{ borderBottom: "var(--rule-soft)" }}>
+        {([
+          { id: "fabrics", label: "Tissus & Catégories", count: null },
+          { id: "products", label: "Produits", count: products.length },
+          { id: "broderie", label: "Broderie", count: null },
+          { id: "palettes", label: "Palettes", count: colors.length },
+        ] as const).map(({ id, label, count }) => (
+          <button
+            key={id}
+            onClick={() => { setActiveTab(id); setSearchQuery(""); setSelectedCategory(null); }}
+            className="relative flex shrink-0 items-center gap-1.5 whitespace-nowrap px-5 py-3 font-body text-sm font-medium transition-colors"
+            style={{
+              color: activeTab === id ? "var(--color-ink)" : "var(--color-ink-3)",
+              borderBottom: activeTab === id ? "2px solid var(--color-ink)" : "2px solid transparent",
+              marginBottom: "-1px",
+            }}
+          >
+            {label}
+            {count !== null && (
+              <span className="font-body text-[10px]" style={{ color: activeTab === id ? "var(--color-ink-3)" : "var(--color-ink-3)", opacity: 0.6 }}>
+                {count}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* ── Action bar ────────────────────────────────────────── */}
@@ -625,24 +621,27 @@ export default function ConfiguratorAdmin() {
           <div className="flex gap-2 lg:flex-1">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="text-ylang-charcoal/30 absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
+              <Search className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
               <input
                 type="text"
                 placeholder={activeTab === 'fabrics' ? "Rechercher un tissu ou une catégorie…" : "Rechercher un produit…"}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="h-11 w-full rounded-xl border border-ylang-beige bg-white pr-4 pl-10 text-sm text-ylang-charcoal shadow-sm outline-none transition-shadow focus:border-ylang-rose/40 focus:shadow-md focus:ring-0"
+                className="font-body h-11 w-full pr-4 pl-10 text-sm outline-none"
+                style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }}
               />
             </div>
             {/* Grid / List toggle */}
-            <div className="flex items-center rounded-xl border border-ylang-beige bg-white p-1 shadow-sm">
+            <div className="flex items-center p-1" style={{ border: "var(--rule-soft)", background: "var(--color-paper)" }}>
               <button onClick={() => setViewMode("grid")}
-                className={`rounded-lg p-1.5 transition-all ${viewMode === "grid" ? "bg-ylang-rose text-white shadow-sm" : "text-ylang-charcoal/30 hover:text-ylang-charcoal"}`}>
-                <LayoutGrid className="h-4 w-4" />
+                className="p-1.5 transition-colors"
+                style={{ background: viewMode === "grid" ? "var(--color-ink)" : "transparent", color: viewMode === "grid" ? "var(--color-paper)" : "var(--color-ink-3)" }}>
+                <LayoutGrid className="h-4 w-4" strokeWidth={1.5} />
               </button>
               <button onClick={() => setViewMode("list")}
-                className={`rounded-lg p-1.5 transition-all ${viewMode === "list" ? "bg-ylang-rose text-white shadow-sm" : "text-ylang-charcoal/30 hover:text-ylang-charcoal"}`}>
-                <List className="h-4 w-4" />
+                className="p-1.5 transition-colors"
+                style={{ background: viewMode === "list" ? "var(--color-ink)" : "transparent", color: viewMode === "list" ? "var(--color-paper)" : "var(--color-ink-3)" }}>
+                <List className="h-4 w-4" strokeWidth={1.5} />
               </button>
             </div>
           </div>
@@ -654,23 +653,25 @@ export default function ConfiguratorAdmin() {
                 <select
                   value={selectedCategory || ""}
                   onChange={e => setSelectedCategory(e.target.value || null)}
-                  className="h-11 cursor-pointer appearance-none rounded-xl border border-ylang-beige bg-white pr-8 pl-3 text-sm text-ylang-charcoal shadow-sm outline-none"
+                  className="font-body h-11 cursor-pointer appearance-none pr-8 pl-3 text-sm outline-none"
+                  style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }}
                 >
                   <option value="">Toutes catégories</option>
                   {uniqueFabricCategories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-ylang-charcoal/40" />
+                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
               </div>
             )}
 
             {/* Active-only toggle */}
-            <label className="flex h-11 cursor-pointer select-none items-center gap-2.5 rounded-xl border border-ylang-beige bg-white px-3.5 shadow-sm">
-              <span className="whitespace-nowrap text-sm font-medium text-ylang-charcoal/60">Actifs seulement</span>
+            <label className="flex h-11 cursor-pointer select-none items-center gap-2.5 px-3.5" style={{ border: "var(--rule-soft)", background: "var(--color-paper)" }}>
+              <span className="font-body whitespace-nowrap text-sm" style={{ color: "var(--color-ink-3)" }}>Actifs seulement</span>
               <div
                 onClick={() => setShowActiveOnly(prev => !prev)}
-                className={`relative h-5 w-9 rounded-full transition-colors ${showActiveOnly ? 'bg-ylang-rose' : 'bg-gray-200'}`}
+                className="relative h-5 w-9 rounded-full transition-colors"
+                style={{ background: showActiveOnly ? "var(--color-ink)" : "var(--color-paper-3)" }}
               >
                 <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${showActiveOnly ? 'left-4' : 'left-0.5'}`} />
               </div>
@@ -681,16 +682,18 @@ export default function ConfiguratorAdmin() {
               <>
                 <button
                   onClick={() => { setEditingCategory({ isActive: true, order: 0 }); setIsCategoryModalOpen(true); }}
-                  className="flex h-11 items-center gap-1.5 whitespace-nowrap rounded-xl border-2 border-ylang-charcoal/20 bg-white px-4 text-sm font-bold text-ylang-charcoal transition-colors hover:border-ylang-charcoal hover:bg-ylang-beige/40"
+                  className="flex h-11 items-center gap-1.5 whitespace-nowrap px-4 font-body text-sm font-medium transition-opacity hover:opacity-70"
+                  style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)", background: "var(--color-paper)" }}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4" strokeWidth={1.5} />
                   Catégorie
                 </button>
                 <button
                   onClick={() => { setEditingFabric({ isActive: true, price: 0 }); setIsFabricModalOpen(true); }}
-                  className="flex h-11 items-center gap-1.5 whitespace-nowrap rounded-xl bg-ylang-rose px-4 text-sm font-bold text-white shadow-sm transition-colors hover:bg-ylang-terracotta"
+                  className="flex h-11 items-center gap-1.5 whitespace-nowrap px-4 font-body text-sm font-medium transition-opacity hover:opacity-80"
+                  style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4" strokeWidth={1.5} />
                   Nouveau Tissu
                 </button>
               </>
@@ -703,36 +706,37 @@ export default function ConfiguratorAdmin() {
       {activeTab === 'fabrics' && (
         <div className="space-y-12">
           {filteredCategories.length === 0 && filteredFabrics.length === 0 ? (
-            <div className="py-20 text-center text-sm text-ylang-charcoal/50">Aucun tissu ou catégorie trouvé</div>
+            <div className="py-20 text-center font-body text-sm text-gray-400">Aucun tissu ou catégorie trouvé</div>
           ) : (
             filteredCategories.map(category => {
               const categoryFabrics = filteredFabrics.filter(f => f.category === category.id);
 
               return (
-                <div key={category.id} className={`overflow-hidden rounded-3xl border bg-white shadow-sm transition-opacity ${category.isActive ? 'border-ylang-beige' : 'border-dashed border-gray-200 opacity-70'}`}>
+                <div key={category.id} className={`overflow-hidden bg-white transition-opacity ${category.isActive ? '' : 'border-dashed border-gray-200 opacity-70'}`} style={{ border: category.isActive ? "var(--rule-hair)" : undefined }}>
                   {/* Category header */}
-                  <div className="flex flex-col justify-between gap-4 border-b border-ylang-beige bg-ylang-beige/30 px-6 py-4 sm:flex-row sm:items-center">
+                  <div className="flex flex-col justify-between gap-4 px-6 py-4 sm:flex-row sm:items-center" style={{ borderBottom: "var(--rule-soft)", background: "var(--color-paper-2)" }}>
                     <div className="flex items-center gap-3">
                       <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${category.isActive ? 'bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.6)]' : 'bg-gray-300'}`} />
                       <div>
                         <div className="flex items-center gap-2.5">
                           <h2 className="font-abramo-script text-3xl" style={{ color: "var(--color-ink)" }}>{category.title}</h2>
-                          <span className="rounded-full bg-ylang-charcoal/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ylang-charcoal/40">{category.id}</span>
+                          <span className="type-overline px-2 py-0.5 text-gray-400" style={{ border: "var(--rule-soft)" }}>{category.id}</span>
                         </div>
-                        {category.description && <p className="mt-0.5 text-sm text-ylang-charcoal/50">{category.description}</p>}
+                        {category.description && <p className="mt-0.5 font-body text-sm text-gray-400">{category.description}</p>}
                       </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-1.5">
                       <button onClick={() => { setEditingFabric({ isActive: true, price: 0, category: category.id }); setIsFabricModalOpen(true); }}
-                        className="flex items-center gap-1.5 rounded-xl border border-ylang-rose/30 bg-ylang-rose/8 px-3 py-1.5 text-xs font-bold text-ylang-rose transition-all hover:bg-ylang-rose/15">
-                        <Plus className="h-3.5 w-3.5" /> Tissu
+                        className="flex items-center gap-1.5 px-3 py-1.5 font-body text-xs font-medium transition-opacity hover:opacity-80"
+                        style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}>
+                        <Plus className="h-3.5 w-3.5" strokeWidth={1.5} /> Tissu
                       </button>
                       <button onClick={() => { setEditingCategory(category); setIsCategoryModalOpen(true); }}
-                        className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-ylang-charcoal/40 shadow-sm transition-colors hover:bg-ylang-beige hover:text-ylang-charcoal">
+                        className="flex h-8 w-8 items-center justify-center bg-white text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600" style={{ border: "var(--rule-soft)" }}>
                         <Edit className="h-3.5 w-3.5" />
                       </button>
                       <button onClick={e => toggleCategoryActive(category, e)}
-                        className={`flex h-8 w-8 items-center justify-center rounded-xl transition-colors ${category.isActive ? 'bg-white text-ylang-charcoal/40 shadow-sm hover:bg-ylang-beige' : 'bg-green-100 text-green-600 hover:bg-green-200'}`}>
+                        className={`flex h-8 w-8 items-center justify-center transition-colors ${category.isActive ? 'bg-white text-gray-400 hover:bg-gray-50' : 'bg-green-100 text-green-600 hover:bg-green-200'}`} style={category.isActive ? { border: "var(--rule-soft)" } : undefined}>
                         {category.isActive ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       </button>
                       <button onClick={e => deleteCategory(category.id, category.title, e)}
@@ -744,27 +748,27 @@ export default function ConfiguratorAdmin() {
                   <div className="p-6">
 
                   {categoryFabrics.length === 0 ? (
-                    <div className="py-12 text-center text-sm text-ylang-charcoal/30">
+                    <div className="py-12 text-center font-body text-sm text-gray-400">
                       <p className="font-medium">Aucun tissu dans cette catégorie</p>
                       <button onClick={() => { setEditingFabric({ isActive: true, price: 0, category: category.id }); setIsFabricModalOpen(true); }}
-                        className="mt-2 text-xs font-bold text-ylang-rose underline-offset-2 hover:underline">
+                        className="font-body mt-2 text-xs font-medium text-gray-500 underline-offset-2 hover:underline">
                         + Ajouter le premier tissu
                       </button>
                     </div>
                   ) : viewMode === "grid" ? (
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                       {categoryFabrics.map(fabric => (
-                        <div key={fabric.id} className={`group relative overflow-hidden rounded-2xl border transition-all hover:shadow-lg hover:-translate-y-0.5 ${fabric.isActive ? 'border-ylang-beige' : 'border-dashed border-gray-200 opacity-55'}`}>
+                        <div key={fabric.id} className={`group relative overflow-hidden transition-all hover:shadow-sm ${fabric.isActive ? '' : 'border-dashed border-gray-200 opacity-55'}`} style={fabric.isActive ? { border: "var(--rule-soft)" } : undefined}>
                           {/* Texture image */}
                           <div className="aspect-square w-full bg-cover bg-center" style={{ backgroundImage: `url(${fabric.image})`, backgroundColor: fabric.baseColor }} />
                           {/* Hover overlay actions */}
-                          <div className="absolute inset-0 flex items-end justify-center gap-1.5 bg-ylang-charcoal/20 p-3 opacity-0 backdrop-blur-[1px] transition-opacity group-hover:opacity-100">
+                          <div className="absolute inset-0 flex items-end justify-center gap-1.5 bg-black/20 p-3 opacity-0 backdrop-blur-[1px] transition-opacity group-hover:opacity-100">
                             <button onClick={e => toggleFabricActive(fabric, e)} title={fabric.isActive ? "Désactiver" : "Activer"}
-                              className={`flex h-8 w-8 items-center justify-center rounded-xl shadow transition-colors ${fabric.isActive ? 'bg-white/90 text-ylang-charcoal hover:bg-white' : 'bg-green-400/90 text-white hover:bg-green-400'}`}>
+                              className={`flex h-8 w-8 items-center justify-center shadow transition-colors ${fabric.isActive ? 'bg-white/90 text-gray-700 hover:bg-white' : 'bg-green-400/90 text-white hover:bg-green-400'}`}>
                               {fabric.isActive ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                             </button>
                             <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }}
-                              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 text-ylang-charcoal shadow transition-colors hover:bg-white">
+                              className="flex h-8 w-8 items-center justify-center bg-white/90 text-gray-700 shadow transition-colors hover:bg-white">
                               <Edit className="h-3.5 w-3.5" />
                             </button>
                             <button onClick={() => deleteFabric(fabric.id, fabric.name)}
@@ -773,34 +777,34 @@ export default function ConfiguratorAdmin() {
                             </button>
                           </div>
                           {/* Info bar */}
-                          <div className="border-t border-ylang-beige bg-white px-2.5 py-2">
-                            <h3 className="truncate text-xs font-bold text-ylang-charcoal">{fabric.name}</h3>
+                          <div className="bg-white px-2.5 py-2" style={{ borderTop: "var(--rule-soft)" }}>
+                            <h3 className="truncate text-xs font-medium text-gray-800">{fabric.name}</h3>
                             <div className="mt-0.5 flex items-center gap-1.5">
                               <div className="h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-black/10" style={{ backgroundColor: fabric.baseColor }} />
-                              <span className="font-mono text-[16px] font-black text-ylang-rose">{fabric.price.toFixed(2)}€</span>
+                              <span className="font-mono text-[13px] font-semibold text-gray-600">{fabric.price.toFixed(2)}€</span>
                             </div>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="border-ylang-beige overflow-hidden rounded-2xl border shadow-xs">
-                      <div className="grid grid-cols-[48px_1fr_100px_80px_140px] items-center gap-4 border-b border-ylang-beige bg-gray-50/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-ylang-charcoal/50">
+                    <div className="overflow-hidden" style={{ border: "var(--rule-hair)" }}>
+                      <div className="grid grid-cols-[48px_1fr_100px_80px_140px] items-center gap-4 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500" style={{ borderBottom: "var(--rule-soft)", background: "var(--color-paper-2)" }}>
                         <div>Aperçu</div><div>Nom</div><div>Prix</div><div>Statut</div><div className="text-right">Actions</div>
                       </div>
-                      <div className="divide-y divide-ylang-beige/50">
+                      <div className="divide-y divide-gray-100">
                         {categoryFabrics.map(fabric => (
                           <div key={fabric.id} className={`grid grid-cols-[48px_1fr_100px_80px_140px] items-center gap-4 px-5 py-2.5 transition-colors hover:bg-gray-50/50 ${!fabric.isActive ? 'opacity-60' : ''}`}>
-                            <div className="h-10 w-10 rounded-lg bg-cover bg-center border border-ylang-beige" style={{ backgroundImage: `url(${fabric.image})`, backgroundColor: fabric.baseColor }} />
-                            <div className="font-medium text-ylang-charcoal truncate">{fabric.name}</div>
-                            <div className="text-sm font-bold text-ylang-rose">{fabric.price.toFixed(2)}€</div>
+                            <div className="h-10 w-10 rounded-sm bg-cover bg-center" style={{ backgroundImage: `url(${fabric.image})`, backgroundColor: fabric.baseColor, border: "var(--rule-soft)" }} />
+                            <div className="truncate font-medium text-gray-800">{fabric.name}</div>
+                            <div className="font-mono text-sm font-medium text-gray-600">{fabric.price.toFixed(2)}€</div>
                             <div>
-                              <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${fabric.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                              <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${fabric.isActive ? 'bg-green-100 text-green-800' : 'border border-gray-300 bg-white text-gray-800'}`}>
                                 {fabric.isActive ? 'Actif' : 'Inactif'}
                               </span>
                             </div>
                             <div className="flex justify-end gap-1.5">
-                              <button onClick={e => toggleFabricActive(fabric, e)} className={`rounded-lg border p-1.5 transition-colors ${fabric.isActive ? 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200' : 'border-gray-300 bg-gray-100 text-gray-500 hover:bg-gray-200'}`} title={fabric.isActive ? "Désactiver" : "Activer"}>
+                              <button onClick={e => toggleFabricActive(fabric, e)} className={`rounded-lg border p-1.5 transition-colors ${fabric.isActive ? 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'}`} title={fabric.isActive ? "Désactiver" : "Activer"}>
                                 {fabric.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                               </button>
                               <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="rounded-lg border border-blue-300 bg-blue-100 p-1.5 text-blue-600 transition-colors hover:bg-blue-200">
@@ -827,22 +831,22 @@ export default function ConfiguratorAdmin() {
             if (uncategorized.length === 0) return null;
             return (
               <div className="rounded-3xl border border-dashed border-gray-300 bg-gray-50/50 p-6 opacity-80">
-                <h3 className="mb-4 text-xl font-bold text-gray-500">Tissus hors catégories (ou ID de catégorie invalide)</h3>
+                <h3 className="mb-4 text-xl font-bold text-gray-700">Tissus hors catégories (ou ID de catégorie invalide)</h3>
                 {viewMode === "grid" ? (
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                     {uncategorized.map(fabric => (
-                      <div key={fabric.id} className={`rounded-2xl border bg-white overflow-hidden transition-all hover:shadow-md ${fabric.isActive ? 'border-ylang-beige' : 'border-gray-200 opacity-60'}`}>
+                      <div key={fabric.id} className={`bg-white overflow-hidden transition-all hover:shadow-sm ${fabric.isActive ? '' : 'border border-gray-200 opacity-60'}`} style={fabric.isActive ? { border: "var(--rule-soft)" } : undefined}>
                         <div className="aspect-square w-full bg-cover bg-center" style={{ backgroundImage: `url(${fabric.image})`, backgroundColor: fabric.baseColor }} />
                         <div className="p-2.5">
                           <div className="flex items-start justify-between gap-1">
                             <div className="min-w-0">
-                              <h3 className="truncate text-sm font-bold text-ylang-charcoal">{fabric.name}</h3>
-                              <span className="text-[10px] font-black text-ylang-rose">{fabric.price.toFixed(2)}€</span>
+                              <h3 className="truncate font-body text-sm font-medium text-gray-800">{fabric.name}</h3>
+                              <span className="font-mono text-[10px] font-semibold text-gray-600">{fabric.price.toFixed(2)}€</span>
                             </div>
                           </div>
-                          <p className="mt-1 truncate text-[10px] text-gray-400">Cat: {fabric.category}</p>
+                          <p className="mt-1 truncate text-[10px] text-gray-600">Cat: {fabric.category}</p>
                           <div className="mt-2 flex items-center gap-1">
-                            <button onClick={e => toggleFabricActive(fabric, e)} title={fabric.isActive ? "Désactiver" : "Activer"} className={`flex h-7 w-7 items-center justify-center rounded-lg border p-1 transition-colors ${fabric.isActive ? 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200' : 'border-gray-300 bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                            <button onClick={e => toggleFabricActive(fabric, e)} title={fabric.isActive ? "Désactiver" : "Activer"} className={`flex h-7 w-7 items-center justify-center rounded-lg border p-1 transition-colors ${fabric.isActive ? 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'}`}>
                               {fabric.isActive ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
                             </button>
                             <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="flex h-7 w-7 items-center justify-center rounded-lg border border-blue-300 bg-blue-100 p-1 text-blue-600 transition-colors hover:bg-blue-200">
@@ -858,23 +862,23 @@ export default function ConfiguratorAdmin() {
                   </div>
                 ) : (
                   <div className="border-gray-200 overflow-hidden rounded-2xl border shadow-xs">
-                    <div className="grid grid-cols-[48px_1fr_120px_100px_80px_140px] items-center gap-4 border-b border-gray-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    <div className="grid grid-cols-[48px_1fr_120px_100px_80px_140px] items-center gap-4 border-b border-gray-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-wider text-gray-600">
                       <div>Aperçu</div><div>Nom</div><div>Catégorie</div><div>Prix</div><div>Statut</div><div className="text-right">Actions</div>
                     </div>
                     <div className="divide-y divide-gray-100">
                       {uncategorized.map(fabric => (
                         <div key={fabric.id} className={`grid grid-cols-[48px_1fr_120px_100px_80px_140px] items-center gap-4 bg-white px-5 py-2.5 transition-colors hover:bg-gray-50/50 ${!fabric.isActive ? 'opacity-60' : ''}`}>
                           <div className="h-10 w-10 rounded-lg bg-cover bg-center border border-gray-200" style={{ backgroundImage: `url(${fabric.image})`, backgroundColor: fabric.baseColor }} />
-                          <div className="font-medium text-gray-600 truncate">{fabric.name}</div>
-                          <div className="text-sm text-gray-400">{fabric.category}</div>
-                          <div className="text-sm font-bold text-gray-500">{fabric.price.toFixed(2)}€</div>
+                          <div className="font-medium text-gray-800 truncate">{fabric.name}</div>
+                          <div className="text-sm text-gray-600">{fabric.category}</div>
+                          <div className="text-sm font-bold text-gray-700">{fabric.price.toFixed(2)}€</div>
                           <div>
-                            <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${fabric.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                            <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${fabric.isActive ? 'bg-green-100 text-green-800' : 'border border-gray-300 bg-white text-gray-800'}`}>
                               {fabric.isActive ? 'Actif' : 'Inactif'}
                             </span>
                           </div>
                           <div className="flex justify-end gap-1.5">
-                            <button onClick={e => toggleFabricActive(fabric, e)} className={`rounded-lg border p-1.5 transition-colors ${fabric.isActive ? 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200' : 'border-gray-300 bg-gray-100 text-gray-500 hover:bg-gray-200'}`} title={fabric.isActive ? "Désactiver" : "Activer"}>
+                            <button onClick={e => toggleFabricActive(fabric, e)} className={`rounded-lg border p-1.5 transition-colors ${fabric.isActive ? 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'}`} title={fabric.isActive ? "Désactiver" : "Activer"}>
                               {fabric.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                             </button>
                             <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="rounded-lg border border-blue-300 bg-blue-100 p-1.5 text-blue-600 transition-colors hover:bg-blue-200">
@@ -900,12 +904,13 @@ export default function ConfiguratorAdmin() {
       {activeTab === 'products' && (
         <div>
           <div className="mb-5 flex items-center justify-between">
-            <p className="text-sm font-medium text-ylang-charcoal/50">{filteredProducts.length} produit{filteredProducts.length !== 1 ? 's' : ''}</p>
+            <p className="text-sm font-medium text-gray-400">{filteredProducts.length} produit{filteredProducts.length !== 1 ? 's' : ''}</p>
             <button
               onClick={() => handleOpenProductModal()}
-              className="flex h-10 items-center gap-1.5 rounded-xl bg-ylang-rose px-4 text-sm font-bold text-white shadow-sm transition-colors hover:bg-ylang-terracotta"
+              className="flex h-10 items-center gap-1.5 px-4 font-body text-sm font-medium transition-opacity hover:opacity-80"
+              style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-4 w-4" strokeWidth={1.5} />
               Nouveau Produit
             </button>
           </div>
@@ -914,19 +919,19 @@ export default function ConfiguratorAdmin() {
             {filteredProducts.map(product => {
               const layerCount = [product.baseImage, product.maskImage, product.colorMaskImage].filter(Boolean).length;
               return (
-                <div key={product.id} className={`group relative overflow-hidden rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md ${product.isActive ? 'border-ylang-beige' : 'border-dashed border-gray-200 opacity-65'}`}>
+                <div key={product.id} className={`group relative overflow-hidden bg-white transition-all hover:shadow-sm ${product.isActive ? '' : 'border-dashed border-gray-200 opacity-65'}`} style={product.isActive ? { border: "var(--rule-soft)" } : undefined}>
                   {/* Status accent stripe */}
                   <div className={`absolute left-0 top-0 h-full w-1 rounded-l-2xl ${product.isActive ? 'bg-green-400' : 'bg-gray-300'}`} />
 
                   <div className="flex flex-col gap-4 p-5 pl-6 sm:flex-row sm:items-center">
                     {/* Aperçu */}
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-ylang-beige/60 ring-1 ring-ylang-beige">
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden" style={{ background: "var(--color-paper-2)", border: "var(--rule-soft)" }}>
                       {product.baseImage
                         ? <img src={product.baseImage} alt={product.name} className="h-full w-full object-cover" />
                         : <span className="flex h-full w-full items-center justify-center text-3xl">{product.icon || "?"}</span>
                       }
                       {/* Layer count badge */}
-                      <div className="absolute bottom-1 right-1 rounded-md bg-ylang-charcoal/80 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                      <div className="absolute bottom-1 right-1 bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white">
                         {layerCount}L
                       </div>
                     </div>
@@ -934,11 +939,11 @@ export default function ConfiguratorAdmin() {
                     {/* Infos */}
                     <div className="grow">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-base font-black text-ylang-charcoal">{product.name}</h3>
+                        <h3 className="text-base font-bold text-gray-900">{product.name}</h3>
                         {product.icon && <span className="text-lg leading-none">{product.icon}</span>}
                       </div>
-                      {product.description && <p className="mt-0.5 line-clamp-1 text-sm text-ylang-charcoal/50">{product.description}</p>}
-                      <p className="mt-1 text-sm font-black text-ylang-rose">{product.basePrice.toFixed(2)} €</p>
+                      {product.description && <p className="mt-0.5 line-clamp-1 text-sm text-gray-400">{product.description}</p>}
+                      <p className="font-mono mt-1 text-sm font-semibold text-gray-600">{product.basePrice.toFixed(2)} €</p>
 
                       {/* Calques badges */}
                       <div className="mt-2 flex flex-wrap items-center gap-1">
@@ -952,7 +957,7 @@ export default function ConfiguratorAdmin() {
                           {product.colorMaskImage ? '✓' : '○'} Couleur
                         </span>
                         {product.embroideryZone && (
-                          <span className="inline-flex items-center gap-0.5 rounded-md bg-ylang-rose/10 px-1.5 py-0.5 text-[10px] font-bold text-ylang-rose">
+                          <span className="inline-flex items-center gap-0.5 rounded-md border border-gray-300 bg-white px-1.5 py-0.5 text-[10px] font-bold text-gray-700">
                             ✓ Broderie
                           </span>
                         )}
@@ -964,20 +969,20 @@ export default function ConfiguratorAdmin() {
                       <div className="hidden shrink-0 items-center gap-1.5 lg:flex">
                         {product.baseImage && (
                           <div className="group/thumb relative">
-                            <img src={product.baseImage} alt="Base" className="h-12 w-12 rounded-xl border border-ylang-beige object-cover bg-ylang-beige/60" />
-                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-ylang-charcoal px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover/thumb:opacity-100">Base</span>
+                            <img src={product.baseImage} alt="Base" className="h-12 w-12 object-cover" style={{ border: "var(--rule-soft)", background: "var(--color-paper-2)" }} />
+                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover/thumb:opacity-100">Base</span>
                           </div>
                         )}
                         {product.maskImage && (
                           <div className="group/thumb relative">
-                            <img src={product.maskImage} alt="Masque" className="h-12 w-12 rounded-xl border border-ylang-beige object-cover bg-gray-100" />
-                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-ylang-charcoal px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover/thumb:opacity-100">Masque</span>
+                            <img src={product.maskImage} alt="Masque" className="h-12 w-12 object-cover bg-gray-100" style={{ border: "var(--rule-soft)" }} />
+                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover/thumb:opacity-100">Masque</span>
                           </div>
                         )}
                         {product.colorMaskImage && (
                           <div className="group/thumb relative">
                             <img src={product.colorMaskImage} alt="Couleur" className="h-12 w-12 rounded-xl border border-blue-200 object-cover bg-gray-100" />
-                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-ylang-charcoal px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover/thumb:opacity-100">Couleur</span>
+                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover/thumb:opacity-100">Couleur</span>
                           </div>
                         )}
                       </div>
@@ -986,7 +991,7 @@ export default function ConfiguratorAdmin() {
                     {/* Actions */}
                     <div className="flex shrink-0 items-center gap-1.5 border-t pt-3 sm:border-none sm:pt-0">
                       <button onClick={() => handleOpenProductModal(product)}
-                        className="flex h-9 items-center gap-1.5 rounded-xl bg-ylang-beige px-3 text-sm font-bold text-ylang-charcoal transition-colors hover:bg-ylang-beige/80">
+                        className="flex h-9 items-center gap-1.5 px-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" style={{ border: "var(--rule-soft)" }}>
                         <Edit className="h-3.5 w-3.5" /> Modifier
                       </button>
                       <button onClick={() => toggleProductActive(product)}
@@ -1012,32 +1017,32 @@ export default function ConfiguratorAdmin() {
 
           {/* ── Liste des produits ── */}
           <div className="w-full shrink-0 space-y-1.5 lg:w-72">
-            <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-ylang-charcoal/30">Sélectionner un produit</p>
+            <p className="type-overline mb-3" style={{ color: "var(--color-ink-3)" }}>Sélectionner un produit</p>
             {products.map(product => (
               <button
                 key={product.id}
                 onClick={() => openEmbroideryEditor(product)}
                 className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all ${
                   embroideryProduct?.id === product.id
-                    ? 'border-ylang-rose bg-ylang-rose/5 shadow-sm'
-                    : 'border-ylang-beige bg-white hover:border-ylang-rose/30 hover:shadow-sm'
+                    ? 'border-[#19191c] bg-gray-50 shadow-sm'
+                    : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-sm'
                 }`}
               >
-                <div className="h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-ylang-beige/60 ring-1 ring-ylang-beige">
+                <div className="h-11 w-11 shrink-0 overflow-hidden" style={{ background: "var(--color-paper-2)", border: "var(--rule-soft)" }}>
                   {product.baseImage
                     ? <img src={product.baseImage} alt={product.name} className="h-full w-full object-cover" />
                     : <span className="flex h-full w-full items-center justify-center text-xl">{product.icon}</span>
                   }
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-ylang-charcoal">{product.name}</p>
+                  <p className="truncate font-body text-sm font-medium text-gray-800">{product.name}</p>
                   {product.embroideryZone
                     ? <p className="mt-0.5 text-[10px] font-semibold text-green-600">✓ Calibré ({Math.round(product.embroideryZone.x * 100)}%, {Math.round(product.embroideryZone.y * 100)}%)</p>
-                    : <p className="mt-0.5 text-[10px] text-ylang-charcoal/35">Non configuré</p>
+                    : <p className="font-body mt-0.5 text-[10px] text-gray-400">Non configuré</p>
                   }
                 </div>
                 {embroideryProduct?.id === product.id && (
-                  <div className="h-2 w-2 shrink-0 rounded-full bg-ylang-rose" />
+                  <div className="h-2 w-2 shrink-0 rounded-full bg-[#19191c]" />
                 )}
               </button>
             ))}
@@ -1045,24 +1050,24 @@ export default function ConfiguratorAdmin() {
 
           {/* ── Éditeur ── */}
           {!embroideryProduct ? (
-            <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-ylang-beige bg-white py-24">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-ylang-beige/60">
-                <Crosshair className="h-8 w-8 text-ylang-charcoal/20" />
+            <div className="flex flex-1 flex-col items-center justify-center border-2 border-dashed border-gray-200 bg-white py-24">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center" style={{ background: "var(--color-paper-2)" }}>
+                <Crosshair className="h-8 w-8 text-gray-300" />
               </div>
-              <p className="font-medium text-ylang-charcoal/40">Sélectionnez un produit</p>
-              <p className="mt-1 text-sm text-ylang-charcoal/25">pour calibrer sa zone de broderie</p>
+              <p className="font-body font-medium text-gray-400">Sélectionnez un produit</p>
+              <p className="font-body mt-1 text-sm text-gray-300">pour calibrer sa zone de broderie</p>
             </div>
           ) : (
             <div className="flex flex-1 flex-col gap-6 lg:flex-row">
 
               {/* Image interactive */}
               <div className="flex-1">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ylang-charcoal/40">
+                <p className="mb-2 type-overline" style={{ color: "var(--color-ink-3)" }}>
                   Cliquez sur l'image pour positionner la broderie
                 </p>
                 <div
                   ref={imageContainerRef}
-                  className="relative cursor-crosshair overflow-hidden rounded-2xl border border-ylang-beige bg-[#f5f1e8] shadow-sm select-none"
+                  className="relative cursor-crosshair overflow-hidden bg-[#f5f1e8] select-none" style={{ border: "var(--rule-soft)" }}
                   onClick={handleImageClick}
                 >
                   <img
@@ -1082,9 +1087,9 @@ export default function ConfiguratorAdmin() {
                     }}
                   >
                     <div className="relative h-8 w-8">
-                      <div className="absolute top-1/2 left-0 h-px w-full bg-ylang-rose/80" />
-                      <div className="absolute left-1/2 top-0 h-full w-px bg-ylang-rose/80" />
-                      <div className="absolute top-1/2 left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ylang-rose ring-2 ring-white shadow" />
+                      <div className="absolute top-1/2 left-0 h-px w-full bg-[#19191c]/60" />
+                      <div className="absolute left-1/2 top-0 h-full w-px bg-[#19191c]/60" />
+                      <div className="absolute top-1/2 left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#19191c] ring-2 ring-white shadow" />
                     </div>
                   </div>
 
@@ -1100,7 +1105,7 @@ export default function ConfiguratorAdmin() {
 
                   {/* Zone max-width indicator */}
                   <div
-                    className="pointer-events-none absolute border border-dashed border-ylang-rose/30"
+                    className="pointer-events-none absolute border border-dashed border-[#19191c]/20"
                     style={{
                       left: `${(embroideryZone.x - embroideryZone.maxWidth / 2) * 100}%`,
                       top: `${embroideryZone.y * 100}%`,
@@ -1115,90 +1120,90 @@ export default function ConfiguratorAdmin() {
 
               {/* Contrôles */}
               <div className="flex w-full flex-col gap-4 lg:w-72">
-                <div className="rounded-2xl border border-ylang-beige bg-white p-5 shadow-sm">
-                  <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-ylang-charcoal/40">Paramètres</h3>
+                <div className="bg-white p-5" style={{ border: "var(--rule-soft)" }}>
+                  <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-gray-400">Paramètres</h3>
 
                   {/* Texte de prévisualisation */}
                   <div className="mb-4">
-                    <label className="mb-1 block text-xs font-semibold text-ylang-charcoal/60">Texte de prévisualisation</label>
+                    <label className="mb-1 block font-body text-xs font-medium text-gray-500">Texte de prévisualisation</label>
                     <input
                       type="text"
                       value={previewText}
                       onChange={e => setPreviewText(e.target.value.slice(0, 15))}
                       placeholder="Ylang"
-                      className="border-ylang-beige focus:border-ylang-rose w-full rounded-xl border bg-white px-3 py-2 text-sm outline-none"
+                      className="font-body w-full border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-gray-400"
                     />
                   </div>
 
                   {/* Position X */}
                   <div className="mb-3">
                     <div className="mb-1 flex items-center justify-between">
-                      <label className="text-xs font-semibold text-ylang-charcoal/60">Position X</label>
-                      <span className="text-xs font-bold text-ylang-rose">{Math.round(embroideryZone.x * 100)}%</span>
+                      <label className="font-body text-xs font-medium text-gray-500">Position X</label>
+                      <span className="font-mono text-xs font-semibold text-gray-600">{Math.round(embroideryZone.x * 100)}%</span>
                     </div>
                     <input type="range" min="0" max="100" step="1"
                       value={Math.round(embroideryZone.x * 100)}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, x: Number(e.target.value) / 100 }))}
-                      className="w-full accent-ylang-rose" />
+                      className="w-full accent-[#19191c]" />
                   </div>
 
                   {/* Position Y */}
                   <div className="mb-3">
                     <div className="mb-1 flex items-center justify-between">
-                      <label className="text-xs font-semibold text-ylang-charcoal/60">Position Y</label>
-                      <span className="text-xs font-bold text-ylang-rose">{Math.round(embroideryZone.y * 100)}%</span>
+                      <label className="font-body text-xs font-medium text-gray-500">Position Y</label>
+                      <span className="font-mono text-xs font-semibold text-gray-600">{Math.round(embroideryZone.y * 100)}%</span>
                     </div>
                     <input type="range" min="0" max="100" step="1"
                       value={Math.round(embroideryZone.y * 100)}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, y: Number(e.target.value) / 100 }))}
-                      className="w-full accent-ylang-rose" />
+                      className="w-full accent-[#19191c]" />
                   </div>
 
                   {/* Rotation */}
                   <div className="mb-3">
                     <div className="mb-1 flex items-center justify-between">
-                      <label className="flex items-center gap-1.5 text-xs font-semibold text-ylang-charcoal/60">
+                      <label className="flex items-center gap-1.5 font-body text-xs font-medium text-gray-500">
                         <RotateCcw className="h-3 w-3" /> Rotation
                       </label>
-                      <span className="text-xs font-bold text-ylang-rose">{embroideryZone.rotation}°</span>
+                      <span className="font-mono text-xs font-semibold text-gray-600">{embroideryZone.rotation}°</span>
                     </div>
                     <input type="range" min="-90" max="90" step="1"
                       value={embroideryZone.rotation}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, rotation: Number(e.target.value) }))}
-                      className="w-full accent-ylang-rose" />
+                      className="w-full accent-[#19191c]" />
                   </div>
 
                   {/* Taille de police */}
                   <div className="mb-3">
                     <div className="mb-1 flex items-center justify-between">
-                      <label className="flex items-center gap-1.5 text-xs font-semibold text-ylang-charcoal/60">
+                      <label className="flex items-center gap-1.5 font-body text-xs font-medium text-gray-500">
                         <Type className="h-3 w-3" /> Taille police
                       </label>
-                      <span className="text-xs font-bold text-ylang-rose">{embroideryZone.fontSize}px</span>
+                      <span className="font-mono text-xs font-semibold text-gray-600">{embroideryZone.fontSize}px</span>
                     </div>
                     <input type="range" min="10" max="80" step="1"
                       value={embroideryZone.fontSize}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, fontSize: Number(e.target.value) }))}
-                      className="w-full accent-ylang-rose" />
+                      className="w-full accent-[#19191c]" />
                   </div>
 
                   {/* Largeur max */}
                   <div className="mb-4">
                     <div className="mb-1 flex items-center justify-between">
-                      <label className="flex items-center gap-1.5 text-xs font-semibold text-ylang-charcoal/60">
+                      <label className="flex items-center gap-1.5 font-body text-xs font-medium text-gray-500">
                         <Maximize2 className="h-3 w-3" /> Largeur max
                       </label>
-                      <span className="text-xs font-bold text-ylang-rose">{Math.round(embroideryZone.maxWidth * 100)}%</span>
+                      <span className="font-mono text-xs font-semibold text-gray-600">{Math.round(embroideryZone.maxWidth * 100)}%</span>
                     </div>
                     <input type="range" min="5" max="100" step="1"
                       value={Math.round(embroideryZone.maxWidth * 100)}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, maxWidth: Number(e.target.value) / 100 }))}
-                      className="w-full accent-ylang-rose" />
+                      className="w-full accent-[#19191c]" />
                   </div>
 
                   {/* Alignement */}
                   <div className="mb-4">
-                    <label className="mb-2 block text-xs font-semibold text-ylang-charcoal/60">Alignement</label>
+                    <label className="mb-2 block font-body text-xs font-medium text-gray-500">Alignement</label>
                     <div className="flex gap-2">
                       {(["left", "center", "right"] as const).map(align => (
                         <button
@@ -1206,8 +1211,8 @@ export default function ConfiguratorAdmin() {
                           onClick={() => setEmbroideryZone(prev => ({ ...prev, alignment: align }))}
                           className={`flex-1 rounded-lg border py-1.5 text-xs font-bold transition-colors ${
                             embroideryZone.alignment === align
-                              ? 'border-ylang-rose bg-ylang-rose text-white'
-                              : 'border-gray-200 bg-white text-ylang-charcoal/60 hover:border-ylang-rose/40'
+                              ? 'border-[#19191c] bg-[#19191c] text-white'
+                              : 'border-gray-200 bg-white text-gray-500 hover:border-gray-400'
                           }`}
                         >
                           {align === "left" ? "◀" : align === "center" ? "◉" : "▶"}
@@ -1216,12 +1221,12 @@ export default function ConfiguratorAdmin() {
                     </div>
                   </div>
 
-                  <div className="mb-3 border-t border-ylang-beige/60 pt-4">
-                    <h4 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-ylang-charcoal/30">Plusieurs noms</h4>
+                  <div className="mb-3 pt-4" style={{ borderTop: "var(--rule-soft)" }}>
+                    <h4 className="type-overline mb-3" style={{ color: "var(--color-ink-3)" }}>Plusieurs noms</h4>
 
                     {/* Multi-noms actif/inactif */}
                     <div className="mb-3">
-                      <label className="mb-2 block text-xs font-semibold text-ylang-charcoal/60">Fonctionnalité multi-noms</label>
+                      <label className="mb-2 block font-body text-xs font-medium text-gray-500">Fonctionnalité multi-noms</label>
                       <div className="flex gap-2">
                         {([true, false] as const).map(val => (
                           <button
@@ -1229,8 +1234,8 @@ export default function ConfiguratorAdmin() {
                             onClick={() => setEmbroideryZone(prev => ({ ...prev, multiNameEnabled: val }))}
                             className={`flex-1 rounded-lg border py-1.5 text-xs font-bold transition-colors ${
                               (embroideryZone.multiNameEnabled ?? true) === val
-                                ? 'border-ylang-rose bg-ylang-rose text-white'
-                                : 'border-gray-200 bg-white text-ylang-charcoal/60 hover:border-ylang-rose/40'
+                                ? 'border-[#19191c] bg-[#19191c] text-white'
+                                : 'border-gray-200 bg-white text-gray-500 hover:border-gray-400'
                             }`}
                           >
                             {val ? "Activé" : "Désactivé"}
@@ -1243,16 +1248,16 @@ export default function ConfiguratorAdmin() {
                     {(embroideryZone.multiNameEnabled ?? true) && (
                       <div>
                         <div className="mb-1 flex items-center justify-between">
-                          <label className="text-xs font-semibold text-ylang-charcoal/60">Espacement des noms</label>
-                          <span className="text-xs font-bold text-ylang-rose">{embroideryZone.nameSpacing ?? -36}px</span>
+                          <label className="font-body text-xs font-medium text-gray-500">Espacement des noms</label>
+                          <span className="font-mono text-xs font-semibold text-gray-600">{embroideryZone.nameSpacing ?? -36}px</span>
                         </div>
                         <input
                           type="range" min="-60" max="20" step="1"
                           value={embroideryZone.nameSpacing ?? -36}
                           onChange={e => setEmbroideryZone(prev => ({ ...prev, nameSpacing: Number(e.target.value) }))}
-                          className="w-full accent-ylang-rose"
+                          className="w-full accent-[#19191c]"
                         />
-                        <div className="mt-0.5 flex justify-between text-[9px] text-ylang-charcoal/30">
+                        <div className="mt-0.5 flex justify-between text-[9px] text-gray-400">
                           <span>Serré</span>
                           <span>Espacé</span>
                         </div>
@@ -1262,14 +1267,15 @@ export default function ConfiguratorAdmin() {
                 </div>
 
                 {/* Valeurs JSON */}
-                <div className="rounded-xl border border-ylang-beige bg-ylang-beige/30 px-4 py-3 font-mono text-[9px] text-ylang-charcoal/40">
+                <div className="px-4 py-3 font-mono text-[9px] text-gray-400" style={{ border: "var(--rule-soft)", background: "var(--color-paper-2)" }}>
                   <pre>{JSON.stringify(embroideryZone, null, 2)}</pre>
                 </div>
 
                 <button
                   onClick={handleSaveEmbroidery}
                   disabled={isSavingEmbroidery}
-                  className="flex items-center justify-center gap-2 rounded-2xl bg-ylang-charcoal py-3.5 font-bold text-white shadow-sm transition-colors hover:bg-ylang-charcoal/80 disabled:opacity-70"
+                  className="flex items-center justify-center gap-2 py-3.5 font-body font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
+                  style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
                 >
                   {isSavingEmbroidery && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isSavingEmbroidery ? "Sauvegarde…" : "Sauvegarder la zone"}
@@ -1285,19 +1291,20 @@ export default function ConfiguratorAdmin() {
         <div className="space-y-5">
           {/* Sub-tabs + CTA */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex gap-1 self-start rounded-2xl border border-ylang-beige bg-white p-1 shadow-sm">
+            <div className="flex gap-1 self-start bg-white p-1" style={{ border: "var(--rule-soft)" }}>
               {(["product", "embroidery"] as const).map(type => (
                 <button
                   key={type}
                   onClick={() => setColorSubTab(type)}
-                  className={`rounded-xl px-5 py-2 text-sm font-bold transition-all ${
+                  className={`px-5 py-2 font-body text-sm font-medium transition-all ${
                     colorSubTab === type
-                      ? "bg-ylang-charcoal text-white shadow-sm"
-                      : "text-ylang-charcoal/50 hover:bg-ylang-beige/60 hover:text-ylang-charcoal"
+                      ? "text-white"
+                      : "text-gray-500 hover:text-gray-700"
                   }`}
+                  style={colorSubTab === type ? { background: "var(--color-ink)" } : undefined}
                 >
                   {type === "product" ? "Couleurs Produit" : "Fils Broderie"}
-                  <span className={`ml-2 rounded-full px-1.5 py-0.5 text-[10px] ${colorSubTab === type ? 'bg-white/20' : 'bg-ylang-beige text-ylang-charcoal/50'}`}>
+                  <span className={`ml-2 px-1.5 py-0.5 text-[10px] ${colorSubTab === type ? 'bg-white/20' : 'bg-gray-100 text-gray-500'}`}>
                     {colors.filter(c => c.type === type).length}
                   </span>
                 </button>
@@ -1308,7 +1315,8 @@ export default function ConfiguratorAdmin() {
                 setEditingColor({ type: colorSubTab, isActive: true, order: colors.filter(c => c.type === colorSubTab).length });
                 setIsColorModalOpen(true);
               }}
-              className="flex h-10 items-center gap-2 self-start rounded-xl bg-ylang-rose px-4 text-sm font-bold text-white shadow-sm transition-colors hover:bg-ylang-terracotta sm:self-auto"
+              className="flex h-10 items-center gap-2 self-start px-4 font-body text-sm font-medium transition-opacity hover:opacity-80 sm:self-auto"
+              style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
             >
               <Plus className="h-4 w-4" />
               Ajouter une couleur
@@ -1316,7 +1324,7 @@ export default function ConfiguratorAdmin() {
           </div>
 
           {/* Description */}
-          <p className="text-sm text-ylang-charcoal/50">
+          <p className="font-body text-sm text-gray-400">
             {colorSubTab === "product"
               ? "Couleurs proposées pour personnaliser les zones colorées des produits (masque couleur)."
               : "Couleurs de fil proposées pour la broderie personnalisée."}
@@ -1324,12 +1332,12 @@ export default function ConfiguratorAdmin() {
 
           {/* Color grid */}
           {colors.filter(c => c.type === colorSubTab).length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-ylang-beige bg-white py-20 text-center">
-              <Palette className="mb-3 h-10 w-10 text-ylang-charcoal/20" />
-              <p className="text-sm font-medium text-ylang-charcoal/40">Aucune couleur pour l&apos;instant</p>
+            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 bg-white py-20 text-center">
+              <Palette className="mb-3 h-10 w-10 text-gray-300" />
+              <p className="font-body text-sm font-medium text-gray-400">Aucune couleur pour l&apos;instant</p>
               <button
                 onClick={() => { setEditingColor({ type: colorSubTab, isActive: true, order: 0 }); setIsColorModalOpen(true); }}
-                className="mt-3 text-xs font-bold text-ylang-rose underline-offset-2 hover:underline"
+                className="font-body mt-3 text-xs font-medium text-gray-500 underline-offset-2 hover:underline"
               >
                 + Ajouter la première couleur
               </button>
@@ -1339,9 +1347,9 @@ export default function ConfiguratorAdmin() {
               {colors.filter(c => c.type === colorSubTab).sort((a, b) => a.order - b.order).map(color => (
                 <div
                   key={color.id}
-                  className={`group flex flex-col items-center gap-2 rounded-2xl border-2 p-3 transition-all hover:shadow-md hover:-translate-y-0.5 ${
-                    color.isActive ? "border-ylang-beige bg-white" : "border-dashed border-gray-200 bg-gray-50/60 opacity-55"
-                  }`}
+                  className={`group flex flex-col items-center gap-2 p-3 transition-all hover:shadow-sm ${
+                    color.isActive ? "bg-white" : "border-dashed border-gray-200 bg-gray-50/60 opacity-55"
+                  }`} style={color.isActive ? { border: "var(--rule-soft)" } : undefined}
                 >
                   {/* Swatch avec fond damier pour couleurs claires */}
                   <div
@@ -1353,20 +1361,20 @@ export default function ConfiguratorAdmin() {
                         : undefined,
                     }}
                   />
-                  <p className="max-w-full truncate text-center text-[11px] font-bold leading-tight text-ylang-charcoal">{color.name}</p>
-                  <p className="font-mono text-[9px] uppercase text-ylang-charcoal/35">{color.hex}</p>
+                  <p className="font-body max-w-full truncate text-center text-[11px] font-medium leading-tight text-gray-800">{color.name}</p>
+                  <p className="font-mono text-[9px] uppercase text-gray-400">{color.hex}</p>
 
                   {/* Actions on hover */}
                   <div className="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
                     <button
                       onClick={() => toggleColorActive(color)}
-                      className="rounded-lg p-1 text-ylang-charcoal/40 transition-colors hover:bg-ylang-beige hover:text-ylang-charcoal"
+                      className="p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
                     >
                       {color.isActive ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                     </button>
                     <button
                       onClick={() => { setEditingColor(color); setIsColorModalOpen(true); }}
-                      className="rounded-lg p-1 text-ylang-charcoal/40 transition-colors hover:bg-ylang-beige hover:text-ylang-charcoal"
+                      className="p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
                     >
                       <Edit className="h-3 w-3" />
                     </button>
@@ -1388,49 +1396,49 @@ export default function ConfiguratorAdmin() {
       <Dialog open={isFabricModalOpen} onOpenChange={setIsFabricModalOpen}>
         <DialogContent className="sm:max-w-[460px]">
           <DialogHeader>
-            <DialogTitle className="text-xl font-black text-ylang-charcoal">
+            <DialogTitle style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.125rem", color: "var(--color-ink)" }}>
               {editingFabric?.id && fabrics.some(f => f.id === editingFabric.id) ? "Modifier le tissu" : "Nouveau tissu"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleFabricSubmit} className="mt-4 space-y-4">
             {!fabrics.some(f => f.id === editingFabric?.id) && (
               <div>
-                <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">ID unique (ex: coton-15)</label>
+                <label className="font-body mb-2 block text-sm font-medium text-gray-600">ID unique (ex: coton-15)</label>
                 <input type="text" value={editingFabric?.id || ""} onChange={e => setEditingFabric(prev => ({ ...prev!, id: e.target.value }))}
-                  className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" required />
+                  className="font-body w-full px-4 py-2 text-sm outline-none" style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }} required />
               </div>
             )}
             <div>
-              <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Nom</label>
+              <label className="font-body mb-2 block text-sm font-medium text-gray-600">Nom</label>
               <input type="text" value={editingFabric?.name || ""} onChange={e => setEditingFabric(prev => ({ ...prev!, name: e.target.value }))}
-                className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" required />
+                className="font-body w-full px-4 py-2 text-sm outline-none" style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }} required />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Catégorie</label>
+                <label className="font-body mb-2 block text-sm font-medium text-gray-600">Catégorie</label>
                 <input type="text" value={editingFabric?.category || ""} onChange={e => setEditingFabric(prev => ({ ...prev!, category: e.target.value }))}
-                  placeholder="coton, vichy..." className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" required />
+                  placeholder="coton, vichy..." className="font-body w-full px-4 py-2 text-sm outline-none" style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }} required />
               </div>
               <div>
-                <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Prix (€)</label>
+                <label className="font-body mb-2 block text-sm font-medium text-gray-600">Prix (€)</label>
                 <div className="relative">
                   <input type="number" step="0.01" min="0" value={editingFabric?.price ?? 0} onChange={e => setEditingFabric(prev => ({ ...prev!, price: parseFloat(e.target.value) || 0 }))}
-                    className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border bg-white py-2 pr-8 pl-4 outline-none focus:ring-2" required />
-                  <span className="absolute top-1/2 right-3 -translate-y-1/2 text-sm font-bold text-ylang-charcoal/40">€</span>
+                    className="font-body w-full bg-white py-2 pr-8 pl-4 outline-none" style={{ border: "var(--rule-soft)" }} required />
+                  <span className="absolute top-1/2 right-3 -translate-y-1/2 text-sm text-gray-400">€</span>
                 </div>
               </div>
             </div>
             <div>
-              <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Couleur de base</label>
+              <label className="font-body mb-2 block text-sm font-medium text-gray-600">Couleur de base</label>
               <div className="flex gap-2">
                 <input type="color" value={editingFabric?.baseColor || "#ffffff"} onChange={e => setEditingFabric(prev => ({ ...prev!, baseColor: e.target.value }))}
                   className="h-10 w-10 shrink-0 cursor-pointer rounded border p-1" />
                 <input type="text" value={editingFabric?.baseColor || ""} onChange={e => setEditingFabric(prev => ({ ...prev!, baseColor: e.target.value }))}
-                  className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full grow rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" required />
+                  className="font-body w-full grow bg-white px-4 py-2 outline-none" style={{ border: "var(--rule-soft)" }} required />
               </div>
             </div>
             <div>
-              <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Image (Texture)</label>
+              <label className="font-body mb-2 block text-sm font-medium text-gray-600">Image (Texture)</label>
               <ImageUpload
                 value={editingFabric?.image ? [editingFabric.image] : []}
                 onChange={(urls) => setEditingFabric(prev => ({ ...prev!, image: urls[0] || "" }))}
@@ -1438,7 +1446,7 @@ export default function ConfiguratorAdmin() {
                 showPreview={true}
               />
             </div>
-            <button type="submit" disabled={isSavingFabric} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-ylang-charcoal py-3 font-bold text-white transition-colors hover:bg-ylang-charcoal/80 disabled:opacity-70">
+            <button type="submit" disabled={isSavingFabric} className="mt-4 flex w-full items-center justify-center gap-2 py-3 font-body font-medium transition-opacity hover:opacity-80 disabled:opacity-50" style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}>
               {isSavingFabric && <Loader2 className="h-4 w-4 animate-spin" />}
               {isSavingFabric ? "Enregistrement…" : "Enregistrer"}
             </button>
@@ -1453,16 +1461,16 @@ export default function ConfiguratorAdmin() {
           {/* ── Header ── */}
           <div className="sticky top-0 z-10 border-b border-[#ede8df] bg-white px-7 py-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-ylang-rose/10">
-                <Package className="h-4 w-4 text-ylang-rose" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center" style={{ background: "var(--color-paper-2)", border: "var(--rule-soft)" }}>
+                <Package className="h-4 w-4" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
               </div>
               <div>
-                <DialogTitle className="text-base font-black text-ylang-charcoal leading-tight">
+                <DialogTitle style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1rem", color: "var(--color-ink)", lineHeight: 1.2 }}>
                   {editingProduct?.id && products.some(p => p.id === editingProduct.id)
                     ? "Modifier le produit"
                     : "Nouveau produit configurateur"}
                 </DialogTitle>
-                <p className="text-[11px] text-ylang-charcoal/40 font-medium mt-0.5">
+                <p className="font-body text-[11px] font-medium mt-0.5" style={{ color: "var(--color-ink-3)" }}>
                   {editingProduct?.id && products.some(p => p.id === editingProduct.id)
                     ? `ID : ${editingProduct.id}`
                     : "Remplissez les informations du nouveau produit"}
@@ -1476,24 +1484,25 @@ export default function ConfiguratorAdmin() {
             {/* ── Section 1 : Identité ── */}
             <div className="px-7 py-6 space-y-4">
               <div className="flex items-center gap-2 mb-1">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ylang-charcoal text-[10px] font-black text-white">1</span>
-                <h3 className="text-xs font-black tracking-widest text-ylang-charcoal/50 uppercase">Identité</h3>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[10px] font-bold text-white" style={{ background: "var(--color-ink)" }}>1</span>
+                <h3 className="type-overline" style={{ color: "var(--color-ink-3)" }}>Identité</h3>
               </div>
 
               {/* ID — création uniquement */}
               {!products.some(p => p.id === editingProduct?.id) && (
                 <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-ylang-charcoal/70">
+                  <label className="mb-1.5 flex items-center gap-1.5 font-body text-xs font-medium text-gray-600">
                     Identifiant unique
-                    <span className="text-ylang-rose">*</span>
-                    <span className="ml-auto text-[10px] font-normal text-ylang-charcoal/30">slug sans espaces</span>
+                    <span className="text-gray-400">*</span>
+                    <span className="ml-auto text-[10px] font-normal text-gray-400">slug sans espaces</span>
                   </label>
                   <input
                     type="text"
                     value={editingProduct?.id || ""}
                     onChange={e => setEditingProduct(prev => ({ ...prev!, id: e.target.value.toLowerCase().replace(/\s+/g, "-") }))}
                     placeholder="gigoteuse-4-saisons"
-                    className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-4 py-2.5 font-mono text-sm text-ylang-charcoal placeholder:text-ylang-charcoal/25 outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                    className="font-body w-full px-4 py-2.5 font-mono text-sm text-gray-800 placeholder:text-gray-300 outline-none"
+                    style={{ border: "var(--rule-soft)", background: "var(--color-paper)" }}
                     required
                   />
                 </div>
@@ -1502,39 +1511,39 @@ export default function ConfiguratorAdmin() {
               {/* Nom + Icône sur la même ligne */}
               <div className="flex gap-3">
                 <div className="flex-1">
-                  <label className="mb-1.5 flex items-center gap-1 text-xs font-semibold text-ylang-charcoal/70">
-                    Nom du produit <span className="text-ylang-rose">*</span>
+                  <label className="mb-1.5 flex items-center gap-1 font-body text-xs font-medium text-gray-600">
+                    Nom du produit <span className="text-gray-400">*</span>
                   </label>
                   <input
                     type="text"
                     value={editingProduct?.name || ""}
                     onChange={e => setEditingProduct(prev => ({ ...prev!, name: e.target.value }))}
                     placeholder="Gigoteuse 4 saisons"
-                    className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-4 py-2.5 text-sm text-ylang-charcoal placeholder:text-ylang-charcoal/25 outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-300 outline-none"
                     required
                   />
                 </div>
                 <div className="w-24 shrink-0">
-                  <label className="mb-1.5 block text-xs font-semibold text-ylang-charcoal/70">Icône</label>
+                  <label className="mb-1.5 block font-body text-xs font-medium text-gray-600">Icône</label>
                   <input
                     type="text"
                     value={editingProduct?.icon || ""}
                     onChange={e => setEditingProduct(prev => ({ ...prev!, icon: e.target.value }))}
                     placeholder="🧸"
-                    className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-3 py-2.5 text-center text-lg outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-center text-lg outline-none focus:border-gray-400"
                   />
                 </div>
               </div>
 
               {/* Description */}
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-ylang-charcoal/70">Description</label>
+                <label className="mb-1.5 block font-body text-xs font-medium text-gray-600">Description</label>
                 <textarea
                   value={editingProduct?.description || ""}
                   onChange={e => setEditingProduct(prev => ({ ...prev!, description: e.target.value }))}
                   rows={2}
                   placeholder="Description courte visible sur la page configurateur…"
-                  className="w-full resize-none rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-4 py-2.5 text-sm text-ylang-charcoal placeholder:text-ylang-charcoal/25 outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                  className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-300 outline-none"
                 />
               </div>
             </div>
@@ -1542,34 +1551,34 @@ export default function ConfiguratorAdmin() {
             {/* ── Section 2 : Tarification ── */}
             <div className="px-7 py-6 space-y-4">
               <div className="flex items-center gap-2 mb-1">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ylang-charcoal text-[10px] font-black text-white">2</span>
-                <h3 className="text-xs font-black tracking-widest text-ylang-charcoal/50 uppercase">Tarification & logistique</h3>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[10px] font-bold text-white" style={{ background: "var(--color-ink)" }}>2</span>
+                <h3 className="type-overline" style={{ color: "var(--color-ink-3)" }}>Tarification & logistique</h3>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-ylang-charcoal/70">
-                    Prix de base (€) <span className="text-ylang-rose">*</span>
+                  <label className="mb-1.5 block font-body text-xs font-medium text-gray-600">
+                    Prix de base (€) <span className="text-gray-400">*</span>
                   </label>
                   <div className="relative">
-                    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-ylang-charcoal/30">€</span>
+                    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">€</span>
                     <input
                       type="number" step="0.01" min="0"
                       value={editingProduct?.basePrice ?? 0}
                       onChange={e => setEditingProduct(prev => ({ ...prev!, basePrice: parseFloat(e.target.value) || 0 }))}
-                      className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] py-2.5 pl-8 pr-4 text-sm text-ylang-charcoal outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                      className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-8 pr-4 text-sm text-gray-800 outline-none focus:border-gray-400"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-ylang-charcoal/70">Poids (grammes)</label>
+                  <label className="mb-1.5 block font-body text-xs font-medium text-gray-600">Poids (grammes)</label>
                   <div className="relative">
-                    <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-ylang-charcoal/30">g</span>
+                    <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">g</span>
                     <input
                       type="number" min="0"
                       value={editingProduct?.weight ?? 0}
                       onChange={e => setEditingProduct(prev => ({ ...prev!, weight: parseInt(e.target.value) || 0 }))}
-                      className="w-full rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] py-2.5 pl-4 pr-8 text-sm text-ylang-charcoal outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                      className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-4 pr-8 text-sm text-gray-800 outline-none focus:border-gray-400"
                     />
                   </div>
                 </div>
@@ -1579,21 +1588,21 @@ export default function ConfiguratorAdmin() {
             {/* ── Section 3 : Calques visuels ── */}
             <div className="px-7 py-6 space-y-4">
               <div className="flex items-center gap-2 mb-1">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ylang-charcoal text-[10px] font-black text-white">3</span>
-                <h3 className="text-xs font-black tracking-widest text-ylang-charcoal/50 uppercase">Calques visuels</h3>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[10px] font-bold text-white" style={{ background: "var(--color-ink)" }}>3</span>
+                <h3 className="type-overline" style={{ color: "var(--color-ink-3)" }}>Calques visuels</h3>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 {/* Image de base */}
-                <div className="rounded-2xl border border-[#ede8df] bg-[#fdfaf6] p-4 flex flex-col">
+                <div className="p-4 flex flex-col bg-white" style={{ border: "var(--rule-soft)" }}>
                   <div className="mb-2 flex items-start justify-between gap-1">
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-ylang-charcoal leading-tight">
-                        Image de base <span className="text-ylang-rose">*</span>
+                      <p className="font-body text-sm font-medium text-gray-800 leading-tight">
+                        Image de base <span className="text-gray-400">*</span>
                       </p>
-                      <p className="text-[10px] text-ylang-charcoal/40 mt-0.5">Silhouette + ombres</p>
+                      <p className="font-body text-[10px] text-gray-400 mt-0.5">Silhouette + ombres</p>
                     </div>
-                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.baseImage ? "bg-green-100 text-green-700" : "bg-[#ede8df] text-ylang-charcoal/40"}`}>
+                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.baseImage ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}>
                       {productImages.baseImage ? "✓" : "Requis"}
                     </span>
                   </div>
@@ -1609,15 +1618,15 @@ export default function ConfiguratorAdmin() {
                 </div>
 
                 {/* Masque tissu */}
-                <div className="rounded-2xl border border-[#ede8df] bg-[#fdfaf6] p-4 flex flex-col">
+                <div className="p-4 flex flex-col bg-white" style={{ border: "var(--rule-soft)" }}>
                   <div className="mb-2 flex items-start justify-between gap-1">
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-ylang-charcoal leading-tight">
-                        Masque tissu <span className="text-ylang-rose">*</span>
+                      <p className="font-body text-sm font-medium text-gray-800 leading-tight">
+                        Masque tissu <span className="text-gray-400">*</span>
                       </p>
-                      <p className="text-[10px] text-ylang-charcoal/40 mt-0.5">N&amp;B — blanc = tissu</p>
+                      <p className="font-body text-[10px] text-gray-400 mt-0.5">N&amp;B — blanc = tissu</p>
                     </div>
-                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.maskImage ? "bg-green-100 text-green-700" : "bg-[#ede8df] text-ylang-charcoal/40"}`}>
+                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.maskImage ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}>
                       {productImages.maskImage ? "✓" : "Requis"}
                     </span>
                   </div>
@@ -1636,10 +1645,10 @@ export default function ConfiguratorAdmin() {
                 <div className="rounded-2xl border border-dashed border-[#ddd5c8] bg-white p-4 flex flex-col">
                   <div className="mb-2 flex items-start justify-between gap-1">
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-ylang-charcoal leading-tight">Masque couleur</p>
-                      <p className="text-[10px] text-ylang-charcoal/40 mt-0.5">Zone d&apos;accent coloré</p>
+                      <p className="font-body text-sm font-medium text-gray-800 leading-tight">Masque couleur</p>
+                      <p className="font-body text-[10px] text-gray-400 mt-0.5">Zone d&apos;accent coloré</p>
                     </div>
-                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.colorMaskImage ? "bg-green-100 text-green-700" : "bg-ylang-beige text-ylang-charcoal/40"}`}>
+                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.colorMaskImage ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}>
                       {productImages.colorMaskImage ? "✓" : "Optionnel"}
                     </span>
                   </div>
@@ -1659,12 +1668,12 @@ export default function ConfiguratorAdmin() {
             {/* ── Section 4 : Tailles ── */}
             <div className="px-7 py-6 space-y-4">
               <div className="flex items-center gap-2 mb-1">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ylang-charcoal text-[10px] font-black text-white">4</span>
-                <h3 className="text-xs font-black tracking-widest text-ylang-charcoal/50 uppercase">Tailles disponibles</h3>
-                <span className="ml-auto rounded-md bg-ylang-beige px-1.5 py-0.5 text-[10px] font-semibold text-ylang-charcoal/50">Optionnel</span>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[10px] font-bold text-white" style={{ background: "var(--color-ink)" }}>4</span>
+                <h3 className="type-overline" style={{ color: "var(--color-ink-3)" }}>Tailles disponibles</h3>
+                <span className="font-body ml-auto px-1.5 py-0.5 text-[10px] font-medium text-gray-400" style={{ border: "var(--rule-soft)" }}>Optionnel</span>
               </div>
-              <p className="text-xs text-ylang-charcoal/40 -mt-2">
-                Laisser vide si le produit n&apos;a pas de taille. Cliquer sur une taille pour la définir par défaut <span className="text-ylang-rose">★</span>
+              <p className="font-body text-xs text-gray-400 -mt-2">
+                Laisser vide si le produit n&apos;a pas de taille. Cliquer sur une taille pour la définir par défaut <span className="text-gray-400">★</span>
               </p>
 
               {/* Input d'ajout */}
@@ -1685,7 +1694,7 @@ export default function ConfiguratorAdmin() {
                     }
                   }}
                   placeholder="Ex : XS, S, M, L, XL, 0–3M…"
-                  className="flex-1 rounded-xl border border-[#e8dcc8] bg-[#fdfaf6] px-4 py-2.5 text-sm text-ylang-charcoal placeholder:text-ylang-charcoal/25 outline-none transition-all focus:border-ylang-rose focus:bg-white focus:ring-2 focus:ring-ylang-rose/10"
+                  className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-300 outline-none"
                 />
                 <button
                   type="button"
@@ -1697,7 +1706,8 @@ export default function ConfiguratorAdmin() {
                     setEditingProduct(prev => ({ ...prev!, sizes: [...current, val] }));
                     setNewSizeInput("");
                   }}
-                  className="flex shrink-0 items-center gap-1.5 rounded-xl bg-ylang-charcoal px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-ylang-charcoal/80 active:scale-95"
+                  className="flex shrink-0 items-center gap-1.5 px-4 py-2.5 font-body text-sm font-medium text-white transition-opacity hover:opacity-80 active:scale-95"
+                  style={{ background: "var(--color-ink)" }}
                 >
                   <Plus className="h-3.5 w-3.5" />
                   Ajouter
@@ -1712,10 +1722,10 @@ export default function ConfiguratorAdmin() {
                     return (
                       <div
                         key={size}
-                        className={`flex items-center gap-1 rounded-xl border-2 pl-3 pr-1.5 py-1.5 text-sm font-bold transition-all ${
+                        className={`flex items-center gap-1 border-2 pl-3 pr-1.5 py-1.5 font-body text-sm font-medium transition-all ${
                           isDefault
-                            ? "border-ylang-rose bg-ylang-rose/8 text-ylang-rose shadow-sm shadow-ylang-rose/15"
-                            : "border-[#e8dcc8] bg-white text-ylang-charcoal hover:border-ylang-rose/40"
+                            ? "border-[#19191c] bg-gray-50 text-gray-900"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
                         }`}
                       >
                         <button
@@ -1725,7 +1735,7 @@ export default function ConfiguratorAdmin() {
                           className="flex items-center gap-1 leading-none"
                         >
                           {size}
-                          {isDefault && <span className="text-ylang-rose text-xs">★</span>}
+                          {isDefault && <span className="text-gray-500 text-xs">★</span>}
                         </button>
                         <button
                           type="button"
@@ -1738,7 +1748,7 @@ export default function ConfiguratorAdmin() {
                               defaultSize: prev?.defaultSize === size ? (next[0] ?? null) : prev?.defaultSize ?? null,
                             }));
                           }}
-                          className="ml-1 flex h-5 w-5 items-center justify-center rounded-lg text-ylang-charcoal/30 transition-colors hover:bg-red-50 hover:text-red-500"
+                          className="ml-1 flex h-5 w-5 items-center justify-center text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
                         >
                           ×
                         </button>
@@ -1747,14 +1757,14 @@ export default function ConfiguratorAdmin() {
                   })}
                 </div>
               ) : (
-                <div className="rounded-xl border border-dashed border-[#ddd5c8] py-4 text-center">
-                  <p className="text-xs text-ylang-charcoal/30">Aucune taille ajoutée — produit sans taille</p>
+                <div className="border border-dashed border-gray-200 py-4 text-center">
+                  <p className="font-body text-xs text-gray-400">Aucune taille ajoutée — produit sans taille</p>
                 </div>
               )}
 
               {editingProduct?.defaultSize && (
-                <p className="text-[11px] text-ylang-charcoal/50">
-                  Par défaut : <strong className="text-ylang-rose">{editingProduct.defaultSize}</strong>
+                <p className="font-body text-[11px] text-gray-400">
+                  Par défaut : <strong className="text-gray-700">{editingProduct.defaultSize}</strong>
                 </p>
               )}
             </div>
@@ -1764,7 +1774,8 @@ export default function ConfiguratorAdmin() {
               <button
                 type="submit"
                 disabled={isSavingProduct}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-ylang-rose to-ylang-terracotta py-3 text-sm font-black text-white shadow-[0_4px_16px_rgba(183,110,121,0.3)] transition-all hover:shadow-[0_6px_20px_rgba(183,110,121,0.4)] hover:brightness-105 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none"
+                className="flex w-full items-center justify-center gap-2 py-3 font-body font-medium transition-opacity hover:opacity-80 disabled:opacity-50 disabled:pointer-events-none"
+                style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
               >
                 {isSavingProduct && <Loader2 className="h-4 w-4 animate-spin" />}
                 {isSavingProduct ? "Enregistrement…" : (
@@ -1791,15 +1802,15 @@ export default function ConfiguratorAdmin() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-500 ring-4 ring-red-50">
                   <TrashBin className="h-6 w-6" />
                 </div>
-                <DialogTitle className="text-lg font-black text-ylang-charcoal">
+                <DialogTitle style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.125rem", color: "var(--color-ink)" }}>
                   {deleteConfirmation.type === "fabric" ? "Supprimer ce tissu ?" :
                    deleteConfirmation.type === "category" ? "Supprimer cette catégorie ?" :
                    deleteConfirmation.type === "color" ? "Supprimer cette couleur ?" :
                    "Supprimer ce produit ?"}
                 </DialogTitle>
-                <DialogDescription className="text-sm text-ylang-charcoal/50">
+                <DialogDescription className="font-body text-sm text-gray-500">
                   Vous êtes sur le point de supprimer{" "}
-                  <span className="font-bold text-ylang-charcoal">&laquo;{deleteConfirmation.name}&raquo;</span>.
+                  <span className="font-bold text-gray-800">&laquo;{deleteConfirmation.name}&raquo;</span>.
                   {" "}Cette action est irréversible.
                 </DialogDescription>
               </DialogHeader>
@@ -1807,7 +1818,7 @@ export default function ConfiguratorAdmin() {
                 <Button
                   variant="ghost"
                   onClick={() => setDeleteConfirmation(prev => ({ ...prev, isOpen: false }))}
-                  className="cursor-pointer font-medium text-ylang-charcoal/60 hover:bg-ylang-beige/50 hover:text-ylang-charcoal"
+                  className="cursor-pointer font-body font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                 >
                   Annuler
                 </Button>
@@ -1828,71 +1839,71 @@ export default function ConfiguratorAdmin() {
       <Dialog open={isColorModalOpen} onOpenChange={open => { setIsColorModalOpen(open); if (!open) setEditingColor(null); }}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle className="text-xl font-black text-ylang-charcoal">
+            <DialogTitle style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.125rem", color: "var(--color-ink)" }}>
               {editingColor?.id && colors.some(c => c.id === editingColor.id) ? "Modifier la couleur" : "Ajouter une couleur"}
             </DialogTitle>
-            <DialogDescription className="text-sm text-ylang-charcoal/40">
+            <DialogDescription className="font-body text-sm text-gray-400">
               {editingColor?.type === "product" ? "Palette personnalisation produit" : "Palette fil de broderie"}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleColorSubmit} className="mt-4 space-y-4">
             {/* Aperçu grand format */}
             {editingColor?.hex && (
-              <div className="flex items-center gap-4 rounded-2xl bg-ylang-beige/40 p-4">
+              <div className="flex items-center gap-4 p-4" style={{ background: "var(--color-paper-2)", border: "var(--rule-soft)" }}>
                 <div
-                  className="h-16 w-16 shrink-0 rounded-2xl border-4 border-white shadow-lg ring-1 ring-black/10"
+                  className="h-16 w-16 shrink-0 border-4 border-white shadow-lg ring-1 ring-black/10"
                   style={{ backgroundColor: editingColor.hex }}
                 />
                 <div>
-                  <p className="font-black text-ylang-charcoal">{editingColor.name || "Aperçu"}</p>
-                  <p className="font-mono text-sm text-ylang-charcoal/50">{editingColor.hex?.toUpperCase()}</p>
+                  <p className="font-body font-medium text-gray-800">{editingColor.name || "Aperçu"}</p>
+                  <p className="font-mono text-sm text-gray-400">{editingColor.hex?.toUpperCase()}</p>
                 </div>
               </div>
             )}
 
             {!colors.some(c => c.id === editingColor?.id) && (
               <div>
-                <label className="mb-1.5 block text-sm font-bold text-ylang-charcoal/70">ID unique</label>
+                <label className="mb-1.5 block font-body text-sm font-medium text-gray-600">ID unique</label>
                 <input
                   type="text"
                   value={editingColor?.id || ""}
                   onChange={e => setEditingColor(prev => ({ ...prev!, id: e.target.value }))}
                   placeholder="ex: rose-poudre"
-                  className="w-full rounded-xl border border-ylang-beige bg-white px-4 py-2.5 text-sm outline-none transition focus:border-ylang-rose/50 focus:shadow-sm"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-gray-400"
                   required
                 />
               </div>
             )}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1.5 block text-sm font-bold text-ylang-charcoal/70">Nom affiché</label>
+                <label className="mb-1.5 block font-body text-sm font-medium text-gray-600">Nom affiché</label>
                 <input
                   type="text"
                   value={editingColor?.name || ""}
                   onChange={e => setEditingColor(prev => ({ ...prev!, name: e.target.value }))}
                   placeholder="Rose Poudré"
-                  className="w-full rounded-xl border border-ylang-beige bg-white px-4 py-2.5 text-sm outline-none transition focus:border-ylang-rose/50 focus:shadow-sm"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-gray-400"
                   required
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-bold text-ylang-charcoal/70">Ordre</label>
+                <label className="mb-1.5 block font-body text-sm font-medium text-gray-600">Ordre</label>
                 <input
                   type="number"
                   value={editingColor?.order ?? 0}
                   onChange={e => setEditingColor(prev => ({ ...prev!, order: parseInt(e.target.value) || 0 }))}
-                  className="w-full rounded-xl border border-ylang-beige bg-white px-4 py-2.5 text-sm outline-none transition focus:border-ylang-rose/50 focus:shadow-sm"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-gray-400"
                 />
               </div>
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-bold text-ylang-charcoal/70">Couleur</label>
+              <label className="mb-1.5 block font-body text-sm font-medium text-gray-600">Couleur</label>
               <div className="flex items-center gap-3">
                 <input
                   type="color"
                   value={editingColor?.hex || "#000000"}
                   onChange={e => setEditingColor(prev => ({ ...prev!, hex: e.target.value }))}
-                  className="h-11 w-14 shrink-0 cursor-pointer rounded-xl border border-ylang-beige bg-white p-1"
+                  className="h-11 w-14 shrink-0 cursor-pointer border border-gray-200 bg-white p-1"
                 />
                 <input
                   type="text"
@@ -1902,15 +1913,16 @@ export default function ConfiguratorAdmin() {
                     if (/^#[0-9A-Fa-f]{0,6}$/.test(val)) setEditingColor(prev => ({ ...prev!, hex: val }));
                   }}
                   placeholder="#E8B4B8"
-                  className="flex-1 rounded-xl border border-ylang-beige bg-white px-4 py-2.5 font-mono text-sm uppercase outline-none transition focus:border-ylang-rose/50 focus:shadow-sm"
+                  className="flex-1 border border-gray-200 bg-white px-4 py-2.5 font-mono text-sm uppercase text-gray-800 outline-none focus:border-gray-400"
                 />
               </div>
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-ylang-beige bg-white px-4 py-3">
-              <label className="text-sm font-bold text-ylang-charcoal/70">Visible (active)</label>
+            <div className="flex items-center justify-between bg-white px-4 py-3" style={{ border: "var(--rule-soft)" }}>
+              <label className="font-body text-sm font-medium text-gray-600">Visible (active)</label>
               <div
                 onClick={() => setEditingColor(prev => ({ ...prev!, isActive: !prev?.isActive }))}
-                className={`relative h-6 w-11 cursor-pointer rounded-full transition-colors ${editingColor?.isActive ? "bg-ylang-rose" : "bg-gray-200"}`}
+                className="relative h-6 w-11 cursor-pointer rounded-full transition-colors"
+                style={{ background: editingColor?.isActive ? "var(--color-ink)" : "var(--color-paper-3)" }}
               >
                 <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-all ${editingColor?.isActive ? "left-6" : "left-1"}`} />
               </div>
@@ -1918,7 +1930,8 @@ export default function ConfiguratorAdmin() {
             <button
               type="submit"
               disabled={isSavingColor}
-              className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-ylang-charcoal py-3.5 font-bold text-white transition-colors hover:bg-ylang-charcoal/80 disabled:opacity-70"
+              className="mt-1 flex w-full items-center justify-center gap-2 py-3.5 font-body font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
+              style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
             >
               {isSavingColor && <Loader2 className="h-4 w-4 animate-spin" />}
               Enregistrer
@@ -1931,34 +1944,34 @@ export default function ConfiguratorAdmin() {
       <Dialog open={isCategoryModalOpen} onOpenChange={setIsCategoryModalOpen}>
         <DialogContent className="sm:max-w-[460px]">
           <DialogHeader>
-            <DialogTitle className="text-xl font-black text-ylang-charcoal">
+            <DialogTitle style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.125rem", color: "var(--color-ink)" }}>
               {editingCategory?.id && categories.some(c => c.id === editingCategory.id) ? "Modifier la catégorie" : "Nouvelle catégorie"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCategorySubmit} className="mt-4 space-y-4">
             {!categories.some(c => c.id === editingCategory?.id) && (
               <div>
-                <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Prefix/ID (ex: coton)</label>
+                <label className="font-body mb-2 block text-sm font-medium text-gray-600">Prefix/ID (ex: coton)</label>
                 <input type="text" value={editingCategory?.id || ""} onChange={e => setEditingCategory(prev => ({ ...prev!, id: e.target.value }))}
-                  className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" required />
+                  className="font-body w-full px-4 py-2 text-sm outline-none" style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }} required />
               </div>
             )}
             <div>
-              <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Titre</label>
+              <label className="font-body mb-2 block text-sm font-medium text-gray-600">Titre</label>
               <input type="text" value={editingCategory?.title || ""} onChange={e => setEditingCategory(prev => ({ ...prev!, title: e.target.value }))}
-                className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" required />
+                className="font-body w-full px-4 py-2 text-sm outline-none" style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }} required />
             </div>
             <div>
-              <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Description</label>
+              <label className="font-body mb-2 block text-sm font-medium text-gray-600">Description</label>
               <textarea value={editingCategory?.description || ""} onChange={e => setEditingCategory(prev => ({ ...prev!, description: e.target.value }))}
-                className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full min-h-[100px] rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" />
+                className="font-body w-full min-h-[100px] bg-white px-4 py-2 text-sm text-gray-800 outline-none" style={{ border: "var(--rule-soft)" }} />
             </div>
             <div>
-              <label className="text-ylang-charcoal/80 mb-2 block text-sm font-medium">Ordre d'affichage</label>
+              <label className="font-body mb-2 block text-sm font-medium text-gray-600">Ordre d'affichage</label>
               <input type="number" value={editingCategory?.order ?? 0} onChange={e => setEditingCategory(prev => ({ ...prev!, order: parseInt(e.target.value) || 0 }))}
-                className="border-ylang-beige focus:border-ylang-rose focus:ring-ylang-rose/20 w-full rounded-xl border bg-white px-4 py-2 outline-none focus:ring-2" required />
+                className="font-body w-full px-4 py-2 text-sm outline-none" style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }} required />
             </div>
-            <button type="submit" className="mt-4 w-full rounded-xl bg-ylang-charcoal py-3 font-bold text-white transition-colors hover:bg-ylang-charcoal/80">
+            <button type="submit" className="mt-4 flex w-full items-center justify-center py-3 font-body font-medium transition-opacity hover:opacity-80" style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}>
               Enregistrer
             </button>
           </form>

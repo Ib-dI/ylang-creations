@@ -8,26 +8,26 @@ interface PremiumLoaderProps {
 }
 
 export function PremiumLoader({
-  title = "Ylang Creations",
+  title = "Ylang Créations",
   subtitle = "Chargement...",
 }: PremiumLoaderProps) {
-  // Array to map the 6 petals with their respective animation delays
   const petals = [0, 0.3, 0.6, 0.9, 1.2, 1.5];
 
   return (
-    <div className="bg-ylang-beige/80 fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 backdrop-blur-md">
+    <div
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6"
+      style={{ background: "var(--color-paper)" }}
+    >
       <div className="relative flex items-center justify-center">
-        {/* Subtle Outer Ring */}
-        <div className="absolute h-32 w-32 rounded-full border border-ylang-rose/10" />
-        
-        {/* Spinning Accent Ring */}
-        <div className="absolute h-28 w-28 animate-[spin_4s_linear_infinite] rounded-full" style={{ border: "1px solid transparent", background: "conic-gradient(from 0deg, transparent 70%, oklch(58% 0.070 28 / 0.5) 100%) border-box" }} />
+        <div
+          className="absolute h-32 w-32 rounded-full"
+          style={{ border: "var(--rule-hair)" }}
+        />
 
-        {/* The Ylang Flower */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 100 100"
-          className="h-36 w-36 drop-shadow-md"
+          className="h-36 w-36"
         >
           <defs>
             <path
@@ -40,7 +40,6 @@ export function PremiumLoader({
           </defs>
 
           <g>
-            {/* Smooth slow rotation of the whole flower */}
             <animateTransform
               attributeName="transform"
               type="rotate"
@@ -67,20 +66,24 @@ export function PremiumLoader({
               </g>
             ))}
 
-            {/* Organic Center */}
             <circle cx="50" cy="50" r="4" fill="#8B8000" />
             <circle cx="50" cy="50" r="1.5" fill="#524C00" opacity="0.6" />
           </g>
         </svg>
       </div>
 
-      {/* Text Content */}
       <div className="flex flex-col items-center gap-1.5 text-center">
         <h2 className="type-overline" style={{ color: "var(--color-ink)" }}>
           {title}
         </h2>
-        <div className="h-px w-8 bg-ylang-rose/30 my-1" />
-        <p className="font-body text-ylang-charcoal/60 text-xs italic tracking-wide">
+        <div
+          className="my-1 h-px w-8"
+          style={{ background: "var(--color-ink-3)", opacity: 0.3 }}
+        />
+        <p
+          className="font-body text-xs italic tracking-wide"
+          style={{ color: "var(--color-ink-3)" }}
+        >
           {subtitle}
         </p>
       </div>

@@ -32,9 +32,7 @@ export default function UsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  useEffect(() => { fetchUsers(); }, []);
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -50,215 +48,158 @@ export default function UsersPage() {
   };
 
   const filteredUsers = users.filter((user) => {
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      user.name.toLowerCase().includes(searchLower) ||
-      user.email.toLowerCase().includes(searchLower)
-    );
+    const q = searchQuery.toLowerCase();
+    return user.name.toLowerCase().includes(q) || user.email.toLowerCase().includes(q);
   });
 
-  // Stats
   const totalUsers = users.length;
   const verifiedUsers = users.filter((u) => u.emailVerified).length;
   const activeCustomers = users.filter((u) => u.orderCount > 0).length;
   const totalRevenue = users.reduce((sum, u) => sum + u.totalSpent, 0);
 
   return (
-    <div className="">
+    <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-ylang-charcoal mb-2 text-3xl font-bold">Clients</h1>
-        <p className="text-ylang-charcoal/60">
+        <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>Administration</p>
+        <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.75rem", color: "var(--color-ink)" }}>
+          Clients
+        </h1>
+        <p className="font-body mt-1 text-sm" style={{ color: "var(--color-ink-3)" }}>
           Gérez vos clients et consultez leurs informations
         </p>
       </div>
 
       {/* Stats */}
-      <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-        <div className="border-ylang-terracotta rounded-2xl border bg-white p-4 transition-all sm:p-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500 shadow-sm shadow-blue-200 sm:h-12 sm:w-12">
-              <Users className="h-5 w-5 text-white sm:h-6 sm:w-6" />
-            </div>
+      <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          { label: "Utilisateurs",   value: totalUsers,                      icon: Users },
+          { label: "Vérifiés",       value: verifiedUsers,                   icon: CheckCircle },
+          { label: "Clients actifs", value: activeCustomers,                  icon: ShoppingBag },
+          { label: "CA clients",     value: `${totalRevenue.toFixed(0)} €`,  icon: Euro },
+        ].map(({ label, value, icon: Icon }) => (
+          <div key={label} className="flex items-start justify-between p-5" style={{ border: "var(--rule-soft)", background: "var(--color-paper)" }}>
             <div>
-              <p className="text-ylang-charcoal text-xl font-bold sm:text-2xl">
-                {totalUsers}
-              </p>
-              <p className="text-ylang-charcoal/60 text-[10px] sm:text-sm">
-                Utilisateurs
+              <p className="type-overline mb-3" style={{ color: "var(--color-ink-3)" }}>{label}</p>
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "var(--text-title)", color: "var(--color-ink)", lineHeight: 1 }}>
+                {value}
               </p>
             </div>
+            <Icon className="h-4 w-4 shrink-0" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
           </div>
-        </div>
-
-        <div className="border-ylang-terracotta rounded-2xl border bg-white p-4 transition-all sm:p-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500 shadow-sm shadow-green-200 sm:h-12 sm:w-12">
-              <CheckCircle className="h-5 w-5 text-white sm:h-6 sm:w-6" />
-            </div>
-            <div>
-              <p className="text-ylang-charcoal text-xl font-bold sm:text-2xl">
-                {verifiedUsers}
-              </p>
-              <p className="text-ylang-charcoal/60 text-[10px] sm:text-sm">
-                Vérifiés
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-ylang-terracotta rounded-2xl border bg-white p-4 transition-all sm:p-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500 shadow-sm shadow-purple-200 sm:h-12 sm:w-12">
-              <ShoppingBag className="h-5 w-5 text-white sm:h-6 sm:w-6" />
-            </div>
-            <div>
-              <p className="text-ylang-charcoal text-xl font-bold sm:text-2xl">
-                {activeCustomers}
-              </p>
-              <p className="text-ylang-charcoal/60 text-[10px] sm:text-sm">
-                Clients
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-ylang-terracotta rounded-2xl border bg-white p-4 transition-all sm:p-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 shadow-sm shadow-orange-200 sm:h-12 sm:w-12">
-              <Euro className="h-5 w-5 text-white sm:h-6 sm:w-6" />
-            </div>
-            <div>
-              <p className="text-ylang-charcoal text-xl font-bold sm:text-2xl">
-                {totalRevenue.toFixed(0)}€
-              </p>
-              <p className="text-ylang-charcoal/60 text-[10px] sm:text-sm">
-                CA Client
-              </p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Search */}
       <div className="mb-6">
-        <div className="relative max-w-md">
-          <Search className="text-ylang-charcoal/40 absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2" />
+        <div className="relative max-w-sm">
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
           <input
             type="text"
             placeholder="Rechercher un client..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border-ylang-beige focus:ring-ylang-rose/20 w-full rounded-xl border bg-white py-3 pr-4 pl-12 focus:ring-2 focus:outline-none"
+            className="font-body w-full py-2.5 pr-4 pl-9 text-sm outline-none"
+            style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }}
           />
         </div>
       </div>
 
-      {/* Users table */}
+      {/* Table */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+          <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
         </div>
       ) : filteredUsers.length === 0 ? (
-        <div className="border-ylang-terracotta rounded-2xl border bg-white py-20 text-center">
-          <Users className="text-ylang-charcoal/20 mx-auto mb-4 h-16 w-16" />
-          <h3 className="text-ylang-charcoal mb-2 text-xl font-semibold">
+        <div className="py-20 text-center" style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}>
+          <Users className="mx-auto mb-4 h-8 w-8" style={{ color: "var(--color-ink-3)", opacity: 0.3 }} strokeWidth={1} />
+          <p style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1rem", color: "var(--color-ink)", marginBottom: "0.25rem" }}>
             Aucun client trouvé
-          </h3>
-          <p className="text-ylang-charcoal/60">
-            {searchQuery
-              ? "Essayez avec d'autres termes de recherche"
-              : "Les clients apparaîtront ici après leur inscription"}
+          </p>
+          <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+            {searchQuery ? "Essayez d'autres termes" : "Les clients apparaîtront après leur inscription"}
           </p>
         </div>
       ) : (
-        <div className="border-ylang-terracotta overflow-hidden rounded-2xl border bg-white">
+        <div style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-ylang-cream">
-                <tr>
-                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
-                    Client
-                  </th>
-                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
-                    Email vérifié
-                  </th>
-                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
-                    Commandes
-                  </th>
-                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
-                    Total dépensé
-                  </th>
-                  <th className="text-ylang-charcoal/60 px-6 py-4 text-left text-xs font-medium tracking-wider uppercase">
-                    Inscrit le
-                  </th>
-                  <th className="text-ylang-charcoal/60 px-6 py-4 text-right text-xs font-medium tracking-wider uppercase">
-                    Actions
-                  </th>
+              <thead>
+                <tr style={{ background: "var(--color-paper-2)" }}>
+                  {["Client", "Email vérifié", "Commandes", "Total dépensé", "Inscrit le", ""].map((th) => (
+                    <th key={th} className={`type-overline px-6 py-3 ${th === "" ? "text-right" : "text-left"}`} style={{ color: "var(--color-ink-3)" }}>
+                      {th}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-ylang-beige divide-y">
+              <tbody>
                 {filteredUsers.map((user, index) => (
                   <motion.tr
                     key={user.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="hover:bg-ylang-cream transition-colors"
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.25, delay: index * 0.03 }}
+                    className="transition-colors hover:bg-[var(--color-paper-2)]"
+                    style={{ borderTop: "var(--rule-soft)" }}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="from-ylang-rose to-ylang-terracotta flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br font-bold text-white">
+                        <div
+                          className="flex h-8 w-8 shrink-0 items-center justify-center font-body text-sm font-medium"
+                          style={{ background: "var(--color-paper-3)", color: "var(--color-ink)" }}
+                        >
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-ylang-charcoal font-medium">
-                            {user.name}
-                          </p>
-                          <p className="text-ylang-charcoal/60 text-xs">
-                            {user.email}
-                          </p>
+                          <p className="font-body font-medium" style={{ color: "var(--color-ink)" }}>{user.name}</p>
+                          <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>{user.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {user.emailVerified ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
-                          <CheckCircle className="h-3 w-3" />
-                          Vérifié
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5" style={{ border: "var(--rule-soft)" }}>
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#22c55e" }} />
+                          <span className="type-overline" style={{ color: "var(--color-ink)" }}>Vérifié</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-100 px-2 py-1 text-xs font-medium text-orange-700">
-                          <XCircle className="h-3 w-3" />
-                          Non vérifié
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5" style={{ border: "var(--rule-soft)" }}>
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#f59e0b" }} />
+                          <span className="type-overline" style={{ color: "var(--color-ink)" }}>Non vérifié</span>
                         </span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <ShoppingBag className="text-ylang-charcoal/40 h-4 w-4" />
-                        <span className="text-ylang-charcoal font-medium">
+                        <ShoppingBag className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+                        <span
+                          style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "0.9375rem", color: "var(--color-ink)" }}
+                        >
                           {user.orderCount}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-ylang-rose font-bold">
-                        {user.totalSpent.toFixed(2)}€
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "0.9375rem", color: "var(--color-ink)" }}>
+                        {user.totalSpent.toFixed(2)} €
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-ylang-charcoal/60 flex items-center gap-2 text-sm">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(user.createdAt).toLocaleDateString("fr-FR")}
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+                        <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                          {new Date(user.createdAt).toLocaleDateString("fr-FR")}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right whitespace-nowrap">
                       <Link
                         href={`/admin/users/${user.id}`}
-                        className="bg-ylang-beige text-ylang-charcoal inline-flex items-center gap-1 rounded-lg px-3 py-1 text-sm transition-colors hover:bg-[#e8dcc8]"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 font-body text-xs transition-opacity hover:opacity-70"
+                        style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}
                       >
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-3.5 w-3.5" strokeWidth={1.5} />
                         Voir
                       </Link>
                     </td>

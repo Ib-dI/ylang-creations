@@ -1,8 +1,6 @@
 "use client";
 
 import { AvatarUpload } from "@/components/ui/avatar-upload";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import {
@@ -27,7 +25,6 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
   const router = useRouter();
   const supabase = createClient();
 
-  // Form states
   const [fullName, setFullName] = useState(
     user.user_metadata?.full_name || user.user_metadata?.name || "",
   );
@@ -71,14 +68,14 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
       }
 
       const { error } = await supabase.auth.updateUser(updates);
-
       if (error) throw error;
 
       showMessage("success", "Profil mis à jour avec succès");
       setPassword("");
       setConfirmPassword("");
-    } catch (error: any) {
-      showMessage("error", error.message || "Erreur lors de la mise à jour");
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
+      showMessage("error", msg);
     } finally {
       setUpdating(false);
     }
@@ -96,7 +93,6 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, file);
-
       if (uploadError) throw uploadError;
 
       const {
@@ -106,7 +102,6 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
       const { error: updateError } = await supabase.auth.updateUser({
         data: { avatar_url: publicUrl },
       });
-
       if (updateError) throw updateError;
 
       setUser({
@@ -114,8 +109,7 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
         user_metadata: { ...user.user_metadata, avatar_url: publicUrl },
       });
       showMessage("success", "Photo de profil mise à jour");
-    } catch (error: any) {
-      console.error("Avatar upload error:", error);
+    } catch {
       showMessage(
         "error",
         "Erreur lors de l'upload de l'image (Vérifiez que le bucket 'avatars' existe)",
@@ -131,22 +125,35 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
   };
 
   return (
-    <div className="bg-ylang-terracotta/50 min-h-screen px-4 py-12 sm:px-6 lg:px-8">
+    <div
+      className="min-h-screen px-4 py-16 sm:px-6 lg:px-8"
+      style={{ background: "var(--color-paper-2)" }}
+    >
       <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="font-abramo-script text-ylang-charcoal mb-2 text-5xl">
+        <div className="mb-12">
+          <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>
+            Mon compte
+          </p>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 400,
+              fontSize: "1.75rem",
+              color: "var(--color-ink)",
+            }}
+          >
             Mon Profil
           </h1>
-          <p className="text-ylang-charcoal/60">
-            Gérez vos informations personnelles et préférences
-          </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {/* Sidebar / User Card */}
+          {/* Sidebar */}
           <div className="md:col-span-1">
-            <div className="rounded-3xl bg-white p-6">
+            <div
+              className="p-6"
+              style={{ border: "var(--rule-soft)", background: "var(--color-paper)" }}
+            >
               <AvatarUpload
                 value={user?.user_metadata?.avatar_url}
                 onChange={handleAvatarChange}
@@ -154,138 +161,183 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
               />
 
               <div className="mt-6 text-center">
-                <h2 className="text-ylang-charcoal text-xl font-bold">
+                <h2
+                  className="text-lg"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 400,
+                    color: "var(--color-ink)",
+                  }}
+                >
                   {fullName || "Utilisateur"}
                 </h2>
-                <p className="text-ylang-charcoal/40 text-sm break-all">
+                <p
+                  className="font-body mt-1 break-all text-sm"
+                  style={{ color: "var(--color-ink-3)" }}
+                >
                   {user?.email}
                 </p>
               </div>
 
-              <div className="border-ylang-beige mt-8 border-t border-dashed pt-6">
-                <Button
-                  variant="ghost"
+              <div className="mt-8 pt-6" style={{ borderTop: "var(--rule-soft)" }}>
+                <button
                   onClick={handleSignOut}
-                  className="w-full justify-start gap-2 rounded-xl border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  className="font-body flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                 >
                   <LogOut className="h-4 w-4" />
                   Se déconnecter
-                </Button>
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Main Content / Forms */}
+          {/* Main Content */}
           <div className="space-y-6 md:col-span-2">
             <form
               onSubmit={handleUpdateProfile}
-              className="shadow-card rounded-3xl bg-white p-8"
+              className="p-8"
+              style={{ border: "var(--rule-soft)", background: "var(--color-paper)" }}
             >
-              <div className="border-ylang-beige mb-6 flex items-center gap-3 border-b pb-4">
-                <div className="bg-ylang-rose/10 text-ylang-rose flex h-10 w-10 items-center justify-center rounded-xl">
-                  <UserIcon className="h-5 w-5" />
+              {/* Section informations */}
+              <div
+                className="mb-6 flex items-center gap-3 pb-4"
+                style={{ borderBottom: "var(--rule-soft)" }}
+              >
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center"
+                  style={{ border: "var(--rule-soft)" }}
+                >
+                  <UserIcon className="h-5 w-5" style={{ color: "var(--color-ink-3)" }} />
                 </div>
                 <div>
-                  <h3 className="text-ylang-charcoal text-lg font-bold">
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontWeight: 400,
+                      fontSize: "1rem",
+                      color: "var(--color-ink)",
+                    }}
+                  >
                     Informations personnelles
                   </h3>
-                  <p className="text-ylang-charcoal/50 text-sm">
+                  <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
                     Mettez à jour vos informations de base
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label
                     htmlFor="fullName"
-                    className="text-ylang-charcoal/80 text-sm font-medium"
+                    className="font-body text-xs uppercase tracking-wide"
+                    style={{ color: "var(--color-ink-3)" }}
                   >
                     Nom complet
                   </label>
-                  <Input
+                  <input
                     id="fullName"
                     value={fullName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setFullName(e.target.value)
                     }
-                    className="border-ylang-beige bg-ylang-cream/50 focus:border-ylang-rose focus:ring-ylang-rose rounded-xl"
                     placeholder="Votre nom"
+                    className="font-body flex h-11 w-full border border-gray-200 bg-white px-4 text-sm text-gray-800 placeholder:text-gray-300 transition-[border-color] duration-200 hover:border-gray-300 focus:border-gray-400 focus:outline-none"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-ylang-charcoal/80 text-sm font-medium">
+                <div className="space-y-1.5">
+                  <label
+                    className="font-body text-xs uppercase tracking-wide"
+                    style={{ color: "var(--color-ink-3)" }}
+                  >
                     Adresse Email
                   </label>
                   <div className="relative">
-                    <Input
+                    <input
                       disabled
                       value={user?.email}
-                      className="border-ylang-beige rounded-xl bg-gray-50 pr-10 text-gray-500"
+                      readOnly
+                      className="font-body flex h-11 w-full cursor-not-allowed border border-gray-200 bg-gray-50 px-4 pr-10 text-sm text-gray-400"
                     />
-                    <Mail className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Mail className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-300" />
                   </div>
                 </div>
               </div>
 
-              <div className="border-ylang-beige mt-10 mb-6 flex items-center gap-3 border-b pb-4">
-                <div className="bg-ylang-rose/10 text-ylang-rose flex h-10 w-10 items-center justify-center rounded-xl">
-                  <Lock className="h-5 w-5" />
+              {/* Section sécurité */}
+              <div
+                className="mb-6 mt-10 flex items-center gap-3 pb-4"
+                style={{ borderBottom: "var(--rule-soft)" }}
+              >
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center"
+                  style={{ border: "var(--rule-soft)" }}
+                >
+                  <Lock className="h-5 w-5" style={{ color: "var(--color-ink-3)" }} />
                 </div>
                 <div>
-                  <h3 className="text-ylang-charcoal text-lg font-bold">
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontWeight: 400,
+                      fontSize: "1rem",
+                      color: "var(--color-ink)",
+                    }}
+                  >
                     Sécurité
                   </h3>
-                  <p className="text-ylang-charcoal/50 text-sm">
+                  <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
                     Modifiez votre mot de passe
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label
                     htmlFor="password"
-                    className="text-ylang-charcoal/80 text-sm font-medium"
+                    className="font-body text-xs uppercase tracking-wide"
+                    style={{ color: "var(--color-ink-3)" }}
                   >
                     Nouveau mot de passe
                   </label>
-                  <Input
+                  <input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setPassword(e.target.value)
                     }
-                    className="border-ylang-beige bg-ylang-cream/50 focus:border-ylang-rose focus:ring-ylang-rose rounded-xl"
                     placeholder="••••••••"
+                    className="font-body flex h-11 w-full border border-gray-200 bg-white px-4 text-sm text-gray-800 placeholder:text-gray-300 transition-[border-color] duration-200 hover:border-gray-300 focus:border-gray-400 focus:outline-none"
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label
                     htmlFor="confirmPassword"
-                    className="text-ylang-charcoal/80 text-sm font-medium"
+                    className="font-body text-xs uppercase tracking-wide"
+                    style={{ color: "var(--color-ink-3)" }}
                   >
                     Confirmer le mot de passe
                   </label>
-                  <Input
+                  <input
                     id="confirmPassword"
                     type="password"
                     value={confirmPassword}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setConfirmPassword(e.target.value)
                     }
-                    className="border-ylang-beige bg-ylang-cream/50 focus:border-ylang-rose focus:ring-ylang-rose rounded-xl"
                     placeholder="••••••••"
+                    className="font-body flex h-11 w-full border border-gray-200 bg-white px-4 text-sm text-gray-800 placeholder:text-gray-300 transition-[border-color] duration-200 hover:border-gray-300 focus:border-gray-400 focus:outline-none"
                   />
                 </div>
               </div>
 
               {message && (
                 <div
-                  className={`mt-6 flex items-center gap-3 rounded-xl p-4 ${
+                  className={`mt-6 flex items-center gap-3 p-4 ${
                     message.type === "success"
                       ? "border border-green-100 bg-green-50 text-green-700"
                       : "border border-red-100 bg-red-50 text-red-700"
@@ -294,29 +346,24 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
                   {message.type === "success" ? (
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
                   ) : (
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-current font-bold">
+                    <div className="flex h-5 w-5 shrink-0 items-center justify-center border-2 border-current font-bold text-xs">
                       !
                     </div>
                   )}
-                  <p className="text-sm font-medium">{message.text}</p>
+                  <p className="font-body text-sm font-medium">{message.text}</p>
                 </div>
               )}
 
               <div className="mt-8 flex justify-end">
-                <Button
+                <button
                   type="submit"
                   disabled={updating || uploadingAvatar}
-                  className="bg-ylang-rose/80 hover:bg-ylang-rose rounded-xl px-8 py-6 text-base font-bold text-white transition-transform hover:scale-102 active:scale-95 disabled:opacity-70 disabled:hover:scale-100"
+                  className="font-body inline-flex h-11 items-center gap-2 px-8 text-sm tracking-wide transition-opacity duration-200 hover:opacity-80 disabled:opacity-50"
+                  style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
                 >
-                  {updating ? (
-                    <>Processing...</>
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-5 w-5" />
-                      Enregistrer les modifications
-                    </>
-                  )}
-                </Button>
+                  <Save className="h-4 w-4" />
+                  {updating ? "Enregistrement..." : "Enregistrer"}
+                </button>
               </div>
             </form>
           </div>

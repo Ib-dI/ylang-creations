@@ -68,7 +68,7 @@ export function AvatarUpload({ value, onChange, disabled }: AvatarUploadProps) {
         <div
           className={cn(
             "relative h-32 w-32 overflow-hidden rounded-full border-4 shadow-xl transition-all duration-300",
-            isDragActive ? "border-ylang-rose scale-105" : "border-white",
+            isDragActive ? "scale-105 border-gray-400" : "border-white",
             error ? "border-red-500" : "",
           )}
         >
@@ -81,8 +81,11 @@ export function AvatarUpload({ value, onChange, disabled }: AvatarUploadProps) {
               onError={() => setPreview(null)}
             />
           ) : (
-            <div className="bg-ylang-beige text-ylang-charcoal/20 flex h-full w-full items-center justify-center">
-              <Camera className="h-12 w-12" />
+            <div
+              className="flex h-full w-full items-center justify-center"
+              style={{ background: "var(--color-paper-2)" }}
+            >
+              <Camera className="h-12 w-12" style={{ color: "var(--color-ink-3)", opacity: 0.4 }} />
             </div>
           )}
 
@@ -93,7 +96,10 @@ export function AvatarUpload({ value, onChange, disabled }: AvatarUploadProps) {
         </div>
 
         {/* Status Indicator */}
-        <div className="bg-ylang-rose absolute right-0 bottom-0 rounded-full border-4 border-[#fdfaf6] p-2 text-white shadow-lg">
+        <div
+          className="absolute right-0 bottom-0 rounded-full border-4 p-2 shadow-lg"
+          style={{ background: "var(--color-ink)", borderColor: "var(--color-paper)", color: "var(--color-paper)" }}
+        >
           <Camera className="h-4 w-4" />
         </div>
       </div>

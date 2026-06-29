@@ -1,22 +1,27 @@
-export default function StatusBadge({ status }: { status: string }) {
-  const config = {
-    pending: { label: "En attente", color: "bg-gray-100 border-gray-200 border text-gray-700" },
-    paid: { label: "Payée", color: "bg-blue-100 border-blue-200 border text-blue-700" },
-    in_production: {
-      label: "En production",
-      color: "bg-orange-100 border-orange-200 border text-orange-700",
-    },
-    shipped: { label: "Expédiée", color: "bg-purple-100 border-purple-200 border text-purple-700" },
-    delivered: { label: "Livrée", color: "bg-green-100 border-green-200 border text-green-700" },
-    cancelled: { label: "Annulée", color: "bg-red-100 border-red-200 border text-red-700" },
-  };
+const STATUS_CONFIG: Record<string, { label: string; dot: string }> = {
+  pending:       { label: "En attente",    dot: "#94a3b8" },
+  paid:          { label: "Payée",         dot: "#3b82f6" },
+  in_production: { label: "En production", dot: "#f59e0b" },
+  shipped:       { label: "Expédiée",      dot: "#8b5cf6" },
+  delivered:     { label: "Livrée",        dot: "#22c55e" },
+  cancelled:     { label: "Annulée",       dot: "#ef4444" },
+};
 
-  const { label, color } =
-    config[status as keyof typeof config] || config.pending;
+export default function StatusBadge({ status }: { status: string }) {
+  const { label, dot } = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending;
 
   return (
-    <span className={`rounded-full px-3 py-1 text-xs font-medium ${color}`}>
-      {label}
+    <span
+      className="inline-flex items-center gap-1.5 px-2 py-0.5"
+      style={{ border: "var(--rule-soft)" }}
+    >
+      <span
+        className="h-1.5 w-1.5 shrink-0 rounded-full"
+        style={{ backgroundColor: dot }}
+      />
+      <span className="type-overline" style={{ color: "var(--color-ink)" }}>
+        {label}
+      </span>
     </span>
   );
 }

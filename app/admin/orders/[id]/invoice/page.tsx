@@ -14,7 +14,6 @@ export default function OrderInvoicePage() {
   React.useEffect(() => {
     const fetchOrder = async () => {
       if (!params.id) return;
-
       try {
         const response = await fetch(`/api/admin/orders/${params.id}`);
         if (!response.ok) throw new Error("Erreur chargement commande");
@@ -27,14 +26,13 @@ export default function OrderInvoicePage() {
         setIsLoading(false);
       }
     };
-
     fetchOrder();
   }, [params.id]);
 
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="text-ylang-rose h-10 w-10 animate-spin" />
+        <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
       </div>
     );
   }
@@ -42,46 +40,59 @@ export default function OrderInvoicePage() {
   if (!order) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <p>Commande introuvable</p>
+        <p className="font-body" style={{ color: "var(--color-ink-3)" }}>Commande introuvable</p>
       </div>
     );
   }
 
+  const subtotal = order.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const shipping = order.total - subtotal;
+
   return (
-    <div className="mx-auto max-w-4xl bg-white p-8 md:p-12 print:p-0">
-      {/* Print Button (Hidden when printing) */}
+    <div className="mx-auto max-w-3xl bg-white p-8 md:p-16 print:p-0">
+      {/* Print button */}
       <button
         onClick={() => window.print()}
-        className="bg-ylang-rose hover:bg-ylang-rose/90 mb-8 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors print:hidden"
+        className="mb-10 flex items-center gap-2 px-4 py-2 font-body text-sm transition-opacity hover:opacity-70 print:hidden"
+        style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}
       >
-        <Printer className="h-4 w-4" />
+        <Printer className="h-4 w-4" strokeWidth={1.5} />
         Imprimer la facture
       </button>
 
       {/* Header */}
-      <div className="mb-12 flex justify-between border-b pb-8">
+      <div className="mb-12 flex items-start justify-between" style={{ borderBottom: "1px solid #e5e7eb", paddingBottom: "2rem" }}>
         <div>
-          <h1 className="text-ylang-charcoal font-display text-4xl font-bold">
-            FACTURE
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 400,
+              fontSize: "2.5rem",
+              color: "#111",
+              letterSpacing: "-0.02em",
+              lineHeight: 1,
+              marginBottom: "0.75rem",
+            }}
+          >
+            Facture
           </h1>
-          <p className="text-ylang-charcoal/60 mt-2">N° {order.orderNumber}</p>
-          <div className="mt-4 text-sm text-gray-500">
-            <p>Date d'émission : {new Date().toLocaleDateString("fr-FR")}</p>
-            <p>
-              Date de commande :{" "}
-              {new Date(order.createdAt).toLocaleDateString("fr-FR")}
-            </p>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "#6b7280" }}>
+            N° {order.orderNumber}
+          </p>
+          <div style={{ marginTop: "1rem", fontFamily: "var(--font-body)", fontSize: "0.8125rem", color: "#9ca3af", lineHeight: 1.6 }}>
+            <p>Émise le {new Date().toLocaleDateString("fr-FR")}</p>
+            <p>Commande du {new Date(order.createdAt).toLocaleDateString("fr-FR")}</p>
           </div>
         </div>
-        <div className="text-right">
-          <h2 className="text-ylang-charcoal text-xl font-bold">
+        <div style={{ textAlign: "right" }}>
+          <p style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.125rem", color: "#111" }}>
             Ylang Créations
-          </h2>
-          <div className="mt-2 text-sm text-gray-500">
+          </p>
+          <div style={{ marginTop: "0.5rem", fontFamily: "var(--font-body)", fontSize: "0.8125rem", color: "#9ca3af", lineHeight: 1.6 }}>
             <p>123 Rue de la Couture</p>
             <p>75001 Paris, France</p>
             <p>contact@ylang-creations.com</p>
-            <p>SIRET: 123 456 789 00012</p>
+            <p>SIRET : 123 456 789 00012</p>
           </div>
         </div>
       </div>
@@ -89,62 +100,91 @@ export default function OrderInvoicePage() {
       {/* Client & Shipping */}
       <div className="mb-12 grid gap-8 md:grid-cols-2">
         <div>
-          <h3 className="text-ylang-charcoal mb-4 text-sm font-bold tracking-wider text-gray-400 uppercase">
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "#9ca3af",
+              marginBottom: "0.75rem",
+            }}
+          >
             Facturé à
-          </h3>
-          <p className="text-lg font-bold">{order.customerName}</p>
-          <p className="text-gray-600">{order.customerEmail}</p>
+          </p>
+          <p style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1rem", color: "#111", marginBottom: "0.25rem" }}>
+            {order.customerName}
+          </p>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "#6b7280" }}>{order.customerEmail}</p>
         </div>
         <div>
-          <h3 className="text-ylang-charcoal mb-4 text-sm font-bold tracking-wider text-gray-400 uppercase">
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "#9ca3af",
+              marginBottom: "0.75rem",
+            }}
+          >
             Adresse de livraison
-          </h3>
-          <p className="font-medium">{order.shippingAddress.address}</p>
-          <p className="text-gray-600">
-            {order.shippingAddress.postalCode} {order.shippingAddress.city}
           </p>
-          <p className="text-gray-600">{order.shippingAddress.country}</p>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "#374151", lineHeight: 1.6 }}>
+            {order.shippingAddress.address}<br />
+            {order.shippingAddress.postalCode} {order.shippingAddress.city}<br />
+            {order.shippingAddress.country}
+          </p>
         </div>
       </div>
 
-      {/* Items Table */}
+      {/* Items */}
       <table className="mb-12 w-full text-left">
         <thead>
-          <tr className="border-b-2 border-gray-100">
-            <th className="py-4 font-bold text-gray-500 uppercase">
-              Description
-            </th>
-            <th className="py-4 text-right font-bold text-gray-500 uppercase">
-              Quantité
-            </th>
-            <th className="py-4 text-right font-bold text-gray-500 uppercase">
-              Prix unitaire
-            </th>
-            <th className="py-4 text-right font-bold text-gray-500 uppercase">
-              Total
-            </th>
+          <tr style={{ borderBottom: "1px solid #f3f4f6" }}>
+            {["Description", "Qté", "Prix unit.", "Total"].map((th, i) => (
+              <th
+                key={th}
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#9ca3af",
+                  paddingBottom: "0.75rem",
+                  textAlign: i > 0 ? "right" : "left",
+                }}
+              >
+                {th}
+              </th>
+            ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody>
           {order.items.map((item, index) => (
-            <tr key={index}>
-              <td className="py-4">
-                <p className="font-bold text-gray-800">{item.productName}</p>
+            <tr key={index} style={{ borderBottom: "1px solid #f9fafb" }}>
+              <td style={{ padding: "1rem 0" }}>
+                <p style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: "0.9375rem", color: "#111" }}>
+                  {item.productName}
+                </p>
                 {item.configuration && (
-                  <p className="text-sm text-gray-500">
+                  <p style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", color: "#9ca3af", marginTop: "0.125rem" }}>
                     {item.configuration.fabricName}
-                    {item.configuration.embroidery
-                      ? ` - ${item.configuration.embroidery}`
-                      : ""}
+                    {item.configuration.embroidery ? ` — ${item.configuration.embroidery}` : ""}
                   </p>
                 )}
               </td>
-              <td className="py-4 text-right text-gray-600">{item.quantity}</td>
-              <td className="py-4 text-right text-gray-600">
-                {item.price.toFixed(2)}€
+              <td style={{ padding: "1rem 0", textAlign: "right", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "#6b7280" }}>
+                {item.quantity}
               </td>
-              <td className="py-4 text-right font-medium text-gray-800">
-                {(item.price * item.quantity).toFixed(2)}€
+              <td style={{ padding: "1rem 0", textAlign: "right", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "#6b7280" }}>
+                {item.price.toFixed(2)} €
+              </td>
+              <td style={{ padding: "1rem 0", textAlign: "right", fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "0.9375rem", color: "#111" }}>
+                {(item.price * item.quantity).toFixed(2)} €
               </td>
             </tr>
           ))}
@@ -153,41 +193,31 @@ export default function OrderInvoicePage() {
 
       {/* Totals */}
       <div className="flex justify-end">
-        <div className="w-80 space-y-3">
-          <div className="flex justify-between text-gray-600">
-            <span>Sous-total</span>
-            <span>
-              {order.items
-                .reduce((acc, item) => acc + item.price * item.quantity, 0)
-                .toFixed(2)}
-              €
-            </span>
+        <div style={{ width: "280px" }}>
+          <div className="flex justify-between py-2" style={{ borderBottom: "1px solid #f3f4f6" }}>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "#6b7280" }}>Sous-total</span>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "#374151" }}>{subtotal.toFixed(2)} €</span>
           </div>
-          <div className="flex justify-between text-gray-600">
-            <span>Livraison</span>
-            <span>
-              {(
-                order.total -
-                order.items.reduce(
-                  (acc, item) => acc + item.price * item.quantity,
-                  0,
-                )
-              ).toFixed(2)}
-              €
-            </span>
+          <div className="flex justify-between py-2" style={{ borderBottom: "1px solid #f3f4f6" }}>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "#6b7280" }}>Livraison</span>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "#374151" }}>{shipping.toFixed(2)} €</span>
           </div>
-          <div className="text-ylang-rose flex justify-between border-t pt-3 text-xl font-bold">
-            <span>Total</span>
-            <span>{order.total.toFixed(2)}€</span>
+          <div className="flex justify-between py-3">
+            <span style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1rem", color: "#111" }}>Total</span>
+            <span style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.375rem", color: "#111" }}>
+              {order.total.toFixed(2)} €
+            </span>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="mt-20 border-t pt-8 text-center text-sm text-gray-400">
-        <p>Merci de votre confiance !</p>
-        <p className="mt-2">
-          Conditions de paiement : Paiement dû à réception.
+      <div style={{ marginTop: "5rem", borderTop: "1px solid #f3f4f6", paddingTop: "2rem", textAlign: "center" }}>
+        <p style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "0.9375rem", color: "#9ca3af" }}>
+          Merci de votre confiance.
+        </p>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", color: "#d1d5db", marginTop: "0.5rem" }}>
+          Conditions de paiement : paiement dû à réception.
         </p>
       </div>
     </div>

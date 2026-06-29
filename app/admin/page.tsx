@@ -1,4 +1,5 @@
 "use client";
+
 import StatusBadge from "@/components/admin/status-badge";
 import {
   Dialog,
@@ -7,10 +8,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAdminStore } from "@/lib/store/admin-store";
-import { cn } from "@/lib/utils";
 import type { DashboardStats } from "@/types/admin";
 import { motion } from "framer-motion";
 import {
+  ChevronRight,
   Clock,
   Euro,
   Loader2,
@@ -24,15 +25,17 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import * as React from "react";
 
-// Lazy-load recharts (~200KB) — only loaded when revenue dialog opens
 const RevenueChart = dynamic(
-  () =>
-    import("@/components/admin/revenue-chart").then((mod) => mod.RevenueChart),
+  () => import("@/components/admin/revenue-chart").then((mod) => mod.RevenueChart),
   {
     ssr: false,
     loading: () => (
       <div className="flex h-[300px] items-center justify-center">
-        <Loader2 className="text-ylang-rose h-8 w-8 animate-spin" />
+        <Loader2
+          className="h-6 w-6 animate-spin"
+          style={{ color: "var(--color-ink-3)" }}
+          strokeWidth={1.5}
+        />
       </div>
     ),
   },
@@ -43,62 +46,58 @@ function StatCard({
   value,
   icon: Icon,
   trend,
-  color = "blue",
   onTrendClick,
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType<{ className?: string }>;
+  icon: React.ElementType<{ className?: string; strokeWidth?: number }>;
   trend?: string;
-  color?: "blue" | "green" | "orange" | "purple";
   onTrendClick?: () => void;
 }) {
-  const colorClasses = {
-    blue: "bg-blue-500",
-    green: "bg-green-500",
-    orange: "bg-orange-500",
-    purple: "bg-purple-500",
-  };
-
   const isPositive = typeof trend === "string" && trend.startsWith("+");
-  const trendColorClass = isPositive ? "text-green-600" : "text-red-600";
-  const trendBgClass = isPositive
-    ? "bg-green-50 hover:bg-green-100"
-    : "bg-red-50 hover:bg-red-100";
 
   return (
-    <div className="group border-ylang-terracotta relative overflow-hidden rounded-2xl border bg-white p-4 transition-all sm:p-6">
-      <div className="mb-3 flex items-start justify-between sm:mb-4">
-        <div
-          className={`h-10 w-10 sm:h-12 sm:w-12 ${colorClasses[color as keyof typeof colorClasses]} flex items-center justify-center rounded-xl`}
-        >
-          <Icon className="h-5 w-5 text-white sm:h-6 sm:w-6" />
-        </div>
-        {trend && (
-          <button
-            onClick={onTrendClick}
-            className={cn(
-              "flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium transition-colors sm:text-sm",
-              onTrendClick
-                ? `${trendBgClass} ${trendColorClass} cursor-pointer`
-                : trendColorClass,
-            )}
+    <div style={{ border: "var(--rule-soft)", background: "var(--color-paper)" }}>
+      <div className="flex items-start justify-between p-5">
+        <div className="min-w-0 flex-1">
+          <p className="type-overline mb-3" style={{ color: "var(--color-ink-3)" }}>
+            {title}
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 400,
+              fontSize: "var(--text-title)",
+              color: "var(--color-ink)",
+              lineHeight: 1,
+            }}
           >
-            {isPositive ? (
-              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
-            ) : (
-              <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4" />
-            )}
+            {value}
+          </p>
+        </div>
+        <Icon className="h-4 w-4 shrink-0" style={{ color: "var(--color-ink-3)" } as React.CSSProperties} strokeWidth={1.5} />
+      </div>
+
+      {trend && (
+        <button
+          onClick={onTrendClick}
+          disabled={!onTrendClick}
+          className="flex w-full items-center justify-between px-5 py-3 font-body text-xs transition-opacity hover:opacity-70 disabled:cursor-default"
+          style={{ borderTop: "var(--rule-soft)" }}
+        >
+          <span style={{ color: "var(--color-ink-3)" }}>vs. mois dernier</span>
+          <span
+            className="flex items-center gap-1 font-medium"
+            style={{ color: isPositive ? "#22c55e" : "#ef4444" }}
+          >
+            {isPositive
+              ? <TrendingUp className="h-3 w-3" strokeWidth={2} />
+              : <TrendingDown className="h-3 w-3" strokeWidth={2} />
+            }
             {trend}
-          </button>
-        )}
-      </div>
-      <p className="text-ylang-charcoal mb-1 text-xl font-bold sm:text-2xl">
-        {value}
-      </p>
-      <div className="flex items-center justify-between">
-        <p className="text-ylang-charcoal/60 text-xs sm:text-sm">{title}</p>
-      </div>
+          </span>
+        </button>
+      )}
     </div>
   );
 }
@@ -107,9 +106,7 @@ export default function AdminDashboard() {
   const { orders, setOrders } = useAdminStore();
   const [isLoading, setIsLoading] = React.useState(true);
   const [isChartOpen, setIsChartOpen] = React.useState(false);
-  const [stats, setStats] = React.useState<
-    DashboardStats & { thisMonthRevenue: number }
-  >({
+  const [stats, setStats] = React.useState<DashboardStats & { thisMonthRevenue: number }>({
     totalOrders: 0,
     totalRevenue: 0,
     pendingOrders: 0,
@@ -118,9 +115,8 @@ export default function AdminDashboard() {
     revenueGrowth: 0,
     thisMonthRevenue: 0,
   });
-  const [chartData, setChartData] = React.useState<any[]>([]);
+  const [chartData, setChartData] = React.useState<{ name: string; revenue: number }[]>([]);
 
-  // Charger les commandes
   React.useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -129,62 +125,38 @@ export default function AdminDashboard() {
         const ordersList = data.orders || [];
         setOrders(ordersList);
 
-        // Filterm les commandes annulées pour les stats financières
-        const validOrders = ordersList.filter(
-          (o: any) => o.status !== "cancelled",
-        );
+        const validOrders = ordersList.filter((o: { status: string }) => o.status !== "cancelled");
 
-        // Calculer les stats
         const totalOrders = validOrders.length;
-        const totalRevenue = validOrders.reduce(
-          (sum: number, order: { total: number }) => sum + (order.total || 0),
-          0,
-        );
-        const pendingOrders = validOrders.filter(
-          (o: { status: string }) =>
-            o.status === "pending" || o.status === "paid",
-        ).length;
-        const inProduction = validOrders.filter(
-          (o: { status: string }) => o.status === "in_production",
-        ).length;
-        const averageOrderValue =
-          totalOrders > 0 ? totalRevenue / totalOrders : 0;
+        const totalRevenue = validOrders.reduce((sum: number, o: { total: number }) => sum + (o.total || 0), 0);
+        const pendingOrders = validOrders.filter((o: { status: string }) => o.status === "pending" || o.status === "paid").length;
+        const inProduction = validOrders.filter((o: { status: string }) => o.status === "in_production").length;
+        const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-        // Calcul de la croissance (CE MOIS vs MOIS DERNIER)
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
-
         const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-        const lastMonthYear =
-          currentMonth === 0 ? currentYear - 1 : currentYear;
+        const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
         const thisMonthRevenue = validOrders
-          .filter((o: any) => {
+          .filter((o: { createdAt: string }) => {
             const d = new Date(o.createdAt);
-            return (
-              d.getMonth() === currentMonth && d.getFullYear() === currentYear
-            );
+            return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
           })
-          .reduce((sum: number, o: any) => sum + (o.total || 0), 0);
+          .reduce((sum: number, o: { total: number }) => sum + (o.total || 0), 0);
 
         const lastMonthRevenue = validOrders
-          .filter((o: any) => {
+          .filter((o: { createdAt: string }) => {
             const d = new Date(o.createdAt);
-            return (
-              d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear
-            );
+            return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
           })
-          .reduce((sum: number, o: any) => sum + (o.total || 0), 0);
+          .reduce((sum: number, o: { total: number }) => sum + (o.total || 0), 0);
 
-        const revenueGrowth =
-          lastMonthRevenue > 0
-            ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
-            : thisMonthRevenue > 0
-              ? 100
-              : 0;
+        const revenueGrowth = lastMonthRevenue > 0
+          ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+          : thisMonthRevenue > 0 ? 100 : 0;
 
-        // Données du graphique (6 derniers mois)
         const months = Array.from({ length: 6 }, (_, i) => {
           const d = new Date();
           d.setMonth(d.getMonth() - (5 - i));
@@ -195,235 +167,229 @@ export default function AdminDashboard() {
           };
         });
 
-        const computedChartData = months.map((m) => {
-          const monthlyRevenue = validOrders
-            .filter((o: any) => {
+        setChartData(months.map((m) => ({
+          name: m.label,
+          revenue: validOrders
+            .filter((o: { createdAt: string }) => {
               const d = new Date(o.createdAt);
               return d.getMonth() === m.month && d.getFullYear() === m.year;
             })
-            .reduce((sum: number, o: any) => sum + (o.total || 0), 0);
+            .reduce((sum: number, o: { total: number }) => sum + (o.total || 0), 0),
+        })));
 
-          return {
-            name: m.label,
-            revenue: monthlyRevenue,
-          };
-        });
-
-        setChartData(computedChartData);
-
-        setStats({
-          totalOrders,
-          totalRevenue,
-          pendingOrders,
-          inProduction,
-          averageOrderValue,
-          revenueGrowth: parseFloat(revenueGrowth.toFixed(1)),
-          thisMonthRevenue,
-        });
+        setStats({ totalOrders, totalRevenue, pendingOrders, inProduction, averageOrderValue, revenueGrowth: parseFloat(revenueGrowth.toFixed(1)), thisMonthRevenue });
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchOrders();
   }, [setOrders]);
 
   if (isLoading) {
     return (
-      <div className="flex h-[80vh] items-center justify-center">
-        <Loader2 className="text-ylang-rose h-10 w-10 animate-spin" />
+      <div className="flex h-[60vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
       </div>
     );
   }
 
   return (
-    <div className="">
+    <div>
       {/* Header */}
-      <div className="mb-6 lg:mb-8">
-        <h1 className="text-ylang-charcoal mb-2 text-2xl font-bold sm:text-3xl">
+      <div className="mb-8">
+        <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>
+          Administration
+        </p>
+        <h1
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 400,
+            fontSize: "1.75rem",
+            color: "var(--color-ink)",
+          }}
+        >
           Dashboard
         </h1>
-        <p className="text-ylang-charcoal/60 text-sm">
-          Bienvenue ! Voici un aperçu de votre activité.
+        <p className="font-body mt-1 text-sm" style={{ color: "var(--color-ink-3)" }}>
+          Aperçu de l&apos;activité en cours
         </p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stat cards */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6"
+        transition={{ duration: 0.4 }}
+        className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4"
       >
         <StatCard
-          title="CA (Mois en cours)"
-          value={`${stats.thisMonthRevenue.toFixed(0)}€`}
+          title="CA mois en cours"
+          value={`${stats.thisMonthRevenue.toFixed(0)} €`}
           icon={Euro}
           trend={`${stats.revenueGrowth > 0 ? "+" : ""}${stats.revenueGrowth}%`}
-          color="green"
           onTrendClick={() => setIsChartOpen(true)}
         />
         <StatCard
-          title="Total Commandes"
+          title="Total commandes"
           value={stats.totalOrders}
           icon={ShoppingBag}
-          color="blue"
         />
         <StatCard
           title="En attente"
           value={stats.pendingOrders}
           icon={Clock}
-          color="orange"
         />
         <StatCard
           title="En production"
           value={stats.inProduction}
           icon={Package}
-          color="purple"
         />
       </motion.div>
 
-      {/* Quick Actions */}
-      <div className="mb-8 grid gap-4 sm:grid-cols-3 sm:gap-6">
-        <Link
-          href="/admin/orders"
-          className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-md"
-        >
-          <div className="flex items-center gap-4">
-            <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
-              <Package className="text-ylang-rose h-6 w-6 transition-colors group-hover:text-white" />
-            </div>
-            <div>
-              <p className="text-ylang-charcoal mb-1 font-bold">
-                Toutes les commandes
+      {/* Quick actions */}
+      <div className="mb-8 grid gap-3 sm:grid-cols-3">
+        {[
+          { href: "/admin/orders",   icon: Package,    label: "Commandes",  sub: "Gérer et suivre" },
+          { href: "/admin/products", icon: ShoppingBag, label: "Produits",   sub: "Gérer le catalogue" },
+          { href: "/admin/users",    icon: Users,       label: "Clients",    sub: "Voir les utilisateurs" },
+        ].map(({ href, icon: Icon, label, sub }) => (
+          <Link
+            key={href}
+            href={href}
+            className="group flex items-center gap-4 p-5 transition-opacity hover:opacity-70"
+            style={{ border: "var(--rule-soft)", background: "var(--color-paper)" }}
+          >
+            <Icon className="h-5 w-5 shrink-0" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+            <div className="min-w-0 flex-1">
+              <p
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 400,
+                  fontSize: "1rem",
+                  color: "var(--color-ink)",
+                }}
+              >
+                {label}
               </p>
-              <p className="text-ylang-charcoal/60 text-sm">Gérer et suivre</p>
-            </div>
-          </div>
-        </Link>
-
-        <Link
-          href="/admin/products"
-          className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-md"
-        >
-          <div className="flex items-center gap-4">
-            <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
-              <ShoppingBag className="text-ylang-rose h-6 w-6 transition-colors group-hover:text-white" />
-            </div>
-            <div>
-              <p className="text-ylang-charcoal mb-1 font-bold">Produits</p>
-              <p className="text-ylang-charcoal/60 text-sm">
-                Gérer le catalogue
+              <p className="font-body mt-0.5 text-xs" style={{ color: "var(--color-ink-3)" }}>
+                {sub}
               </p>
             </div>
-          </div>
-        </Link>
-
-        <Link
-          href="/admin/users"
-          className="group border-ylang-beige rounded-2xl border bg-white p-6 transition-all duration-300 hover:scale-105 hover:shadow-md"
-        >
-          <div className="flex items-center gap-4">
-            <div className="bg-ylang-rose/10 group-hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
-              <Users className="text-ylang-rose h-6 w-6 transition-colors group-hover:text-white" />
-            </div>
-            <div>
-              <p className="text-ylang-charcoal mb-1 font-bold">Clients</p>
-              <p className="text-ylang-charcoal/60 text-sm">
-                Voir les utilisateurs
-              </p>
-            </div>
-          </div>
-        </Link>
+            <ChevronRight
+              className="h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+              style={{ color: "var(--color-ink-3)" }}
+              strokeWidth={1.5}
+            />
+          </Link>
+        ))}
       </div>
 
-      {/* Recent Orders */}
+      {/* Commandes récentes */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="border-ylang-terracotta rounded-2xl border bg-white shadow-xs"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.15 }}
+        style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}
       >
-        <div className="border-ylang-beige border-b p-4 sm:p-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-ylang-charcoal text-lg font-bold sm:text-xl">
-              Commandes récentes
-            </h2>
-            <Link
-              href="/admin/orders"
-              className="text-ylang-rose text-xs font-medium hover:underline sm:text-sm"
-            >
-              Voir tout →
-            </Link>
-          </div>
+        {/* Table header */}
+        <div
+          className="flex items-center justify-between px-6 py-4"
+          style={{ borderBottom: "var(--rule-hair)" }}
+        >
+          <h2
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 400,
+              fontSize: "1rem",
+              color: "var(--color-ink)",
+            }}
+          >
+            Commandes récentes
+          </h2>
+          <Link
+            href="/admin/orders"
+            className="font-body text-xs transition-opacity hover:opacity-70"
+            style={{ color: "var(--color-ink-3)", borderBottom: "1px solid var(--color-accent)" }}
+          >
+            Voir tout →
+          </Link>
         </div>
 
         {orders.length === 0 ? (
-          <div className="p-12 text-center">
-            <Package className="text-ylang-charcoal/20 mx-auto mb-4 h-12 w-12" />
-            <p className="text-ylang-charcoal/60">
+          <div className="px-6 py-16 text-center">
+            <Package
+              className="mx-auto mb-4 h-8 w-8"
+              style={{ color: "var(--color-ink-3)", opacity: 0.3 }}
+              strokeWidth={1}
+            />
+            <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
               Aucune commande pour le moment
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-ylang-cream">
-                <tr>
-                  <th className="text-ylang-charcoal/60 px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Commande
-                  </th>
-                  <th className="text-ylang-charcoal/60 px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Client
-                  </th>
-                  <th className="text-ylang-charcoal/60 px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Statut
-                  </th>
-                  <th className="text-ylang-charcoal/60 px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Montant
-                  </th>
-                  <th className="text-ylang-charcoal/60 px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    Date
-                  </th>
+              <thead>
+                <tr style={{ background: "var(--color-paper-2)" }}>
+                  {["Commande", "Client", "Statut", "Montant", "Date"].map((th) => (
+                    <th
+                      key={th}
+                      className="type-overline px-6 py-3 text-left"
+                      style={{ color: "var(--color-ink-3)" }}
+                    >
+                      {th}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-ylang-beige divide-y">
+              <tbody>
                 {orders.slice(0, 5).map((order, idx) => (
                   <motion.tr
                     key={order.id}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: 0.3 + idx * 0.05 }}
-                    className="hover:bg-ylang-cream transition-colors"
+                    transition={{ duration: 0.25, delay: 0.2 + idx * 0.04 }}
+                    className="transition-colors hover:bg-[var(--color-paper-2)]"
+                    style={{ borderTop: "var(--rule-soft)" }}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Link
                         href={`/admin/orders/${order.id}`}
-                        className="text-ylang-rose font-medium hover:underline"
+                        className="font-body text-sm transition-opacity hover:opacity-70"
+                        style={{ color: "var(--color-ink)", borderBottom: "1px solid var(--color-accent)" }}
                       >
                         {order.orderNumber}
                       </Link>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <p className="text-ylang-charcoal text-sm font-medium">
-                          {order.customerName}
-                        </p>
-                        <p className="text-ylang-charcoal/60 text-xs">
-                          {order.customerEmail}
-                        </p>
-                      </div>
+                      <p className="font-body text-sm font-medium" style={{ color: "var(--color-ink)" }}>
+                        {order.customerName}
+                      </p>
+                      <p className="font-body mt-0.5 text-xs" style={{ color: "var(--color-ink-3)" }}>
+                        {order.customerEmail}
+                      </p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusBadge status={order.status} />
                     </td>
-                    <td className="text-ylang-charcoal px-6 py-4 text-sm font-bold whitespace-nowrap">
-                      {order.total.toFixed(2)}€
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontWeight: 400,
+                          fontSize: "0.9375rem",
+                          color: "var(--color-ink)",
+                        }}
+                      >
+                        {order.total.toFixed(2)} €
+                      </span>
                     </td>
-                    <td className="text-ylang-charcoal/60 px-6 py-4 text-sm whitespace-nowrap">
-                      {new Date(order.createdAt).toLocaleDateString("fr-FR")}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                        {new Date(order.createdAt).toLocaleDateString("fr-FR")}
+                      </span>
                     </td>
                   </motion.tr>
                 ))}
@@ -433,37 +399,66 @@ export default function AdminDashboard() {
         )}
       </motion.div>
 
-      {/* Revenue Modal */}
+      {/* Revenue dialog */}
       <Dialog open={isChartOpen} onOpenChange={setIsChartOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent
+          className="sm:max-w-2xl"
+          style={{ background: "var(--color-paper)", border: "var(--rule-hair)" }}
+        >
           <DialogHeader>
-            <DialogTitle className="text-ylang-charcoal text-2xl font-bold">
-              Analyse du chiffre d&apos;affaires
+            <DialogTitle
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 400,
+                fontSize: "var(--text-title)",
+                color: "var(--color-ink)",
+              }}
+            >
+              Chiffre d&apos;affaires
             </DialogTitle>
           </DialogHeader>
-          <div className="mt-4 border-t pt-6">
+
+          <div style={{ borderTop: "var(--rule-hair)", paddingTop: "1.5rem" }}>
             <div className="mb-6 grid grid-cols-2 gap-4">
-              <div className="border-ylang-beige bg-ylang-cream/10 rounded-2xl border p-4">
-                <p className="text-ylang-charcoal/60 text-sm font-medium">
-                  Revenu Total
+              <div className="p-4" style={{ border: "var(--rule-soft)" }}>
+                <p className="type-overline mb-2" style={{ color: "var(--color-ink-3)" }}>
+                  Revenu total
                 </p>
-                <p className="text-ylang-charcoal text-xl font-bold">
-                  {stats.totalRevenue.toFixed(2)}€
+                <p
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 400,
+                    fontSize: "var(--text-title)",
+                    color: "var(--color-ink)",
+                  }}
+                >
+                  {stats.totalRevenue.toFixed(2)} €
                 </p>
               </div>
-              <div className="border-ylang-beige bg-ylang-cream/10 rounded-2xl border p-4">
-                <p className="text-ylang-charcoal/60 text-sm font-medium">
+              <div className="p-4" style={{ border: "var(--rule-soft)" }}>
+                <p className="type-overline mb-2" style={{ color: "var(--color-ink-3)" }}>
                   Croissance
                 </p>
-                <p className="text-xl font-bold text-green-600">
-                  {stats.revenueGrowth > 0 ? "+" : ""}
-                  {stats.revenueGrowth}%
+                <p
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 400,
+                    fontSize: "var(--text-title)",
+                    color: stats.revenueGrowth >= 0 ? "#22c55e" : "#ef4444",
+                  }}
+                >
+                  {stats.revenueGrowth > 0 ? "+" : ""}{stats.revenueGrowth}%
                 </p>
               </div>
             </div>
+
             <RevenueChart data={chartData} />
-            <p className="text-ylang-charcoal/40 mt-6 text-center text-xs italic">
-              Données basées sur les 6 derniers mois d&apos;activité
+
+            <p
+              className="mt-6 text-center font-body text-xs italic"
+              style={{ color: "var(--color-ink-3)", opacity: 0.5 }}
+            >
+              6 derniers mois d&apos;activité
             </p>
           </div>
         </DialogContent>

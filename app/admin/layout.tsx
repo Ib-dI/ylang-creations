@@ -14,6 +14,7 @@ import {
   Settings,
   ShoppingBag,
   Users,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,43 +23,15 @@ import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 
 const navItems = [
-  {
-    name: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Commandes",
-    href: "/admin/orders",
-    icon: ShoppingBag,
-  },
-  {
-    name: "Produits",
-    href: "/admin/products",
-    icon: Package,
-  },
-  {
-    name: "Configurateur",
-    href: "/admin/configurator",
-    icon: Palette,
-  },
-  {
-    name: "Clients",
-    href: "/admin/users",
-    icon: Users,
-  },
-  {
-    name: "Newsletter",
-    href: "/admin/newsletter",
-    icon: Mail,
-  },
+  { name: "Dashboard",     href: "/admin",              icon: LayoutDashboard },
+  { name: "Commandes",     href: "/admin/orders",        icon: ShoppingBag },
+  { name: "Produits",      href: "/admin/products",      icon: Package },
+  { name: "Configurateur", href: "/admin/configurator",  icon: Palette },
+  { name: "Clients",       href: "/admin/users",         icon: Users },
+  { name: "Newsletter",    href: "/admin/newsletter",    icon: Mail },
 ];
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { push } = useRouter();
   const supabase = createClient();
@@ -69,27 +42,13 @@ export default function AdminLayout({
 
   useEffect(() => {
     const checkAuth = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        push("/sign-in");
-        return;
-      }
-
-      if (user.app_metadata?.role !== "admin") {
-        push("/");
-        return;
-      }
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { push("/sign-in"); return; }
+      if (user.app_metadata?.role !== "admin") { push("/"); return; }
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       setLoading(false);
     };
-
     checkAuth();
   }, [push, supabase]);
 
@@ -98,151 +57,168 @@ export default function AdminLayout({
     push("/");
   };
 
-  if (loading) {
-    return <PremiumLoader />;
-  }
-
-  if (!session) {
-    return null;
-  }
+  if (loading) return <PremiumLoader />;
+  if (!session) return null;
 
   return (
-    <div className="bg-ylang-terracotta/30 min-h-screen">
-      {/* Mobile menu button */}
-      <div className="fixed top-4 right-4 z-50 lg:hidden">
+    <div className="min-h-screen" style={{ background: "var(--color-paper)" }}>
+
+      {/* Mobile top bar */}
+      <div
+        className="fixed top-0 right-0 left-0 z-40 flex items-center justify-between px-4 py-3 lg:hidden"
+        style={{ background: "var(--color-ink)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+      >
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image src="/logo/logo-2.png" alt="Ylang" width={28} height={28} />
+          <span
+            className="font-body text-sm font-medium"
+            style={{ color: "var(--color-paper)" }}
+          >
+            Admin
+          </span>
+        </Link>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="border-ylang-beige flex h-10 items-center gap-2 rounded-xl border bg-white px-3 shadow-lg"
+          className="flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-60"
+          style={{ color: "var(--color-paper)" }}
+          aria-label="Menu"
         >
-          <Menu className="text-ylang-charcoal h-5 w-5" />
-          <span className="text-ylang-charcoal font-body text-xs font-semibold uppercase">
-            Menu
-          </span>
+          {mobileMenuOpen
+            ? <X className="h-5 w-5" strokeWidth={1.5} />
+            : <Menu className="h-5 w-5" strokeWidth={1.5} />
+          }
         </button>
       </div>
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 transition-all duration-300 ${
-          sidebarOpen ? "w-64" : "w-20"
+        className={`fixed inset-y-0 left-0 z-40 flex flex-col transition-all duration-300 ${
+          sidebarOpen ? "w-60" : "w-16"
         } ${
-          mobileMenuOpen
-            ? "translate-x-0"
-            : "-translate-x-full lg:translate-x-0"
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
+        style={{ background: "var(--color-ink)", borderRight: "1px solid rgba(255,255,255,0.08)" }}
       >
-        <div className="border-ylang-beige flex h-full flex-col border-r bg-white">
-          {/* Logo */}
-          <div
-            className={`border-ylang-beige flex items-center border-b transition-all duration-300 ${
-              sidebarOpen ? "p-6" : "flex-col gap-4 p-4"
-            }`}
-          >
-            <Link
-              href="/"
-              className={`flex items-center gap-3 ${
-                sidebarOpen ? "" : "justify-center"
-              }`}
-            >
-              <Image
-                src="/logo/logo-2.png"
-                alt="Ylang Logo"
-                width={40}
-                height={40}
-              />
-              {sidebarOpen && (
-                <span className="font-display text-ylang-charcoal font-bold whitespace-nowrap">
-                  Ylang Admin
-                </span>
-              )}
-            </Link>
-            <div className={sidebarOpen ? "ml-auto" : ""}>
-              <SidebarToggle
-                isOpen={sidebarOpen}
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              />
+        {/* Logo */}
+        <div
+          className={`flex items-center gap-3 transition-all duration-300 ${
+            sidebarOpen ? "px-5 py-5" : "flex-col justify-center px-3 py-5"
+          }`}
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+        >
+          <Link href="/" className="flex shrink-0 items-center gap-3">
+            <Image src="/logo/logo-2.png" alt="Ylang" width={32} height={32} className="shrink-0" />
+            {sidebarOpen && (
+              <span
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 400,
+                  fontSize: "1rem",
+                  color: "var(--color-paper)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Ylang Admin
+              </span>
+            )}
+          </Link>
+          {sidebarOpen && (
+            <div className="ml-auto">
+              <SidebarToggle isOpen={sidebarOpen} onClick={() => setSidebarOpen(!sidebarOpen)} />
             </div>
-          </div>
+          )}
+          {!sidebarOpen && (
+            <SidebarToggle isOpen={sidebarOpen} onClick={() => setSidebarOpen(!sidebarOpen)} />
+          )}
+        </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 space-y-2 p-4">
-            {navItems.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/admin" && pathname.startsWith(item.href));
+        {/* Navigation */}
+        <nav className="flex-1 space-y-0.5 px-2 py-4">
+          {navItems.map((item) => {
+            const isActive =
+              pathname === item.href ||
+              (item.href !== "/admin" && pathname.startsWith(item.href));
 
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
-                    sidebarOpen ? "justify-start" : "justify-center"
-                  } ${
-                    isActive
-                      ? "text-ylang-rose bg-ylang-terracotta/20"
-                      : "text-ylang-charcoal hover:text-ylang-rose hover:bg-ylang-terracotta/20"
-                  }`}
-                >
-                  <item.icon className="h-5 w-5 shrink-0" />
-                  {sidebarOpen && (
-                    <span className="font-medium">{item.name}</span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 font-body text-sm transition-all duration-150 ${
+                  sidebarOpen ? "justify-start" : "justify-center"
+                }`}
+                style={{
+                  color: isActive ? "var(--color-accent)" : "var(--color-paper)",
+                  opacity: isActive ? 1 : 0.5,
+                  borderLeft: isActive ? "2px solid var(--color-accent)" : "2px solid transparent",
+                  background: isActive ? "rgba(255,255,255,0.05)" : "transparent",
+                }}
+                onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.opacity = "1"; }}
+                onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.opacity = "0.5"; }}
+              >
+                <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                {sidebarOpen && <span>{item.name}</span>}
+              </Link>
+            );
+          })}
+        </nav>
 
-          {/* Toggle & Logout */}
-          <div className="border-ylang-beige space-y-2 border-t p-4">
-            <Link
-              href="/admin/settings"
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-all ${
-                sidebarOpen ? "justify-start" : "justify-center"
-              } ${
-                pathname === "/admin/settings"
-                  ? "text-ylang-rose bg-ylang-terracotta/20"
-                  : "text-ylang-charcoal hover:bg-ylang-terracotta/20 hover:text-ylang-rose"
-              }`}
-            >
-              <Settings className="h-5 w-5 shrink-0" />
-              {sidebarOpen && <span className="font-medium">Paramètres</span>}
-            </Link>
+        {/* Footer nav */}
+        <div
+          className="space-y-0.5 px-2 py-4"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+        >
+          <Link
+            href="/admin/settings"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2.5 font-body text-sm transition-all duration-150 ${
+              sidebarOpen ? "justify-start" : "justify-center"
+            }`}
+            style={{
+              color: pathname === "/admin/settings" ? "var(--color-accent)" : "var(--color-paper)",
+              opacity: pathname === "/admin/settings" ? 1 : 0.5,
+              borderLeft: pathname === "/admin/settings" ? "2px solid var(--color-accent)" : "2px solid transparent",
+              background: pathname === "/admin/settings" ? "rgba(255,255,255,0.05)" : "transparent",
+            }}
+            onMouseEnter={(e) => { if (pathname !== "/admin/settings") e.currentTarget.style.opacity = "1"; }}
+            onMouseLeave={(e) => { if (pathname !== "/admin/settings") e.currentTarget.style.opacity = "0.5"; }}
+          >
+            <Settings className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+            {sidebarOpen && <span>Paramètres</span>}
+          </Link>
 
-            <button
-              onClick={handleLogout}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-600 transition-colors hover:bg-red-50 ${
-                sidebarOpen ? "justify-start" : "justify-center"
-              }`}
-            >
-              <LogOut className="h-5 w-5 shrink-0" />
-              {sidebarOpen ? (
-                <span className="font-medium">Déconnexion</span>
-              ) : null}
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className={`flex w-full items-center gap-3 px-3 py-2.5 font-body text-sm transition-opacity hover:opacity-100 ${
+              sidebarOpen ? "justify-start" : "justify-center"
+            }`}
+            style={{ color: "var(--color-paper)", opacity: 0.35 }}
+          >
+            <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+            {sidebarOpen && <span>Déconnexion</span>}
+          </button>
         </div>
       </aside>
 
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-30 lg:hidden"
+          style={{ background: "rgba(0,0,0,0.4)" }}
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Main content */}
       <main
-        className={`pb-12 transition-all duration-300 ${
-          sidebarOpen ? "lg:ml-64" : "lg:ml-20"
-        }`}
+        className={`transition-all duration-300 ${sidebarOpen ? "lg:ml-60" : "lg:ml-16"}`}
       >
-        <div className="px-4 pt-20 sm:p-6 lg:p-8">
-          <div className="safe-area-bottom">{children}</div>
+        <div className="px-4 pt-16 pb-12 sm:px-6 lg:px-8 lg:pt-8">
+          {children}
         </div>
       </main>
-      <Toaster position="top-right" richColors />
+
+      <Toaster position="top-right" />
     </div>
   );
 }

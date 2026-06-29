@@ -260,7 +260,8 @@ const AnimatedBadge = React.memo(({ count }: { count: number }) => {
 
   return (
     <span
-      className="bg-ylang-beige animate-scale-in absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium text-ylang-rose lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px]"
+      className="animate-scale-in absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px]"
+      style={{ background: "var(--color-paper)", color: "var(--color-ink)" }}
       aria-hidden="true"
     >
       {count}
@@ -478,7 +479,8 @@ export function Header() {
                   <DropdownMenuTrigger asChild>
                     <button
                       aria-label="Mon compte"
-                      className="text-ylang-charcoal hover:border-ylang-rose focus:ring-ylang-rose/20 h-9 w-9 overflow-hidden rounded-full border border-ylang-beige/60 transition-all duration-300 hover:border-ylang-rose/50 focus:ring-2 focus:outline-none"
+                      className="h-9 w-9 overflow-hidden rounded-full border-2 transition-all duration-300 focus:outline-none"
+                      style={{ borderColor: "rgba(255,255,255,0.55)" }}
                     >
                       {session.user.user_metadata?.avatar_url ? (
                         <div className="relative h-full w-full">
@@ -492,18 +494,25 @@ export function Header() {
                           />
                         </div>
                       ) : (
-                        <div className="bg-ylang-rose/10 text-ylang-rose group-hover:bg-ylang-rose/20 flex h-full w-full items-center justify-center text-xs font-bold uppercase transition-colors">
-                          {session.user.email?.charAt(0) || "U"}
+                        <div
+                          className="flex h-full w-full items-center justify-center text-xs font-bold uppercase"
+                          style={{ background: "var(--color-paper)", color: "var(--color-ink)" }}
+                        >
+                          {session.user.email?.charAt(0).toUpperCase() || "U"}
                         </div>
                       )}
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="border-ylang-beige w-64 bg-white/95 p-2 shadow-xl backdrop-blur-md"
+                    className="w-64 p-2 shadow-xl"
+                    style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }}
                   >
                     <div className="flex items-center gap-3 px-2 py-3">
-                      <div className="border-ylang-beige bg-ylang-cream flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border">
+                      <div
+                        className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border"
+                        style={{ borderColor: "var(--rule-soft)", background: "var(--color-paper-2)" }}
+                      >
                         {session.user.user_metadata?.avatar_url ? (
                           <div className="relative h-full w-full">
                             <Image
@@ -516,32 +525,42 @@ export function Header() {
                             />
                           </div>
                         ) : (
-                          <span className="text-ylang-rose text-sm font-bold uppercase">
-                            {session.user.email?.charAt(0) || "U"}
+                          <span
+                            className="text-sm font-bold uppercase"
+                            style={{ color: "var(--color-ink)" }}
+                          >
+                            {session.user.email?.charAt(0).toUpperCase() || "U"}
                           </span>
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-gray-900">
+                        <p
+                          className="font-body truncate text-sm font-semibold"
+                          style={{ color: "var(--color-ink)" }}
+                        >
                           {session.user.user_metadata?.full_name ||
                             session.user.email?.split("@")[0]}
                         </p>
-                        <p className="truncate text-xs text-gray-500">
+                        <p
+                          className="font-body truncate text-xs"
+                          style={{ color: "var(--color-ink-3)" }}
+                        >
                           {session.user.email}
                         </p>
                       </div>
                     </div>
 
-                    <DropdownMenuSeparator className="bg-ylang-beige" />
+                    <DropdownMenuSeparator className="bg-gray-100" />
 
                     <div className="py-1">
                       {session.user.app_metadata?.role === "admin" ? (
                         <DropdownMenuItem asChild>
                           <Link
                             href="/admin"
-                            className="group focus:text-ylang-rose data-highlighted:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose flex cursor-pointer items-center rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                            className="font-body flex cursor-pointer items-center px-2 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
+                            style={{ color: "var(--color-ink-3)" }}
                           >
-                            <LayoutDashboard className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
+                            <LayoutDashboard className="mr-3 h-4 w-4" style={{ color: "var(--color-ink-3)" }} />
                             <span>Tableau de bord</span>
                           </Link>
                         </DropdownMenuItem>
@@ -549,29 +568,31 @@ export function Header() {
                         <>
                           <DropdownMenuItem
                             onClick={() => router.push("/orders")}
-                            className="group focus:text-ylang-rose data-highlighted:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                            className="font-body flex cursor-pointer items-center px-2 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
+                            style={{ color: "var(--color-ink-3)" }}
                           >
-                            <Package className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
+                            <Package className="mr-3 h-4 w-4" style={{ color: "var(--color-ink-3)" }} />
                             <span>Mes Commandes</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => router.push("/profil")}
-                            className="group focus:text-ylang-rose data-highlighted:text-ylang-rose hover:bg-ylang-beige hover:text-ylang-rose cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors"
+                            className="font-body flex cursor-pointer items-center px-2 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
+                            style={{ color: "var(--color-ink-3)" }}
                           >
-                            <User className="group-hover:text-ylang-rose mr-3 h-4 w-4 text-gray-400" />
+                            <User className="mr-3 h-4 w-4" style={{ color: "var(--color-ink-3)" }} />
                             <span>Mon Profil</span>
                           </DropdownMenuItem>
                         </>
                       )}
                     </div>
 
-                    <DropdownMenuSeparator className="bg-ylang-beige" />
+                    <DropdownMenuSeparator className="bg-gray-100" />
 
                     <DropdownMenuItem
                       onClick={handleSignOut}
-                      className="group cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 focus:text-red-700 data-highlighted:text-red-700"
+                      className="font-body flex cursor-pointer items-center px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                     >
-                      <LogOut className="mr-3 h-4 w-4 text-red-400 group-hover:text-red-700" />
+                      <LogOut className="mr-3 h-4 w-4 text-red-400" />
                       <span>Se déconnecter</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>

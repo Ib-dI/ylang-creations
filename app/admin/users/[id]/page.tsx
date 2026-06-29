@@ -4,7 +4,6 @@ import StatusBadge from "@/components/admin/status-badge";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
-  CheckCircle,
   Euro,
   ExternalLink,
   Loader2,
@@ -48,18 +47,14 @@ export default function UserDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (id) {
-      fetchUserDetails();
-    }
+    if (id) fetchUserDetails();
   }, [id]);
 
   const fetchUserDetails = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/admin/users/${id}`);
-      if (!response.ok) {
-        throw new Error("Impossible de récupérer les détails de l'utilisateur");
-      }
+      if (!response.ok) throw new Error("Impossible de récupérer les détails de l'utilisateur");
       const data = await response.json();
       setUser(data.user);
     } catch (err: any) {
@@ -72,7 +67,7 @@ export default function UserDetailPage() {
   if (isLoading) {
     return (
       <div className="flex h-[80vh] items-center justify-center">
-        <Loader2 className="text-ylang-rose h-12 w-12 animate-spin" />
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
       </div>
     );
   }
@@ -80,13 +75,15 @@ export default function UserDetailPage() {
   if (error || !user) {
     return (
       <div className="p-8">
-        <div className="rounded-2xl border border-red-100 bg-red-50 p-8 text-center text-red-600">
-          <XCircle className="mx-auto mb-4 h-12 w-12" />
-          <h2 className="mb-2 text-xl font-bold">Erreur</h2>
-          <p>{error || "Utilisateur non trouvé"}</p>
+        <div className="border p-8 text-center" style={{ border: "var(--rule-hair)" }}>
+          <XCircle className="mx-auto mb-4 h-10 w-10" style={{ color: "var(--color-ink-3)", opacity: 0.4 }} strokeWidth={1} />
+          <p style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1rem", color: "var(--color-ink)" }}>
+            {error || "Utilisateur non trouvé"}
+          </p>
           <button
             onClick={() => router.back()}
-            className="mt-6 font-medium hover:underline"
+            className="mt-4 font-body text-sm transition-opacity hover:opacity-70"
+            style={{ color: "var(--color-ink-3)" }}
           >
             ← Retour aux clients
           </button>
@@ -96,184 +93,172 @@ export default function UserDetailPage() {
   }
 
   return (
-    <div className="p-8">
+    <div>
       {/* Header */}
       <div className="mb-8">
         <button
           onClick={() => router.back()}
-          className="text-ylang-charcoal/60 hover:text-ylang-rose mb-4 flex items-center gap-2 text-sm font-medium transition-colors"
+          className="mb-4 flex items-center gap-2 font-body text-sm transition-opacity hover:opacity-70"
+          style={{ color: "var(--color-ink-3)" }}
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
           Retour aux clients
         </button>
+
+        <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>Administration</p>
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <div className="mb-2 flex items-center gap-3">
-              <h1 className="text-ylang-charcoal text-3xl font-bold">
-                {user.name}
-              </h1>
-              {user.emailVerified ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
-                  <CheckCircle className="h-3 w-3" />
-                  Vérifié
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-700">
-                  <XCircle className="h-3 w-3" />
-                  Non vérifié
-                </span>
-              )}
-            </div>
-            <p className="text-ylang-charcoal/60 flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              {user.email}
-            </p>
-          </div>
           <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-ylang-charcoal/40 text-sm font-medium tracking-wider uppercase">
-                ID Utilisateur
-              </p>
-              <p className="text-ylang-charcoal/60 font-mono text-xs">
-                {user.id}
-              </p>
-            </div>
+            <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.75rem", color: "var(--color-ink)" }}>
+              {user.name}
+            </h1>
+            {user.emailVerified ? (
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5" style={{ border: "var(--rule-soft)" }}>
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#22c55e" }} />
+                <span className="type-overline" style={{ color: "var(--color-ink)" }}>Vérifié</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5" style={{ border: "var(--rule-soft)" }}>
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#f59e0b" }} />
+                <span className="type-overline" style={{ color: "var(--color-ink)" }}>Non vérifié</span>
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2" style={{ color: "var(--color-ink-3)" }}>
+            <Mail className="h-4 w-4" strokeWidth={1.5} />
+            <span className="font-body text-sm">{user.email}</span>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Profile Card & Stats */}
-        <div className="space-y-8 lg:col-span-1">
-          {/* Main Profile Info */}
-          <div className="border-ylang-beige overflow-hidden rounded-2xl border bg-white shadow-xs">
-            <div className="from-ylang-rose to-ylang-terracotta bg-linear-to-br p-8 text-center text-white">
-              <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 text-4xl font-bold backdrop-blur-md">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Profile card + Stats */}
+        <div className="space-y-4 lg:col-span-1">
+          {/* Profile card */}
+          <div style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}>
+            {/* Dark header */}
+            <div className="flex flex-col items-center gap-3 p-8 text-center" style={{ background: "var(--color-ink)" }}>
+              <div
+                className="flex h-20 w-20 shrink-0 items-center justify-center font-body text-3xl font-medium"
+                style={{ background: "rgba(255,255,255,0.1)", color: "var(--color-paper)" }}
+              >
                 {user.name.charAt(0).toUpperCase()}
               </div>
-              <h2 className="text-xl font-bold">{user.name}</h2>
-              <p className="text-white/80">{user.email}</p>
+              <div>
+                <p style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.125rem", color: "var(--color-paper)" }}>
+                  {user.name}
+                </p>
+                <p className="font-body text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{user.email}</p>
+              </div>
             </div>
-            <div className="space-y-4 p-6">
-              <div className="border-ylang-beige flex items-center justify-between border-b py-2">
-                <span className="text-ylang-charcoal/60 text-sm">
-                  Inscrit le
-                </span>
-                <span className="text-ylang-charcoal font-medium">
-                  {new Date(user.createdAt).toLocaleDateString("fr-FR")}
-                </span>
-              </div>
-              <div className="border-ylang-beige flex items-center justify-between border-b py-2">
-                <span className="text-ylang-charcoal/60 text-sm">
-                  Dernière connexion
-                </span>
-                <span className="text-ylang-charcoal font-medium">
-                  {user.lastSignInAt
-                    ? new Date(user.lastSignInAt).toLocaleDateString("fr-FR")
-                    : "Jamais"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-ylang-charcoal/60 text-sm">
-                  SumUp Customer ID
-                </span>
-                <span className="text-ylang-charcoal/60 font-mono text-xs">
-                  {user.sumupCustomerId || "Aucun"}
-                </span>
-              </div>
+            {/* Info rows */}
+            <div className="divide-y px-6" style={{ borderTop: "var(--rule-soft)" }}>
+              {[
+                { label: "Inscrit le", value: new Date(user.createdAt).toLocaleDateString("fr-FR") },
+                { label: "Dernière connexion", value: user.lastSignInAt ? new Date(user.lastSignInAt).toLocaleDateString("fr-FR") : "Jamais" },
+                { label: "SumUp ID", value: user.sumupCustomerId || "—" },
+                { label: "ID Utilisateur", value: user.id.slice(0, 8).toUpperCase(), mono: true },
+              ].map(({ label, value, mono }) => (
+                <div key={label} className="flex items-center justify-between py-3">
+                  <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>{label}</span>
+                  <span
+                    className={mono ? "font-mono text-xs" : "font-body text-sm font-medium"}
+                    style={{ color: "var(--color-ink)" }}
+                  >
+                    {value}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Key Stats */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1">
-            <div className="border-ylang-beige rounded-2xl border bg-white p-6 shadow-xs">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100">
-                <ShoppingBag className="h-5 w-5 text-purple-600" />
+          {/* Stat cards */}
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { label: "Commandes", value: user.orderCount.toString(), icon: ShoppingBag },
+              { label: "Total dépensé", value: `${user.totalSpent.toFixed(2)} €`, icon: Euro },
+            ].map(({ label, value, icon: Icon }) => (
+              <div key={label} className="flex items-start justify-between p-4" style={{ border: "var(--rule-soft)", background: "var(--color-paper)" }}>
+                <div>
+                  <p className="type-overline mb-2" style={{ color: "var(--color-ink-3)" }}>{label}</p>
+                  <p style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "var(--text-title)", color: "var(--color-ink)", lineHeight: 1 }}>
+                    {value}
+                  </p>
+                </div>
+                <Icon className="h-4 w-4 shrink-0" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
               </div>
-              <p className="text-ylang-charcoal text-2xl font-bold">
-                {user.orderCount}
-              </p>
-              <p className="text-ylang-charcoal/60 text-sm">
-                Commandes totales
-              </p>
-            </div>
-            <div className="border-ylang-beige rounded-2xl border bg-white p-6 shadow-xs">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                <Euro className="h-5 w-5 text-green-600" />
-              </div>
-              <p className="text-ylang-charcoal text-2xl font-bold">
-                {user.totalSpent.toFixed(2)}€
-              </p>
-              <p className="text-ylang-charcoal/60 text-sm">
-                Total dépensé (LTV)
-              </p>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Orders History */}
+        {/* Order history */}
         <div className="lg:col-span-2">
-          <div className="border-ylang-beige overflow-hidden rounded-2xl border bg-white shadow-xs">
-            <div className="border-ylang-beige bg-ylang-cream/30 border-b p-6">
-              <h2 className="text-ylang-charcoal text-xl font-bold">
+          <div style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}>
+            {/* Table header */}
+            <div className="px-6 py-4" style={{ borderBottom: "var(--rule-soft)", background: "var(--color-paper-2)" }}>
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.125rem", color: "var(--color-ink)" }}>
                 Historique des commandes
-              </h2>
+              </p>
             </div>
+
             {user.orders.length === 0 ? (
-              <div className="text-ylang-charcoal/60 p-12 text-center">
-                <Package className="mx-auto mb-4 h-12 w-12 opacity-20" />
-                <p>Aucune commande passée par ce client.</p>
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Package className="mb-4 h-8 w-8" style={{ color: "var(--color-ink-3)", opacity: 0.3 }} strokeWidth={1} />
+                <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                  Aucune commande passée par ce client.
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-ylang-cream/50 text-left">
-                    <tr>
-                      <th className="text-ylang-charcoal/60 px-6 py-4 text-xs font-medium tracking-wider uppercase">
-                        Commande
-                      </th>
-                      <th className="text-ylang-charcoal/60 px-6 py-4 text-xs font-medium tracking-wider uppercase">
-                        Status
-                      </th>
-                      <th className="text-ylang-charcoal/60 px-6 py-4 text-xs font-medium tracking-wider uppercase">
-                        Date
-                      </th>
-                      <th className="text-ylang-charcoal/60 px-6 py-4 text-xs font-medium tracking-wider uppercase">
-                        Montant
-                      </th>
-                      <th className="text-ylang-charcoal/60 px-6 py-4 text-right text-xs font-medium tracking-wider uppercase"></th>
+                  <thead>
+                    <tr style={{ background: "var(--color-paper-2)" }}>
+                      {["Commande", "Statut", "Date", "Montant", ""].map((th) => (
+                        <th
+                          key={th}
+                          className={`type-overline px-6 py-3 ${th === "" ? "text-right" : "text-left"}`}
+                          style={{ color: "var(--color-ink-3)" }}
+                        >
+                          {th}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-ylang-beige divide-y">
+                  <tbody>
                     {user.orders.map((order, index) => (
                       <motion.tr
                         key={order.id}
-                        initial={{ opacity: 0, x: 20 }}
+                        initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="hover:bg-ylang-cream/30 transition-colors"
+                        transition={{ duration: 0.25, delay: index * 0.04 }}
+                        className="transition-colors hover:bg-[var(--color-paper-2)]"
+                        style={{ borderTop: "var(--rule-soft)" }}
                       >
-                        <td className="text-ylang-charcoal px-6 py-4 font-medium">
-                          {order.id.slice(0, 8).toUpperCase()}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="font-body font-medium" style={{ color: "var(--color-ink)" }}>
+                            {order.id.slice(0, 8).toUpperCase()}
+                          </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <StatusBadge status={order.status} />
                         </td>
-                        <td className="text-ylang-charcoal/60 px-6 py-4 text-sm">
-                          {new Date(order.createdAt).toLocaleDateString(
-                            "fr-FR",
-                          )}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                            {new Date(order.createdAt).toLocaleDateString("fr-FR")}
+                          </span>
                         </td>
-                        <td className="text-ylang-rose px-6 py-4 font-bold">
-                          {order.totalAmount.toFixed(2)}€
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "0.9375rem", color: "var(--color-ink)" }}>
+                            {order.totalAmount.toFixed(2)} €
+                          </span>
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-6 py-4 text-right whitespace-nowrap">
                           <Link
                             href={`/admin/orders/${order.id}`}
-                            className="text-ylang-rose hover:bg-ylang-rose/10 inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 font-body text-xs transition-opacity hover:opacity-70"
+                            style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}
                           >
                             Détails
-                            <ExternalLink className="h-3 w-3" />
+                            <ExternalLink className="h-3 w-3" strokeWidth={1.5} />
                           </Link>
                         </td>
                       </motion.tr>

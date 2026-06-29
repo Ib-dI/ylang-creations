@@ -13,7 +13,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className="group relative w-full">
         {/* Label flottant premium */}
         {label && (
-          <label className="bg-ylang-cream font-body text-ylang-charcoal/60 group-focus-within:text-ylang-rose absolute -top-2.5 left-3 px-2 text-xs tracking-wide uppercase transition-all duration-300 group-focus-within:font-medium">
+          <label className="font-body absolute -top-2.5 left-3 bg-white px-2 text-xs uppercase tracking-wide text-gray-400 transition-all duration-200 group-focus-within:text-gray-600">
             {label}
           </label>
         )}
@@ -21,11 +21,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            "bg-ylang-cream border-ylang-beige flex h-11 w-full rounded-lg border px-4",
-            "font-body text-ylang-charcoal placeholder:text-ylang-charcoal/40 text-sm",
-            "transition-[border-color,box-shadow] duration-300",
-            "focus-visible:border-ylang-rose focus-visible:shadow-[0_0_0_4px_rgba(183,110,121,0.1)] focus-visible:outline-none",
-            "hover:border-ylang-terracotta/50",
+            "flex h-11 w-full border border-gray-200 bg-white px-4",
+            "font-body text-sm text-gray-800 placeholder:text-gray-300",
+            "transition-[border-color] duration-200",
+            "focus-visible:border-gray-400 focus-visible:outline-none",
+            "hover:border-gray-300",
             "disabled:cursor-not-allowed disabled:opacity-50",
             error && "border-red-400 focus-visible:border-red-500",
             className,
