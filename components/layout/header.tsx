@@ -771,7 +771,7 @@ export function Header() {
                   return (
                     <div key={category.title} className="min-w-0 space-y-3 overflow-hidden">
                       <Link href={category.href} onClick={closeMegaMenu} className="group block">
-                        <p className="type-overline break-words transition-colors group-hover:text-ylang-rose" style={{ color: "var(--color-accent)" }}>
+                        <p className="type-overline wrap-break-word transition-colors group-hover:text-ylang-rose" style={{ color: "var(--color-accent)" }}>
                           {category.title}
                         </p>
                         {category.subtitle && (
@@ -798,7 +798,7 @@ export function Header() {
                             <Link
                               href={category.href}
                               onClick={closeMegaMenu}
-                              className="text-[11px] font-medium text-ylang-rose hover:underline underline-offset-4"
+                              className=" font-medium text-overline text-ylang-rose hover:underline underline-offset-4"
                             >
                               Voir tout →
                             </Link>
