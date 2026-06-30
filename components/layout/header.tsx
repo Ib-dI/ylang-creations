@@ -419,7 +419,7 @@ export function Header() {
                 }
                 aria-expanded={isMegaMenuOpen}
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center transition-all duration-300 rounded-full sm:rounded-none lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
+                  "flex h-9 w-9 items-center justify-center transition-all duration-300 rounded-full sm:rounded-none lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
                   "hover:text-ylang-rose hover:bg-white/80",
                   isMegaMenuOpen ? "text-ylang-rose bg-white/80" : "text-ylang-white bg-white/20",
                 )}
@@ -438,7 +438,7 @@ export function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Rechercher"
-                className="text-ylang-white hover:text-ylang-rose flex items-center justify-center rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80 sm:hidden"
+                className="text-ylang-white hover:text-ylang-rose flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all duration-300 hover:bg-white/80 sm:hidden"
               >
                 <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
               </button>
@@ -601,7 +601,7 @@ export function Header() {
                 <button
                   onClick={() => router.push("/sign-in")}
                   aria-label="Se connecter"
-                  className="text-ylang-white hover:text-ylang-rose rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
+                  className="text-ylang-white hover:text-ylang-rose flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
                 >
                   <User className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
                 </button>
@@ -611,7 +611,7 @@ export function Header() {
               <button
                 onClick={() => useWishlistStore.getState().openWishlist()}
                 aria-label="Ma liste d'envies"
-                className="text-ylang-white hover:text-ylang-rose relative rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
+                className="text-ylang-white hover:text-ylang-rose relative flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
               >
                 <Heart className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
                 <AnimatedBadge count={wishlistCount} />
@@ -621,7 +621,7 @@ export function Header() {
               <button
                 onClick={() => useCartStore.getState().openCart()}
                 aria-label="Mon panier"
-                className="text-ylang-white hover:text-ylang-rose group relative rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
+                className="text-ylang-white hover:text-ylang-rose group relative flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
               >
                 <ShoppingBag
                   className="h-4 w-4 lg:h-5 lg:w-5"

@@ -154,7 +154,7 @@ export default function ProductDetails({
             </div>
 
             {/* Image principale */}
-            <div className="order-1 lg:order-2 relative flex-1 aspect-[3/4] lg:aspect-auto lg:h-[min(75vh,720px)] overflow-hidden" style={{ background: "var(--color-paper-3)" }}>
+            <div className="order-1 lg:order-2 relative flex-1 aspect-3/4 lg:aspect-auto lg:h-[min(75vh,720px)] overflow-hidden" style={{ background: "var(--color-paper-3)" }}>
               <motion.div style={{ x: xPct }} className="flex h-full">
                 {productImages.map((img, i) => (
                   <div key={i} className="relative h-full w-full shrink-0">
