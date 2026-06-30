@@ -403,7 +403,7 @@ export default function ProductDetails({
                   <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
                     Livraison offerte
                   </p>
-                  <p className="type-caption" style={{ color: "var(--color-ink-2)" }}>
+                  <p className="type-caption" style={{ color: "var(--color-ink-3)" }}>
                     Dès {freeShippingThreshold}€ d&apos;achat
                   </p>
                 </div>
@@ -416,7 +416,7 @@ export default function ProductDetails({
                   <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
                     Paiement sécurisé
                   </p>
-                  <p className="type-caption" style={{ color: "var(--color-ink-2)" }}>
+                  <p className="type-caption" style={{ color: "var(--color-ink-3)" }}>
                     Cryptage SSL
                   </p>
                 </div>
@@ -429,7 +429,7 @@ export default function ProductDetails({
                   <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
                     Fait main
                   </p>
-                  <p className="type-caption" style={{ color: "var(--color-ink-2)" }}>
+                  <p className="type-caption" style={{ color: "var(--color-ink-3)" }}>
                     Artisanat français
                   </p>
                 </div>
@@ -443,7 +443,7 @@ export default function ProductDetails({
                     <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
                       Sur mesure
                     </p>
-                    <p className="type-caption" style={{ color: "var(--color-ink-2)" }}>
+                    <p className="type-caption" style={{ color: "var(--color-ink-3)" }}>
                       100% personnalisable
                     </p>
                   </div>
