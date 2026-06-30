@@ -719,7 +719,7 @@ export default function ConfiguratorAdmin() {
                       <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${category.isActive ? 'bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.6)]' : 'bg-gray-300'}`} />
                       <div>
                         <div className="flex items-center gap-2.5">
-                          <h2 className="font-abramo-script text-3xl" style={{ color: "var(--color-ink)" }}>{category.title}</h2>
+                          <h2 className="text-2xl" style={{fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>{category.title}</h2>
                           <span className="type-overline px-2 py-0.5 text-gray-400" style={{ border: "var(--rule-soft)" }}>{category.id}</span>
                         </div>
                         {category.description && <p className="mt-0.5 font-body text-sm text-gray-400">{category.description}</p>}
@@ -736,7 +736,7 @@ export default function ConfiguratorAdmin() {
                         <Edit className="h-3.5 w-3.5" />
                       </button>
                       <button onClick={e => toggleCategoryActive(category, e)}
-                        className={`flex h-8 w-8 items-center justify-center transition-colors ${category.isActive ? 'bg-white text-gray-400 hover:bg-gray-50' : 'bg-green-100 text-green-600 hover:bg-green-200'}`} style={category.isActive ? { border: "var(--rule-soft)" } : undefined}>
+                        className="flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)", background: "var(--color-paper)" }}>
                         {category.isActive ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       </button>
                       <button onClick={e => deleteCategory(category.id, category.title, e)}
@@ -764,11 +764,11 @@ export default function ConfiguratorAdmin() {
                           {/* Hover overlay actions */}
                           <div className="absolute inset-0 flex items-end justify-center gap-1.5 bg-black/20 p-3 opacity-0 backdrop-blur-[1px] transition-opacity group-hover:opacity-100">
                             <button onClick={e => toggleFabricActive(fabric, e)} title={fabric.isActive ? "Désactiver" : "Activer"}
-                              className={`flex h-8 w-8 items-center justify-center shadow transition-colors ${fabric.isActive ? 'bg-white/90 text-gray-700 hover:bg-white' : 'bg-green-400/90 text-white hover:bg-green-400'}`}>
+                              className="flex h-8 w-8 items-center justify-center bg-white/90 shadow transition-opacity hover:opacity-70" style={{ color: "var(--color-ink)" }}>
                               {fabric.isActive ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                             </button>
                             <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }}
-                              className="flex h-8 w-8 items-center justify-center bg-white/90 text-gray-700 shadow transition-colors hover:bg-white">
+                              className="flex h-8 w-8 items-center justify-center bg-white/90 shadow transition-opacity hover:opacity-70" style={{ color: "var(--color-ink)" }}>
                               <Edit className="h-3.5 w-3.5" />
                             </button>
                             <button onClick={() => deleteFabric(fabric.id, fabric.name)}
@@ -799,18 +799,19 @@ export default function ConfiguratorAdmin() {
                             <div className="truncate font-medium text-gray-800">{fabric.name}</div>
                             <div className="font-mono text-sm font-medium text-gray-600">{fabric.price.toFixed(2)}€</div>
                             <div>
-                              <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${fabric.isActive ? 'bg-green-100 text-green-800' : 'border border-gray-300 bg-white text-gray-800'}`}>
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+                                <span className={`h-1.5 w-1.5 rounded-full ${fabric.isActive ? 'bg-green-400' : 'bg-gray-300'}`} />
                                 {fabric.isActive ? 'Actif' : 'Inactif'}
                               </span>
                             </div>
                             <div className="flex justify-end gap-1.5">
-                              <button onClick={e => toggleFabricActive(fabric, e)} className={`rounded-lg border p-1.5 transition-colors ${fabric.isActive ? 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'}`} title={fabric.isActive ? "Désactiver" : "Activer"}>
+                              <button onClick={e => toggleFabricActive(fabric, e)} className="p-1.5 transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)", background: "var(--color-paper)" }} title={fabric.isActive ? "Désactiver" : "Activer"}>
                                 {fabric.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                               </button>
-                              <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="rounded-lg border border-blue-300 bg-blue-100 p-1.5 text-blue-600 transition-colors hover:bg-blue-200">
+                              <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="p-1.5 transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)", background: "var(--color-paper)" }}>
                                 <Edit className="h-4 w-4" />
                               </button>
-                              <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="rounded-lg border border-red-300 bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200">
+                              <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="p-1.5 transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-accent)", background: "var(--color-paper)" }}>
                                 <Trash2 className="h-4 w-4" />
                               </button>
                             </div>
@@ -830,8 +831,8 @@ export default function ConfiguratorAdmin() {
             const uncategorized = filteredFabrics.filter(f => !categories.some(c => c.id === f.category));
             if (uncategorized.length === 0) return null;
             return (
-              <div className="rounded-3xl border border-dashed border-gray-300 bg-gray-50/50 p-6 opacity-80">
-                <h3 className="mb-4 text-xl font-bold text-gray-700">Tissus hors catégories (ou ID de catégorie invalide)</h3>
+              <div className="p-6 opacity-80" style={{ border: "var(--rule-soft)", borderStyle: "dashed", background: "var(--color-paper-2)" }}>
+                <p className="type-overline mb-4" style={{ color: "var(--color-ink-3)" }}>Tissus hors catégories (ou ID de catégorie invalide)</p>
                 {viewMode === "grid" ? (
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                     {uncategorized.map(fabric => (
@@ -846,13 +847,13 @@ export default function ConfiguratorAdmin() {
                           </div>
                           <p className="mt-1 truncate text-[10px] text-gray-600">Cat: {fabric.category}</p>
                           <div className="mt-2 flex items-center gap-1">
-                            <button onClick={e => toggleFabricActive(fabric, e)} title={fabric.isActive ? "Désactiver" : "Activer"} className={`flex h-7 w-7 items-center justify-center rounded-lg border p-1 transition-colors ${fabric.isActive ? 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'}`}>
+                            <button onClick={e => toggleFabricActive(fabric, e)} title={fabric.isActive ? "Désactiver" : "Activer"} className="flex h-7 w-7 items-center justify-center p-1 transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)", background: "var(--color-paper)" }}>
                               {fabric.isActive ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
                             </button>
-                            <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="flex h-7 w-7 items-center justify-center rounded-lg border border-blue-300 bg-blue-100 p-1 text-blue-600 transition-colors hover:bg-blue-200">
+                            <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="flex h-7 w-7 items-center justify-center p-1 transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)", background: "var(--color-paper)" }}>
                               <Edit className="h-3.5 w-3.5" />
                             </button>
-                            <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="flex h-7 w-7 items-center justify-center rounded-lg border border-red-300 bg-red-100 p-1 text-red-500 transition-colors hover:bg-red-200">
+                            <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="flex h-7 w-7 items-center justify-center p-1 transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-accent)", background: "var(--color-paper)" }}>
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           </div>
@@ -861,8 +862,8 @@ export default function ConfiguratorAdmin() {
                     ))}
                   </div>
                 ) : (
-                  <div className="border-gray-200 overflow-hidden rounded-2xl border shadow-xs">
-                    <div className="grid grid-cols-[48px_1fr_120px_100px_80px_140px] items-center gap-4 border-b border-gray-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-wider text-gray-600">
+                  <div className="overflow-hidden" style={{ border: "var(--rule-hair)" }}>
+                    <div className="grid grid-cols-[48px_1fr_120px_100px_80px_140px] items-center gap-4 px-5 py-2 text-xs font-semibold uppercase tracking-wider" style={{ borderBottom: "var(--rule-soft)", background: "var(--color-paper-2)", color: "var(--color-ink-3)" }}>
                       <div>Aperçu</div><div>Nom</div><div>Catégorie</div><div>Prix</div><div>Statut</div><div className="text-right">Actions</div>
                     </div>
                     <div className="divide-y divide-gray-100">
@@ -873,18 +874,19 @@ export default function ConfiguratorAdmin() {
                           <div className="text-sm text-gray-600">{fabric.category}</div>
                           <div className="text-sm font-bold text-gray-700">{fabric.price.toFixed(2)}€</div>
                           <div>
-                            <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${fabric.isActive ? 'bg-green-100 text-green-800' : 'border border-gray-300 bg-white text-gray-800'}`}>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+                              <span className={`h-1.5 w-1.5 rounded-full ${fabric.isActive ? 'bg-green-400' : 'bg-gray-300'}`} />
                               {fabric.isActive ? 'Actif' : 'Inactif'}
                             </span>
                           </div>
                           <div className="flex justify-end gap-1.5">
-                            <button onClick={e => toggleFabricActive(fabric, e)} className={`rounded-lg border p-1.5 transition-colors ${fabric.isActive ? 'border-green-300 bg-green-100 text-green-600 hover:bg-green-200' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'}`} title={fabric.isActive ? "Désactiver" : "Activer"}>
+                            <button onClick={e => toggleFabricActive(fabric, e)} className="p-1.5 transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)", background: "var(--color-paper)" }} title={fabric.isActive ? "Désactiver" : "Activer"}>
                               {fabric.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                             </button>
-                            <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="rounded-lg border border-blue-300 bg-blue-100 p-1.5 text-blue-600 transition-colors hover:bg-blue-200">
+                            <button onClick={() => { setEditingFabric(fabric); setIsFabricModalOpen(true); }} className="p-1.5 transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)", background: "var(--color-paper)" }}>
                               <Edit className="h-4 w-4" />
                             </button>
-                            <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="rounded-lg border border-red-300 bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200">
+                            <button onClick={() => deleteFabric(fabric.id, fabric.name)} className="p-1.5 transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-accent)", background: "var(--color-paper)" }}>
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
@@ -947,18 +949,18 @@ export default function ConfiguratorAdmin() {
 
                       {/* Calques badges */}
                       <div className="mt-2 flex flex-wrap items-center gap-1">
-                        <span className={`inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-bold ${product.baseImage ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-500'}`}>
-                          {product.baseImage ? '✓' : '✗'} Base
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${product.baseImage ? 'bg-green-400' : 'bg-red-400'}`} /> Base
                         </span>
-                        <span className={`inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-bold ${product.maskImage ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-500'}`}>
-                          {product.maskImage ? '✓' : '✗'} Masque
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${product.maskImage ? 'bg-green-400' : 'bg-red-400'}`} /> Masque
                         </span>
-                        <span className={`inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-bold ${product.colorMaskImage ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400'}`}>
-                          {product.colorMaskImage ? '✓' : '○'} Couleur
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${product.colorMaskImage ? 'bg-green-400' : 'bg-gray-300'}`} /> Couleur
                         </span>
                         {product.embroideryZone && (
-                          <span className="inline-flex items-center gap-0.5 rounded-md border border-gray-300 bg-white px-1.5 py-0.5 text-[10px] font-bold text-gray-700">
-                            ✓ Broderie
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+                            <span className="h-1.5 w-1.5 rounded-full bg-green-400" /> Broderie
                           </span>
                         )}
                       </div>
@@ -981,7 +983,7 @@ export default function ConfiguratorAdmin() {
                         )}
                         {product.colorMaskImage && (
                           <div className="group/thumb relative">
-                            <img src={product.colorMaskImage} alt="Couleur" className="h-12 w-12 rounded-xl border border-blue-200 object-cover bg-gray-100" />
+                            <img src={product.colorMaskImage} alt="Couleur" className="h-12 w-12 object-cover" style={{ border: "var(--rule-soft)", background: "var(--color-paper-2)" }} />
                             <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black px-1.5 py-0.5 text-[9px] font-bold text-white opacity-0 transition-opacity group-hover/thumb:opacity-100">Couleur</span>
                           </div>
                         )}
@@ -995,11 +997,11 @@ export default function ConfiguratorAdmin() {
                         <Edit className="h-3.5 w-3.5" /> Modifier
                       </button>
                       <button onClick={() => toggleProductActive(product)}
-                        className={`flex h-9 w-9 items-center justify-center rounded-xl transition-colors ${product.isActive ? 'bg-gray-100 text-gray-500 hover:bg-gray-200' : 'bg-green-100 text-green-600 hover:bg-green-200'}`}>
+                        className="flex h-9 w-9 items-center justify-center transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)", background: "var(--color-paper)" }}>
                         {product.isActive ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                       <button onClick={() => openDeleteModal("product", product.id, product.name)}
-                        className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-400 transition-colors hover:bg-red-100 hover:text-red-600">
+                        className="flex h-9 w-9 items-center justify-center transition-opacity hover:opacity-60" style={{ border: "var(--rule-soft)", color: "var(--color-accent)", background: "var(--color-paper)" }}>
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
@@ -1304,7 +1306,7 @@ export default function ConfiguratorAdmin() {
                   style={colorSubTab === type ? { background: "var(--color-ink)" } : undefined}
                 >
                   {type === "product" ? "Couleurs Produit" : "Fils Broderie"}
-                  <span className={`ml-2 px-1.5 py-0.5 text-[10px] ${colorSubTab === type ? 'bg-white/20' : 'bg-gray-100 text-gray-500'}`}>
+                  <span className="ml-2 px-1.5 py-0.5 text-[10px]" style={{ opacity: 0.6 }}>
                     {colors.filter(c => c.type === type).length}
                   </span>
                 </button>
@@ -1332,8 +1334,8 @@ export default function ConfiguratorAdmin() {
 
           {/* Color grid */}
           {colors.filter(c => c.type === colorSubTab).length === 0 ? (
-            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 bg-white py-20 text-center">
-              <Palette className="mb-3 h-10 w-10 text-gray-300" />
+            <div className="flex flex-col items-center justify-center py-20 text-center" style={{ border: "var(--rule-soft)", borderStyle: "dashed", background: "var(--color-paper)" }}>
+              <Palette className="mb-3 h-10 w-10" style={{ color: "var(--color-ink-3)", opacity: 0.4 }} />
               <p className="font-body text-sm font-medium text-gray-400">Aucune couleur pour l&apos;instant</p>
               <button
                 onClick={() => { setEditingColor({ type: colorSubTab, isActive: true, order: 0 }); setIsColorModalOpen(true); }}
@@ -1347,9 +1349,8 @@ export default function ConfiguratorAdmin() {
               {colors.filter(c => c.type === colorSubTab).sort((a, b) => a.order - b.order).map(color => (
                 <div
                   key={color.id}
-                  className={`group flex flex-col items-center gap-2 p-3 transition-all hover:shadow-sm ${
-                    color.isActive ? "bg-white" : "border-dashed border-gray-200 bg-gray-50/60 opacity-55"
-                  }`} style={color.isActive ? { border: "var(--rule-soft)" } : undefined}
+                  className={`group flex flex-col items-center gap-2 p-3 transition-all hover:shadow-sm ${!color.isActive ? "opacity-55" : ""}`}
+                  style={{ border: color.isActive ? "var(--rule-soft)" : "1px dashed var(--color-paper-3)", background: "var(--color-paper)" }}
                 >
                   {/* Swatch avec fond damier pour couleurs claires */}
                   <div
@@ -1366,22 +1367,13 @@ export default function ConfiguratorAdmin() {
 
                   {/* Actions on hover */}
                   <div className="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                    <button
-                      onClick={() => toggleColorActive(color)}
-                      className="p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
-                    >
+                    <button onClick={() => toggleColorActive(color)} className="p-1 transition-opacity hover:opacity-60" style={{ color: "var(--color-ink-3)" }}>
                       {color.isActive ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                     </button>
-                    <button
-                      onClick={() => { setEditingColor(color); setIsColorModalOpen(true); }}
-                      className="p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
-                    >
+                    <button onClick={() => { setEditingColor(color); setIsColorModalOpen(true); }} className="p-1 transition-opacity hover:opacity-60" style={{ color: "var(--color-ink-3)" }}>
                       <Edit className="h-3 w-3" />
                     </button>
-                    <button
-                      onClick={() => openDeleteModal("color", color.id, color.name)}
-                      className="rounded-lg p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                    >
+                    <button onClick={() => openDeleteModal("color", color.id, color.name)} className="p-1 transition-opacity hover:opacity-60" style={{ color: "var(--color-accent)" }}>
                       <Trash2 className="h-3 w-3" />
                     </button>
                   </div>
@@ -1602,8 +1594,9 @@ export default function ConfiguratorAdmin() {
                       </p>
                       <p className="font-body text-[10px] text-gray-400 mt-0.5">Silhouette + ombres</p>
                     </div>
-                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.baseImage ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}>
-                      {productImages.baseImage ? "✓" : "Requis"}
+                    <span className="inline-flex shrink-0 items-center gap-1 px-1.5 py-0.5 text-[9px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${productImages.baseImage ? "bg-green-400" : "bg-gray-300"}`} />
+                      {productImages.baseImage ? "Ok" : "Requis"}
                     </span>
                   </div>
                   <div className="flex-1">
@@ -1626,8 +1619,9 @@ export default function ConfiguratorAdmin() {
                       </p>
                       <p className="font-body text-[10px] text-gray-400 mt-0.5">N&amp;B — blanc = tissu</p>
                     </div>
-                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.maskImage ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}>
-                      {productImages.maskImage ? "✓" : "Requis"}
+                    <span className="inline-flex shrink-0 items-center gap-1 px-1.5 py-0.5 text-[9px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${productImages.maskImage ? "bg-green-400" : "bg-gray-300"}`} />
+                      {productImages.maskImage ? "Ok" : "Requis"}
                     </span>
                   </div>
                   <div className="flex-1">
@@ -1642,14 +1636,15 @@ export default function ConfiguratorAdmin() {
                 </div>
 
                 {/* Masque couleur */}
-                <div className="rounded-2xl border border-dashed border-[#ddd5c8] bg-white p-4 flex flex-col">
+                <div className="p-4 flex flex-col bg-white" style={{ border: "var(--rule-soft)", borderStyle: "dashed" }}>
                   <div className="mb-2 flex items-start justify-between gap-1">
                     <div className="min-w-0">
                       <p className="font-body text-sm font-medium text-gray-800 leading-tight">Masque couleur</p>
                       <p className="font-body text-[10px] text-gray-400 mt-0.5">Zone d&apos;accent coloré</p>
                     </div>
-                    <span className={`shrink-0 rounded-lg px-1.5 py-0.5 text-[9px] font-black ${productImages.colorMaskImage ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}>
-                      {productImages.colorMaskImage ? "✓" : "Optionnel"}
+                    <span className="inline-flex shrink-0 items-center gap-1 px-1.5 py-0.5 text-[9px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${productImages.colorMaskImage ? "bg-green-400" : "bg-gray-300"}`} />
+                      {productImages.colorMaskImage ? "Ok" : "Optionnel"}
                     </span>
                   </div>
                   <div className="flex-1">
@@ -1722,11 +1717,12 @@ export default function ConfiguratorAdmin() {
                     return (
                       <div
                         key={size}
-                        className={`flex items-center gap-1 border-2 pl-3 pr-1.5 py-1.5 font-body text-sm font-medium transition-all ${
-                          isDefault
-                            ? "border-ylang-charcoal bg-gray-50 text-gray-900"
-                            : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
-                        }`}
+                        className="flex items-center gap-1 pl-3 pr-1.5 py-1.5 font-body text-sm font-medium transition-all"
+                        style={{
+                          border: isDefault ? "2px solid var(--color-ink)" : "var(--rule-soft)",
+                          background: "var(--color-paper)",
+                          color: isDefault ? "var(--color-ink)" : "var(--color-ink-3)",
+                        }}
                       >
                         <button
                           type="button"
@@ -1735,7 +1731,7 @@ export default function ConfiguratorAdmin() {
                           className="flex items-center gap-1 leading-none"
                         >
                           {size}
-                          {isDefault && <span className="text-gray-500 text-xs">★</span>}
+                          {isDefault && <span className="text-xs" style={{ color: "var(--color-ink-3)" }}>★</span>}
                         </button>
                         <button
                           type="button"
@@ -1757,8 +1753,8 @@ export default function ConfiguratorAdmin() {
                   })}
                 </div>
               ) : (
-                <div className="border border-dashed border-gray-200 py-4 text-center">
-                  <p className="font-body text-xs text-gray-400">Aucune taille ajoutée — produit sans taille</p>
+                <div className="py-4 text-center" style={{ border: "var(--rule-soft)", borderStyle: "dashed" }}>
+                  <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>Aucune taille ajoutée — produit sans taille</p>
                 </div>
               )}
 
@@ -1799,7 +1795,7 @@ export default function ConfiguratorAdmin() {
           >
             <DialogContent className="sm:max-w-[440px]">
               <DialogHeader>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-500 ring-4 ring-red-50">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center" style={{ border: "var(--rule-soft)", color: "var(--color-accent)", background: "var(--color-paper-2)" }}>
                   <TrashBin className="h-6 w-6" />
                 </div>
                 <DialogTitle style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "1.125rem", color: "var(--color-ink)" }}>
