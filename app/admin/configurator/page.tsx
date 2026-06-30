@@ -383,7 +383,7 @@ export default function ConfiguratorAdmin() {
         if (!uploadRes.ok) throw new Error("Erreur d'upload");
         const uploadData = await uploadRes.json();
         finalImageUrl = uploadData.url;
-      } catch (err) {
+      } catch {
         toast.error("Erreur lors de l'upload de l'image");
         setIsSavingFabric(false);
         return;
@@ -531,8 +531,8 @@ export default function ConfiguratorAdmin() {
         const err = await res.json();
         toast.error("Erreur : " + (err.error || "Une erreur est survenue"));
       }
-    } catch (err: any) {
-      toast.error(err.message || "Erreur réseau");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur réseau");
     } finally {
       setIsSavingProduct(false);
     }
@@ -781,7 +781,7 @@ export default function ConfiguratorAdmin() {
                             <h3 className="truncate text-xs font-medium text-gray-800">{fabric.name}</h3>
                             <div className="mt-0.5 flex items-center gap-1.5">
                               <div className="h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-black/10" style={{ backgroundColor: fabric.baseColor }} />
-                              <span className="font-mono text-[13px] font-semibold text-gray-600">{fabric.price.toFixed(2)}€</span>
+                              <span className="font-mono text-caption font-semibold text-gray-600">{fabric.price.toFixed(2)}€</span>
                             </div>
                           </div>
                         </div>
@@ -1024,7 +1024,7 @@ export default function ConfiguratorAdmin() {
                 onClick={() => openEmbroideryEditor(product)}
                 className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all ${
                   embroideryProduct?.id === product.id
-                    ? 'border-[#19191c] bg-gray-50 shadow-sm'
+                    ? 'border-ylang-charcoal bg-gray-50 shadow-sm'
                     : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-sm'
                 }`}
               >
@@ -1042,7 +1042,7 @@ export default function ConfiguratorAdmin() {
                   }
                 </div>
                 {embroideryProduct?.id === product.id && (
-                  <div className="h-2 w-2 shrink-0 rounded-full bg-[#19191c]" />
+                  <div className="h-2 w-2 shrink-0 rounded-full bg-ylang-charcoal" />
                 )}
               </button>
             ))}
@@ -1063,7 +1063,7 @@ export default function ConfiguratorAdmin() {
               {/* Image interactive */}
               <div className="flex-1">
                 <p className="mb-2 type-overline" style={{ color: "var(--color-ink-3)" }}>
-                  Cliquez sur l'image pour positionner la broderie
+                  Cliquez sur l&apos;image pour positionner la broderie
                 </p>
                 <div
                   ref={imageContainerRef}
@@ -1087,9 +1087,9 @@ export default function ConfiguratorAdmin() {
                     }}
                   >
                     <div className="relative h-8 w-8">
-                      <div className="absolute top-1/2 left-0 h-px w-full bg-[#19191c]/60" />
-                      <div className="absolute left-1/2 top-0 h-full w-px bg-[#19191c]/60" />
-                      <div className="absolute top-1/2 left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#19191c] ring-2 ring-white shadow" />
+                      <div className="absolute top-1/2 left-0 h-px w-full bg-ylang-charcoal/60" />
+                      <div className="absolute left-1/2 top-0 h-full w-px bg-ylang-charcoal/60" />
+                      <div className="absolute top-1/2 left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ylang-charcoal ring-2 ring-white shadow" />
                     </div>
                   </div>
 
@@ -1105,7 +1105,7 @@ export default function ConfiguratorAdmin() {
 
                   {/* Zone max-width indicator */}
                   <div
-                    className="pointer-events-none absolute border border-dashed border-[#19191c]/20"
+                    className="pointer-events-none absolute border border-dashed border-ylang-charcoal/20"
                     style={{
                       left: `${(embroideryZone.x - embroideryZone.maxWidth / 2) * 100}%`,
                       top: `${embroideryZone.y * 100}%`,
@@ -1144,7 +1144,7 @@ export default function ConfiguratorAdmin() {
                     <input type="range" min="0" max="100" step="1"
                       value={Math.round(embroideryZone.x * 100)}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, x: Number(e.target.value) / 100 }))}
-                      className="w-full accent-[#19191c]" />
+                      className="w-full accent-ylang-charcoal" />
                   </div>
 
                   {/* Position Y */}
@@ -1156,7 +1156,7 @@ export default function ConfiguratorAdmin() {
                     <input type="range" min="0" max="100" step="1"
                       value={Math.round(embroideryZone.y * 100)}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, y: Number(e.target.value) / 100 }))}
-                      className="w-full accent-[#19191c]" />
+                      className="w-full accent-ylang-charcoal" />
                   </div>
 
                   {/* Rotation */}
@@ -1170,7 +1170,7 @@ export default function ConfiguratorAdmin() {
                     <input type="range" min="-90" max="90" step="1"
                       value={embroideryZone.rotation}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, rotation: Number(e.target.value) }))}
-                      className="w-full accent-[#19191c]" />
+                      className="w-full accent-ylang-charcoal" />
                   </div>
 
                   {/* Taille de police */}
@@ -1184,7 +1184,7 @@ export default function ConfiguratorAdmin() {
                     <input type="range" min="10" max="80" step="1"
                       value={embroideryZone.fontSize}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, fontSize: Number(e.target.value) }))}
-                      className="w-full accent-[#19191c]" />
+                      className="w-full accent-ylang-charcoal" />
                   </div>
 
                   {/* Largeur max */}
@@ -1198,7 +1198,7 @@ export default function ConfiguratorAdmin() {
                     <input type="range" min="5" max="100" step="1"
                       value={Math.round(embroideryZone.maxWidth * 100)}
                       onChange={e => setEmbroideryZone(prev => ({ ...prev, maxWidth: Number(e.target.value) / 100 }))}
-                      className="w-full accent-[#19191c]" />
+                      className="w-full accent-ylang-charcoal" />
                   </div>
 
                   {/* Alignement */}
@@ -1211,7 +1211,7 @@ export default function ConfiguratorAdmin() {
                           onClick={() => setEmbroideryZone(prev => ({ ...prev, alignment: align }))}
                           className={`flex-1 rounded-lg border py-1.5 text-xs font-bold transition-colors ${
                             embroideryZone.alignment === align
-                              ? 'border-[#19191c] bg-[#19191c] text-white'
+                              ? 'border-ylang-charcoal bg-ylang-charcoal text-white'
                               : 'border-gray-200 bg-white text-gray-500 hover:border-gray-400'
                           }`}
                         >
@@ -1234,7 +1234,7 @@ export default function ConfiguratorAdmin() {
                             onClick={() => setEmbroideryZone(prev => ({ ...prev, multiNameEnabled: val }))}
                             className={`flex-1 rounded-lg border py-1.5 text-xs font-bold transition-colors ${
                               (embroideryZone.multiNameEnabled ?? true) === val
-                                ? 'border-[#19191c] bg-[#19191c] text-white'
+                                ? 'border-ylang-charcoal bg-ylang-charcoal text-white'
                                 : 'border-gray-200 bg-white text-gray-500 hover:border-gray-400'
                             }`}
                           >
@@ -1255,7 +1255,7 @@ export default function ConfiguratorAdmin() {
                           type="range" min="-60" max="20" step="1"
                           value={embroideryZone.nameSpacing ?? -36}
                           onChange={e => setEmbroideryZone(prev => ({ ...prev, nameSpacing: Number(e.target.value) }))}
-                          className="w-full accent-[#19191c]"
+                          className="w-full accent-ylang-charcoal"
                         />
                         <div className="mt-0.5 flex justify-between text-[9px] text-gray-400">
                           <span>Serré</span>
@@ -1361,7 +1361,7 @@ export default function ConfiguratorAdmin() {
                         : undefined,
                     }}
                   />
-                  <p className="font-body max-w-full truncate text-center text-[11px] font-medium leading-tight text-gray-800">{color.name}</p>
+                  <p className="font-body max-w-full truncate text-center text-overline font-medium leading-tight text-gray-800">{color.name}</p>
                   <p className="font-mono text-[9px] uppercase text-gray-400">{color.hex}</p>
 
                   {/* Actions on hover */}
@@ -1470,7 +1470,7 @@ export default function ConfiguratorAdmin() {
                     ? "Modifier le produit"
                     : "Nouveau produit configurateur"}
                 </DialogTitle>
-                <p className="font-body text-[11px] font-medium mt-0.5" style={{ color: "var(--color-ink-3)" }}>
+                <p className="font-body text-overline font-medium mt-0.5" style={{ color: "var(--color-ink-3)" }}>
                   {editingProduct?.id && products.some(p => p.id === editingProduct.id)
                     ? `ID : ${editingProduct.id}`
                     : "Remplissez les informations du nouveau produit"}
@@ -1724,7 +1724,7 @@ export default function ConfiguratorAdmin() {
                         key={size}
                         className={`flex items-center gap-1 border-2 pl-3 pr-1.5 py-1.5 font-body text-sm font-medium transition-all ${
                           isDefault
-                            ? "border-[#19191c] bg-gray-50 text-gray-900"
+                            ? "border-ylang-charcoal bg-gray-50 text-gray-900"
                             : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
                         }`}
                       >
@@ -1763,7 +1763,7 @@ export default function ConfiguratorAdmin() {
               )}
 
               {editingProduct?.defaultSize && (
-                <p className="font-body text-[11px] text-gray-400">
+                <p className="font-body text-overline text-gray-400">
                   Par défaut : <strong className="text-gray-700">{editingProduct.defaultSize}</strong>
                 </p>
               )}
@@ -1967,7 +1967,7 @@ export default function ConfiguratorAdmin() {
                 className="font-body w-full min-h-[100px] bg-white px-4 py-2 text-sm text-gray-800 outline-none" style={{ border: "var(--rule-soft)" }} />
             </div>
             <div>
-              <label className="font-body mb-2 block text-sm font-medium text-gray-600">Ordre d'affichage</label>
+              <label className="font-body mb-2 block text-sm font-medium text-gray-600">Ordre d&apos;affichage</label>
               <input type="number" value={editingCategory?.order ?? 0} onChange={e => setEditingCategory(prev => ({ ...prev!, order: parseInt(e.target.value) || 0 }))}
                 className="font-body w-full px-4 py-2 text-sm outline-none" style={{ border: "var(--rule-soft)", background: "var(--color-paper)", color: "var(--color-ink)" }} required />
             </div>
