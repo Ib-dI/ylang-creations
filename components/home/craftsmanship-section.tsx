@@ -118,7 +118,7 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
                   style={{ borderBottom: "var(--rule-hair)" }}
                 >
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center">
-                    <value.icon className="h-6 w-6" style={{ color: "var(--color-accent)" }} />
+                    <value.icon className="h-6 w-6" strokeWidth="1" style={{ color: "var(--color-accent)" }} />
                   </div>
                   <div>
                     <h4 className="font-display text-ylang-charcoal mb-1 text-lg font-semibold tracking-tight">
@@ -137,7 +137,7 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
               className="animate-fade-in-up"
               style={{ animationDelay: '1s' }}
             >
-              <Button variant="secondary" size="lg" className="group " asChild>
+              <Button variant="secondary" size="lg" className="group border" asChild>
                 <Link href="/a-propos">
                   Découvrir notre histoire
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
