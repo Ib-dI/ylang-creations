@@ -1,7 +1,4 @@
-/**
- * Colissimo shipping rates for 2026
- * Calculated based on total package weight in grams
- */
+import { euros, type Euros } from "@/lib/currency";
 
 const COLISSIMO_TIERS: Array<{ maxGrams: number; priceEur: number }> = [
   { maxGrams: 250, priceEur: 5.49 },
@@ -13,15 +10,11 @@ const COLISSIMO_TIERS: Array<{ maxGrams: number; priceEur: number }> = [
   { maxGrams: 10000, priceEur: 25.29 },
 ];
 
-const COLISSIMO_MAX_PRICE_EUR = 39.59;
+const COLISSIMO_MAX_PRICE_EUR = euros(39.59);
 
-/**
- * Calculates the Colissimo home delivery rate based on package weight.
- *
- * @param weightGrams - Total package weight in grams
- * @returns Shipping cost in EUR
- */
-export function calculateShippingRate(weightGrams: number): number {
+export const FALLBACK_SHIPPING_EUR = euros(9.59);
+
+export function calculateShippingRate(weightGrams: number): Euros {
   const tier = COLISSIMO_TIERS.find((t) => weightGrams <= t.maxGrams);
-  return tier?.priceEur ?? COLISSIMO_MAX_PRICE_EUR;
+  return tier ? euros(tier.priceEur) : COLISSIMO_MAX_PRICE_EUR;
 }

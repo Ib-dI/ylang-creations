@@ -11,6 +11,7 @@ import {
 import { useCartStore } from "@/lib/store/cart-store";
 import { Check, ChevronLeft, ChevronRight, Palette, ShoppingBag, X } from "lucide-react";
 import { EMBROIDERY_PRICE_CENTS } from "@/lib/constants";
+import { cents, centsToEuros } from "@/lib/currency";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
@@ -374,7 +375,7 @@ const ProductConfigurator = () => {
           ? (productColors.find((c) => c.hex === configuration.selectedColor)?.name ?? undefined)
           : undefined,
       },
-      price: totalPrice() / 100,
+      price: centsToEuros(cents(totalPrice())),
       weight: configuration.product.weight ?? 0,
       quantity: 1,
       thumbnail: thumbnailDataUrl,

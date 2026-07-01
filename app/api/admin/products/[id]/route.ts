@@ -2,6 +2,7 @@ import { product, review } from "@/db/schema";
 import { db } from "@/lib/db";
 import { formatZodErrors, updateProductSchema } from "@/lib/validations";
 import { withAdminAuth } from "@/lib/auth/with-admin-auth";
+import { cents, centsToEuros, euros, eurosToCents } from "@/lib/currency";
 import { supabaseAdmin } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
@@ -36,8 +37,8 @@ async function handleGET(
         name: p.name,
         slug: p.slug,
         description: p.description,
-        price: p.price / 100,
-        compareAtPrice: p.compareAtPrice ? p.compareAtPrice / 100 : null,
+        price: centsToEuros(cents(p.price)),
+        compareAtPrice: p.compareAtPrice ? centsToEuros(cents(p.compareAtPrice)) : null,
         category: p.category,
         subcategory: p.subcategory,
         images: (p.images as string[] | null) ?? [],
@@ -103,11 +104,11 @@ async function handlePATCH(
 
     // Handle numeric fields
     if (validatedData.price !== undefined) {
-      updateData.price = Math.round(validatedData.price * 100);
+      updateData.price = eurosToCents(euros(validatedData.price));
     }
     if (validatedData.compareAtPrice !== undefined) {
       updateData.compareAtPrice = validatedData.compareAtPrice
-        ? Math.round(validatedData.compareAtPrice * 100)
+        ? eurosToCents(euros(validatedData.compareAtPrice))
         : null;
     }
     if (validatedData.stock !== undefined) {

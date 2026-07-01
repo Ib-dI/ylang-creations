@@ -248,6 +248,57 @@ export const newsletterSubscribeSchema = z.object({
 });
 export type NewsletterSubscribeInput = z.infer<typeof newsletterSubscribeSchema>;
 
+// --- Schémas Configurateur ---
+const embroideryZoneSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+  maxWidth: z.number(),
+  rotation: z.number(),
+  fontSize: z.number(),
+  alignment: z.enum(["left", "center", "right"]),
+});
+
+export const createConfiguratorProductSchema = z.object({
+  id: z.string().min(1, "L'identifiant est requis").max(100).transform(sanitizeString),
+  name: z.string().min(1, "Le nom est requis").max(200).transform(sanitizeString),
+  description: z.string().max(2000).optional().default("").transform(sanitizeString),
+  basePrice: z.number().int().min(0).max(9999999).optional().default(0),
+  weight: z.number().int().min(0).max(99999).optional().default(0),
+  icon: z.string().max(500).optional().nullable(),
+  baseImage: z.string().min(1, "L'image de base est requise").max(1000),
+  maskImage: z.string().min(1, "Le masque est requis").max(1000),
+  colorMaskImage: z.string().max(1000).optional().nullable(),
+  embroideryZone: embroideryZoneSchema.optional().default({
+    x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center",
+  }),
+  sizes: z.array(z.string().max(50)).max(30).optional().nullable(),
+  defaultSize: z.string().max(50).optional().nullable(),
+  isActive: z.boolean().optional().default(true),
+});
+
+export const updateConfiguratorProductSchema = createConfiguratorProductSchema
+  .omit({ id: true })
+  .partial();
+
+export const createConfiguratorFabricSchema = z.object({
+  id: z.string().min(1, "L'identifiant est requis").max(100).transform(sanitizeString),
+  name: z.string().min(1, "Le nom est requis").max(200).transform(sanitizeString),
+  price: z.number().int().min(0).max(9999999).optional().default(0),
+  baseColor: z.string().min(1, "La couleur de base est requise").max(50).transform(sanitizeString),
+  image: z.string().min(1, "L'image est requise").max(1000),
+  category: z.string().min(1, "La catégorie est requise").max(100).transform(sanitizeString),
+  isActive: z.boolean().optional().default(true),
+});
+
+export const updateConfiguratorFabricSchema = createConfiguratorFabricSchema
+  .omit({ id: true })
+  .partial();
+
+export type CreateConfiguratorProductInput = z.infer<typeof createConfiguratorProductSchema>;
+export type UpdateConfiguratorProductInput = z.infer<typeof updateConfiguratorProductSchema>;
+export type CreateConfiguratorFabricInput = z.infer<typeof createConfiguratorFabricSchema>;
+export type UpdateConfiguratorFabricInput = z.infer<typeof updateConfiguratorFabricSchema>;
+
 // --- Types exportés ---
 export type CreateProductInput = z.infer<typeof createProductSchema>;
 export type UpdateProductInput = z.infer<typeof updateProductSchema>;

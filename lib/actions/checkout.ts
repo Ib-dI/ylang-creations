@@ -10,7 +10,8 @@ import {
 } from "@/db/schema";
 import { db } from "@/lib/db";
 import { getSumupHeaders, SUMUP_API_URL } from "@/lib/sumup";
-import { calculateShippingRate } from "@/lib/shipping";
+import { calculateShippingRate, FALLBACK_SHIPPING_EUR } from "@/lib/shipping";
+import { cents, euros, centsToEuros, eurosToCents, type Euros } from "@/lib/currency";
 import { createClient } from "@/utils/supabase/server";
 import type { CartItem } from "@/types/cart";
 import { eq } from "drizzle-orm";
@@ -29,6 +30,30 @@ const UCP_METADATA = {
     "dev.ucp.shopping.order",
   ],
 };
+
+interface OrderTotals {
+  subtotal: Euros;
+  shipping: Euros;
+  total: Euros;
+}
+
+function calculateOrderTotals(
+  items: CartItem[],
+  freeShippingThreshold: Euros,
+  totalWeightGrams: number,
+  fallbackShipping: Euros,
+): OrderTotals {
+  const subtotal = euros(
+    items.reduce((acc, item) => acc + item.price * item.quantity, 0),
+  );
+  const isFreeShipping = freeShippingThreshold > 0 && subtotal >= freeShippingThreshold;
+  const shipping = isFreeShipping
+    ? euros(0)
+    : totalWeightGrams > 0
+      ? calculateShippingRate(totalWeightGrams)
+      : fallbackShipping;
+  return { subtotal, shipping, total: euros(subtotal + shipping) };
+}
 
 // Types
 interface CheckoutResult {
@@ -179,25 +204,22 @@ export async function createCheckoutSession(
       .limit(1);
 
     const s = settingsResult[0];
-    const freeShippingThresholdValue =
-      (s?.freeShippingThreshold ?? 15000) / 100;
+    const freeShippingThreshold = centsToEuros(cents(s?.freeShippingThreshold ?? 15000));
+    const fallbackShipping = s?.shippingFee
+      ? centsToEuros(cents(s.shippingFee))
+      : FALLBACK_SHIPPING_EUR;
 
-    const subtotal = items.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0,
-    );
-    const isFreeShipping = subtotal >= freeShippingThresholdValue;
-
-    // Calcul des frais par poids Colissimo 2026
     const totalWeight = items.reduce(
       (acc, item) => acc + (item.weight ?? 0) * item.quantity,
       0,
     );
-    // Fallback sur la valeur DB si aucun poids défini
-    const shippingFeeValue =
-      totalWeight > 0
-        ? calculateShippingRate(totalWeight)
-        : (s?.shippingFee ?? 990) / 100;
+
+    const { subtotal, shipping, total: totalAmount } = calculateOrderTotals(
+      items,
+      freeShippingThreshold,
+      totalWeight,
+      fallbackShipping,
+    );
 
     // 4. Get or create local customer
     const customerId = await getOrCreateLocalCustomer(
@@ -209,13 +231,12 @@ export async function createCheckoutSession(
     // 5. Create pending order in database
     const orderId = crypto.randomUUID();
     const now = new Date();
-    const totalAmount = subtotal + (isFreeShipping ? 0 : shippingFeeValue);
 
     await db.insert(order).values({
       id: orderId,
       customerId: customerId,
       status: "pending",
-      totalAmount: Math.round(totalAmount * 100),
+      totalAmount: eurosToCents(totalAmount),
       currency: "eur",
       items: items,
       createdAt: now,
@@ -328,7 +349,7 @@ export async function getCheckoutSession(sessionId: string) {
         lineItems: parsedItems.map((item) => ({
           name: item.productName,
           quantity: item.quantity,
-          amount: Math.round(item.price * item.quantity * 100),
+          amount: eurosToCents(euros(item.price * item.quantity)),
         })),
       },
     };

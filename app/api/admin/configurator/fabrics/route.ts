@@ -1,12 +1,16 @@
 import { configuratorFabric } from "@/db/schema";
 import { db } from "@/lib/db";
 import { withAdminAuth } from "@/lib/auth/with-admin-auth";
+import {
+  createConfiguratorFabricSchema,
+  updateConfiguratorFabricSchema,
+  validateRequest,
+  formatZodErrors,
+} from "@/lib/validations";
 import { supabaseAdmin } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-
-// Public GET: List all fabrics
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -26,23 +30,23 @@ export async function GET(request: Request) {
   }
 }
 
-// Admin POST: Add a new fabric
 async function handlePOST(request: Request): Promise<Response> {
   try {
     const body = await request.json();
-
-    if (!body.id || !body.name || !body.baseColor || !body.image || !body.category) {
-      return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
+    const validation = validateRequest(createConfiguratorFabricSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: formatZodErrors(validation.errors) }, { status: 400 });
     }
 
+    const data = validation.data;
     await db.insert(configuratorFabric).values({
-      id: body.id,
-      name: body.name,
-      price: body.price || 0,
-      baseColor: body.baseColor,
-      image: body.image,
-      category: body.category,
-      isActive: body.isActive ?? true,
+      id: data.id,
+      name: data.name,
+      price: data.price,
+      baseColor: data.baseColor,
+      image: data.image,
+      category: data.category,
+      isActive: data.isActive,
     });
 
     return NextResponse.json({ success: true });
@@ -56,7 +60,6 @@ async function handlePOST(request: Request): Promise<Response> {
 }
 export const POST = withAdminAuth(handlePOST);
 
-// Admin PUT: Update a fabric
 async function handlePUT(request: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(request.url);
@@ -67,21 +70,18 @@ async function handlePUT(request: Request): Promise<Response> {
     }
 
     const body = await request.json();
-    console.log("Updating fabric with ID:", id, "payload:", body);
-    const { id: _, updatedAt: __, createdAt: ___, ...updateData } = body;
+    const validation = validateRequest(updateConfiguratorFabricSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: formatZodErrors(validation.errors) }, { status: 400 });
+    }
 
-    if (Object.keys(updateData).length === 0) {
+    if (Object.keys(validation.data).length === 0) {
       return NextResponse.json({ error: "Aucune donnée à mettre à jour" }, { status: 400 });
     }
 
-    const result = await db.update(configuratorFabric)
-      .set({
-        ...updateData,
-        updatedAt: new Date(),
-      })
+    await db.update(configuratorFabric)
+      .set({ ...validation.data, updatedAt: new Date() })
       .where(eq(configuratorFabric.id, id));
-
-    console.log("Update result:", result);
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -91,31 +91,23 @@ async function handlePUT(request: Request): Promise<Response> {
 }
 export const PUT = withAdminAuth(handlePUT);
 
-// Admin DELETE: Remove a fabric
 async function handleDELETE(request: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
     if (!id) {
-       return NextResponse.json({ error: "ID manquant" }, { status: 400 });
+      return NextResponse.json({ error: "ID manquant" }, { status: 400 });
     }
 
-    // 1. Fetch fabric to get image URL
     const fabricRecord = await db.select().from(configuratorFabric).where(eq(configuratorFabric.id, id)).limit(1);
     if (fabricRecord.length > 0) {
       const imageUrl = fabricRecord[0].image;
-      // 2. Supprimer les images du stockage Supabase (bucket "products")
-      if (imageUrl && imageUrl.includes("/products/") && supabaseAdmin) {
+      if (imageUrl?.includes("/products/") && supabaseAdmin) {
         const parts = imageUrl.split("/products/");
         if (parts.length > 1) {
-          const relativePath = parts[1];
-          const { error } = await supabaseAdmin.storage.from("products").remove([relativePath]);
-          if (error) {
-            console.error("Erreur lors de la suppression de l'image du storage:", error.message);
-          } else {
-            console.log("Image du tissu supprimée:", relativePath);
-          }
+          const { error } = await supabaseAdmin.storage.from("products").remove([parts[1]]);
+          if (error) console.error("Erreur suppression image storage:", error.message);
         }
       }
     }

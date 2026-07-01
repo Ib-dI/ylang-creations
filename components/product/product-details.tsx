@@ -6,6 +6,7 @@ import { type CatalogProduct } from "@/data/products";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import type { CartItem } from "@/types/cart";
+import { euros } from "@/lib/currency";
 import {
   AnimatePresence,
   motion,
@@ -350,7 +351,7 @@ export default function ProductDetails({
                     fabricColor: "Original",
                     ...(selectedSize ? { size: selectedSize } : {}),
                   },
-                  price: product.price,
+                  price: euros(product.price),
                   weight: product.weight ?? 0,
                   quantity: 1,
                   thumbnail: productImages[selectedImage],

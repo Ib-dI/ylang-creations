@@ -2,7 +2,9 @@
 
 ## Price
 
-A monetary value. All prices in the system are stored and computed in **cents** (integer) to avoid floating-point errors. The exception is the cart store's `getTotalPrice()` and `getShipping()` which return euros for display. Conversion: `centsToEuros` / `eurosToCents` in `lib/currency.ts`.
+A monetary value. All prices in the system are stored and computed in **cents** (integer) to avoid floating-point errors. The unit is enforced at the type level via branded types `Cents` and `Euros` in `lib/currency.ts` — use `cents()` / `euros()` factory functions and `centsToEuros()` / `eurosToCents()` for conversion; never raw `/100` or `*100`. Display: `formatPrice(n: Cents)` or `formatEuros(n: Euros)`.
+
+**Seam règle :** the Configurateur API (`/api/configurator/*`) returns `basePrice` and `price` in **Cents** — the configurateur page uses them internally in cents and converts to Euros only when adding to cart (`centsToEuros`). All other public product APIs return prices in **Euros**.
 
 ## Configurateur
 
@@ -30,4 +32,4 @@ A purchase record created at checkout. `totalAmount` is stored in **cents**. Sta
 
 ## Shipping
 
-Colissimo home-delivery rate, calculated from the total parcel weight in grams. Rate table lives in `lib/shipping.ts`. Free shipping applies when `CartItem` total ≥ `freeShippingThreshold` (euros).
+Colissimo home-delivery rate, calculated from the total parcel weight in grams. `calculateShippingRate(weightGrams): Euros` is the single authority — `lib/shipping.ts` is the only place Colissimo tiers are defined. `FALLBACK_SHIPPING_EUR` (9.59 €) is used when no weight is available. Free shipping applies when `CartItem` total ≥ `freeShippingThreshold` (Euros). The `settings.shippingFee` DB column is used as fallback only in checkout when no Colissimo tier applies; the cart UI uses `FALLBACK_SHIPPING_EUR` directly.

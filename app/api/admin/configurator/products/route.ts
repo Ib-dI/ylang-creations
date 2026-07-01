@@ -1,12 +1,16 @@
 import { configuratorProduct } from "@/db/schema";
 import { db } from "@/lib/db";
 import { withAdminAuth } from "@/lib/auth/with-admin-auth";
+import {
+  createConfiguratorProductSchema,
+  updateConfiguratorProductSchema,
+  validateRequest,
+  formatZodErrors,
+} from "@/lib/validations";
 import { supabaseAdmin } from "@/utils/supabase/server";
-import { eq, asc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-
-// Public GET: List all products
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -26,29 +30,29 @@ export async function GET(request: Request) {
   }
 }
 
-// Admin POST: Create a new configurator product
 async function handlePOST(request: Request): Promise<Response> {
   try {
     const body = await request.json();
-
-    if (!body.id || !body.name || !body.baseImage || !body.maskImage) {
-      return NextResponse.json({ error: "Données manquantes (id, name, baseImage, maskImage requis)" }, { status: 400 });
+    const validation = validateRequest(createConfiguratorProductSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: formatZodErrors(validation.errors) }, { status: 400 });
     }
 
+    const data = validation.data;
     const newProduct = await db.insert(configuratorProduct).values({
-      id: body.id,
-      name: body.name,
-      description: body.description || "",
-      basePrice: body.basePrice ?? 0,
-      weight: body.weight ?? 0,
-      icon: body.icon || null,
-      baseImage: body.baseImage,
-      maskImage: body.maskImage,
-      colorMaskImage: body.colorMaskImage || null,
-      embroideryZone: body.embroideryZone ?? { x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center" },
-      sizes: body.sizes ?? null,
-      defaultSize: body.defaultSize ?? null,
-      isActive: body.isActive ?? true,
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      basePrice: data.basePrice,
+      weight: data.weight,
+      icon: data.icon ?? null,
+      baseImage: data.baseImage,
+      maskImage: data.maskImage,
+      colorMaskImage: data.colorMaskImage ?? null,
+      embroideryZone: data.embroideryZone,
+      sizes: data.sizes ?? null,
+      defaultSize: data.defaultSize ?? null,
+      isActive: data.isActive,
     }).returning();
 
     return NextResponse.json({ product: newProduct[0] });
@@ -59,28 +63,24 @@ async function handlePOST(request: Request): Promise<Response> {
 }
 export const POST = withAdminAuth(handlePOST);
 
-// Admin PUT: Update an existing product (active/inactive, description, etc)
 async function handlePUT(request: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
     if (!id) {
-       return NextResponse.json({ error: "ID manquant" }, { status: 400 });
+      return NextResponse.json({ error: "ID manquant" }, { status: 400 });
     }
 
     const body = await request.json();
-    console.log("Updating product with ID:", id, "payload:", body);
-    const { id: _, updatedAt: __, createdAt: ___, ...updateData } = body;
+    const validation = validateRequest(updateConfiguratorProductSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: formatZodErrors(validation.errors) }, { status: 400 });
+    }
 
-    const result = await db.update(configuratorProduct)
-      .set({
-        ...updateData,
-        updatedAt: new Date(),
-      })
+    await db.update(configuratorProduct)
+      .set({ ...validation.data, updatedAt: new Date() })
       .where(eq(configuratorProduct.id, id));
-
-    console.log("Update result:", result);
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -90,7 +90,6 @@ async function handlePUT(request: Request): Promise<Response> {
 }
 export const PUT = withAdminAuth(handlePUT);
 
-// Admin DELETE: Remove a configurator product and clean up Supabase Storage
 async function handleDELETE(request: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(request.url);
@@ -100,33 +99,25 @@ async function handleDELETE(request: Request): Promise<Response> {
       return NextResponse.json({ error: "ID manquant" }, { status: 400 });
     }
 
-    // 1. Fetch product to get image URLs
     const productRecord = await db.select().from(configuratorProduct).where(eq(configuratorProduct.id, id)).limit(1);
 
     if (productRecord.length > 0) {
-      const product = productRecord[0];
-      const imageUrls = [product.baseImage, product.maskImage, product.colorMaskImage].filter(Boolean) as string[];
+      const p = productRecord[0];
+      const imageUrls = [p.baseImage, p.maskImage, p.colorMaskImage].filter(Boolean) as string[];
 
-      // 2. Supprimer les images du stockage Supabase (bucket "products")
       if (supabaseAdmin) {
         for (const imageUrl of imageUrls) {
-          if (imageUrl && imageUrl.includes("/products/")) {
+          if (imageUrl.includes("/products/")) {
             const parts = imageUrl.split("/products/");
             if (parts.length > 1) {
-              const relativePath = parts[1];
-              const { error } = await supabaseAdmin.storage.from("products").remove([relativePath]);
-              if (error) {
-                console.error("Erreur lors de la suppression de l'image du storage:", error.message);
-              } else {
-                console.log("Image du produit supprimée:", relativePath);
-              }
+              const { error } = await supabaseAdmin.storage.from("products").remove([parts[1]]);
+              if (error) console.error("Erreur suppression image storage:", error.message);
             }
           }
         }
       }
     }
 
-    // 3. Supprimer le produit de la DB
     await db.delete(configuratorProduct).where(eq(configuratorProduct.id, id));
 
     return NextResponse.json({ success: true });

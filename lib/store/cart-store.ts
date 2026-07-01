@@ -2,7 +2,8 @@ import type { CartItem } from "@/types/cart";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { MAX_WEIGHT_GRAMS } from "@/lib/constants";
-import { calculateShippingRate } from "@/lib/shipping";
+import { calculateShippingRate, FALLBACK_SHIPPING_EUR } from "@/lib/shipping";
+import { euros, type Euros } from "@/lib/currency";
 
 interface CartStore {
   items: CartItem[];
@@ -22,11 +23,11 @@ interface CartStore {
 
   // Getters
   getTotalItems: () => number;
-  getTotalPrice: () => number;
+  getTotalPrice: () => Euros;
   getTotalWeight: () => number;
   isOverWeightLimit: () => boolean;
-  getShipping: () => number;
-  getFinalPrice: () => number;
+  getShipping: () => Euros;
+  getFinalPrice: () => Euros;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -116,9 +117,8 @@ export const useCartStore = create<CartStore>()(
       },
 
       getTotalPrice: () => {
-        return get().items.reduce(
-          (total, item) => total + item.price * item.quantity,
-          0,
+        return euros(
+          get().items.reduce((total, item) => total + item.price * item.quantity, 0),
         );
       },
 
@@ -136,21 +136,18 @@ export const useCartStore = create<CartStore>()(
       getShipping: () => {
         const total = get().getTotalPrice();
         const { freeShippingThreshold } = get();
-        // Livraison offerte si le seuil de montant est atteint
         if (freeShippingThreshold > 0 && total >= freeShippingThreshold) {
-          return 0;
+          return euros(0);
         }
-        // Sinon calculer selon le poids Colissimo
         const totalWeight = get().getTotalWeight();
-        // Si aucun poids n'est défini (anciens articles), fallback sur 9.59 €
         if (totalWeight === 0 && get().items.length > 0) {
-          return 9.59;
+          return FALLBACK_SHIPPING_EUR;
         }
         return calculateShippingRate(totalWeight);
       },
 
       getFinalPrice: () => {
-        return get().getTotalPrice() + get().getShipping();
+        return euros(get().getTotalPrice() + get().getShipping());
       },
     }),
     {

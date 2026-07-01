@@ -1,3 +1,5 @@
+import type { Euros } from "@/lib/currency";
+
 export interface CartItem {
   id: string;
   productId: string;
@@ -11,7 +13,7 @@ export interface CartItem {
     selectedColor?: string;    // hex, pour le swatch
     selectedColorName?: string; // nom affiché
   };
-  price: number;
+  price: Euros;
   weight: number; // Weight in grams
   quantity: number;
   thumbnail?: string;
