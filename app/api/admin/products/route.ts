@@ -1,6 +1,6 @@
 import { product } from "@/db/schema";
 import { db } from "@/lib/db";
-import { centsToEuros, eurosToCents } from "@/lib/currency";
+import { cents, centsToEuros, euros, eurosToCents } from "@/lib/currency";
 import { createProductSchema, formatZodErrors } from "@/lib/validations";
 import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { desc } from "drizzle-orm";
@@ -25,8 +25,8 @@ async function handleGET(request: Request): Promise<Response> {
       name: p.name,
       slug: p.slug,
       description: p.description,
-      price: centsToEuros(p.price),
-      compareAtPrice: p.compareAtPrice ? centsToEuros(p.compareAtPrice) : null,
+      price: centsToEuros(cents(p.price)),
+      compareAtPrice: p.compareAtPrice ? centsToEuros(cents(p.compareAtPrice)) : null,
       category: p.category,
       subcategory: p.subcategory,
       images: (p.images as string[] | null) ?? [],
@@ -126,8 +126,8 @@ async function handlePOST(request: Request): Promise<Response> {
       name,
       slug: `${slug}-${id.slice(0, 8)}`,
       description: description || null,
-      price: eurosToCents(price),
-      compareAtPrice: compareAtPrice ? eurosToCents(compareAtPrice) : null,
+      price: eurosToCents(euros(price)),
+      compareAtPrice: compareAtPrice ? eurosToCents(euros(compareAtPrice)) : null,
       category,
       subcategory: subcategory || null,
       images: images ?? null,
