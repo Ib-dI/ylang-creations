@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { euros } from "@/lib/currency";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { AnimatePresence, motion } from "framer-motion";
@@ -22,7 +23,7 @@ export function WishlistDrawer() {
         fabricName: "Standard",
         fabricColor: "Original",
       },
-      price: item.price,
+      price: euros(item.price),
       weight: item.weight,
       quantity: 1,
       thumbnail: item.image,
