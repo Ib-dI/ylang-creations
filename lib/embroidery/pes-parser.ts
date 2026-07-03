@@ -143,7 +143,7 @@ function mapPecColors(colorBytes: Uint8Array, chart: Thread[]): Thread[] {
 function readPecStitches(r: Reader): StitchEvent[] {
   const events: StitchEvent[] = [];
   while (true) {
-    let val1 = r.u8();
+    const val1 = r.u8();
     let val2 = r.u8();
     if (val1 === null || val2 === null || (val1 === 0xff && val2 === 0x00)) break;
     if (val1 === 0xfe && val2 === 0xb0) {
