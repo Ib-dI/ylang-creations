@@ -995,7 +995,7 @@ const ProductConfigurator = () => {
                       Broderie personnalisée
                     </h2>
                     <p className="font-body mt-1 text-sm" style={{ color: "var(--color-ink-3)" }}>
-                      +{((configuration.embroideryFont?.price ?? 0) / 100).toFixed(0)} € · Aperçu immédiat sur le produit
+                      +{((configuration.embroideryFont?.price ?? 0) / 100).toFixed(2)} € · Aperçu immédiat sur le produit
                     </p>
                   </div>
 
@@ -1323,7 +1323,7 @@ const ProductConfigurator = () => {
                           </div>
                         </div>
                         <span className="font-body text-sm" style={{ color: "var(--color-ink)" }}>
-                          +{((configuration.embroideryFont?.price ?? 0) / 100).toFixed(0)} €
+                          +{((configuration.embroideryFont?.price ?? 0) / 100).toFixed(2)} €
                         </span>
                       </motion.div>
                     ) : (
