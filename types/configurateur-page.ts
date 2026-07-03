@@ -42,11 +42,21 @@ export interface ConfigurateurFabricCategory {
   order: number;
 }
 
+export interface ConfigurateurEmbroideryFont {
+  id: string;
+  name: string;
+  folder: string;
+  format: "exp" | "pes";
+  price: number;
+  order: number;
+}
+
 export interface ConfigurateurConfiguration {
   product: ConfigurateurProduct | null;
   fabric: ConfigurateurFabric | null;
   size: string | null;
   embroideries: string[];
   embroideryColor: string;
+  embroideryFont: ConfigurateurEmbroideryFont | null;
   selectedColor: string | null;
 }
