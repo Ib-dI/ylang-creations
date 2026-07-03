@@ -9,6 +9,7 @@ import { ImageUpload } from "@/components/ui/image-upload";
 import { Loader2, Plus, Edit, Trash2, Eye, EyeOff, Search, ChevronDown, LayoutGrid, List, Palette, Crosshair, RotateCcw, Type, Maximize2, Package } from "lucide-react";
 import { toast } from "sonner";
 import EmbroideryZoneOverlay from "@/components/configurator/EmbroideryZoneOverlay";
+import EmbroideryFontsPanel from "@/components/admin/configurator/embroidery-fonts-panel";
 
 type Fabric = {
   id: string;
@@ -65,7 +66,7 @@ type Color = {
 };
 
 export default function ConfiguratorAdmin() {
-  const [activeTab, setActiveTab] = useState<"fabrics" | "products" | "broderie" | "palettes">("fabrics");
+  const [activeTab, setActiveTab] = useState<"fabrics" | "products" | "broderie" | "palettes" | "polices">("fabrics");
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [products, setProducts] = useState<ConfigProduct[]>([]);
   const [categories, setCategories] = useState<FabricCategory[]>([]);
@@ -594,6 +595,7 @@ export default function ConfiguratorAdmin() {
           { id: "products", label: "Produits", count: products.length },
           { id: "broderie", label: "Broderie", count: null },
           { id: "palettes", label: "Palettes", count: colors.length },
+          { id: "polices", label: "Polices", count: null },
         ] as const).map(({ id, label, count }) => (
           <button
             key={id}
@@ -616,7 +618,7 @@ export default function ConfiguratorAdmin() {
       </div>
 
       {/* ── Action bar ────────────────────────────────────────── */}
-      {activeTab !== 'broderie' && activeTab !== 'palettes' && (
+      {activeTab !== 'broderie' && activeTab !== 'palettes' && activeTab !== 'polices' && (
         <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="flex gap-2 lg:flex-1">
             {/* Search */}
@@ -1381,6 +1383,12 @@ export default function ConfiguratorAdmin() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === 'polices' && (
+        <div>
+          <EmbroideryFontsPanel />
         </div>
       )}
 
