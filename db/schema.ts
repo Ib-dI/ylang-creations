@@ -236,6 +236,19 @@ export const configuratorColor = pgTable("configurator_color", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// Configurator Embroidery Fonts
+export const configuratorEmbroideryFont = pgTable("configurator_embroidery_font", {
+  id: text("id").primaryKey(), // e.g. "moonlight", "alfabeto-liz"
+  name: text("name").notNull(), // display name, e.g. "Moonlight"
+  folder: text("folder").notNull(), // public/fonts/<folder> — e.g. "moonlight", "Alfabeto Liz"
+  format: text("format").notNull(), // "exp" | "pes"
+  price: integer("price").notNull().default(1500), // Price in cents
+  order: integer("order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Newsletter Subscribers
 export const newsletterSubscriber = pgTable(
   "newsletter_subscriber",
