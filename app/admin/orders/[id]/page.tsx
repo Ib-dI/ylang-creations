@@ -352,6 +352,11 @@ export default function OrderDetailPage() {
                                     style={{ backgroundColor: item.configuration.embroideryColor, border: "var(--rule-soft)" }}
                                   />
                                 )}
+                                {item.configuration.embroideryFont && (
+                                  <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                                    {" "}({item.configuration.embroideryFont})
+                                  </span>
+                                )}
                               </span>
                             </div>
                           )}

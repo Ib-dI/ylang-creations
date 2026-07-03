@@ -170,6 +170,11 @@ export function CartDrawer() {
                                 « {item.configuration.embroidery} »
                               </p>
                             )}
+                            {item.configuration.embroidery && item.configuration.embroideryFont && (
+                              <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                                Police : {item.configuration.embroideryFont}
+                              </p>
+                            )}
                           </div>
                         </div>
 

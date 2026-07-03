@@ -21,6 +21,7 @@ export interface Order {
       fabricColor?: string;
       embroidery?: string;
       embroideryColor?: string;
+      embroideryFont?: string;
       size?: string;
       selectedColor?: string;
       selectedColorName?: string;

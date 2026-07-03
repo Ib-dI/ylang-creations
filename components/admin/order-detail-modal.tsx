@@ -335,6 +335,11 @@ export default function OrderDetailModal({
                                             title={item.configuration.embroideryColor}
                                           />
                                         )}
+                                        {item.configuration.embroideryFont && (
+                                          <span className="text-ylang-charcoal/60 ml-1.5 text-xs">
+                                            ({item.configuration.embroideryFont})
+                                          </span>
+                                        )}
                                       </span>
                                     </div>
                                   )}

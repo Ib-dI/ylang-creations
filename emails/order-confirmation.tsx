@@ -10,6 +10,7 @@ interface OrderConfirmationEmailProps {
     configuration: {
       fabricName: string;
       embroidery?: string;
+      embroideryFont?: string;
     };
   }>;
   total: number;
@@ -269,6 +270,18 @@ export function OrderConfirmationEmail({
                                   }}
                                 >
                                   Broderie: "{item.configuration.embroidery}"
+                                </p>
+                              )}
+                              {item.configuration.embroidery && item.configuration.embroideryFont && (
+                                <p
+                                  style={{
+                                    color: "#1a1a1a",
+                                    opacity: 0.6,
+                                    fontSize: "14px",
+                                    margin: "0 0 4px 0",
+                                  }}
+                                >
+                                  Police: {item.configuration.embroideryFont}
                                 </p>
                               )}
 

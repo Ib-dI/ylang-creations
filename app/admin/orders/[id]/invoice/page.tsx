@@ -174,6 +174,7 @@ export default function OrderInvoicePage() {
                   <p style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", color: "#9ca3af", marginTop: "0.125rem" }}>
                     {item.configuration.fabricName}
                     {item.configuration.embroidery ? ` — ${item.configuration.embroidery}` : ""}
+                    {item.configuration.embroideryFont ? ` (${item.configuration.embroideryFont})` : ""}
                   </p>
                 )}
               </td>
