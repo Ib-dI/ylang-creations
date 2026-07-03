@@ -101,11 +101,14 @@ export default function EmbroideryFontsPanel() {
 
   const toggleActive = async (font: EmbroideryFont) => {
     try {
-      await fetch(`/api/admin/configurator/embroidery-fonts?id=${font.id}`, {
+      const res = await fetch(`/api/admin/configurator/embroidery-fonts?id=${font.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isActive: !font.isActive }),
       });
+      if (!res.ok) {
+        throw new Error("Erreur lors de la mise à jour");
+      }
       await loadFonts();
     } catch {
       toast.error("Erreur lors de la mise à jour");
@@ -114,7 +117,10 @@ export default function EmbroideryFontsPanel() {
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`/api/admin/configurator/embroidery-fonts?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/configurator/embroidery-fonts?id=${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        throw new Error("Erreur lors de la suppression");
+      }
       toast.success("Police supprimée");
       setDeleteConfirmId(null);
       await loadFonts();
