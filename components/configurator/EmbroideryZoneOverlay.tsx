@@ -18,9 +18,12 @@ interface Props {
   threadColor: string;
   zone: EmbroideryZone;
   containerRef: React.RefObject<HTMLDivElement | null>;
+  fontId: string;
+  fontFolder: string;
+  fontFormat: "exp" | "pes";
 }
 
-export default function EmbroideryZoneOverlay({ texts, threadColor, zone, containerRef }: Props) {
+export default function EmbroideryZoneOverlay({ texts, threadColor, zone, containerRef, fontId, fontFolder, fontFormat }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [lastCanvasH, setLastCanvasH] = useState(0);
@@ -91,6 +94,9 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
               text={text}
               threadColor={threadColor}
               targetHeight={zone.fontSize}
+              fontId={fontId}
+              fontFolder={fontFolder}
+              fontFormat={fontFormat}
             />
           </div>
         ))}
