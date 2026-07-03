@@ -80,7 +80,7 @@ async function loadFontsShared(folder: string, format: EmbroideryFontFormat): Pr
   return promise;
 }
 
-type LetterAdj = { offsetY: number; advanceX: number; leftBearing: number };
+type LetterAdj = { offsetY: number; advanceX: number; leftBearing: number; colorableIndices?: number[] };
 
 const FONT_ADJUSTMENTS: Record<string, Record<string, LetterAdj>> = {
   moonlight: {
@@ -246,27 +246,33 @@ function drawPath(ctx: CanvasRenderingContext2D, stitches: Stitch[], scale: numb
   ctx.stroke();
 }
 
-function renderEXP(ctx: CanvasRenderingContext2D, pes: PESData, scale: number, offsetX: number, colorOverride?: string) {
+function renderEXP(ctx: CanvasRenderingContext2D, pes: PESData, scale: number, offsetX: number, colorOverride?: string, colorableIndices?: number[]) {
   if (!pes.colorBlocks.length) return;
   ctx.lineCap="round"; ctx.lineJoin="round";
+
+  const colorFor = (blockIndex: number, originalColor: string): string => {
+    if (!colorOverride) return originalColor;
+    if (!colorableIndices) return colorOverride;
+    return colorableIndices.includes(blockIndex) ? colorOverride : originalColor;
+  };
 
   // Passe 1 : underlay – suit exactement les chemins de points
   // Utilise la couleur du fil (légèrement éclaircie) comme en broderie réelle
   // pour un rendu naturel sans cadre artificiel
-  for (const block of pes.colorBlocks) {
-    if (block.stitches.length<2) continue;
-    const color=colorOverride??block.color;
+  pes.colorBlocks.forEach((block, blockIndex) => {
+    if (block.stitches.length<2) return;
+    const color=colorFor(blockIndex, block.color);
     ctx.beginPath();
     ctx.shadowColor="transparent";
     ctx.strokeStyle=shadeColor(color,80,0.92); // couleur du fil éclaircie
     ctx.lineWidth=scale*2.2;
     drawPath(ctx,block.stitches,scale,offsetX);
-  }
+  });
 
   // Passe 2 : ombrage de profondeur
-  for (const block of pes.colorBlocks) {
-    if (block.stitches.length<2) continue;
-    const color=colorOverride??block.color;
+  pes.colorBlocks.forEach((block, blockIndex) => {
+    if (block.stitches.length<2) return;
+    const color=colorFor(blockIndex, block.color);
     ctx.beginPath(); ctx.shadowColor="rgba(0,0,0,0.45)"; ctx.shadowBlur=2;
     ctx.shadowOffsetX=0.6; ctx.shadowOffsetY=0.6;
     ctx.strokeStyle=shadeColor(color,-40); ctx.lineWidth=scale*0.95;
@@ -277,7 +283,7 @@ function renderEXP(ctx: CanvasRenderingContext2D, pes: PESData, scale: number, o
     ctx.beginPath();
     ctx.strokeStyle=shadeColor(color,70,0.45); ctx.lineWidth=scale*0.22;
     drawPath(ctx,block.stitches,scale,offsetX);
-  }
+  });
 }
 
 export interface EmbroideryPreviewProps {
@@ -377,7 +383,7 @@ export default function EmbroideryPreview({
       if (pes?.colorBlocks.length) {
         ctx.save();
         ctx.translate(0, vertY);
-        renderEXP(ctx, pes, SCALE, originX, threadColor??undefined);
+        renderEXP(ctx, pes, SCALE, originX, threadColor??undefined, adj.colorableIndices);
         ctx.restore();
       } else {
         ctx.save();
