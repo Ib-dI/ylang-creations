@@ -10,11 +10,12 @@ import {
 } from "@/components/ui/dialog";
 import { useCartStore } from "@/lib/store/cart-store";
 import { Check, ChevronLeft, ChevronRight, Palette, ShoppingBag, X } from "lucide-react";
-import { EMBROIDERY_PRICE_CENTS } from "@/lib/constants";
 import { cents, centsToEuros } from "@/lib/currency";
+import { normalizeForFont } from "@/lib/embroidery/normalize";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
+import EmbroideryPreview from "@/components/configurator/EmbroideryPreview";
 import EmbroideryZoneOverlay from "@/components/configurator/EmbroideryZoneOverlay";
 import {
   Suspense,
@@ -26,6 +27,7 @@ import {
 } from "react";
 import type {
   ConfigurateurConfiguration,
+  ConfigurateurEmbroideryFont,
   ConfigurateurFabric,
   ConfigurateurFabricCategory,
   ConfigurateurProduct,
@@ -202,6 +204,7 @@ const ProductConfigurator = () => {
   const [categories, setCategories] = useState<ConfigurateurFabricCategory[]>([]);
   const [productColors, setProductColors] = useState<{ name: string; hex: string }[]>([]);
   const [embroideryColors, setEmbroideryColors] = useState<{ name: string; hex: string }[]>([]);
+  const [embroideryFonts, setEmbroideryFonts] = useState<ConfigurateurEmbroideryFont[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<"product" | "fabric" | "embroidery" | "summary">("product");
@@ -212,6 +215,7 @@ const ProductConfigurator = () => {
     size: null,
     embroideries: [""],
     embroideryColor: "#D4AF37",
+    embroideryFont: null,
     selectedColor: null,
   });
 
@@ -230,12 +234,13 @@ const ProductConfigurator = () => {
   useEffect(() => {
     async function loadConfiguratorData() {
       try {
-        const [prodRes, fabRes, catRes, productColorsRes, embroideryColorsRes] = await Promise.all([
+        const [prodRes, fabRes, catRes, productColorsRes, embroideryColorsRes, embroideryFontsRes] = await Promise.all([
           fetch("/api/configurator/products?active=true"),
           fetch("/api/configurator/fabrics?active=true"),
           fetch("/api/configurator/categories?active=true"),
           fetch("/api/configurator/colors?type=product&active=true"),
           fetch("/api/configurator/colors?type=embroidery&active=true"),
+          fetch("/api/configurator/embroidery-fonts?active=true"),
         ]);
         const prodData = await prodRes.json();
         const fabData = await fabRes.json();
@@ -248,6 +253,9 @@ const ProductConfigurator = () => {
         const loadedCategories = catData.categories || [];
         const loadedProductColors: { name: string; hex: string }[] = productColorsData.colors || [];
         const loadedEmbroideryColors: { name: string; hex: string }[] = embroideryColorsData.colors || [];
+        const embroideryFontsData = await embroideryFontsRes.json();
+        const loadedEmbroideryFonts: ConfigurateurEmbroideryFont[] = embroideryFontsData.fonts || [];
+        setEmbroideryFonts(loadedEmbroideryFonts);
 
         setProducts(loadedProducts);
         setFabrics(loadedFabrics);
@@ -272,6 +280,7 @@ const ProductConfigurator = () => {
             fabric: loadedFabrics[0],
             size: initialConfigProduct?.defaultSize ?? initialConfigProduct?.sizes?.[0] ?? null,
             embroideryColor: loadedEmbroideryColors[0]?.hex ?? "#D4AF37",
+            embroideryFont: loadedEmbroideryFonts[0] ?? null,
             selectedColor:
               initialConfigProduct?.colorMaskImage && loadedProductColors[0]
                 ? loadedProductColors[0].hex
@@ -290,7 +299,9 @@ const ProductConfigurator = () => {
   const totalPrice = () => {
     let total = configuration.product?.basePrice || 0;
     total += configuration.fabric?.price || 0;
-    if (configuration.embroideries.some((e) => e.length > 0)) total += EMBROIDERY_PRICE_CENTS;
+    if (configuration.embroideries.some((e) => e.length > 0)) {
+      total += configuration.embroideryFont?.price ?? 0;
+    }
     return total;
   };
 
@@ -369,6 +380,7 @@ const ProductConfigurator = () => {
         fabricColor: configuration.fabric.baseColor,
         embroidery: configuration.embroideries.filter(Boolean).join(", ") || undefined,
         embroideryColor: configuration.embroideries.some((e) => e) ? configuration.embroideryColor : undefined,
+        embroideryFont: configuration.embroideries.some((e) => e) ? (configuration.embroideryFont?.name ?? undefined) : undefined,
         size: configuration.size || undefined,
         selectedColor: configuration.selectedColor || undefined,
         selectedColorName: configuration.selectedColor
@@ -542,12 +554,15 @@ const ProductConfigurator = () => {
             className={`relative w-full overflow-hidden transition-opacity duration-300 ${isProcessing ? "opacity-50" : "opacity-100"}`}
           >
             <canvas ref={canvasRef} className="h-auto w-full" />
-            {configuration.embroideries.some((e) => e) && configuration.product?.embroideryZone && (
+            {configuration.embroideries.some((e) => e) && configuration.product?.embroideryZone && configuration.embroideryFont && (
               <EmbroideryZoneOverlay
-                texts={configuration.embroideries.filter(Boolean)}
+                texts={configuration.embroideries.filter(Boolean).map((t) => normalizeForFont(t, configuration.embroideryFont!.id))}
                 threadColor={configuration.embroideryColor}
                 zone={configuration.product.embroideryZone}
                 containerRef={productContainerRef}
+                fontId={configuration.embroideryFont.id}
+                fontFolder={`/fonts/${configuration.embroideryFont.folder}`}
+                fontFormat={configuration.embroideryFont.format}
               />
             )}
             {isProcessing && (
@@ -965,7 +980,7 @@ const ProductConfigurator = () => {
                       Broderie personnalisée
                     </h2>
                     <p className="font-body mt-1 text-sm" style={{ color: "var(--color-ink-3)" }}>
-                      +15 € · Aperçu immédiat sur le produit
+                      +{((configuration.embroideryFont?.price ?? 0) / 100).toFixed(0)} € · Aperçu immédiat sur le produit
                     </p>
                   </div>
 
@@ -1095,6 +1110,52 @@ const ProductConfigurator = () => {
                       })}
                     </div>
                   </div>
+
+                  {/* Police de broderie */}
+                  {embroideryFonts.length > 1 && (
+                    <div style={{ borderTop: "var(--rule-soft)", paddingTop: "1.5rem" }}>
+                      <div className="mb-4 flex items-center justify-between">
+                        <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+                          Police de broderie
+                        </span>
+                        {configuration.embroideryFont && (
+                          <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                            {configuration.embroideryFont.name}
+                          </span>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {embroideryFonts.map((font) => {
+                          const isSelected = configuration.embroideryFont?.id === font.id;
+                          const sampleText = normalizeForFont("Ylang", font.id);
+                          return (
+                            <button
+                              key={font.id}
+                              type="button"
+                              onClick={() => setConfiguration((prev) => ({ ...prev, embroideryFont: font }))}
+                              className="flex flex-col items-center gap-2 p-4 transition-all"
+                              style={{
+                                border: isSelected ? "2px solid var(--color-accent)" : "var(--rule-soft)",
+                                background: isSelected ? "var(--color-paper-2)" : "var(--color-paper)",
+                              }}
+                            >
+                              <EmbroideryPreview
+                                text={sampleText}
+                                threadColor={configuration.embroideryColor}
+                                targetHeight={48}
+                                fontId={font.id}
+                                fontFolder={`/fonts/${font.folder}`}
+                                fontFormat={font.format}
+                              />
+                              <span className="font-body text-xs" style={{ color: "var(--color-ink)" }}>
+                                {font.name}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
 
@@ -1246,7 +1307,9 @@ const ProductConfigurator = () => {
                             </div>
                           </div>
                         </div>
-                        <span className="font-body text-sm" style={{ color: "var(--color-ink)" }}>+15 €</span>
+                        <span className="font-body text-sm" style={{ color: "var(--color-ink)" }}>
+                          +{((configuration.embroideryFont?.price ?? 0) / 100).toFixed(0)} €
+                        </span>
                       </motion.div>
                     ) : (
                       <motion.div
