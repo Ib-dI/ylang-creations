@@ -391,7 +391,9 @@ const ProductConfigurator = () => {
       configuration: {
         fabricName: configuration.fabric.name,
         fabricColor: configuration.fabric.baseColor,
-        embroidery: configuration.embroideries.filter(Boolean).join(", ") || undefined,
+        embroidery: configuration.embroideryFont
+          ? configuration.embroideries.filter(Boolean).map((t) => normalizeForFont(t, configuration.embroideryFont!.id)).join(", ") || undefined
+          : configuration.embroideries.filter(Boolean).join(", ") || undefined,
         embroideryColor: configuration.embroideries.some((e) => e) ? configuration.embroideryColor : undefined,
         embroideryFont: configuration.embroideries.some((e) => e) ? (configuration.embroideryFont?.name ?? undefined) : undefined,
         size: configuration.size || undefined,
