@@ -1,63 +1,89 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { parsePesToPESData } from "@/lib/embroidery/pes-parser";
 
-const FONT_FOLDER = "/fonts/moonlight";
+export type EmbroideryFontFormat = "exp" | "pes";
 
-// Cache module-level : toutes les instances partagent le même chargement
-let _fontCache: FontFiles | null = null;
-let _fontLoadPromise: Promise<FontFiles> | null = null;
+// Cache module-level, keyed by "format:folder" so multiple fonts coexist.
+const _fontCache = new Map<string, FontFiles>();
+const _fontLoadPromises = new Map<string, Promise<FontFiles>>();
 
-async function loadFontsShared(folder: string): Promise<FontFiles> {
-  if (_fontCache) return _fontCache;
-  if (_fontLoadPromise) return _fontLoadPromise;
+function encodeFolderPath(folder: string): string {
+  return folder.split("/").map(encodeURIComponent).join("/");
+}
 
-  _fontLoadPromise = (async () => {
-    const mRes = await fetch(`${folder}/manifest.json`);
+async function loadFontsShared(folder: string, format: EmbroideryFontFormat): Promise<FontFiles> {
+  const cacheKey = `${format}:${folder}`;
+  if (_fontCache.has(cacheKey)) return _fontCache.get(cacheKey)!;
+  if (_fontLoadPromises.has(cacheKey)) return _fontLoadPromises.get(cacheKey)!;
+
+  const promise = (async () => {
+    const encodedFolder = encodeFolderPath(folder);
+    const mRes = await fetch(`${encodedFolder}/manifest.json`);
     if (!mRes.ok) throw new Error(`manifest.json introuvable dans ${folder}`);
     const raw = await mRes.json();
 
-    let filenames: string[] = [];
-    let prefix = "";
-    if (Array.isArray(raw)) {
-      filenames = raw;
-    } else if (typeof raw === "object" && raw !== null) {
-      const keys = Object.keys(raw).sort((a, b) => parseFloat(a) - parseFloat(b));
-      const firstKey = keys[0];
-      if (firstKey) { filenames = raw[firstKey]; prefix = `${firstKey}/`; }
-    }
-    if (!filenames.length) throw new Error("Aucun fichier dans le manifest.");
-
     const newFonts: FontFiles = {};
-    await Promise.all(filenames.map(async (filename: string) => {
-      if (!filename.toLowerCase().endsWith(".exp")) return;
-      let letter = "";
-      const lowerFile = filename.toLowerCase();
-      for (const [key, val] of Object.entries(SYMBOL_MAP)) {
-        if (lowerFile.startsWith(key.toLowerCase())) { letter = val; break; }
-      }
-      if (!letter) {
-        const firstChar = filename.charAt(0);
-        if (firstChar.match(/[a-zA-Z0-9]/)) letter = firstChar;
-      }
-      if (!letter) return;
-      try {
-        const res = await fetch(`${folder}/${prefix}${filename}`);
-        if (!res.ok) return;
-        newFonts[letter] = parseEXP(await res.arrayBuffer());
-      } catch (e) { console.warn(`Failed to load ${filename}`, e); }
-    }));
 
-    _fontCache = newFonts;
+    if (format === "pes") {
+      // Direct letter → filename map, e.g. { "A": "99999974_A.pes", ... }.
+      const map = raw as Record<string, string>;
+      await Promise.all(
+        Object.entries(map).map(async ([letter, filename]) => {
+          try {
+            const res = await fetch(`${encodedFolder}/${encodeURIComponent(filename)}`);
+            if (!res.ok) return;
+            newFonts[letter] = parsePesToPESData(await res.arrayBuffer());
+          } catch (e) {
+            console.warn(`Failed to load ${filename}`, e);
+          }
+        }),
+      );
+    } else {
+      let filenames: string[] = [];
+      let prefix = "";
+      if (Array.isArray(raw)) {
+        filenames = raw;
+      } else if (typeof raw === "object" && raw !== null) {
+        const keys = Object.keys(raw).sort((a, b) => parseFloat(a) - parseFloat(b));
+        const firstKey = keys[0];
+        if (firstKey) { filenames = raw[firstKey]; prefix = `${firstKey}/`; }
+      }
+      if (!filenames.length) throw new Error("Aucun fichier dans le manifest.");
+
+      await Promise.all(filenames.map(async (filename: string) => {
+        if (!filename.toLowerCase().endsWith(".exp")) return;
+        let letter = "";
+        const lowerFile = filename.toLowerCase();
+        for (const [key, val] of Object.entries(SYMBOL_MAP)) {
+          if (lowerFile.startsWith(key.toLowerCase())) { letter = val; break; }
+        }
+        if (!letter) {
+          const firstChar = filename.charAt(0);
+          if (firstChar.match(/[a-zA-Z0-9]/)) letter = firstChar;
+        }
+        if (!letter) return;
+        try {
+          const res = await fetch(`${encodedFolder}/${prefix}${filename}`);
+          if (!res.ok) return;
+          newFonts[letter] = parseEXP(await res.arrayBuffer());
+        } catch (e) { console.warn(`Failed to load ${filename}`, e); }
+      }));
+    }
+
+    _fontCache.set(cacheKey, newFonts);
     return newFonts;
   })();
 
-  return _fontLoadPromise;
+  _fontLoadPromises.set(cacheKey, promise);
+  return promise;
 }
 
 type LetterAdj = { offsetY: number; advanceX: number; leftBearing: number };
 
-const DEFAULT_ADJUSTMENTS: Record<string, LetterAdj> = {
+const FONT_ADJUSTMENTS: Record<string, Record<string, LetterAdj>> = {
+  moonlight: {
   A:{offsetY:18,advanceX:0,leftBearing:0},
   B:{offsetY:0,advanceX:-40,leftBearing:0},
   C:{offsetY:29,advanceX:-46,leftBearing:0},
@@ -110,6 +136,22 @@ const DEFAULT_ADJUSTMENTS: Record<string, LetterAdj> = {
   x:{offsetY:0,advanceX:-23,leftBearing:-6},
   y:{offsetY:28,advanceX:-34,leftBearing:-19},
   z:{offsetY:36,advanceX:-40,leftBearing:-24}
+  },
+  "alfabeto-liz": {
+    A:{offsetY:0,advanceX:0,leftBearing:0}, B:{offsetY:0,advanceX:0,leftBearing:0},
+    C:{offsetY:0,advanceX:0,leftBearing:0}, D:{offsetY:0,advanceX:0,leftBearing:0},
+    E:{offsetY:0,advanceX:0,leftBearing:0}, F:{offsetY:0,advanceX:0,leftBearing:0},
+    G:{offsetY:0,advanceX:0,leftBearing:0}, H:{offsetY:0,advanceX:0,leftBearing:0},
+    I:{offsetY:0,advanceX:0,leftBearing:0}, J:{offsetY:0,advanceX:0,leftBearing:0},
+    K:{offsetY:0,advanceX:0,leftBearing:0}, L:{offsetY:0,advanceX:0,leftBearing:0},
+    M:{offsetY:0,advanceX:0,leftBearing:0}, N:{offsetY:0,advanceX:0,leftBearing:0},
+    O:{offsetY:0,advanceX:0,leftBearing:0}, P:{offsetY:0,advanceX:0,leftBearing:0},
+    Q:{offsetY:0,advanceX:0,leftBearing:0}, R:{offsetY:0,advanceX:0,leftBearing:0},
+    S:{offsetY:0,advanceX:0,leftBearing:0}, T:{offsetY:0,advanceX:0,leftBearing:0},
+    U:{offsetY:0,advanceX:0,leftBearing:0}, V:{offsetY:0,advanceX:0,leftBearing:0},
+    W:{offsetY:0,advanceX:0,leftBearing:0}, X:{offsetY:0,advanceX:0,leftBearing:0},
+    Y:{offsetY:0,advanceX:0,leftBearing:0}, Z:{offsetY:0,advanceX:0,leftBearing:0},
+  },
 };
 
 const SYMBOL_MAP: Record<string, string> = {
@@ -243,21 +285,25 @@ export interface EmbroideryPreviewProps {
   threadColor?: string | null;
   className?: string;
   targetHeight?: number;
+  fontId: string;
+  fontFolder: string;
+  fontFormat: EmbroideryFontFormat;
 }
 
 export default function EmbroideryPreview({
-  text, threadColor, className="", targetHeight=130,
+  text, threadColor, className="", targetHeight=130, fontId, fontFolder, fontFormat,
 }: EmbroideryPreviewProps) {
-  const [fontFiles, setFontFiles] = useState<FontFiles>(_fontCache ?? {});
+  const [fontFiles, setFontFiles] = useState<FontFiles>({});
   const [errorMsg, setErrorMsg] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (_fontCache) { setFontFiles(_fontCache); return; }
-    loadFontsShared(FONT_FOLDER)
+    const cacheKey = `${fontFormat}:${fontFolder}`;
+    if (_fontCache.has(cacheKey)) { setFontFiles(_fontCache.get(cacheKey)!); return; }
+    loadFontsShared(fontFolder, fontFormat)
       .then(fonts => setFontFiles(fonts))
       .catch(e => setErrorMsg(e instanceof Error ? e.message : "Erreur inconnue"));
-  }, []);
+  }, [fontFolder, fontFormat]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -267,6 +313,8 @@ export default function EmbroideryPreview({
 
     ctx.clearRect(0,0,canvas.width,canvas.height);
     if (!text) { canvas.width=1; canvas.height=1; return; }
+
+    const adjustments = FONT_ADJUSTMENTS[fontId] ?? {};
 
     const PX=16, PY=12, CAP=targetHeight;
     const chars = text.split("").map(c=>c===" "?null:c);
@@ -283,7 +331,7 @@ export default function EmbroideryPreview({
     let maxDescender = 0;
     for (const ch of chars) {
       if (!ch) continue;
-      const adj = DEFAULT_ADJUSTMENTS[ch];
+      const adj = adjustments[ch];
       if (adj && adj.offsetY > 0) {
         maxDescender = Math.max(maxDescender, adj.offsetY * ADJ_SCALE);
       }
@@ -294,14 +342,14 @@ export default function EmbroideryPreview({
 
     const GAP = CAP * 0.05;
 
-    // Les ajustements DEFAULT_ADJUSTMENTS ont été calibrés dans l'outil de preview
+    // Les ajustements FONT_ADJUSTMENTS ont été calibrés dans l'outil de preview
     // avec targetHeight=130 comme référence. Pour les appliquer correctement à
     // n'importe quelle targetHeight, on les scale proportionnellement.
 
     const advances = chars.map(ch=>{
       if (!ch) return CAP*0.28;
       const pes=fontFiles[ch]; if(!pes) return CAP*0.4;
-      const adj=DEFAULT_ADJUSTMENTS[ch]??{offsetY:0,advanceX:0,leftBearing:0};
+      const adj=adjustments[ch]??{offsetY:0,advanceX:0,leftBearing:0};
       // pes.width*SCALE = largeur réelle de la lettre en px canvas
       // adj.advanceX calibré à targetHeight=130, donc on scale
       return pes.width*SCALE + GAP + adj.advanceX*ADJ_SCALE;
@@ -321,7 +369,7 @@ export default function EmbroideryPreview({
     chars.forEach((ch,i)=>{
       if (!ch) { curX+=advances[i]; return; }
       const pes=fontFiles[ch];
-      const adj=DEFAULT_ADJUSTMENTS[ch]??{offsetY:0,advanceX:0,leftBearing:0};
+      const adj=adjustments[ch]??{offsetY:0,advanceX:0,leftBearing:0};
 
       const originX = curX + adj.leftBearing*ADJ_SCALE;
       const vertY = pes ? (baselineY - pes.maxY*SCALE + adj.offsetY*ADJ_SCALE) : adj.offsetY*ADJ_SCALE;
@@ -341,7 +389,7 @@ export default function EmbroideryPreview({
       }
       curX+=advances[i];
     });
-  }, [text, fontFiles, threadColor, targetHeight]);
+  }, [text, fontFiles, threadColor, targetHeight, fontId]);
 
   if (errorMsg) return <div className="text-xs text-red-500">Erreur EXP: {errorMsg}</div>;
 
