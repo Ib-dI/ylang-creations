@@ -1104,6 +1104,9 @@ export default function ConfiguratorAdmin() {
                       threadColor="#E91E8C"
                       zone={embroideryZone}
                       containerRef={imageContainerRef}
+                      fontId="moonlight"
+                      fontFolder="/fonts/moonlight"
+                      fontFormat="exp"
                     />
                   )}
 
