@@ -294,10 +294,26 @@ export const updateConfiguratorFabricSchema = createConfiguratorFabricSchema
   .omit({ id: true })
   .partial();
 
+export const createConfiguratorEmbroideryFontSchema = z.object({
+  id: z.string().min(1, "L'identifiant est requis").max(100).transform(sanitizeString),
+  name: z.string().min(1, "Le nom est requis").max(200).transform(sanitizeString),
+  folder: z.string().min(1, "Le dossier est requis").max(200).transform(sanitizeString),
+  format: z.enum(["exp", "pes"]),
+  price: z.number().int().min(0).max(9999999).optional().default(1500),
+  order: z.number().int().min(0).max(9999).optional().default(0),
+  isActive: z.boolean().optional().default(true),
+});
+
+export const updateConfiguratorEmbroideryFontSchema = createConfiguratorEmbroideryFontSchema
+  .omit({ id: true })
+  .partial();
+
 export type CreateConfiguratorProductInput = z.infer<typeof createConfiguratorProductSchema>;
 export type UpdateConfiguratorProductInput = z.infer<typeof updateConfiguratorProductSchema>;
 export type CreateConfiguratorFabricInput = z.infer<typeof createConfiguratorFabricSchema>;
 export type UpdateConfiguratorFabricInput = z.infer<typeof updateConfiguratorFabricSchema>;
+export type CreateConfiguratorEmbroideryFontInput = z.infer<typeof createConfiguratorEmbroideryFontSchema>;
+export type UpdateConfiguratorEmbroideryFontInput = z.infer<typeof updateConfiguratorEmbroideryFontSchema>;
 
 // --- Types exportés ---
 export type CreateProductInput = z.infer<typeof createProductSchema>;
