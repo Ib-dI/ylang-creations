@@ -65,6 +65,16 @@ type Color = {
   isActive: boolean;
 };
 
+type EmbroideryFont = {
+  id: string;
+  name: string;
+  folder: string;
+  format: "exp" | "pes";
+  price: number;
+  order: number;
+  isActive: boolean;
+};
+
 export default function ConfiguratorAdmin() {
   const [activeTab, setActiveTab] = useState<"fabrics" | "products" | "broderie" | "palettes" | "polices">("fabrics");
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
@@ -100,6 +110,7 @@ export default function ConfiguratorAdmin() {
 
   // Palettes tab
   const [colors, setColors] = useState<Color[]>([]);
+  const [embroideryFonts, setEmbroideryFonts] = useState<EmbroideryFont[]>([]);
   const [colorSubTab, setColorSubTab] = useState<"product" | "embroidery">("product");
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const [editingColor, setEditingColor] = useState<Partial<Color> | null>(null);
@@ -111,6 +122,7 @@ export default function ConfiguratorAdmin() {
     x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center", multiNameEnabled: true, nameSpacing: -36,
   });
   const [previewText, setPreviewText] = useState("Ylang");
+  const [previewFontId, setPreviewFontId] = useState<string>("moonlight");
   const [isSavingEmbroidery, setIsSavingEmbroidery] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
@@ -200,20 +212,23 @@ export default function ConfiguratorAdmin() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [fabricsRes, productsRes, categoriesRes, colorsRes] = await Promise.all([
+      const [fabricsRes, productsRes, categoriesRes, colorsRes, embroideryFontsRes] = await Promise.all([
         fetch("/api/admin/configurator/fabrics"),
         fetch("/api/admin/configurator/products"),
         fetch("/api/admin/configurator/categories"),
         fetch("/api/admin/configurator/colors"),
+        fetch("/api/admin/configurator/embroidery-fonts"),
       ]);
       const fabricsData = await fabricsRes.json();
       const productsData = await productsRes.json();
       const categoriesData = await categoriesRes.json();
       const colorsData = await colorsRes.json();
+      const embroideryFontsData = await embroideryFontsRes.json();
       setFabrics(fabricsData.fabrics?.map((f: Fabric) => ({ ...f, price: f.price / 100 })) || []);
       setProducts(productsData.products?.map((p: ConfigProduct) => ({ ...p, basePrice: p.basePrice / 100 })) || []);
       setCategories(categoriesData.categories || []);
       setColors(colorsData.colors || []);
+      setEmbroideryFonts(embroideryFontsData.fonts || []);
     } catch (e) {
       console.error("Failed to load configurator data", e);
       toast.error("Erreur lors du chargement des données");
@@ -1104,9 +1119,9 @@ export default function ConfiguratorAdmin() {
                       threadColor="#E91E8C"
                       zone={embroideryZone}
                       containerRef={imageContainerRef}
-                      fontId="moonlight"
-                      fontFolder="/fonts/moonlight"
-                      fontFormat="exp"
+                      fontId={embroideryFonts.find(f => f.id === previewFontId)?.id ?? "moonlight"}
+                      fontFolder={`/fonts/${embroideryFonts.find(f => f.id === previewFontId)?.folder ?? "moonlight"}`}
+                      fontFormat={embroideryFonts.find(f => f.id === previewFontId)?.format ?? "exp"}
                     />
                   )}
 
@@ -1140,6 +1155,24 @@ export default function ConfiguratorAdmin() {
                       placeholder="Ylang"
                       className="font-body w-full border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-gray-400"
                     />
+                  </div>
+
+                  {/* Police de prévisualisation */}
+                  <div className="mb-4">
+                    <label className="mb-1 block font-body text-xs font-medium text-gray-500">Police de prévisualisation</label>
+                    <select
+                      value={previewFontId}
+                      onChange={e => setPreviewFontId(e.target.value)}
+                      className="font-body w-full border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none focus:border-gray-400"
+                    >
+                      {embroideryFonts.length === 0 ? (
+                        <option value="moonlight">Moonlight</option>
+                      ) : (
+                        embroideryFonts.map(font => (
+                          <option key={font.id} value={font.id}>{font.name}</option>
+                        ))
+                      )}
+                    </select>
                   </div>
 
                   {/* Position X */}
