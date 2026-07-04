@@ -42,7 +42,7 @@ type ConfigProduct = {
   baseImage: string;
   maskImage: string;
   colorMaskImage: string | null;
-  embroideryZone: EmbroideryZone | null;
+  embroideryZone: Record<string, EmbroideryZone> | null;
   sizes: string[] | null;
   defaultSize: string | null;
   isActive: boolean;
@@ -118,9 +118,10 @@ export default function ConfiguratorAdmin() {
 
   // Broderie tab
   const [embroideryProduct, setEmbroideryProduct] = useState<ConfigProduct | null>(null);
-  const [embroideryZone, setEmbroideryZone] = useState<EmbroideryZone>({
+  const DEFAULT_EMBROIDERY_ZONE: EmbroideryZone = {
     x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center", multiNameEnabled: true, nameSpacing: -36,
-  });
+  };
+  const [embroideryZone, setEmbroideryZone] = useState<EmbroideryZone>(DEFAULT_EMBROIDERY_ZONE);
   const [previewText, setPreviewText] = useState("Ylang");
   const [previewFontId, setPreviewFontId] = useState<string>("moonlight");
   const [isSavingEmbroidery, setIsSavingEmbroidery] = useState(false);
@@ -128,10 +129,12 @@ export default function ConfiguratorAdmin() {
 
   const openEmbroideryEditor = useCallback((product: ConfigProduct) => {
     setEmbroideryProduct(product);
-    setEmbroideryZone(product.embroideryZone ?? {
-      x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center", multiNameEnabled: true, nameSpacing: -36,
-    });
   }, []);
+
+  useEffect(() => {
+    if (!embroideryProduct) return;
+    setEmbroideryZone(embroideryProduct.embroideryZone?.[previewFontId] ?? DEFAULT_EMBROIDERY_ZONE);
+  }, [embroideryProduct, previewFontId]);
 
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -144,17 +147,18 @@ export default function ConfiguratorAdmin() {
     if (!embroideryProduct) return;
     setIsSavingEmbroidery(true);
     try {
+      const updatedZoneMap = { ...(embroideryProduct.embroideryZone ?? {}), [previewFontId]: embroideryZone };
       const res = await fetch(`/api/admin/configurator/products?id=${embroideryProduct.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ embroideryZone }),
+        body: JSON.stringify({ embroideryZone: updatedZoneMap }),
       });
       if (res.ok) {
         toast.success("Zone de broderie sauvegardée");
         setProducts(prev => prev.map(p =>
-          p.id === embroideryProduct.id ? { ...p, embroideryZone } : p
+          p.id === embroideryProduct.id ? { ...p, embroideryZone: updatedZoneMap } : p
         ));
-        setEmbroideryProduct(prev => prev ? { ...prev, embroideryZone } : prev);
+        setEmbroideryProduct(prev => prev ? { ...prev, embroideryZone: updatedZoneMap } : prev);
       } else {
         toast.error("Erreur lors de la sauvegarde");
       }
@@ -975,7 +979,7 @@ export default function ConfiguratorAdmin() {
                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
                           <span className={`h-1.5 w-1.5 rounded-full ${product.colorMaskImage ? 'bg-green-400' : 'bg-gray-300'}`} /> Couleur
                         </span>
-                        {product.embroideryZone && (
+                        {product.embroideryZone && Object.keys(product.embroideryZone).length > 0 && (
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium" style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}>
                             <span className="h-1.5 w-1.5 rounded-full bg-green-400" /> Broderie
                           </span>
@@ -1055,8 +1059,8 @@ export default function ConfiguratorAdmin() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-body text-sm font-medium text-gray-800">{product.name}</p>
-                  {product.embroideryZone
-                    ? <p className="mt-0.5 text-[10px] font-semibold text-green-600">✓ Calibré ({Math.round(product.embroideryZone.x * 100)}%, {Math.round(product.embroideryZone.y * 100)}%)</p>
+                  {product.embroideryZone && Object.keys(product.embroideryZone).length > 0
+                    ? <p className="mt-0.5 text-[10px] font-semibold text-green-600">✓ Calibré ({Object.keys(product.embroideryZone).length} police{Object.keys(product.embroideryZone).length > 1 ? "s" : ""})</p>
                     : <p className="font-body mt-0.5 text-[10px] text-gray-400">Non configuré</p>
                   }
                 </div>

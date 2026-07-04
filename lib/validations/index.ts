@@ -256,7 +256,13 @@ const embroideryZoneSchema = z.object({
   rotation: z.number(),
   fontSize: z.number(),
   alignment: z.enum(["left", "center", "right"]),
+  nameSpacing: z.number().optional(),
+  multiNameEnabled: z.boolean().optional(),
 });
+
+// Zone de broderie par police (chaque police a ses propres proportions de
+// lettres, donc sa propre calibration position/taille/rotation par produit).
+const embroideryZoneByFontSchema = z.record(z.string(), embroideryZoneSchema);
 
 export const createConfiguratorProductSchema = z.object({
   id: z.string().min(1, "L'identifiant est requis").max(100).transform(sanitizeString),
@@ -268,8 +274,8 @@ export const createConfiguratorProductSchema = z.object({
   baseImage: z.string().min(1, "L'image de base est requise").max(1000),
   maskImage: z.string().min(1, "Le masque est requis").max(1000),
   colorMaskImage: z.string().max(1000).optional().nullable(),
-  embroideryZone: embroideryZoneSchema.optional().default({
-    x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center",
+  embroideryZone: embroideryZoneByFontSchema.optional().default({
+    moonlight: { x: 0.5, y: 0.3, maxWidth: 0.5, rotation: 0, fontSize: 28, alignment: "center" },
   }),
   sizes: z.array(z.string().max(50)).max(30).optional().nullable(),
   defaultSize: z.string().max(50).optional().nullable(),

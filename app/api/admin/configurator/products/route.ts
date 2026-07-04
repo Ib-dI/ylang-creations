@@ -1,6 +1,7 @@
 import { configuratorProduct } from "@/db/schema";
 import { db } from "@/lib/db";
 import { withAdminAuth } from "@/lib/auth/with-admin-auth";
+import { normalizeEmbroideryZoneByFont } from "@/lib/configurator/normalize-embroidery-zone";
 import {
   createConfiguratorProductSchema,
   updateConfiguratorProductSchema,
@@ -17,9 +18,14 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const activeOnly = searchParams.get("active") === "true";
 
-    const products = activeOnly
+    const rows = activeOnly
       ? await db.select().from(configuratorProduct).where(eq(configuratorProduct.isActive, true))
       : await db.select().from(configuratorProduct);
+
+    const products = rows.map((p) => ({
+      ...p,
+      embroideryZone: normalizeEmbroideryZoneByFont(p.embroideryZone),
+    }));
 
     return NextResponse.json({ products });
   } catch (error) {

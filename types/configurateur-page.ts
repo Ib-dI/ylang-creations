@@ -21,7 +21,7 @@ export interface ConfigurateurProduct {
   baseImage: string;
   maskImage: string;
   colorMaskImage?: string;
-  embroideryZone: EmbroideryZone;
+  embroideryZone: Record<string, EmbroideryZone>;
   sizes?: string[];
   defaultSize?: string | null;
 }

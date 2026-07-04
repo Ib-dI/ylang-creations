@@ -24,7 +24,20 @@ import type {
   ConfigurateurFabric,
   ConfigurateurFabricCategory,
   ConfigurateurProduct,
+  EmbroideryZone,
 } from "@/types/configurateur-page";
+
+function getEmbroideryZoneForFont(
+  product: ConfigurateurProduct | null,
+  fontId: string | undefined,
+): EmbroideryZone | null {
+  if (!product?.embroideryZone) return null;
+  const zones = product.embroideryZone;
+  if (fontId && zones[fontId]) return zones[fontId];
+  if (zones.moonlight) return zones.moonlight;
+  const first = Object.values(zones)[0];
+  return first ?? null;
+}
 
 interface SeeAllDialogProps {
   title: string;
@@ -304,7 +317,7 @@ const ConfiguratorClient = ({
           compositeCtx.drawImage(canvas, 0, 0);
           if (
             configuration.embroideries.some((e) => e) &&
-            configuration.product.embroideryZone &&
+            getEmbroideryZoneForFont(configuration.product, configuration.embroideryFont?.id) &&
             productContainerRef.current
           ) {
             const container = productContainerRef.current;
@@ -508,11 +521,11 @@ const ConfiguratorClient = ({
             className={`relative w-full overflow-hidden transition-opacity duration-300 ${isProcessing ? "opacity-50" : "opacity-100"}`}
           >
             <canvas ref={canvasRef} className="h-auto w-full" />
-            {configuration.embroideries.some((e) => e) && configuration.product?.embroideryZone && configuration.embroideryFont && (
+            {configuration.embroideries.some((e) => e) && configuration.product && getEmbroideryZoneForFont(configuration.product, configuration.embroideryFont?.id) && configuration.embroideryFont && (
               <EmbroideryZoneOverlay
                 texts={configuration.embroideries.filter(Boolean).map((t) => normalizeForFont(t, configuration.embroideryFont!.id))}
                 threadColor={configuration.embroideryColor}
-                zone={configuration.product.embroideryZone}
+                zone={getEmbroideryZoneForFont(configuration.product, configuration.embroideryFont.id)!}
                 containerRef={productContainerRef}
                 fontId={configuration.embroideryFont.id}
                 fontFolder={`/fonts/${configuration.embroideryFont.folder}`}
@@ -944,7 +957,7 @@ const ConfiguratorClient = ({
                       <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
                         Noms à broder
                       </span>
-                      {configuration.product?.embroideryZone?.multiNameEnabled !== false && (
+                      {getEmbroideryZoneForFont(configuration.product, configuration.embroideryFont?.id)?.multiNameEnabled !== false && (
                         <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
                           {configuration.embroideries.length} / 3
                         </span>
@@ -997,7 +1010,7 @@ const ConfiguratorClient = ({
                       ))}
                     </div>
 
-                    {configuration.product?.embroideryZone?.multiNameEnabled !== false &&
+                    {getEmbroideryZoneForFont(configuration.product, configuration.embroideryFont?.id)?.multiNameEnabled !== false &&
                       configuration.embroideries.length < 3 &&
                       configuration.embroideries[configuration.embroideries.length - 1].length > 0 && (
                         <button

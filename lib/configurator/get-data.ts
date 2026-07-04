@@ -8,12 +8,12 @@ import {
 } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
+import { normalizeEmbroideryZoneByFont } from "@/lib/configurator/normalize-embroidery-zone";
 import type {
   ConfigurateurEmbroideryFont,
   ConfigurateurFabric,
   ConfigurateurFabricCategory,
   ConfigurateurProduct,
-  EmbroideryZone,
 } from "@/types/configurateur-page";
 
 export interface ConfiguratorData {
@@ -66,7 +66,7 @@ export async function getConfiguratorData(): Promise<ConfiguratorData> {
     baseImage: p.baseImage,
     maskImage: p.maskImage,
     colorMaskImage: p.colorMaskImage ?? undefined,
-    embroideryZone: p.embroideryZone as EmbroideryZone,
+    embroideryZone: normalizeEmbroideryZoneByFont(p.embroideryZone),
     sizes: (p.sizes as string[] | null) ?? undefined,
     defaultSize: p.defaultSize,
   }));
