@@ -8,6 +8,7 @@ import {
   formatZodErrors,
 } from "@/lib/validations";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -48,6 +49,8 @@ async function handlePOST(request: Request): Promise<Response> {
       isActive: data.isActive,
     });
 
+    revalidateTag("configurator", "max");
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error creating embroidery font:", error);
@@ -83,6 +86,8 @@ async function handlePUT(request: Request): Promise<Response> {
       .set({ ...validation.data, updatedAt: new Date() })
       .where(eq(configuratorEmbroideryFont.id, id));
 
+    revalidateTag("configurator", "max");
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating embroidery font:", error);
@@ -101,6 +106,9 @@ async function handleDELETE(request: Request): Promise<Response> {
     }
 
     await db.delete(configuratorEmbroideryFont).where(eq(configuratorEmbroideryFont.id, id));
+
+    revalidateTag("configurator", "max");
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting embroidery font:", error);

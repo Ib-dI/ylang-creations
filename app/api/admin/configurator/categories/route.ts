@@ -2,6 +2,7 @@ import { configuratorFabric, configuratorFabricCategory } from "@/db/schema";
 import { db } from "@/lib/db";
 import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -36,6 +37,8 @@ async function handlePOST(request: Request): Promise<Response> {
         isActive: isActive !== false,
       })
       .returning();
+
+    revalidateTag("configurator", "max");
 
     return NextResponse.json({ category: newCategory });
   } catch (error) {
@@ -82,6 +85,8 @@ async function handlePUT(request: Request): Promise<Response> {
       );
     }
 
+    revalidateTag("configurator", "max");
+
     return NextResponse.json({ category: updatedCategory });
   } catch (error) {
     console.error("Error updating category:", error);
@@ -119,6 +124,8 @@ async function handleDELETE(request: Request): Promise<Response> {
         { status: 404 }
       );
     }
+
+    revalidateTag("configurator", "max");
 
     return NextResponse.json({ success: true, category: deletedCategory });
   } catch (error) {

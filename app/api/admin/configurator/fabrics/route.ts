@@ -9,6 +9,7 @@ import {
 } from "@/lib/validations";
 import { supabaseAdmin } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -49,6 +50,8 @@ async function handlePOST(request: Request): Promise<Response> {
       isActive: data.isActive,
     });
 
+    revalidateTag("configurator", "max");
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error creating fabric:", error);
@@ -83,6 +86,8 @@ async function handlePUT(request: Request): Promise<Response> {
       .set({ ...validation.data, updatedAt: new Date() })
       .where(eq(configuratorFabric.id, id));
 
+    revalidateTag("configurator", "max");
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating fabric:", error);
@@ -113,6 +118,8 @@ async function handleDELETE(request: Request): Promise<Response> {
     }
 
     await db.delete(configuratorFabric).where(eq(configuratorFabric.id, id));
+
+    revalidateTag("configurator", "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {
