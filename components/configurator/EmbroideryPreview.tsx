@@ -25,8 +25,14 @@ async function loadFontsShared(folder: string, format: EmbroideryFontFormat): Pr
     const raw = await mRes.json();
 
     const newFonts: FontFiles = {};
+    const parseBuffer = format === "pes" ? parsePesToPESData : parseEXP;
+    const extension = `.${format}`;
 
-    if (format === "pes") {
+    const isDirectLetterMap =
+      typeof raw === "object" && raw !== null && !Array.isArray(raw) &&
+      typeof Object.values(raw as Record<string, unknown>)[0] === "string";
+
+    if (isDirectLetterMap) {
       // Direct letter → filename map, e.g. { "A": "99999974_A.pes", ... }.
       const map = raw as Record<string, string>;
       await Promise.all(
@@ -34,13 +40,15 @@ async function loadFontsShared(folder: string, format: EmbroideryFontFormat): Pr
           try {
             const res = await fetch(`${encodedFolder}/${encodeURIComponent(filename)}`);
             if (!res.ok) return;
-            newFonts[letter] = parsePesToPESData(await res.arrayBuffer());
+            newFonts[letter] = parseBuffer(await res.arrayBuffer());
           } catch (e) {
             console.warn(`Failed to load ${filename}`, e);
           }
         }),
       );
     } else {
+      // Array of prefix/suffix-named files (optionally nested under a
+      // size-variant key), letter resolved via SYMBOL_MAP or first character.
       let filenames: string[] = [];
       let prefix = "";
       if (Array.isArray(raw)) {
@@ -53,7 +61,7 @@ async function loadFontsShared(folder: string, format: EmbroideryFontFormat): Pr
       if (!filenames.length) throw new Error("Aucun fichier dans le manifest.");
 
       await Promise.all(filenames.map(async (filename: string) => {
-        if (!filename.toLowerCase().endsWith(".exp")) return;
+        if (!filename.toLowerCase().endsWith(extension)) return;
         let letter = "";
         const lowerFile = filename.toLowerCase();
         for (const [key, val] of Object.entries(SYMBOL_MAP)) {
@@ -67,7 +75,7 @@ async function loadFontsShared(folder: string, format: EmbroideryFontFormat): Pr
         try {
           const res = await fetch(`${encodedFolder}/${prefix}${filename}`);
           if (!res.ok) return;
-          newFonts[letter] = parseEXP(await res.arrayBuffer());
+          newFonts[letter] = parseBuffer(await res.arrayBuffer());
         } catch (e) { console.warn(`Failed to load ${filename}`, e); }
       }));
     }
@@ -152,12 +160,94 @@ const FONT_ADJUSTMENTS: Record<string, Record<string, LetterAdj>> = {
     W:{offsetY:0,advanceX:0,leftBearing:0}, X:{offsetY:0,advanceX:0,leftBearing:0},
     Y:{offsetY:0,advanceX:0,leftBearing:0}, Z:{offsetY:0,advanceX:0,leftBearing:0},
   },
+  singular: {
+    "!":{offsetY:0,advanceX:0,leftBearing:0},
+    "#":{offsetY:0,advanceX:0,leftBearing:0},
+    "$":{offsetY:0,advanceX:0,leftBearing:0},
+    "%":{offsetY:0,advanceX:0,leftBearing:0},
+    "&":{offsetY:0,advanceX:0,leftBearing:0},
+    "'":{offsetY:0,advanceX:0,leftBearing:0},
+    "(":{offsetY:0,advanceX:0,leftBearing:0},
+    ")":{offsetY:0,advanceX:0,leftBearing:0},
+    "*":{offsetY:0,advanceX:0,leftBearing:0},
+    ",":{offsetY:0,advanceX:0,leftBearing:0},
+    "-":{offsetY:0,advanceX:0,leftBearing:0},
+    ".":{offsetY:0,advanceX:0,leftBearing:0},
+    "/":{offsetY:0,advanceX:0,leftBearing:0},
+    "0":{offsetY:0,advanceX:0,leftBearing:0},
+    "1":{offsetY:0,advanceX:0,leftBearing:0},
+    "2":{offsetY:0,advanceX:0,leftBearing:0},
+    "3":{offsetY:0,advanceX:0,leftBearing:0},
+    "4":{offsetY:0,advanceX:0,leftBearing:0},
+    "5":{offsetY:0,advanceX:0,leftBearing:0},
+    "6":{offsetY:0,advanceX:0,leftBearing:0},
+    "7":{offsetY:0,advanceX:0,leftBearing:0},
+    "8":{offsetY:0,advanceX:0,leftBearing:0},
+    "9":{offsetY:0,advanceX:0,leftBearing:0},
+    ":":{offsetY:0,advanceX:0,leftBearing:0},
+    ";":{offsetY:0,advanceX:0,leftBearing:0},
+    "?":{offsetY:0,advanceX:0,leftBearing:0},
+    "@":{offsetY:0,advanceX:0,leftBearing:0},
+    A:{offsetY:0,advanceX:-7,leftBearing:-12},
+    B:{offsetY:0,advanceX:-8,leftBearing:0},
+    C:{offsetY:0,advanceX:-14,leftBearing:0},
+    D:{offsetY:0,advanceX:-10,leftBearing:0},
+    E:{offsetY:0,advanceX:-9,leftBearing:0},
+    F:{offsetY:11,advanceX:-27,leftBearing:-10},
+    G:{offsetY:16,advanceX:-18,leftBearing:0},
+    H:{offsetY:0,advanceX:-23,leftBearing:0},
+    I:{offsetY:0,advanceX:-18,leftBearing:0},
+    J:{offsetY:11,advanceX:-21,leftBearing:0},
+    K:{offsetY:18,advanceX:-25,leftBearing:0},
+    L:{offsetY:0,advanceX:-5,leftBearing:-4},
+    M:{offsetY:0,advanceX:-19,leftBearing:-6},
+    N:{offsetY:21,advanceX:-35,leftBearing:0},
+    O:{offsetY:0,advanceX:-9,leftBearing:0},
+    P:{offsetY:0,advanceX:-18,leftBearing:0},
+    Q:{offsetY:22,advanceX:-21,leftBearing:0},
+    R:{offsetY:21,advanceX:-27,leftBearing:0},
+    S:{offsetY:0,advanceX:-15,leftBearing:0},
+    T:{offsetY:0,advanceX:-33,leftBearing:0},
+    U:{offsetY:0,advanceX:-8,leftBearing:0},
+    V:{offsetY:0,advanceX:-28,leftBearing:0},
+    W:{offsetY:0,advanceX:-26,leftBearing:0},
+    X:{offsetY:0,advanceX:-14,leftBearing:-4},
+    Y:{offsetY:0,advanceX:-47,leftBearing:0},
+    Z:{offsetY:0,advanceX:-6,leftBearing:0},
+    a:{offsetY:0,advanceX:-8,leftBearing:0},
+    b:{offsetY:0,advanceX:-8,leftBearing:0},
+    c:{offsetY:0,advanceX:-6,leftBearing:0},
+    d:{offsetY:0,advanceX:-24,leftBearing:-5},
+    e:{offsetY:0,advanceX:-7,leftBearing:0},
+    f:{offsetY:39,advanceX:-25,leftBearing:-30},
+    g:{offsetY:39,advanceX:-18,leftBearing:-26},
+    h:{offsetY:0,advanceX:-7,leftBearing:0},
+    i:{offsetY:0,advanceX:-10,leftBearing:4},
+    j:{offsetY:39,advanceX:-11,leftBearing:-30},
+    k:{offsetY:20,advanceX:-23,leftBearing:-2},
+    l:{offsetY:0,advanceX:-25,leftBearing:0},
+    m:{offsetY:0,advanceX:-7,leftBearing:0},
+    n:{offsetY:0,advanceX:-7,leftBearing:0},
+    o:{offsetY:0,advanceX:-7,leftBearing:0},
+    p:{offsetY:38,advanceX:-8,leftBearing:0},
+    q:{offsetY:37,advanceX:-8,leftBearing:0},
+    r:{offsetY:0,advanceX:-16,leftBearing:0},
+    s:{offsetY:0,advanceX:-13,leftBearing:-3},
+    t:{offsetY:0,advanceX:-8,leftBearing:0},
+    u:{offsetY:0,advanceX:-11,leftBearing:0},
+    v:{offsetY:0,advanceX:-9,leftBearing:0},
+    w:{offsetY:0,advanceX:-10,leftBearing:0},
+    x:{offsetY:18,advanceX:-10,leftBearing:0},
+    y:{offsetY:37,advanceX:-15,leftBearing:-13},
+    z:{offsetY:0,advanceX:-7,leftBearing:0},
+    "¡":{offsetY:0,advanceX:0,leftBearing:0},
+  },
 };
 
 const SYMBOL_MAP: Record<string, string> = {
   _amp_: "&", _ap_: "'", _at_: "@", _col_: ":", _comma_: ",",
   _dash_: "-", _dol_: "$", _dot_: ".", _exc_: "!", _hash_: "#",
-  _inv_: '"', _parL_: "(", _parR_: ")", _perc_: "%", _quest_: "?",
+  _inv_: "¡", _parL_: "(", _parR_: ")", _perc_: "%", _quest_: "?",
   _sem_: ";", _sl_: "/", _st_: "*",
 };
 

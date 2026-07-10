@@ -22,6 +22,7 @@ type EmbroideryFont = {
 const AVAILABLE_FONT_DEFINITIONS: Array<Pick<EmbroideryFont, "id" | "name" | "folder" | "format">> = [
   { id: "moonlight", name: "Moonlight", folder: "moonlight", format: "exp" },
   { id: "alfabeto-liz", name: "Alfabeto Liz", folder: "Alfabeto Liz", format: "pes" },
+  { id: "singular", name: "Singular", folder: "Singular", format: "pes" },
 ];
 
 export default function EmbroideryFontsPanel() {
