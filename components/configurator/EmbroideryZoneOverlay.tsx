@@ -36,7 +36,7 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
 
       const containerW = container.getBoundingClientRect().width;
       const REFERENCE_WIDTH = 512;
-      const newScale = Math.min(containerW / REFERENCE_WIDTH, 1);
+      const newScale = containerW / REFERENCE_WIDTH;
       setScale(newScale);
 
       // Compensation basée sur le dernier canvas (ligne la plus basse du groupe)
@@ -52,15 +52,20 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
     return () => ro.disconnect();
   }, [texts, zone, containerRef]);
 
+  // Le canvas de chaque ligne est rendu directement à sa taille finale
+  // (targetHeight = fontSize * scale) plutôt que dessiné petit puis agrandi en
+  // CSS, pour rester net même quand scale dépasse 1 (grand cadre de preview).
   const PY_TOP = 12;
-  const symmetricBase = 2 * PY_TOP + zone.fontSize;
+  const effectiveFontSize = zone.fontSize * scale;
+  const symmetricBase = 2 * PY_TOP + effectiveFontSize;
   const actualDescender = lastCanvasH > symmetricBase ? lastCanvasH - symmetricBase : 0;
-  const verticalCompensation = (actualDescender / 2) * scale;
+  const verticalCompensation = actualDescender / 2;
 
   // Réduction du double padding entre les canvases empilés :
-  // Chaque EmbroideryPreview a PY=12px en haut et en bas → 24px entre deux lignes.
-  // On applique un margin-top négatif en px de référence (le wrapper scale() s'en charge visuellement).
-  const lineGap = zone.nameSpacing ?? -(PY_TOP * 3);
+  // Chaque EmbroideryPreview a PY=12px fixe en haut et en bas, indépendant de
+  // targetHeight. nameSpacing est calibré en unités de référence (scale=1),
+  // donc on le projette en pixels réels via scale.
+  const lineGap = (zone.nameSpacing ?? -(PY_TOP * 3)) * scale;
 
   if (!texts.length) return null;
 
@@ -77,8 +82,6 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
       <div
         ref={wrapperRef}
         style={{
-          transformOrigin: "center center",
-          transform: `scale(${scale})`,
           overflow: "visible",
           display: "flex",
           flexDirection: "column",
@@ -93,7 +96,7 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
             <EmbroideryPreview
               text={text}
               threadColor={threadColor}
-              targetHeight={zone.fontSize}
+              targetHeight={effectiveFontSize}
               fontId={fontId}
               fontFolder={fontFolder}
               fontFormat={fontFormat}

@@ -2,6 +2,7 @@ import { configuratorProduct } from "@/db/schema";
 import { db } from "@/lib/db";
 import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { normalizeEmbroideryZoneByFont } from "@/lib/configurator/normalize-embroidery-zone";
+import { detectCropRect, cropToRect } from "@/lib/configurator/auto-crop";
 import {
   createConfiguratorProductSchema,
   updateConfiguratorProductSchema,
@@ -12,6 +13,48 @@ import { supabaseAdmin } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
+
+function relativeStoragePath(url: string): string | null {
+  const parts = url.split("/products/");
+  return parts.length > 1 ? parts[1] : null;
+}
+
+async function fetchAsBuffer(url: string): Promise<Buffer> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Impossible de télécharger ${url}`);
+  return Buffer.from(await res.arrayBuffer());
+}
+
+// Trims the excess transparent padding on a product's base/mask/colorMask
+// photos (same crop rect applied to all three so they stay pixel-aligned),
+// overwriting them in place in storage. Best-effort: an image that's already
+// tight, unreachable, or not hosted in our storage bucket is left untouched.
+async function autoCropConfiguratorImages(
+  baseImage: string,
+  maskImage: string | null | undefined,
+  colorMaskImage: string | null | undefined,
+): Promise<void> {
+  if (!supabaseAdmin) return;
+
+  const baseBuffer = await fetchAsBuffer(baseImage);
+  const rect = await detectCropRect(baseBuffer);
+  if (!rect) return;
+
+  const layers: Array<[string, Buffer]> = [[baseImage, baseBuffer]];
+  if (maskImage) layers.push([maskImage, await fetchAsBuffer(maskImage)]);
+  if (colorMaskImage) layers.push([colorMaskImage, await fetchAsBuffer(colorMaskImage)]);
+
+  for (const [url, buffer] of layers) {
+    const relPath = relativeStoragePath(url);
+    if (!relPath) continue;
+    const cropped = await cropToRect(buffer, rect);
+    const { error } = await supabaseAdmin.storage.from("products").upload(relPath, cropped, {
+      contentType: "image/png",
+      upsert: true,
+    });
+    if (error) console.error(`Auto-crop upload error (${relPath}):`, error.message);
+  }
+}
 
 export async function GET(request: Request) {
   try {
@@ -46,6 +89,13 @@ async function handlePOST(request: Request): Promise<Response> {
     }
 
     const data = validation.data;
+
+    try {
+      await autoCropConfiguratorImages(data.baseImage, data.maskImage, data.colorMaskImage);
+    } catch (error) {
+      console.error("Auto-crop configurator images failed:", error);
+    }
+
     const newProduct = await db.insert(configuratorProduct).values({
       id: data.id,
       name: data.name,
@@ -85,6 +135,18 @@ async function handlePUT(request: Request): Promise<Response> {
     const validation = validateRequest(updateConfiguratorProductSchema, body);
     if (!validation.success) {
       return NextResponse.json({ error: formatZodErrors(validation.errors) }, { status: 400 });
+    }
+
+    if (validation.data.baseImage) {
+      try {
+        await autoCropConfiguratorImages(
+          validation.data.baseImage,
+          validation.data.maskImage,
+          validation.data.colorMaskImage,
+        );
+      } catch (error) {
+        console.error("Auto-crop configurator images failed:", error);
+      }
     }
 
     await db.update(configuratorProduct)

@@ -510,7 +510,7 @@ const ConfiguratorClient = ({
           style={{ background: "var(--color-paper-3)" }}
         >
           <div
-            className="w-full max-w-lg p-6 lg:p-8"
+            className="w-full max-w-180 p-6 lg:p-8"
             style={{
               background: "var(--color-paper)",
               boxShadow: "0 4px 32px rgba(0,0,0,0.07)",
@@ -518,9 +518,12 @@ const ConfiguratorClient = ({
           >
           <div
             ref={productContainerRef}
-            className={`relative w-full overflow-hidden transition-opacity duration-300 ${isProcessing ? "opacity-50" : "opacity-100"}`}
+            className={`relative mx-auto w-fit overflow-hidden transition-opacity duration-300 ${isProcessing ? "opacity-50" : "opacity-100"}`}
           >
-            <canvas ref={canvasRef} className="h-auto w-full" />
+            <canvas
+              ref={canvasRef}
+              className="block h-auto w-auto max-w-full lg:max-h-[calc(100vh-90px-8rem)]"
+            />
             {configuration.embroideries.some((e) => e) && configuration.product && getEmbroideryZoneForFont(configuration.product, configuration.embroideryFont?.id) && configuration.embroideryFont && (
               <EmbroideryZoneOverlay
                 texts={configuration.embroideries.filter(Boolean).map((t) => normalizeForFont(t, configuration.embroideryFont!.id))}
