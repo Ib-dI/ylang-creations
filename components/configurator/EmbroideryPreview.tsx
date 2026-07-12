@@ -459,9 +459,20 @@ export default function EmbroideryPreview({
     });
     tw+=PX;
 
-    canvas.width=Math.max(Math.ceil(tw),1);
-    canvas.height=Math.ceil(canvasH);
+    // Backing store rendered at devicePixelRatio so fine curved detail (e.g.
+    // Alfabeto Liz's flowers) stays crisp on HiDPI screens instead of being
+    // upscaled from a 1:1 canvas — CSS size stays in logical px, drawing
+    // coordinates below are unchanged (ctx.scale maps them to device px).
+    const logicalW = Math.max(Math.ceil(tw),1);
+    const logicalH = Math.ceil(canvasH);
+    const dpr = typeof window !== "undefined" ? (window.devicePixelRatio || 1) : 1;
+
+    canvas.width = logicalW * dpr;
+    canvas.height = logicalH * dpr;
+    canvas.style.width = `${logicalW}px`;
+    canvas.style.height = `${logicalH}px`;
     ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.scale(dpr, dpr);
 
     let curX=PX;
     chars.forEach((ch,i)=>{

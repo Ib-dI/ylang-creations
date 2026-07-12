@@ -40,10 +40,12 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
       const newScale = containerW / REFERENCE_WIDTH;
       setScale(newScale);
 
-      // Compensation basée sur le dernier canvas (ligne la plus basse du groupe)
+      // Compensation basée sur le dernier canvas (ligne la plus basse du groupe).
+      // getBoundingClientRect (pas canvas.height) car le canvas est rendu au
+      // devicePixelRatio — sa résolution interne n'est plus en px CSS.
       const canvases = wrapper.querySelectorAll<HTMLCanvasElement>("canvas");
       const lastCanvas = canvases.length > 0 ? canvases[canvases.length - 1] : null;
-      if (lastCanvas) setLastCanvasH(lastCanvas.height);
+      if (lastCanvas) setLastCanvasH(lastCanvas.getBoundingClientRect().height);
     };
 
     update();
