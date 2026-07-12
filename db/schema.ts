@@ -244,6 +244,9 @@ export const configuratorEmbroideryFont = pgTable("configurator_embroidery_font"
   format: text("format").notNull(), // "exp" | "pes"
   price: integer("price").notNull().default(1500), // Price in cents
   order: integer("order").notNull().default(0),
+  // false for fonts with native multi-color threads (e.g. Alfabeto Liz) —
+  // the thread color picker is hidden and the font's own PES colors are used as-is.
+  supportsThreadColor: boolean("supports_thread_color").notNull().default(true),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

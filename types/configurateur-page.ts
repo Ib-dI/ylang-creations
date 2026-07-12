@@ -49,6 +49,7 @@ export interface ConfigurateurEmbroideryFont {
   format: "exp" | "pes";
   price: number;
   order: number;
+  supportsThreadColor: boolean;
 }
 
 export interface ConfigurateurConfiguration {

@@ -1,9 +1,15 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   productionBrowserSourceMaps: false, // Suppress source map warnings
+  // A stray package-lock.json in the user's home directory (C:\Users\hp)
+  // makes Next.js misdetect the workspace root — pin it explicitly.
+  turbopack: {
+    root: path.join(__dirname),
+  },
   experimental: {
     optimizePackageImports: [
       "lucide-react",

@@ -46,6 +46,7 @@ async function handlePOST(request: Request): Promise<Response> {
       format: data.format,
       price: data.price,
       order: data.order,
+      supportsThreadColor: data.supportsThreadColor,
       isActive: data.isActive,
     });
 

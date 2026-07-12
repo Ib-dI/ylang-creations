@@ -94,6 +94,7 @@ export async function getConfiguratorData(): Promise<ConfiguratorData> {
     format: f.format as "exp" | "pes",
     price: f.price,
     order: f.order,
+    supportsThreadColor: f.supportsThreadColor,
   }));
 
   return {

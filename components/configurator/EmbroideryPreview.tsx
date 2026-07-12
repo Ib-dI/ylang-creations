@@ -384,11 +384,15 @@ export interface EmbroideryPreviewProps {
   fontId: string;
   fontFolder: string;
   fontFormat: EmbroideryFontFormat;
+  // false for fonts with native multi-color threads (e.g. Alfabeto Liz) —
+  // threadColor is ignored and the font's own PES colors are rendered as-is.
+  supportsThreadColor?: boolean;
 }
 
 export default function EmbroideryPreview({
-  text, threadColor, className="", targetHeight=130, fontId, fontFolder, fontFormat,
+  text, threadColor, className="", targetHeight=130, fontId, fontFolder, fontFormat, supportsThreadColor = true,
 }: EmbroideryPreviewProps) {
+  const effectiveThreadColor = supportsThreadColor ? threadColor : undefined;
   const [fontFiles, setFontFiles] = useState<FontFiles>({});
   const [errorMsg, setErrorMsg] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -471,7 +475,7 @@ export default function EmbroideryPreview({
       if (pes?.colorBlocks.length) {
         ctx.save();
         ctx.translate(0, vertY);
-        renderEXP(ctx, pes, SCALE, originX, threadColor??undefined, adj.colorableIndices);
+        renderEXP(ctx, pes, SCALE, originX, effectiveThreadColor??undefined, adj.colorableIndices);
         ctx.restore();
       } else {
         ctx.save();
@@ -483,7 +487,7 @@ export default function EmbroideryPreview({
       }
       curX+=advances[i];
     });
-  }, [text, fontFiles, threadColor, targetHeight, fontId]);
+  }, [text, fontFiles, effectiveThreadColor, targetHeight, fontId]);
 
   if (errorMsg) return <div className="text-xs text-red-500">Erreur EXP: {errorMsg}</div>;
 

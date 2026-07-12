@@ -307,6 +307,7 @@ export const createConfiguratorEmbroideryFontSchema = z.object({
   format: z.enum(["exp", "pes"]),
   price: z.number().int().min(0).max(9999999).optional().default(1500),
   order: z.number().int().min(0).max(9999).optional().default(0),
+  supportsThreadColor: z.boolean().optional().default(true),
   isActive: z.boolean().optional().default(true),
 });
 

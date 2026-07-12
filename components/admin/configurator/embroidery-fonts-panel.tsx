@@ -14,15 +14,21 @@ type EmbroideryFont = {
   price: number; // cents
   order: number;
   isActive: boolean;
+  supportsThreadColor: boolean;
 };
 
 // Fonts that ship with code assets (manifest + files + calibration) and can
 // safely be registered in the DB. A developer adds an entry here when a new
 // font is deployed; the admin only ever picks from this fixed list.
-const AVAILABLE_FONT_DEFINITIONS: Array<Pick<EmbroideryFont, "id" | "name" | "folder" | "format">> = [
-  { id: "moonlight", name: "Moonlight", folder: "moonlight", format: "exp" },
-  { id: "alfabeto-liz", name: "Alfabeto Liz", folder: "Alfabeto Liz", format: "pes" },
-  { id: "singular", name: "Singular", folder: "Singular", format: "pes" },
+// supportsThreadColor is an intrinsic property of the font asset (does it use
+// native multi-color PES threads, e.g. Alfabeto Liz's flowers?) — like folder
+// and format, it isn't exposed as an admin-editable field.
+const AVAILABLE_FONT_DEFINITIONS: Array<
+  Pick<EmbroideryFont, "id" | "name" | "folder" | "format" | "supportsThreadColor">
+> = [
+  { id: "moonlight", name: "Moonlight", folder: "moonlight", format: "exp", supportsThreadColor: true },
+  { id: "alfabeto-liz", name: "Alfabeto Liz", folder: "Alfabeto Liz", format: "pes", supportsThreadColor: false },
+  { id: "singular", name: "Singular", folder: "Singular", format: "pes", supportsThreadColor: true },
 ];
 
 export default function EmbroideryFontsPanel() {
@@ -165,6 +171,7 @@ export default function EmbroideryFontsPanel() {
                   <p className="truncate font-body text-sm font-medium text-gray-800">{font.name}</p>
                   <p className="font-body mt-0.5 text-xs text-gray-400">
                     {font.folder} · .{font.format} · {(font.price / 100).toFixed(2)} €
+                    {!font.supportsThreadColor && " · Couleurs natives (fil non personnalisable)"}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">

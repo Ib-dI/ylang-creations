@@ -73,6 +73,7 @@ type EmbroideryFont = {
   price: number;
   order: number;
   isActive: boolean;
+  supportsThreadColor: boolean;
 };
 
 export default function ConfiguratorAdmin() {
@@ -1126,6 +1127,7 @@ export default function ConfiguratorAdmin() {
                       fontId={embroideryFonts.find(f => f.id === previewFontId)?.id ?? "moonlight"}
                       fontFolder={`/fonts/${embroideryFonts.find(f => f.id === previewFontId)?.folder ?? "moonlight"}`}
                       fontFormat={embroideryFonts.find(f => f.id === previewFontId)?.format ?? "exp"}
+                      supportsThreadColor={embroideryFonts.find(f => f.id === previewFontId)?.supportsThreadColor ?? true}
                     />
                   )}
 

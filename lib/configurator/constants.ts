@@ -11,4 +11,5 @@ export const FALLBACK_EMBROIDERY_FONT: ConfigurateurEmbroideryFont = {
   format: "exp",
   price: 1500,
   order: 0,
+  supportsThreadColor: true,
 };

@@ -357,7 +357,10 @@ const ConfiguratorClient = ({
         embroidery: configuration.embroideryFont
           ? configuration.embroideries.filter(Boolean).map((t) => normalizeForFont(t, configuration.embroideryFont!.id)).join(", ") || undefined
           : configuration.embroideries.filter(Boolean).join(", ") || undefined,
-        embroideryColor: configuration.embroideries.some((e) => e) ? configuration.embroideryColor : undefined,
+        embroideryColor:
+          configuration.embroideries.some((e) => e) && configuration.embroideryFont?.supportsThreadColor !== false
+            ? configuration.embroideryColor
+            : undefined,
         embroideryFont: configuration.embroideries.some((e) => e) ? (configuration.embroideryFont?.name ?? undefined) : undefined,
         size: configuration.size || undefined,
         selectedColor: configuration.selectedColor || undefined,
@@ -533,6 +536,7 @@ const ConfiguratorClient = ({
                 fontId={configuration.embroideryFont.id}
                 fontFolder={`/fonts/${configuration.embroideryFont.folder}`}
                 fontFormat={configuration.embroideryFont.format}
+                supportsThreadColor={configuration.embroideryFont.supportsThreadColor}
               />
             )}
             {isProcessing && (
@@ -1039,47 +1043,49 @@ const ConfiguratorClient = ({
                     </p>
                   </div>
 
-                  {/* Couleur du fil */}
-                  <div style={{ borderTop: "var(--rule-soft)", paddingTop: "1.5rem" }}>
-                    <div className="mb-4 flex items-center justify-between">
-                      <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
-                        Couleur du fil
-                      </span>
-                      {configuration.embroideryColor && (
-                        <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
-                          {embroideryColors.find((c) => c.hex === configuration.embroideryColor)?.name}
+                  {/* Couleur du fil — masqué pour les polices multicolores natives (ex: Alfabeto Liz) */}
+                  {configuration.embroideryFont?.supportsThreadColor !== false && (
+                    <div style={{ borderTop: "var(--rule-soft)", paddingTop: "1.5rem" }}>
+                      <div className="mb-4 flex items-center justify-between">
+                        <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+                          Couleur du fil
                         </span>
-                      )}
+                        {configuration.embroideryColor && (
+                          <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                            {embroideryColors.find((c) => c.hex === configuration.embroideryColor)?.name}
+                          </span>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-6 gap-4 sm:grid-cols-8 md:grid-cols-10">
+                        {embroideryColors.map((color) => {
+                          const isSelected = configuration.embroideryColor === color.hex;
+                          return (
+                            <button
+                              key={color.hex}
+                              onClick={() =>
+                                setConfiguration((prev) => ({ ...prev, embroideryColor: color.hex }))
+                              }
+                              className={`relative h-10 w-10 shrink-0 rounded-full transition-all duration-200 ${
+                                isSelected ? "scale-110" : "hover:scale-105"
+                              }`}
+                              style={{
+                                backgroundColor: color.hex,
+                                outline: isSelected ? "2px solid var(--color-accent)" : "none",
+                                outlineOffset: "2px",
+                              }}
+                              title={color.name}
+                            >
+                              {isSelected && (
+                                <div className="absolute inset-0 flex items-center justify-center rounded-full border-2 border-white">
+                                  <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <div className="grid grid-cols-6 gap-4 sm:grid-cols-8 md:grid-cols-10">
-                      {embroideryColors.map((color) => {
-                        const isSelected = configuration.embroideryColor === color.hex;
-                        return (
-                          <button
-                            key={color.hex}
-                            onClick={() =>
-                              setConfiguration((prev) => ({ ...prev, embroideryColor: color.hex }))
-                            }
-                            className={`relative h-10 w-10 shrink-0 rounded-full transition-all duration-200 ${
-                              isSelected ? "scale-110" : "hover:scale-105"
-                            }`}
-                            style={{
-                              backgroundColor: color.hex,
-                              outline: isSelected ? "2px solid var(--color-accent)" : "none",
-                              outlineOffset: "2px",
-                            }}
-                            title={color.name}
-                          >
-                            {isSelected && (
-                              <div className="absolute inset-0 flex items-center justify-center rounded-full border-2 border-white">
-                                <div className="h-1.5 w-1.5 rounded-full bg-white" />
-                              </div>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  )}
 
                   {/* Police de broderie */}
                   {embroideryFonts.length > 1 && (
@@ -1116,6 +1122,7 @@ const ConfiguratorClient = ({
                                 fontId={font.id}
                                 fontFolder={`/fonts/${font.folder}`}
                                 fontFormat={font.format}
+                                supportsThreadColor={font.supportsThreadColor}
                               />
                               <span className="font-body text-xs" style={{ color: "var(--color-ink)" }}>
                                 {font.name}
@@ -1252,10 +1259,12 @@ const ConfiguratorClient = ({
                         <div>
                           <p className="type-overline mb-2" style={{ color: "var(--color-ink-3)" }}>Broderie</p>
                           <div className="flex items-center gap-2.5">
-                            <div
-                              className="h-6 w-6 shrink-0 rounded-full border-2 border-white shadow-sm"
-                              style={{ backgroundColor: configuration.embroideryColor }}
-                            />
+                            {configuration.embroideryFont?.supportsThreadColor !== false && (
+                              <div
+                                className="h-6 w-6 shrink-0 rounded-full border-2 border-white shadow-sm"
+                                style={{ backgroundColor: configuration.embroideryColor }}
+                              />
+                            )}
                             <div>
                               {configuration.embroideries.filter(Boolean).map((name, i) => (
                                 <p
@@ -1272,7 +1281,9 @@ const ConfiguratorClient = ({
                                 </p>
                               ))}
                               <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
-                                {embroideryColors.find((c) => c.hex === configuration.embroideryColor)?.name}
+                                {configuration.embroideryFont?.supportsThreadColor !== false
+                                  ? embroideryColors.find((c) => c.hex === configuration.embroideryColor)?.name
+                                  : configuration.embroideryFont?.name}
                               </p>
                             </div>
                           </div>
