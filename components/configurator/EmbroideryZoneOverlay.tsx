@@ -46,6 +46,13 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
       const canvases = wrapper.querySelectorAll<HTMLCanvasElement>("canvas");
       const lastCanvas = canvases.length > 0 ? canvases[canvases.length - 1] : null;
       if (lastCanvas) setLastCanvasH(lastCanvas.getBoundingClientRect().height);
+      // DEBUG-TEMP: remove after diagnosing the baseline-offset regression.
+      console.log("[EmbroideryZoneOverlay]", {
+        containerW,
+        newScale,
+        zone,
+        lastCanvasH: lastCanvas?.getBoundingClientRect().height,
+      });
     };
 
     update();
@@ -62,7 +69,12 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
   const effectiveFontSize = zone.fontSize * scale;
   const symmetricBase = 2 * PY_TOP + effectiveFontSize;
   const actualDescender = lastCanvasH > symmetricBase ? lastCanvasH - symmetricBase : 0;
-  const verticalCompensation = actualDescender / 2;
+  // HYPOTHESIS TEST #2: confirmed wrong for single-line (always pulls down,
+  // never balances). User reports it also pulls multi-line stacks down —
+  // disabling entirely to isolate whether the -50% translate alone already
+  // centers correctly without this compensation.
+  const verticalCompensation = 0;
+  void actualDescender; // kept temporarily for the next hypothesis test if needed
 
   // Réduction du double padding entre les canvases empilés :
   // Chaque EmbroideryPreview a PY=12px fixe en haut et en bas, indépendant de
