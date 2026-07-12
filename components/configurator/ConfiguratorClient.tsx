@@ -1282,7 +1282,12 @@ const ConfiguratorClient = ({
                               ))}
                               <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
                                 {configuration.embroideryFont?.supportsThreadColor !== false
-                                  ? embroideryColors.find((c) => c.hex === configuration.embroideryColor)?.name
+                                  ? [
+                                      configuration.embroideryFont?.name,
+                                      embroideryColors.find((c) => c.hex === configuration.embroideryColor)?.name,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(" · ")
                                   : configuration.embroideryFont?.name}
                               </p>
                             </div>
