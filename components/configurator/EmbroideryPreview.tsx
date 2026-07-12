@@ -223,7 +223,7 @@ const FONT_ADJUSTMENTS: Record<string, Record<string, LetterAdj>> = {
     g:{offsetY:39,advanceX:-18,leftBearing:-26},
     h:{offsetY:0,advanceX:-7,leftBearing:0},
     i:{offsetY:0,advanceX:-10,leftBearing:4},
-    j:{offsetY:39,advanceX:-11,leftBearing:-30},
+    j:{offsetY:39,advanceX:-40,leftBearing:-26},
     k:{offsetY:20,advanceX:-23,leftBearing:-2},
     l:{offsetY:0,advanceX:-25,leftBearing:0},
     m:{offsetY:0,advanceX:-7,leftBearing:0},
@@ -346,6 +346,13 @@ function renderEXP(ctx: CanvasRenderingContext2D, pes: PESData, scale: number, o
     return colorableIndices.includes(blockIndex) ? colorOverride : originalColor;
   };
 
+  // scale (CAP/maxH du plus grand glyphe de la police) est une fraction
+  // minuscule (souvent 0.03-0.09) aux tailles réelles du configurateur, donc
+  // scale*constante seul retombe sous le pixel et s'anti-crénelle en trait
+  // quasi invisible — surtout visible sur Alfabeto Liz avec ses courbes
+  // fines. Un plancher garantit un trait lisible quelle que soit la police.
+  const w = (mult: number, floor: number) => Math.max(scale * mult, floor);
+
   // Passe 1 : underlay – suit exactement les chemins de points
   // Utilise la couleur du fil (légèrement éclaircie) comme en broderie réelle
   // pour un rendu naturel sans cadre artificiel
@@ -355,7 +362,7 @@ function renderEXP(ctx: CanvasRenderingContext2D, pes: PESData, scale: number, o
     ctx.beginPath();
     ctx.shadowColor="transparent";
     ctx.strokeStyle=shadeColor(color,80,0.92); // couleur du fil éclaircie
-    ctx.lineWidth=scale*2.2;
+    ctx.lineWidth=w(2.2, 1.4);
     drawPath(ctx,block.stitches,scale,offsetX);
   });
 
@@ -365,13 +372,13 @@ function renderEXP(ctx: CanvasRenderingContext2D, pes: PESData, scale: number, o
     const color=colorFor(blockIndex, block.color);
     ctx.beginPath(); ctx.shadowColor="rgba(0,0,0,0.45)"; ctx.shadowBlur=2;
     ctx.shadowOffsetX=0.6; ctx.shadowOffsetY=0.6;
-    ctx.strokeStyle=shadeColor(color,-40); ctx.lineWidth=scale*0.95;
+    ctx.strokeStyle=shadeColor(color,-40); ctx.lineWidth=w(0.95, 1.0);
     drawPath(ctx,block.stitches,scale,offsetX);
     ctx.beginPath(); ctx.shadowColor="transparent";
-    ctx.strokeStyle=color; ctx.lineWidth=scale*0.62;
+    ctx.strokeStyle=color; ctx.lineWidth=w(0.62, 0.75);
     drawPath(ctx,block.stitches,scale,offsetX);
     ctx.beginPath();
-    ctx.strokeStyle=shadeColor(color,70,0.45); ctx.lineWidth=scale*0.22;
+    ctx.strokeStyle=shadeColor(color,70,0.45); ctx.lineWidth=w(0.22, 0.3);
     drawPath(ctx,block.stitches,scale,offsetX);
   });
 }

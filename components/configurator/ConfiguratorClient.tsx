@@ -984,7 +984,7 @@ const ConfiguratorClient = ({
                                 setConfiguration((prev) => ({ ...prev, embroideries: next }));
                               }}
                               placeholder={
-                                index === 0 ? "Ex : Zoé" : index === 1 ? "Ex : Mon Bébé" : "Ex : Chéri(e)"
+                                index === 0 ? "Ex : Cara" : index === 1 ? "Ex : Maina" : "Ex : Fayel"
                               }
                               className="w-full bg-transparent py-3 font-body text-base outline-none placeholder:opacity-30"
                               style={{ color: "var(--color-ink)", caretColor: "var(--color-accent)" }}
