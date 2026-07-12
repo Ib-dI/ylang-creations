@@ -979,8 +979,11 @@ const ConfiguratorClient = ({
                               type="text"
                               value={name}
                               onChange={(e) => {
+                                // Noms uniquement : lettres (accents compris), espaces,
+                                // apostrophes et tirets — pas de chiffres ni symboles.
+                                const sanitized = e.target.value.replace(/[^\p{L}\s'-]/gu, "");
                                 const next = [...configuration.embroideries];
-                                next[index] = e.target.value.slice(0, 15);
+                                next[index] = sanitized.slice(0, 15);
                                 setConfiguration((prev) => ({ ...prev, embroideries: next }));
                               }}
                               placeholder={
