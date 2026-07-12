@@ -394,8 +394,6 @@ export default function EmbroideryPreview({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const cacheKey = `${fontFormat}:${fontFolder}`;
-    if (_fontCache.has(cacheKey)) { setFontFiles(_fontCache.get(cacheKey)!); return; }
     loadFontsShared(fontFolder, fontFormat)
       .then(fonts => setFontFiles(fonts))
       .catch(e => setErrorMsg(e instanceof Error ? e.message : "Erreur inconnue"));
