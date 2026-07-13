@@ -134,7 +134,12 @@ export default function ConfiguratorAdmin() {
 
   useEffect(() => {
     if (!embroideryProduct) return;
-    setEmbroideryZone(embroideryProduct.embroideryZone?.[previewFontId] ?? DEFAULT_EMBROIDERY_ZONE);
+    // Même repli que le client (getEmbroideryZoneForFont) : une police sans
+    // zone calibrée pour ce produit hérite de moonlight plutôt que de
+    // retomber sur un défaut générique sans rapport avec le produit.
+    const zones = embroideryProduct.embroideryZone ?? {};
+    const zone = zones[previewFontId] ?? zones.moonlight ?? Object.values(zones)[0] ?? DEFAULT_EMBROIDERY_ZONE;
+    setEmbroideryZone(zone);
   }, [embroideryProduct, previewFontId]);
 
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
