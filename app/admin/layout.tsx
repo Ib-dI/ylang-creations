@@ -1,9 +1,7 @@
 "use client";
 
-import { PremiumLoader } from "@/components/admin/premium-loader";
 import { SidebarToggle } from "@/components/admin/sidebar-toggle";
 import { createClient } from "@/utils/supabase/client";
-import { Session } from "@supabase/supabase-js";
 import {
   LayoutDashboard,
   LogOut,
@@ -19,7 +17,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Toaster } from "sonner";
 
 const navItems = [
@@ -35,30 +33,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const { push } = useRouter();
   const supabase = createClient();
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { push("/sign-in"); return; }
-      if (user.app_metadata?.role !== "admin") { push("/"); return; }
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setLoading(false);
-    };
-    checkAuth();
-  }, [push, supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     push("/");
   };
-
-  if (loading) return <PremiumLoader />;
-  if (!session) return null;
 
   return (
     <div className="min-h-screen" style={{ background: "var(--color-paper)" }}>
