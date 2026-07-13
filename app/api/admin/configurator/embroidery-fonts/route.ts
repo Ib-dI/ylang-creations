@@ -11,6 +11,9 @@ import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
+// force-dynamic: uses request.url — see app/api/products/route.ts for why
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

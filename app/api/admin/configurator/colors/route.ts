@@ -5,6 +5,9 @@ import { eq, and } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
+// force-dynamic: uses request.url — see app/api/products/route.ts for why
+export const dynamic = "force-dynamic";
+
 // GET: List colors (optionally filtered by type and/or active)
 export async function GET(request: Request) {
   try {

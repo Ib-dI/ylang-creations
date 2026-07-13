@@ -4,6 +4,9 @@ import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+// force-dynamic: uses request.url — see app/api/products/route.ts for why
+export const dynamic = "force-dynamic";
+
 async function handleGET(request: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(request.url);

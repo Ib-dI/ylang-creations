@@ -5,6 +5,12 @@ import { and, asc, desc, eq, like, or, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { NextResponse } from "next/server";
 
+// Always dynamic: relies on per-request query params (request.url). Without
+// this, Next tries to prerender the route at build time; bailing out throws
+// an internal signal that our own try/catch below would otherwise swallow
+// and turn into a 500. https://nextjs.org/docs/messages/ppr-caught-error
+export const dynamic = "force-dynamic";
+
 async function getCachedProducts(params: {
   category: string | null;
   search: string | null;

@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+// force-dynamic: uses request.url — see app/api/products/route.ts for why
+export const dynamic = "force-dynamic";
+
 // GET: List active colors, optionally filtered by type
 export async function GET(request: Request) {
   try {
