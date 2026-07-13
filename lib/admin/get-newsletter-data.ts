@@ -12,7 +12,13 @@ export interface NewsletterSubscriber {
 
 export async function getNewsletterData(): Promise<NewsletterSubscriber[]> {
   return db
-    .select()
+    .select({
+      id: newsletterSubscriber.id,
+      email: newsletterSubscriber.email,
+      status: newsletterSubscriber.status,
+      createdAt: newsletterSubscriber.createdAt,
+      updatedAt: newsletterSubscriber.updatedAt,
+    })
     .from(newsletterSubscriber)
     .orderBy(desc(newsletterSubscriber.createdAt));
 }
