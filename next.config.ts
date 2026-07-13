@@ -21,10 +21,14 @@ const nextConfig: NextConfig = {
   // sharp dlopens libvips-cpp.so at runtime instead of require()-ing it, so
   // Next's file tracer (static analysis of require/import) misses it and
   // prunes it from the deployed function bundle — force-include it here.
+  // Scoped to each package's own subfolder (not `@img/**`) so the glob
+  // doesn't sweep up the sibling symlink pnpm places at
+  // node_modules/.pnpm/@img+sharp-linux-x64@*/node_modules/@img/sharp-libvips-linux-x64
+  // — Vercel's function packager rejects symlinked directories in the bundle.
   outputFileTracingIncludes: {
     "/api/admin/configurator/products": [
-      "./node_modules/.pnpm/@img+sharp-libvips-linux-x64@*/**",
-      "./node_modules/.pnpm/@img+sharp-linux-x64@*/**",
+      "./node_modules/.pnpm/@img+sharp-libvips-linux-x64@*/node_modules/@img/sharp-libvips-linux-x64/**",
+      "./node_modules/.pnpm/@img+sharp-linux-x64@*/node_modules/@img/sharp-linux-x64/**",
     ],
   },
   images: {
