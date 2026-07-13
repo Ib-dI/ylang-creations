@@ -18,6 +18,15 @@ const nextConfig: NextConfig = {
       "framer-motion",
     ],
   },
+  // sharp dlopens libvips-cpp.so at runtime instead of require()-ing it, so
+  // Next's file tracer (static analysis of require/import) misses it and
+  // prunes it from the deployed function bundle — force-include it here.
+  outputFileTracingIncludes: {
+    "/api/admin/configurator/products": [
+      "./node_modules/.pnpm/@img+sharp-libvips-linux-x64@*/**",
+      "./node_modules/.pnpm/@img+sharp-linux-x64@*/**",
+    ],
+  },
   images: {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 450, 500, 550, 600],
