@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Eliminate the double client-side waterfall on `/admin/*` (client auth check → client data fetch) by adding server-side auth gating and converting the dashboard page to the Server-Component-fetch pattern already used by `/configurateur` and `/admin/settings`.
+**Goal:** Eliminate the double client-side waterfall on `/admin/*` (client auth check → client data fetch) by removing the now-redundant client-side auth gate and converting the dashboard page to the Server-Component-fetch pattern already used by `/configurateur` and `/admin/settings`.
 
-**Architecture:** A new root `middleware.ts` gates `/admin/:path*` server-side (redirects unauthenticated/non-admin requests before any admin code runs), replacing the client-side `supabase.auth.getUser()` check currently in `app/admin/layout.tsx`. `app/admin/page.tsx` becomes an `async` Server Component that queries the DB directly via a new `lib/admin/get-dashboard-data.ts` (built on a new, reusable `lib/admin/get-orders-data.ts`) and passes the result as props to a new `components/admin/dashboard-client.tsx`, which keeps all the existing interactive JSX but no longer fetches on mount. `app/admin/loading.tsx` becomes a skeleton matching the dashboard's real layout instead of the current generic `PremiumLoader` spinner. Mutations (none on the dashboard itself) are out of scope for this phase.
+**Architecture:** **Correction (discovered mid-execution of Task 1):** this repo already migrated `middleware.ts` → `proxy.ts` (Next.js 16's renamed convention, done in commit `62ef5c9`), and `proxy.ts` → `utils/supabase/middleware.ts`'s `updateSession()` **already gates every `/admin/*` and `/api/admin/*` request server-side** (redirects unauthenticated users to `/sign-in`, non-admins to `/`, returns 401/403 JSON for API routes) — this was true before this plan was written; the original research for this plan only searched for a file literally named `middleware.ts` and missed it. There is nothing to add here: Task 1 is now a verification-only task confirming this existing gate covers `/admin` correctly, not a task that creates new code. The client-side `supabase.auth.getUser()` check in `app/admin/layout.tsx` was therefore **always fully redundant** with `proxy.ts` — not newly redundant — which only strengthens the case for removing it in Task 2. `app/admin/page.tsx` becomes an `async` Server Component that queries the DB directly via a new `lib/admin/get-dashboard-data.ts` (built on a new, reusable `lib/admin/get-orders-data.ts`) and passes the result as props to a new `components/admin/dashboard-client.tsx`, which keeps all the existing interactive JSX but no longer fetches on mount. `app/admin/loading.tsx` becomes a skeleton matching the dashboard's real layout instead of the current generic `PremiumLoader` spinner. Mutations (none on the dashboard itself) are out of scope for this phase.
 
 **Tech Stack:** Next.js 16 App Router, Drizzle ORM, `@supabase/ssr` (already a dependency), Zod (unused in this phase), Tailwind CSS v4.
 
@@ -13,78 +13,57 @@
 - Prices are stored in cents in the DB. Per `CONTEXT.md`'s **Price** entry, conversion must go through `cents()`/`euros()`/`centsToEuros()`/`eurosToCents()` from `lib/currency.ts` — never a raw `/100` or `*100`. (`/api/admin/orders/route.ts` currently violates this with a raw `/100`; that pre-existing route is out of scope for this refactor, but the new `lib/admin/get-orders-data.ts` in Task 3 must not repeat the violation.)
 - French language for all UI strings and code comments, per `CLAUDE.md`.
 - No test framework exists in this repo (`package.json` has no test script) — verification is `pnpm build`, `pnpm lint`, and manual dev-server checks (curl for middleware, browser for the dashboard).
-- Auth role check convention (already established in `lib/auth/with-admin-auth.ts` and the current `app/admin/layout.tsx`): a request is authorized only if `user` exists AND `user.app_metadata?.role === "admin"`.
+- Auth role check convention (already established in `utils/supabase/middleware.ts`'s `updateSession()`, `lib/auth/with-admin-auth.ts`, and the current `app/admin/layout.tsx`): a request is authorized only if `user` exists AND `user.app_metadata?.role === "admin"`.
+- Do not create a `middleware.ts` file — Next.js 16 rejects having both `middleware.ts` and `proxy.ts` present (`"Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected. Please use "./proxy.ts" only."`). Any change to the request-level auth gate belongs in `proxy.ts` / `utils/supabase/middleware.ts`, not a new file.
 - Do not touch `/api/admin/*` route handlers — they keep their own `withAdminAuth` wrapper and remain callable independently (per project decision: GET handlers stay as-is even once unused by the frontend).
 
 ---
 
-### Task 1: Add server-side auth middleware for `/admin`
+### Task 1: Verify the existing `proxy.ts` gate covers `/admin` (no new code)
 
-**Files:**
-- Create: `middleware.ts` (repo root, alongside `next.config.ts`)
-
-**Interfaces:**
-- Consumes: `@supabase/ssr`'s `createServerClient`, env vars `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` (already used in `utils/supabase/server.ts` and `utils/supabase/client.ts`).
-- Produces: nothing consumed by later tasks — this is a standalone gate. Later tasks (dashboard Server Component) rely on its *side effect*: by the time `app/admin/page.tsx` runs, the request is guaranteed to be from an authenticated admin.
-
-- [ ] **Step 1: Write `middleware.ts`**
+**Correction:** this task originally planned to create `middleware.ts`. Mid-execution, the implementer found that `proxy.ts` already exists (Next.js 16's renamed `middleware.ts` convention) and its `updateSession()` (in `utils/supabase/middleware.ts`) already performs this exact check for both `/admin/*` and `/api/admin/*`:
 
 ```ts
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+// utils/supabase/middleware.ts — already in the codebase, unchanged by this task
+const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
+const isAdminApiRoute = request.nextUrl.pathname.startsWith("/api/admin");
 
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
-          );
-        },
-      },
-    },
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+if (isAdminRoute || isAdminApiRoute) {
   if (!user) {
+    if (isAdminApiRoute) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
+    url.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
-
   if (user.app_metadata?.role !== "admin") {
+    if (isAdminApiRoute) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
   }
-
-  return response;
 }
-
-export const config = {
-  matcher: ["/admin/:path*"],
-};
 ```
 
-- [ ] **Step 2: Typecheck and build**
+`proxy.ts`'s matcher (`"/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"`) covers `/admin` — there is no gap to fill. **Do not create a `middleware.ts` file** — Next.js 16 refuses to build with both `middleware.ts` and `proxy.ts` present. This task is now verification-only.
+
+**Files:** none (no code changes)
+
+**Interfaces:**
+- Consumes: nothing new.
+- Produces: nothing new. Later tasks (dashboard Server Component, Task 2's layout cleanup) rely on the *existing* `proxy.ts` gate's side effect: by the time `app/admin/page.tsx` or `app/admin/layout.tsx` runs, the request is already guaranteed to be from an authenticated admin.
+
+- [ ] **Step 1: Confirm no stray `middleware.ts` exists**
+
+```bash
+ls middleware.ts 2>/dev/null && echo "CONFLICT: remove this file" || echo "clean, as expected"
+```
+Expected: `clean, as expected`.
+
+- [ ] **Step 2: Build**
 
 Run: `pnpm build`
-Expected: build completes with no TypeScript errors (existing warnings from `baseline-browser-mapping` are unrelated and fine).
+Expected: succeeds (this confirms `proxy.ts` and `middleware.ts` aren't both present, among the usual checks).
 
 - [ ] **Step 3: Verify the redirect manually**
 
@@ -92,16 +71,11 @@ Run: `pnpm dev` (in one terminal), then in another:
 ```bash
 curl -sI http://localhost:3000/admin | head -5
 ```
-Expected: `HTTP/1.1 307 Temporary Redirect` (or 302) with a `location: /sign-in` header, since the curl request carries no Supabase auth cookies.
+Expected: a redirect status (302/307) with a `location: /sign-in?next=%2Fadmin` header, since the curl request carries no Supabase auth cookies. This confirms the *existing* `proxy.ts` gate, not new code from this task.
 
 Then sign in as the admin account in a browser and confirm `/admin` loads normally (no redirect loop, sidebar renders).
 
-- [ ] **Step 4: Commit**
-
-```bash
-git add middleware.ts
-git commit -m "feat(admin): add server-side auth middleware for /admin routes"
-```
+- [ ] **Step 4: No commit** — this task makes no code changes. Skip straight to Task 2.
 
 ---
 
@@ -112,7 +86,7 @@ git commit -m "feat(admin): add server-side auth middleware for /admin routes"
 - Delete: `components/admin/premium-loader.tsx` (verified via `grep -rl "components/admin/premium-loader"` that `app/admin/layout.tsx` is its only consumer; once this task removes that usage it becomes dead code)
 
 **Interfaces:**
-- Consumes: Task 1's middleware (auth is now guaranteed before this component renders).
+- Consumes: the existing `proxy.ts` gate confirmed in Task 1 (auth is guaranteed before this component renders — has been true all along, not a new guarantee from this plan).
 - Produces: `AdminLayout` still exports the same sidebar/shell UI; no other file imports `AdminLayout` directly (it's the implicit Next.js layout for the `/admin` segment), so no downstream signature to preserve.
 
 - [ ] **Step 1: Remove the auth-gating imports and state**
@@ -996,7 +970,7 @@ git commit -m "feat(admin): replace generic dashboard spinner with a layout-matc
 - [ ] **Step 1: Cold-load check**
 
 Run `pnpm dev`. In a browser, fully reload `/admin` (hard refresh) while signed in as admin. Confirm:
-- No `PremiumLoader` full-screen flash before the shell appears (middleware already resolved auth server-side).
+- No `PremiumLoader` full-screen flash before the shell appears (`proxy.ts` already resolved auth server-side, and Task 2 removed the redundant client-side recheck).
 - The dashboard skeleton (Task 7) is visible only very briefly (or not at all locally, since the DB call is fast), then the real dashboard renders with real stats — not a second client-side spinner.
 - The stat cards, quick actions, and "Commandes récentes" table show real data matching what the old client-fetched version showed (cross-check against `/api/admin/orders` response or the orders page).
 

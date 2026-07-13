@@ -28,7 +28,7 @@ An item in the user's cart (persisted in Zustand). `price` is in **euros** (conv
 
 ## Admin
 
-A Supabase-authenticated `user` whose `app_metadata.role === "admin"`. There is no `role` column on the `user` DB table — admin-ness lives entirely in Supabase auth metadata. This exact check is intentionally duplicated in `middleware.ts` (gates `/admin/:path*` page navigation) and `lib/auth/with-admin-auth.ts` (gates every `/api/admin/*` route handler independently) — see `docs/adr/0001-admin-middleware-auth.md`. Both must stay in sync with this definition if the role model ever changes.
+A Supabase-authenticated `user` whose `app_metadata.role === "admin"`. There is no `role` column on the `user` DB table — admin-ness lives entirely in Supabase auth metadata. This exact check is intentionally duplicated in `utils/supabase/middleware.ts`'s `updateSession()` (called from `proxy.ts`; gates `/admin/*` and `/api/admin/*` request-wide) and `lib/auth/with-admin-auth.ts` (gates every `/api/admin/*` route handler independently) — see `docs/adr/0001-admin-middleware-auth.md`. Both must stay in sync with this definition if the role model ever changes.
 
 ## Order
 
