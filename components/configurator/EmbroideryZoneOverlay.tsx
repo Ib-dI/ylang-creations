@@ -27,32 +27,14 @@ interface Props {
 export default function EmbroideryZoneOverlay({ texts, threadColor, zone, containerRef, fontId, fontFolder, fontFormat, supportsThreadColor = true }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
-  const [lastCanvasH, setLastCanvasH] = useState(0);
 
   useEffect(() => {
     const update = () => {
       const container = containerRef.current;
-      const wrapper = wrapperRef.current;
-      if (!container || !wrapper) return;
-
+      if (!container) return;
       const containerW = container.getBoundingClientRect().width;
       const REFERENCE_WIDTH = 512;
-      const newScale = containerW / REFERENCE_WIDTH;
-      setScale(newScale);
-
-      // Compensation basée sur le dernier canvas (ligne la plus basse du groupe).
-      // getBoundingClientRect (pas canvas.height) car le canvas est rendu au
-      // devicePixelRatio — sa résolution interne n'est plus en px CSS.
-      const canvases = wrapper.querySelectorAll<HTMLCanvasElement>("canvas");
-      const lastCanvas = canvases.length > 0 ? canvases[canvases.length - 1] : null;
-      if (lastCanvas) setLastCanvasH(lastCanvas.getBoundingClientRect().height);
-      // DEBUG-TEMP: remove after diagnosing the baseline-offset regression.
-      console.log("[EmbroideryZoneOverlay]", {
-        containerW,
-        newScale,
-        zone,
-        lastCanvasH: lastCanvas?.getBoundingClientRect().height,
-      });
+      setScale(containerW / REFERENCE_WIDTH);
     };
 
     update();
@@ -67,14 +49,6 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
   // CSS, pour rester net même quand scale dépasse 1 (grand cadre de preview).
   const PY_TOP = 12;
   const effectiveFontSize = zone.fontSize * scale;
-  const symmetricBase = 2 * PY_TOP + effectiveFontSize;
-  const actualDescender = lastCanvasH > symmetricBase ? lastCanvasH - symmetricBase : 0;
-  // HYPOTHESIS TEST #2: confirmed wrong for single-line (always pulls down,
-  // never balances). User reports it also pulls multi-line stacks down —
-  // disabling entirely to isolate whether the -50% translate alone already
-  // centers correctly without this compensation.
-  const verticalCompensation = 0;
-  void actualDescender; // kept temporarily for the next hypothesis test if needed
 
   // Réduction du double padding entre les canvases empilés :
   // Chaque EmbroideryPreview a PY=12px fixe en haut et en bas, indépendant de
@@ -90,7 +64,7 @@ export default function EmbroideryZoneOverlay({ texts, threadColor, zone, contai
       style={{
         left: `${zone.x * 100}%`,
         top: `${zone.y * 100}%`,
-        transform: `translate(-50%, calc(-50% + ${verticalCompensation}px)) rotate(${zone.rotation}deg)`,
+        transform: `translate(-50%, -50%) rotate(${zone.rotation}deg)`,
         overflow: "visible",
       }}
     >

@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 import EmbroideryZoneOverlay from "@/components/configurator/EmbroideryZoneOverlay";
 import { normalizeForFont } from "@/lib/embroidery/normalize";
 import { getEmbroideryZoneForFont } from "@/lib/configurator/get-embroidery-zone-for-font";
+import { blendFabricTexture, blendProductColor } from "@/lib/configurator/compose-product-canvas";
 import type {
   ConfigurateurEmbroideryFont,
   ConfigurateurFabric,
@@ -134,21 +135,8 @@ const ProductPreviewPanel = forwardRef<ProductPreviewPanelHandle, ProductPreview
                 textureCtx.drawImage(fabricImg, 0, 0, canvas.width, canvas.height);
                 const textureData = textureCtx.getImageData(0, 0, canvas.width, canvas.height);
                 const baseData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < maskData.data.length; i += 4) {
-                  const maskAlpha = maskData.data[i] / 255;
-                  if (maskAlpha > 0.1) {
-                    const baseR = baseData.data[i], baseG = baseData.data[i + 1], baseB = baseData.data[i + 2];
-                    const texR = textureData.data[i], texG = textureData.data[i + 1], texB = textureData.data[i + 2];
-                    const bf = 1.15;
-                    const fR = Math.min(255, (baseR * texR / 255) * bf);
-                    const fG = Math.min(255, (baseG * texG / 255) * bf);
-                    const fB = Math.min(255, (baseB * texB / 255) * bf);
-                    baseData.data[i] = fR * maskAlpha + baseR * (1 - maskAlpha);
-                    baseData.data[i + 1] = fG * maskAlpha + baseG * (1 - maskAlpha);
-                    baseData.data[i + 2] = fB * maskAlpha + baseB * (1 - maskAlpha);
-                  }
-                }
-                ctx.putImageData(baseData, 0, 0);
+                const blended = blendFabricTexture(baseData.data, maskData.data, textureData.data);
+                ctx.putImageData(new ImageData(blended, canvas.width, canvas.height), 0, 0);
               }
             }
           }
@@ -164,24 +152,8 @@ const ProductPreviewPanel = forwardRef<ProductPreviewPanelHandle, ProductPreview
                 colorMaskCtx.drawImage(colorMaskImg, 0, 0, canvas.width, canvas.height);
                 const colorMaskData = colorMaskCtx.getImageData(0, 0, canvas.width, canvas.height);
                 const currentData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const hex = selectedColor;
-                const colorR = parseInt(hex.slice(1, 3), 16);
-                const colorG = parseInt(hex.slice(3, 5), 16);
-                const colorB = parseInt(hex.slice(5, 7), 16);
-                for (let i = 0; i < colorMaskData.data.length; i += 4) {
-                  const maskAlpha = colorMaskData.data[i] / 255;
-                  if (maskAlpha > 0.1) {
-                    const baseR = currentData.data[i], baseG = currentData.data[i + 1], baseB = currentData.data[i + 2];
-                    const bf = 1.4;
-                    const fR = Math.min(255, (baseR * colorR / 255) * bf);
-                    const fG = Math.min(255, (baseG * colorG / 255) * bf);
-                    const fB = Math.min(255, (baseB * colorB / 255) * bf);
-                    currentData.data[i] = fR * maskAlpha + baseR * (1 - maskAlpha);
-                    currentData.data[i + 1] = fG * maskAlpha + baseG * (1 - maskAlpha);
-                    currentData.data[i + 2] = fB * maskAlpha + baseB * (1 - maskAlpha);
-                  }
-                }
-                ctx.putImageData(currentData, 0, 0);
+                const blended = blendProductColor(currentData.data, colorMaskData.data, selectedColor);
+                ctx.putImageData(new ImageData(blended, canvas.width, canvas.height), 0, 0);
               }
             } catch (e) {
               console.warn("Color mask error", e);
@@ -191,14 +163,6 @@ const ProductPreviewPanel = forwardRef<ProductPreviewPanelHandle, ProductPreview
           console.error("Canvas error", err);
         } finally {
           setIsProcessing(false);
-          // DEBUG-TEMP: remove after diagnosing the baseline-offset regression.
-          console.log("[ProductPreviewPanel]", {
-            productId: product.id,
-            canvasWidth: canvas.width,
-            canvasHeight: canvas.height,
-            containerW: productContainerRef.current?.getBoundingClientRect().width,
-            containerH: productContainerRef.current?.getBoundingClientRect().height,
-          });
         }
       };
       renderCanvas();

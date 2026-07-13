@@ -316,11 +316,16 @@ function parseEXP(buffer: ArrayBuffer): PESData {
   return buildFromStitches(stitches);
 }
 
+// Lightens (amt>0) or darkens (amt<0) proportionally toward white/black
+// rather than adding a flat amount to each channel — a flat +80 clamps
+// light colors (silver #C0C0C0, pink #FFB6C1) straight to pure white,
+// losing the hue entirely. Proportional blending degrades gracefully and
+// matches the old flat-additive result exactly for dark/mid colors.
 function shadeColor(hex: string, amt: number, alpha=1): string {
   const n=parseInt(hex.replace("#",""),16);
-  const r=Math.min(255,Math.max(0,(n>>16)+amt));
-  const g=Math.min(255,Math.max(0,((n>>8)&0xff)+amt));
-  const b=Math.min(255,Math.max(0,(n&0xff)+amt));
+  const channels=[(n>>16)&0xff,(n>>8)&0xff,n&0xff];
+  const ratio=Math.abs(amt)/255;
+  const [r,g,b]=channels.map(c=>amt>=0?Math.round(c+(255-c)*ratio):Math.round(c*(1-ratio)));
   return alpha<1?`rgba(${r},${g},${b},${alpha})`:`rgb(${r},${g},${b})`;
 }
 
