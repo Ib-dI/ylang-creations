@@ -5,12 +5,6 @@ import { and, asc, desc, eq, like, or, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { NextResponse } from "next/server";
 
-// Always dynamic: relies on per-request query params (request.url). Without
-// this, Next tries to prerender the route at build time; bailing out throws
-// an internal signal that our own try/catch below would otherwise swallow
-// and turn into a 500. https://nextjs.org/docs/messages/ppr-caught-error
-export const dynamic = "force-dynamic";
-
 async function getCachedProducts(params: {
   category: string | null;
   search: string | null;
@@ -122,15 +116,18 @@ async function getCachedProducts(params: {
 }
 
 export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const category = searchParams.get("category");
-    const search = searchParams.get("search");
-    const sort = searchParams.get("sort");
-    const featured = searchParams.get("featured");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "50");
+  // request.url must be read outside the try/catch: Next throws an internal
+  // signal here to bail out of prerendering, and our catch below would
+  // otherwise swallow it. https://nextjs.org/docs/messages/ppr-caught-error
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get("category");
+  const search = searchParams.get("search");
+  const sort = searchParams.get("sort");
+  const featured = searchParams.get("featured");
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "50");
 
+  try {
     const { products, total } = await getCachedProducts({
       category,
       search,

@@ -7,9 +7,6 @@ import { desc } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
-// force-dynamic: uses request.url — see app/api/products/route.ts for why
-export const dynamic = "force-dynamic";
-
 // GET all products
 async function handleGET(request: Request): Promise<Response> {
   try {

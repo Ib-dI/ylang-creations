@@ -3,18 +3,18 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-// force-dynamic: uses request.url — see app/api/products/route.ts for why
-export const dynamic = "force-dynamic";
-
 export async function GET(request: Request) {
+  // request.url must be read outside the try/catch: Next throws an internal
+  // signal here to bail out of prerendering, and our catch below would
+  // otherwise swallow it. https://nextjs.org/docs/messages/ppr-caught-error
+  const { searchParams } = new URL(request.url);
+  const token = searchParams.get("token");
+
+  if (!token || token.length < 10) {
+    return NextResponse.json({ error: "Token invalide" }, { status: 400 });
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const token = searchParams.get("token");
-
-    if (!token || token.length < 10) {
-      return NextResponse.json({ error: "Token invalide" }, { status: 400 });
-    }
-
     const existing = await db
       .select()
       .from(newsletterSubscriber)

@@ -14,9 +14,6 @@ import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
-// force-dynamic: uses request.url — see app/api/products/route.ts for why
-export const dynamic = "force-dynamic";
-
 function relativeStoragePath(url: string): string | null {
   const parts = url.split("/products/");
   return parts.length > 1 ? parts[1] : null;

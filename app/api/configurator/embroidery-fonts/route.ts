@@ -3,15 +3,15 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-// force-dynamic: uses request.url — see app/api/products/route.ts for why
-export const dynamic = "force-dynamic";
-
 // Public GET: List active embroidery fonts, ordered for display
 export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const activeOnly = searchParams.get("active") === "true";
+  // request.url must be read outside the try/catch: Next throws an internal
+  // signal here to bail out of prerendering, and our catch below would
+  // otherwise swallow it. https://nextjs.org/docs/messages/ppr-caught-error
+  const { searchParams } = new URL(request.url);
+  const activeOnly = searchParams.get("active") === "true";
 
+  try {
     const fonts = activeOnly
       ? await db
           .select()
