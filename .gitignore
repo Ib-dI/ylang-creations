@@ -44,5 +44,5 @@ next-env.d.ts
 .ucp-spec/
 
 # Claude Code local overrides
-.claude/settings.local.json
+.claude/settings.*
 
