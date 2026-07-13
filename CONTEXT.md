@@ -26,6 +26,10 @@ A product from the `product` DB table, displayed in the shop catalog. `price` is
 
 An item in the user's cart (persisted in Zustand). `price` is in **euros** (converted at the point of addition). `weight` is in grams. `configuration` holds the fabric name, color, embroidery text, and size chosen in the Configurateur.
 
+## Admin
+
+A Supabase-authenticated `user` whose `app_metadata.role === "admin"`. There is no `role` column on the `user` DB table — admin-ness lives entirely in Supabase auth metadata. This exact check is intentionally duplicated in `middleware.ts` (gates `/admin/:path*` page navigation) and `lib/auth/with-admin-auth.ts` (gates every `/api/admin/*` route handler independently) — see `docs/adr/0001-admin-middleware-auth.md`. Both must stay in sync with this definition if the role model ever changes.
+
 ## Order
 
 A purchase record created at checkout. `totalAmount` is stored in **cents**. Status lifecycle: `pending` → `paid` → `shipped` → `delivered` (or `cancelled`).
