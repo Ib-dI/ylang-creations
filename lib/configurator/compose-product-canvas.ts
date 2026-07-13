@@ -22,8 +22,9 @@ export function blendFabricTexture(
   mask: Uint8ClampedArray,
   texture: Uint8ClampedArray,
   brightnessFactor = 1.15,
-): Uint8ClampedArray {
-  const out = new Uint8ClampedArray(base);
+): Uint8ClampedArray<ArrayBuffer> {
+  const out = new Uint8ClampedArray(base.length);
+  out.set(base);
   for (let i = 0; i < mask.length; i += 4) {
     const maskAlpha = mask[i] / 255;
     if (maskAlpha <= MASK_ALPHA_THRESHOLD) continue;
@@ -49,8 +50,9 @@ export function blendProductColor(
   colorMask: Uint8ClampedArray,
   hexColor: string,
   brightnessFactor = 1.4,
-): Uint8ClampedArray {
-  const out = new Uint8ClampedArray(base);
+): Uint8ClampedArray<ArrayBuffer> {
+  const out = new Uint8ClampedArray(base.length);
+  out.set(base);
   const colorR = parseInt(hexColor.slice(1, 3), 16);
   const colorG = parseInt(hexColor.slice(3, 5), 16);
   const colorB = parseInt(hexColor.slice(5, 7), 16);
