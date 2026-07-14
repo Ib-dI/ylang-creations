@@ -4,6 +4,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { Button } from "@/components/ui/button";
 import { type CatalogProduct } from "@/data/products";
 import { useCartStore } from "@/lib/store/cart-store";
+import { useNavigationStore } from "@/lib/store/navigation-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import type { CartItem } from "@/types/cart";
 import { euros } from "@/lib/currency";
@@ -29,6 +30,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ProductReviews } from "@/components/product/product-reviews";
@@ -69,6 +71,13 @@ export default function ProductDetails({
     (state) => state.freeShippingThreshold,
   );
   const isWishlisted = isInWishlist(product.id);
+
+  // Mémorise cette page comme point de retour pour "Continuer mes achats" / états vides
+  const pathname = usePathname();
+  const setLastBrowse = useNavigationStore((state) => state.setLastBrowse);
+  useEffect(() => {
+    setLastBrowse(pathname, `Revoir ${product.name}`);
+  }, [pathname, product.name, setLastBrowse]);
 
   // Images du produit (utiliser l'image principale si pas d'images supplémentaires)
   const productImages =

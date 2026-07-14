@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { euros } from "@/lib/currency";
 import { useCartStore } from "@/lib/store/cart-store";
+import { DEFAULT_BROWSE, useNavigationStore } from "@/lib/store/navigation-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Heart, ShoppingBag, Sparkles, X } from "lucide-react";
@@ -13,6 +14,7 @@ export function WishlistDrawer() {
   const { items, isOpen, closeWishlist, removeItem, getTotalItems } =
     useWishlistStore();
   const { addItem: addToCart, openCart } = useCartStore();
+  const lastBrowse = useNavigationStore((state) => state.lastBrowse) ?? DEFAULT_BROWSE;
 
   const handleAddToCart = (item: (typeof items)[0]) => {
     addToCart({
@@ -119,7 +121,7 @@ export function WishlistDrawer() {
                     Découvrez nos créations et ajoutez vos coups de cœur
                   </p>
                   <Button variant="luxury" onClick={closeWishlist} asChild>
-                    <Link href="/collections">Découvrir les collections</Link>
+                    <Link href={lastBrowse.path}>{lastBrowse.label}</Link>
                   </Button>
                 </div>
               ) : (

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store/cart-store";
+import { DEFAULT_BROWSE, useNavigationStore } from "@/lib/store/navigation-store";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, ArrowRight, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import Link from "next/link";
@@ -23,6 +24,7 @@ export function CartDrawer() {
     isOverWeightLimit,
     getTotalWeight,
   } = useCartStore();
+  const lastBrowse = useNavigationStore((state) => state.lastBrowse) ?? DEFAULT_BROWSE;
 
   useEffect(() => {
     refreshWeights();
@@ -114,7 +116,7 @@ export function CartDrawer() {
                     Commencez par explorer nos créations
                   </p>
                   <Button variant="luxury" onClick={closeCart} asChild>
-                    <Link href="/collections">Découvrir les collections</Link>
+                    <Link href={lastBrowse.path}>{lastBrowse.label}</Link>
                   </Button>
                 </div>
               ) : (

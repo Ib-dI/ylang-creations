@@ -4,6 +4,7 @@ import { OrderSummary } from "@/components/checkout/order-summary";
 import { Button } from "@/components/ui/button";
 import { createCheckoutSession } from "@/lib/actions/checkout";
 import { useCartStore } from "@/lib/store/cart-store";
+import { DEFAULT_BROWSE, useNavigationStore } from "@/lib/store/navigation-store";
 import { createClient } from "@/utils/supabase/client";
 import { motion } from "framer-motion";
 import {
@@ -37,6 +38,7 @@ export default function CheckoutPage() {
     getTotalWeight,
     isOverWeightLimit,
   } = useCartStore();
+  const lastBrowse = useNavigationStore((state) => state.lastBrowse) ?? DEFAULT_BROWSE;
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -147,7 +149,7 @@ export default function CheckoutPage() {
               Ajoutez des créations à votre panier pour passer commande
             </p>
             <Button variant="primary" size="lg" asChild>
-              <Link href="/collections">Découvrir nos créations</Link>
+              <Link href={lastBrowse.path}>{lastBrowse.label}</Link>
             </Button>
           </motion.div>
         </div>
@@ -165,12 +167,12 @@ export default function CheckoutPage() {
           className="mb-8"
         >
           <Link
-            href="/"
+            href={lastBrowse.path}
             className="mb-4 inline-flex items-center gap-2 text-sm transition-opacity hover:opacity-60"
             style={{ color: "var(--color-ink-3)" }}
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
-            Continuer mes achats
+            {lastBrowse.label}
           </Link>
           <h1 className="font-display text-4xl font-bold" style={{ color: "var(--color-ink)" }}>
             Finaliser ma commande

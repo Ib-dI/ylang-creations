@@ -4,6 +4,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { Slider } from "@/components/ui/slider";
 import { categories, type CatalogProduct } from "@/data/products";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useNavigationStore } from "@/lib/store/navigation-store";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
@@ -12,7 +13,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
 const slugify = (text: string) => {
@@ -28,8 +29,16 @@ const slugify = (text: string) => {
 function CollectionsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
+  const setLastBrowse = useNavigationStore((state) => state.setLastBrowse);
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Mémorise cette page (avec filtres) comme point de retour pour "Continuer mes achats" / états vides
+  useEffect(() => {
+    const query = searchParams.toString();
+    setLastBrowse(query ? `${pathname}?${query}` : pathname, "Découvrir nos créations");
+  }, [pathname, searchParams, setLastBrowse]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tout");

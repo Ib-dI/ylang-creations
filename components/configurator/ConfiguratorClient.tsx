@@ -1,8 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Check, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart-store";
+import { useNavigationStore } from "@/lib/store/navigation-store";
 import { cents, centsToEuros } from "@/lib/currency";
 import { normalizeForFont } from "@/lib/embroidery/normalize";
 import { FALLBACK_EMBROIDERY_FONT } from "@/lib/configurator/constants";
@@ -41,6 +43,14 @@ const ConfiguratorClient = ({
   embroideryFonts,
   initialProductId,
 }: ConfiguratorClientProps) => {
+  // Mémorise cette page comme point de retour pour "Continuer mes achats" / états vides
+  const pathname = usePathname();
+  const setLastBrowse = useNavigationStore((state) => state.setLastBrowse);
+  useEffect(() => {
+    const path = initialProductId ? `${pathname}?product=${initialProductId}` : pathname;
+    setLastBrowse(path, "Reprendre ma personnalisation");
+  }, [pathname, initialProductId, setLastBrowse]);
+
   const [activeTab, setActiveTab] = useState<"product" | "fabric" | "embroidery" | "summary">("product");
 
   const [configuration, setConfiguration] = useState<ConfigurateurConfiguration>(() => {

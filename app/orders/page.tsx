@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { OrdersEmptyState } from "@/components/orders/orders-empty-state";
 import { customer, order } from "@/db/schema";
 import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
@@ -7,7 +8,6 @@ import {
   ArrowLeft,
   Calendar,
   ChevronRight,
-  Package,
   ShoppingBag,
 } from "lucide-react";
 import Image from "next/image";
@@ -80,21 +80,7 @@ export default async function OrdersPage() {
         </div>
 
         {orders.length === 0 ? (
-          <div className="border-ylang-beige flex flex-col items-center justify-center rounded-2xl border bg-white/50 p-12 text-center backdrop-blur-sm">
-            <div className="bg-ylang-cream mb-6 flex h-20 w-20 items-center justify-center rounded-full">
-              <Package className="text-ylang-charcoal/30 h-10 w-10" />
-            </div>
-            <h2 className="text-ylang-charcoal mb-2 text-xl font-semibold">
-              Vous n'avez pas encore passé de commande
-            </h2>
-            <p className="text-ylang-charcoal/60 mb-8 max-w-md">
-              Dès que vous aurez passé votre première commande, elle apparaîtra
-              ici avec tous les détails de son suivi.
-            </p>
-            <Button variant="luxury" asChild>
-              <Link href="/collections">Découvrir nos créations</Link>
-            </Button>
-          </div>
+          <OrdersEmptyState />
         ) : (
           <div className="space-y-6">
             {orders.map((order) => {
