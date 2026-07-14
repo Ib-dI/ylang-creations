@@ -52,7 +52,7 @@ function formatProduct(p: typeof productTable.$inferSelect, thirtyDaysAgo: Date)
     description: p.description || "",
     longDescription: p.description || "",
     features: [],
-    new: parsedOptions.isNew ?? new Date(p.createdAt) > thirtyDaysAgo,
+    new: parsedOptions.isNew === false ? false : new Date(p.createdAt) > thirtyDaysAgo,
     featured: p.isFeatured,
     customizable: parsedOptions.customizable ?? true,
     sizes: parsedSizes,

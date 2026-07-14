@@ -18,6 +18,7 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
     features?: string[];
     longDescription?: string;
     customizable?: boolean;
+    isNew?: boolean;
   } = (p.options as typeof parsedOptions | null) ?? {};
 
   const parsedSizes = (p.sizes as string[] | null) ?? [];
@@ -34,7 +35,9 @@ function formatProduct(p: typeof productTable.$inferSelect): CatalogProduct {
     longDescription: parsedOptions.longDescription || p.description || "",
     features: parsedOptions.features || [],
     new:
-      new Date(p.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      parsedOptions.isNew === false
+        ? false
+        : new Date(p.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     featured: p.isFeatured,
     customizable: parsedOptions.customizable ?? true,
     sizes: parsedSizes,

@@ -95,8 +95,8 @@ async function getCachedProducts(params: {
       longDescription: p.description,
       features: [],
       new:
-        parsedOptions.isNew !== undefined
-          ? parsedOptions.isNew
+        parsedOptions.isNew === false
+          ? false
           : new Date(p.createdAt) >
             new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       featured: p.isFeatured,
