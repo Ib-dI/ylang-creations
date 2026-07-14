@@ -41,11 +41,24 @@ export default function MentionsLegalesPage() {
                 <strong>Adresse :</strong> Île de la Réunion
               </li>
               <li>
-                <strong>Statut :</strong> Entreprise individuelle (ou mentionner
-                le statut réel si connu, e.g. Micro-entreprise)
+                <strong>Statut juridique :</strong>{" "}
+                <span className="font-semibold text-red-600">
+                  ⚠️ À COMPLÉTER — statut réel de l'entreprise (ex :
+                  micro-entreprise, EURL, SASU...)
+                </span>
               </li>
               <li>
-                <strong>SIRET :</strong> [Numéro SIRET à compléter]
+                <strong>SIRET :</strong>{" "}
+                <span className="font-semibold text-red-600">
+                  ⚠️ À COMPLÉTER — numéro SIRET obligatoire
+                </span>
+              </li>
+              <li>
+                <strong>Directeur de la publication :</strong>{" "}
+                <span className="font-semibold text-red-600">
+                  ⚠️ À COMPLÉTER — nom du responsable de la publication
+                  (obligatoire, art. 6-III de la LCEN)
+                </span>
               </li>
             </ul>
           </section>

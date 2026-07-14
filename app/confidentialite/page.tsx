@@ -41,30 +41,51 @@ export default function ConfidentialitePage() {
 
           <section>
             <h2 className="font-display mb-4 text-xl font-semibold text-gray-900">
-              2. Utilisation des données
+              2. Utilisation des données et base légale
             </h2>
             <p className="mb-4">
               Toutes les informations que nous recueillons auprès de vous
               peuvent être utilisées pour :
             </p>
             <ul className="list-disc space-y-2 pl-5">
-              <li>Traiter vos commandes et assurer la livraison</li>
+              <li>
+                Traiter vos commandes et assurer la livraison (base légale :
+                exécution du contrat de vente)
+              </li>
               <li>
                 Personnaliser votre expérience et répondre à vos besoins
-                individuels
+                individuels (base légale : intérêt légitime)
               </li>
               <li>
                 Améliorer le service client et vos besoins de prise en charge
+                (base légale : intérêt légitime)
               </li>
               <li>
-                Vous contacter par e-mail (suivi de commande, newsletter, etc.)
+                Vous contacter par e-mail pour le suivi de votre commande (base
+                légale : exécution du contrat) ou vous adresser notre newsletter
+                (base légale : consentement, révocable à tout moment)
               </li>
             </ul>
           </section>
 
           <section>
             <h2 className="font-display mb-4 text-xl font-semibold text-gray-900">
-              3. Confidentialité du commerce en ligne
+              3. Durée de conservation
+            </h2>
+            <p>
+              Les données relatives à votre commande sont conservées pendant la
+              durée nécessaire à la gestion de la relation commerciale et au
+              respect de nos obligations légales, notamment comptables (10 ans
+              pour les documents de facturation, conformément au Code de
+              commerce). Les données liées à la newsletter sont conservées
+              jusqu'à votre désinscription. Les données de prospection sont
+              supprimées après 3 ans d'inactivité.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display mb-4 text-xl font-semibold text-gray-900">
+              4. Confidentialité du commerce en ligne
             </h2>
             <p>
               Nous sommes les seuls propriétaires des informations recueillies
@@ -78,21 +99,35 @@ export default function ConfidentialitePage() {
 
           <section>
             <h2 className="font-display mb-4 text-xl font-semibold text-gray-900">
-              4. Divulgation à des tiers
+              5. Divulgation à des tiers
             </h2>
             <p>
               Nous ne vendons, n'échangeons et ne transférons pas vos
               informations personnelles identifiables à des tiers. Cela ne
-              comprend pas les tierce parties de confiance qui nous aident à
+              comprend pas les tierces parties de confiance qui nous aident à
               exploiter notre site Web ou à mener nos affaires, tant que ces
               parties conviennent de garder ces informations confidentielles
-              (ex: Stripe pour les paiements, transporteurs pour la livraison).
+              (ex: SumUp pour les paiements, transporteurs pour la livraison).
             </p>
           </section>
 
           <section>
             <h2 className="font-display mb-4 text-xl font-semibold text-gray-900">
-              5. Protection des informations
+              6. Transferts de données hors Union Européenne
+            </h2>
+            <p>
+              Certains de nos prestataires (hébergement du site chez Vercel
+              Inc., notamment) sont établis en dehors de l'Union Européenne,
+              principalement aux États-Unis. Ces transferts sont encadrés par
+              des garanties appropriées reconnues par le RGPD (clauses
+              contractuelles types de la Commission européenne et/ou adhésion
+              au Data Privacy Framework UE-États-Unis).
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display mb-4 text-xl font-semibold text-gray-900">
+              7. Protection des informations
             </h2>
             <p>
               Nous mettons en œuvre une variété de mesures de sécurité pour
@@ -106,7 +141,7 @@ export default function ConfidentialitePage() {
 
           <section>
             <h2 className="font-display mb-4 text-xl font-semibold text-gray-900">
-              6. Cookies
+              8. Cookies
             </h2>
             <p>
               Nos cookies améliorent l'accès à notre site et identifient les
@@ -122,11 +157,19 @@ export default function ConfidentialitePage() {
 
           <section>
             <h2 className="font-display mb-4 text-xl font-semibold text-gray-900">
-              7. Consentement
+              9. Vos droits et consentement
             </h2>
             <p>
-              En utilisant notre site, vous consentez à notre politique de
-              confidentialité.
+              Conformément au RGPD, vous disposez de droits sur vos données
+              personnelles (accès, rectification, effacement, limitation,
+              portabilité, opposition), détaillés sur notre{" "}
+              <Link href="/rgpd" className="text-ylang-rose hover:underline">
+                page RGPD
+              </Link>
+              . En utilisant notre site pour les traitements reposant sur le
+              consentement (newsletter notamment), vous consentez à notre
+              politique de confidentialité ; ce consentement est révocable à
+              tout moment.
             </p>
           </section>
         </div>

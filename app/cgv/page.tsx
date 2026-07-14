@@ -79,7 +79,8 @@ export default function CGVPage() {
             </h2>
             <p>
               Le paiement est exigible immédiatement à la commande. Le règlement
-              s'effectue par carte bancaire via un système sécurisé (Stripe).
+              s'effectue par carte bancaire via un système de paiement sécurisé
+              (SumUp).
             </p>
           </section>
 
@@ -105,16 +106,17 @@ export default function CGVPage() {
               6. Rétractation
             </h2>
             <p className="mb-4">
-              Conformément à l'article L121-20 du Code de la consommation,
-              l'acheteur dispose d'un délai de quatorze jours ouvrables à
-              compter de la livraison de leur commande pour exercer son droit de
-              rétractation et faire retour du produit au vendeur pour échange ou
-              remboursement sans pénalité, à l'exception des frais de retour.
+              Conformément à l'article L221-18 du Code de la consommation,
+              l'acheteur dispose d'un délai de quatorze jours à compter de la
+              livraison de sa commande pour exercer son droit de rétractation et
+              faire retour du produit au vendeur pour échange ou remboursement
+              sans pénalité, à l'exception des frais de retour.
             </p>
             <p className="text-sm italic">
-              Note : Le droit de rétractation ne s'applique pas aux produits
-              confectionnés sur mesure ou nettement personnalisés (Article
-              L121-21-8 du Code de la consommation).
+              Note : Conformément à l'article L221-28 du Code de la
+              consommation, le droit de rétractation ne s'applique pas aux
+              produits confectionnés selon les spécifications du consommateur
+              ou nettement personnalisés.
             </p>
           </section>
 

@@ -37,7 +37,7 @@ export default function RGPDPage() {
             <ul className="list-none space-y-1 pl-0">
               <li>
                 <strong>
-                  Contact DPO (Délégué à la Protection des Données) :
+                  Contact pour l'exercice de vos droits :
                 </strong>{" "}
                 ylang.creations@gmail.com
               </li>
@@ -79,6 +79,14 @@ export default function RGPDPage() {
               <li>
                 <strong>Droit d'opposition :</strong> Vous pouvez vous opposer
                 au traitement de vos données pour des motifs légitimes.
+              </li>
+              <li>
+                <strong>Droit d'introduire une réclamation :</strong> Si vous
+                estimez que le traitement de vos données personnelles
+                constitue une violation de la réglementation, vous disposez du
+                droit d'introduire une réclamation auprès de la Commission
+                Nationale de l'Informatique et des Libertés (CNIL), autorité de
+                contrôle compétente en France (cnil.fr).
               </li>
             </ul>
           </section>
