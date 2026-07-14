@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ylang Creations
 
-## Getting Started
+Plateforme e-commerce pour la vente de créations artisanales sur mesure (vêtements, accessoires) avec un configurateur de tissu permettant aux clients de personnaliser leurs produits.
 
-First, run the development server:
+## Stack technique
+
+- **Framework** : [Next.js 16](https://nextjs.org) (App Router) avec React 19
+- **Base de données** : PostgreSQL via [Supabase](https://supabase.com), ORM [Drizzle](https://orm.drizzle.team)
+- **State management** : Zustand (panier, configurateur, persistance locale)
+- **UI** : Tailwind CSS v4, HeroUI (beta), Radix UI, Framer Motion, Three.js / React Three Fiber
+- **Paiement** : SumUp SDK
+- **Email** : Resend
+- **Validation** : Zod v4
+
+## Prérequis
+
+- Node.js
+- [pnpm](https://pnpm.io)
+- Un projet Supabase (base de données PostgreSQL)
+
+## Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Configurez vos variables d'environnement dans un fichier `.env.local` (accès Supabase, clés SumUp, Resend, etc.).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Commandes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm dev          # Lance le serveur de développement (localhost:3000)
+pnpm build        # Build de production
+pnpm start        # Lance le serveur en mode production
+pnpm lint         # Vérifie le code avec ESLint
 
-## Learn More
+pnpm db:push      # Applique les changements de schéma à la base de données
+pnpm db:generate  # Génère les migrations Drizzle
+pnpm db:migrate   # Exécute les migrations
+pnpm db:studio    # Ouvre Drizzle Studio pour inspecter la base de données
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Structure du projet
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `app/` — Pages et routes API (App Router)
+- `components/` — Composants React organisés par fonctionnalité (admin, cart, checkout, configurator, home, product)
+- `db/schema.ts` — Schéma de la base de données (Drizzle ORM)
+- `lib/store/` — Stores Zustand (panier, configurateur)
+- `lib/validations/` — Schémas Zod pour la validation des API
+- `utils/supabase/` — Clients Supabase (navigateur / serveur)
+- `types/` — Types TypeScript partagés
+- `emails/` — Templates d'emails transactionnels (React Email)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Fonctionnalités principales
 
-## Deploy on Vercel
+- Catalogue produits avec gestion des stocks
+- Configurateur de tissu en plusieurs étapes (produit → tissu → aperçu → options → récapitulatif)
+- Panier persistant avec calcul du transport Colissimo au poids
+- Paiement via SumUp
+- Emails transactionnels (confirmation de commande, etc.)
+- Interface d'administration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Conventions du projet
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Les prix sont stockés en centimes (entiers) pour éviter les erreurs d'arrondi
+- Les poids sont stockés en grammes pour le calcul du transport
+- Interface et commentaires de code en français
+- Alias de chemin `@/*` pointant vers la racine du projet
+
+Voir [CLAUDE.md](./CLAUDE.md) pour plus de détails sur l'architecture et les conventions de développement.
