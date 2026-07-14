@@ -13,7 +13,7 @@ import type {
 
 export interface ProductPreviewPanelHandle {
   /** Renders the current canvas (product + embroidery layers) to a PNG data URL, for the cart thumbnail. */
-  captureThumbnail: () => string | undefined;
+  captureThumbnail: () => Promise<string | undefined>;
 }
 
 interface ProductPreviewPanelProps {
@@ -37,40 +37,71 @@ const ProductPreviewPanel = forwardRef<ProductPreviewPanelHandle, ProductPreview
     const productContainerRef = useRef<HTMLDivElement>(null);
 
     useImperativeHandle(ref, () => ({
-      captureThumbnail: () => {
+      captureThumbnail: async () => {
         const canvas = canvasRef.current;
         if (!canvas) return undefined;
         try {
+          const container = productContainerRef.current;
+          const zone = getEmbroideryZoneForFont(product, embroideryFont?.id);
+          const embCanvases: HTMLCanvasElement[] =
+            embroideries.some((e) => e) && zone && container
+              ? (() => {
+                  const allCanvases = container.querySelectorAll<HTMLCanvasElement>("canvas");
+                  return allCanvases.length > 1 ? Array.from(allCanvases).slice(1) : [];
+                })()
+              : [];
+
+          // Chaque canvas de broderie se redessine de façon asynchrone une fois
+          // la police chargée (voir EmbroideryPreview) ; s'il est encore à sa
+          // taille par défaut (1x1), on attend quelques frames pour éviter de
+          // capturer une broderie vide/tronquée.
+          const isReady = () => embCanvases.every((c) => c.offsetWidth > 1 && c.offsetHeight > 1);
+          for (let attempt = 0; embCanvases.length > 0 && !isReady() && attempt < 20; attempt++) {
+            await new Promise((resolve) => requestAnimationFrame(resolve));
+          }
+
           const compositeCanvas = document.createElement("canvas");
           compositeCanvas.width = canvas.width;
           compositeCanvas.height = canvas.height;
           const compositeCtx = compositeCanvas.getContext("2d");
           if (!compositeCtx) return undefined;
           compositeCtx.drawImage(canvas, 0, 0);
-          if (
-            embroideries.some((e) => e) &&
-            getEmbroideryZoneForFont(product, embroideryFont?.id) &&
-            productContainerRef.current
-          ) {
-            const container = productContainerRef.current;
-            const allCanvases = container.querySelectorAll<HTMLCanvasElement>("canvas");
-            const embCanvases = allCanvases.length > 1 ? Array.from(allCanvases).slice(1) : [];
-            if (embCanvases.length > 0) {
-              const containerRect = container.getBoundingClientRect();
-              const scaleX = canvas.width / containerRect.width;
-              const scaleY = canvas.height / containerRect.height;
-              for (const embCanvas of embCanvases) {
-                const embRect = embCanvas.getBoundingClientRect();
-                compositeCtx.drawImage(
-                  embCanvas,
-                  (embRect.left - containerRect.left) * scaleX,
-                  (embRect.top - containerRect.top) * scaleY,
-                  embRect.width * scaleX,
-                  embRect.height * scaleY,
-                );
-              }
+
+          if (embCanvases.length > 0 && container && zone) {
+            const containerRect = container.getBoundingClientRect();
+            // Le canvas produit préserve le ratio de l'image de base, donc un
+            // seul facteur d'échelle (px CSS -> px canvas) suffit pour les deux axes.
+            const scale = canvas.width / containerRect.width;
+            const rotationRad = (zone.rotation * Math.PI) / 180;
+
+            for (const embCanvas of embCanvases) {
+              // Le bloc broderie est positionné via `left/top` + `transform:
+              // translate(-50%,-50%) rotate(...)` (EmbroideryZoneOverlay). Les
+              // offsetLeft/Top/Width/Height ignorent les transforms CSS, donc ils
+              // donnent la géométrie *avant rotation* — on reproduit exactement
+              // la même transformation ici plutôt que de se fier au rectangle
+              // pivoté renvoyé par getBoundingClientRect (qui produisait le
+              // décalage/déformation dans le panier).
+              const rotatedWrapper = embCanvas.offsetParent as HTMLElement | null;
+              if (!rotatedWrapper) continue;
+              compositeCtx.save();
+              compositeCtx.translate(rotatedWrapper.offsetLeft * scale, rotatedWrapper.offsetTop * scale);
+              compositeCtx.rotate(rotationRad);
+              compositeCtx.translate(
+                -(rotatedWrapper.offsetWidth / 2) * scale,
+                -(rotatedWrapper.offsetHeight / 2) * scale,
+              );
+              compositeCtx.drawImage(
+                embCanvas,
+                embCanvas.offsetLeft * scale,
+                embCanvas.offsetTop * scale,
+                embCanvas.offsetWidth * scale,
+                embCanvas.offsetHeight * scale,
+              );
+              compositeCtx.restore();
             }
           }
+
           return compositeCanvas.toDataURL("image/png");
         } catch (e) {
           console.warn("Impossible de capturer le thumbnail", e);

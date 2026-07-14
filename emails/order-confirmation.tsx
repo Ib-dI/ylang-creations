@@ -11,11 +11,13 @@ interface OrderConfirmationEmailProps {
       fabricName: string;
       embroidery?: string;
       embroideryFont?: string;
+      embroideryColor?: string;
+      embroideryColorName?: string;
     };
   }>;
   total: number;
   shipping: number;
-  shippingAddress: {
+  shippingAddress?: {
     address: string;
     addressComplement?: string;
     postalCode: string;
@@ -284,6 +286,18 @@ export function OrderConfirmationEmail({
                                   Police: {item.configuration.embroideryFont}
                                 </p>
                               )}
+                              {item.configuration.embroidery && item.configuration.embroideryColor && (
+                                <p
+                                  style={{
+                                    color: "#1a1a1a",
+                                    opacity: 0.6,
+                                    fontSize: "14px",
+                                    margin: "0 0 4px 0",
+                                  }}
+                                >
+                                  Fil: {item.configuration.embroideryColorName ?? item.configuration.embroideryColor}
+                                </p>
+                              )}
 
                               <p
                                 style={{
@@ -418,53 +432,55 @@ export function OrderConfirmationEmail({
               </table>
 
               {/* Shipping Address */}
-              <table
-                cellPadding="0"
-                cellSpacing="0"
-                border={0}
-                style={{
-                  width: "100%",
-                  backgroundColor: "#ffffff",
-                  borderRadius: "12px",
-                  marginBottom: "20px",
-                  border: "1px solid #e8dcc8",
-                }}
-              >
-                <tr>
-                  <td style={{ padding: "20px" }}>
-                    <h3
-                      style={{
-                        color: "#1a1a1a",
-                        fontSize: "18px",
-                        fontWeight: "bold",
-                        margin: "0 0 15px 0",
-                      }}
-                    >
-                      Adresse de livraison
-                    </h3>
-                    <p
-                      style={{
-                        color: "#1a1a1a",
-                        fontSize: "14px",
-                        lineHeight: "1.6",
-                        margin: 0,
-                      }}
-                    >
-                      {shippingAddress.address}
-                      <br />
-                      {shippingAddress.addressComplement ? (
-                        <>
-                          {shippingAddress.addressComplement}
-                          <br />
-                        </>
-                      ) : null}
-                      {shippingAddress.postalCode} {shippingAddress.city}
-                      <br />
-                      {shippingAddress.country}
-                    </p>
-                  </td>
-                </tr>
-              </table>
+              {shippingAddress && (
+                <table
+                  cellPadding="0"
+                  cellSpacing="0"
+                  border={0}
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#ffffff",
+                    borderRadius: "12px",
+                    marginBottom: "20px",
+                    border: "1px solid #e8dcc8",
+                  }}
+                >
+                  <tr>
+                    <td style={{ padding: "20px" }}>
+                      <h3
+                        style={{
+                          color: "#1a1a1a",
+                          fontSize: "18px",
+                          fontWeight: "bold",
+                          margin: "0 0 15px 0",
+                        }}
+                      >
+                        Adresse de livraison
+                      </h3>
+                      <p
+                        style={{
+                          color: "#1a1a1a",
+                          fontSize: "14px",
+                          lineHeight: "1.6",
+                          margin: 0,
+                        }}
+                      >
+                        {shippingAddress.address}
+                        <br />
+                        {shippingAddress.addressComplement ? (
+                          <>
+                            {shippingAddress.addressComplement}
+                            <br />
+                          </>
+                        ) : null}
+                        {shippingAddress.postalCode} {shippingAddress.city}
+                        <br />
+                        {shippingAddress.country}
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              )}
 
               {/* Next Steps */}
               <table

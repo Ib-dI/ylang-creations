@@ -27,11 +27,14 @@ interface SendOrderConfirmationParams {
     configuration: {
       fabricName: string;
       embroidery?: string;
+      embroideryFont?: string;
+      embroideryColor?: string;
+      embroideryColorName?: string;
     };
   }>;
   total: number;
   shipping: number;
-  shippingAddress: {
+  shippingAddress?: {
     address: string;
     addressComplement?: string;
     postalCode: string;

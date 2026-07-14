@@ -1,12 +1,26 @@
-import { order, product } from "@/db/schema";
+import { customer, order, product } from "@/db/schema";
 import { db } from "@/lib/db";
 import { getSumupHeaders, SUMUP_API_URL } from "@/lib/sumup";
+import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation";
 import type { CartItem } from "@/types/cart";
 import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function orderNumberFromId(orderId: string): string {
+  return `YC${orderId.slice(0, 8).toUpperCase()}`;
+}
 
 interface VerifiedCheckout {
   status: string;
@@ -56,15 +70,78 @@ async function decrementStock(items: CartItem[]): Promise<void> {
 async function sendAdminOrderEmail(
   orderId: string,
   amount: number,
+  items: CartItem[],
 ): Promise<void> {
-  const orderNumber = `YC${orderId.slice(0, 8).toUpperCase()}`;
+  const orderNumber = orderNumberFromId(orderId);
   const adminEmail = process.env.ADMIN_EMAIL || "contact@ylang-creations.fr";
+
+  const itemsHtml = items
+    .map((item) => {
+      const details = [
+        `Tissu : ${escapeHtml(item.configuration.fabricName)}`,
+        item.configuration.size && `Taille : ${escapeHtml(item.configuration.size)}`,
+        item.configuration.selectedColorName &&
+          `Couleur : ${escapeHtml(item.configuration.selectedColorName)}`,
+        item.configuration.embroidery && `Broderie : "${escapeHtml(item.configuration.embroidery)}"`,
+        item.configuration.embroideryFont &&
+          `Police : ${escapeHtml(item.configuration.embroideryFont)}`,
+        item.configuration.embroideryColor &&
+          `Fil : ${escapeHtml(item.configuration.embroideryColorName ?? item.configuration.embroideryColor)}`,
+      ]
+        .filter(Boolean)
+        .join(" — ");
+      return `<li><strong>${escapeHtml(item.productName)}</strong> (x${item.quantity})<br/>${details}</li>`;
+    })
+    .join("");
 
   await resend.emails.send({
     from: "Ylang Créations <contact@ylang-creations.fr>",
     to: adminEmail,
     subject: `Nouvelle commande ! (${orderNumber})`,
-    html: `<p>Nouvelle commande <strong>${orderNumber}</strong> reçue via SumUp. Montant : ${amount} EUR.</p>`,
+    html: `
+      <p>Nouvelle commande <strong>${orderNumber}</strong> reçue via SumUp. Montant : ${amount} EUR.</p>
+      <ul>${itemsHtml}</ul>
+    `,
+  });
+}
+
+async function sendCustomerConfirmationEmail(
+  orderId: string,
+  customerId: string,
+  totalAmountCents: number,
+  items: CartItem[],
+): Promise<void> {
+  const customerRows = await db
+    .select({ email: customer.email, name: customer.name })
+    .from(customer)
+    .where(eq(customer.id, customerId))
+    .limit(1);
+  const customerRow = customerRows[0];
+  if (!customerRow) return;
+
+  // Le tunnel de commande ne stocke pas encore de découpage sous-total/livraison,
+  // donc on le recalcule à partir du prix des articles vs. le montant total payé.
+  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const shipping = Math.max(0, totalAmountCents / 100 - subtotal);
+
+  await sendOrderConfirmationEmail({
+    to: customerRow.email,
+    orderNumber: orderNumberFromId(orderId),
+    customerName: customerRow.name || "Client",
+    items: items.map((item) => ({
+      productName: item.productName,
+      quantity: item.quantity,
+      price: item.price,
+      configuration: {
+        fabricName: item.configuration.fabricName,
+        embroidery: item.configuration.embroidery,
+        embroideryFont: item.configuration.embroideryFont,
+        embroideryColor: item.configuration.embroideryColor,
+        embroideryColorName: item.configuration.embroideryColorName,
+      },
+    })),
+    total: subtotal,
+    shipping,
   });
 }
 
@@ -113,14 +190,29 @@ export async function POST(req: Request) {
 
       await markOrderPaid(orderId, transactionCode);
 
-      if (Array.isArray(existingOrder.items)) {
-        await decrementStock(existingOrder.items as CartItem[]);
+      const items = Array.isArray(existingOrder.items)
+        ? (existingOrder.items as CartItem[])
+        : [];
+
+      if (items.length > 0) {
+        await decrementStock(items);
       }
 
       try {
-        await sendAdminOrderEmail(orderId, verified.amount);
+        await sendAdminOrderEmail(orderId, verified.amount, items);
       } catch (emailError) {
-        console.error("[SumUp Webhook] Error sending email:", emailError);
+        console.error("[SumUp Webhook] Error sending admin email:", emailError);
+      }
+
+      try {
+        await sendCustomerConfirmationEmail(
+          orderId,
+          existingOrder.customerId,
+          existingOrder.totalAmount,
+          items,
+        );
+      } catch (emailError) {
+        console.error("[SumUp Webhook] Error sending customer confirmation email:", emailError);
       }
     } else if (status === "FAILED" || status === "CANCELLED") {
       await markOrderCancelled(orderId);

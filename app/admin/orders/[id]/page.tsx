@@ -347,10 +347,15 @@ export default function OrderDetailPage() {
                               <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
                                 Broderie : <span style={{ color: "var(--color-ink)" }}>&ldquo;{item.configuration.embroidery}&rdquo;</span>
                                 {item.configuration.embroideryColor && (
-                                  <span
-                                    className="ml-2 inline-block h-3 w-3 rounded-full align-middle"
-                                    style={{ backgroundColor: item.configuration.embroideryColor, border: "var(--rule-soft)" }}
-                                  />
+                                  <>
+                                    <span
+                                      className="ml-2 inline-block h-3 w-3 rounded-full align-middle"
+                                      style={{ backgroundColor: item.configuration.embroideryColor, border: "var(--rule-soft)" }}
+                                    />
+                                    <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                                      {" "}{item.configuration.embroideryColorName ?? item.configuration.embroideryColor}
+                                    </span>
+                                  </>
                                 )}
                                 {item.configuration.embroideryFont && (
                                   <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>

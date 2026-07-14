@@ -239,6 +239,22 @@ export default function CheckoutPage() {
                           Broderie: &quot;{item.configuration.embroidery}&quot;
                         </p>
                       )}
+                      {item.configuration.embroidery && item.configuration.embroideryFont && (
+                        <p className="text-ylang-charcoal/60 text-xs">
+                          Police: {item.configuration.embroideryFont}
+                        </p>
+                      )}
+                      {item.configuration.embroidery && item.configuration.embroideryColor && (
+                        <div className="flex items-center gap-1.5">
+                          <div
+                            className="h-2.5 w-2.5 shrink-0 rounded-full border border-black/10"
+                            style={{ backgroundColor: item.configuration.embroideryColor }}
+                          />
+                          <span className="text-ylang-charcoal/60 text-xs">
+                            Fil: {item.configuration.embroideryColorName ?? item.configuration.embroideryColor}
+                          </span>
+                        </div>
+                      )}
                       <p className="text-ylang-charcoal/60 text-xs">
                         Qté: {item.quantity}
                       </p>

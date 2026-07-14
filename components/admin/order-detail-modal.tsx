@@ -329,11 +329,16 @@ export default function OrderDetailModal({
                                           &quot;{item.configuration.embroidery}&quot;
                                         </strong>
                                         {item.configuration.embroideryColor && (
-                                          <span
-                                            className="ml-1.5 inline-block h-3 w-3 rounded-full border border-black/10 align-middle"
-                                            style={{ backgroundColor: item.configuration.embroideryColor }}
-                                            title={item.configuration.embroideryColor}
-                                          />
+                                          <>
+                                            <span
+                                              className="ml-1.5 inline-block h-3 w-3 rounded-full border border-black/10 align-middle"
+                                              style={{ backgroundColor: item.configuration.embroideryColor }}
+                                              title={item.configuration.embroideryColor}
+                                            />
+                                            <span className="text-ylang-charcoal/60 ml-1 text-xs">
+                                              {item.configuration.embroideryColorName ?? item.configuration.embroideryColor}
+                                            </span>
+                                          </>
                                         )}
                                         {item.configuration.embroideryFont && (
                                           <span className="text-ylang-charcoal/60 ml-1.5 text-xs">

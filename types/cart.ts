@@ -8,7 +8,8 @@ export interface CartItem {
     fabricName: string;
     fabricColor: string;
     embroidery?: string;
-    embroideryColor?: string;
+    embroideryColor?: string;    // hex, pour le swatch
+    embroideryColorName?: string; // nom affiché
     embroideryFont?: string; // nom affiché de la police
     size?: string;
     selectedColor?: string;    // hex, pour le swatch

@@ -175,6 +175,17 @@ export function CartDrawer() {
                                 Police : {item.configuration.embroideryFont}
                               </p>
                             )}
+                            {item.configuration.embroidery && item.configuration.embroideryColor && (
+                              <div className="flex items-center gap-1.5">
+                                <div
+                                  className="h-2.5 w-2.5 shrink-0 rounded-full border border-black/10"
+                                  style={{ backgroundColor: item.configuration.embroideryColor }}
+                                />
+                                <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                                  Fil : {item.configuration.embroideryColorName ?? item.configuration.embroideryColor}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
 

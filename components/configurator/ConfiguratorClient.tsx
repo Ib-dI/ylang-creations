@@ -152,10 +152,10 @@ const ConfiguratorClient = ({
   const handleSelectFont = (font: ConfigurateurEmbroideryFont) =>
     setConfiguration((prev) => ({ ...prev, embroideryFont: font }));
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!configuration.product || !configuration.fabric) return;
 
-    const thumbnailDataUrl = previewRef.current?.captureThumbnail();
+    const thumbnailDataUrl = await previewRef.current?.captureThumbnail();
 
     addItem({
       id: `custom-${configuration.product.id}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
@@ -170,6 +170,10 @@ const ConfiguratorClient = ({
         embroideryColor:
           configuration.embroideries.some((e) => e) && configuration.embroideryFont?.supportsThreadColor !== false
             ? configuration.embroideryColor
+            : undefined,
+        embroideryColorName:
+          configuration.embroideries.some((e) => e) && configuration.embroideryFont?.supportsThreadColor !== false
+            ? (embroideryColors.find((c) => c.hex === configuration.embroideryColor)?.name ?? undefined)
             : undefined,
         embroideryFont: configuration.embroideries.some((e) => e) ? (configuration.embroideryFont?.name ?? undefined) : undefined,
         size: configuration.size || undefined,
