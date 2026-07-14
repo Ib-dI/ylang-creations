@@ -84,10 +84,13 @@ function SuccessContent() {
 
   if (loading) {
     return (
-      <div className="from-ylang-cream to-ylang-beige flex min-h-screen items-center justify-center bg-linear-to-br pt-24 pb-12">
+      <div
+        className="flex min-h-screen items-center justify-center pt-24 pb-12"
+        style={{ background: "var(--color-paper)" }}
+      >
         <div className="text-center">
-          <Loader2 className="text-ylang-rose mx-auto mb-4 h-12 w-12 animate-spin" />
-          <p className="text-ylang-charcoal/60">
+          <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin" style={{ color: "var(--color-accent)" }} />
+          <p style={{ color: "var(--color-ink-3)" }}>
             Confirmation de votre paiement...
           </p>
         </div>
@@ -97,7 +100,10 @@ function SuccessContent() {
 
   if (error) {
     return (
-      <div className="from-ylang-cream to-ylang-beige flex min-h-screen items-center justify-center bg-linear-to-br pt-24 pb-12">
+      <div
+        className="flex min-h-screen items-center justify-center pt-24 pb-12"
+        style={{ background: "var(--color-paper)" }}
+      >
         <div className="text-center">
           <p className="mb-4 text-red-500">{error}</p>
           <Button variant="primary" asChild>
@@ -109,7 +115,11 @@ function SuccessContent() {
   }
 
   return (
-    <div suppressHydrationWarning={true} className="from-ylang-terracotta/50 to-ylang-terracotta/30 min-h-screen bg-linear-to-br pt-24 pb-12">
+    <div
+      suppressHydrationWarning={true}
+      className="min-h-screen pt-24 pb-12"
+      style={{ background: "var(--color-paper)" }}
+    >
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Success Animation */}
         <motion.div
@@ -118,14 +128,15 @@ function SuccessContent() {
           transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
           className="mb-8 text-center"
         >
-          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-500 shadow-sm">
-            <CheckCircle2 className="h-14 w-14 text-white" />
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-500">
+            <CheckCircle2 className="h-14 w-14 text-white" strokeWidth={1.5} />
           </div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="font-display text-ylang-charcoal mb-3 text-4xl font-bold"
+            className="font-display mb-3 text-4xl font-bold"
+            style={{ color: "var(--color-ink)" }}
           >
             Commande confirmée !
           </motion.h1>
@@ -133,7 +144,8 @@ function SuccessContent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-ylang-charcoal/60 text-lg"
+            className="text-lg"
+            style={{ color: "var(--color-ink-3)" }}
           >
             Merci pour votre confiance. Votre création unique est en cours de
             préparation.
@@ -145,38 +157,44 @@ function SuccessContent() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="border-ylang-beige mb-6 overflow-hidden rounded-2xl border bg-white shadow-lg"
+          className="mb-6 overflow-hidden"
+          style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }}
         >
-          <div className="from-ylang-rose to-ylang-terracotta bg-linear-to-r p-6 text-white">
+          <div
+            className="p-6"
+            style={{ background: "var(--color-paper-2)", borderBottom: "var(--rule-soft)" }}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="mb-1 text-sm opacity-90">Numéro de commande</p>
-                <p className="text-2xl font-bold">{orderNumber}</p>
+                <p className="mb-1 text-sm" style={{ color: "var(--color-ink-3)" }}>
+                  Numéro de commande
+                </p>
+                <p className="text-2xl font-bold" style={{ color: "var(--color-ink)" }}>
+                  {orderNumber}
+                </p>
               </div>
-              <Package className="h-12 w-12 opacity-80" />
+              <Package className="h-12 w-12" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
             </div>
           </div>
 
           <div className="space-y-4 p-6">
             {/* Montant total */}
             {session?.amountTotal && (
-              <div className="border-ylang-beige flex items-center justify-between border-b pb-4">
-                <span className="text-ylang-charcoal/60">Montant total</span>
-                <span className="text-ylang-rose text-2xl font-bold">
+              <div className="flex items-center justify-between pb-4" style={{ borderBottom: "var(--rule-soft)" }}>
+                <span style={{ color: "var(--color-ink-3)" }}>Montant total</span>
+                <span className="text-2xl font-bold" style={{ color: "var(--color-accent)" }}>
                   {(session.amountTotal / 100).toFixed(2)} €
                 </span>
               </div>
             )}
 
             <div className="flex items-start gap-4">
-              <div className="bg-ylang-beige flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                <Mail className="text-ylang-rose h-5 w-5" />
-              </div>
+              <Mail className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
               <div>
-                <h3 className="text-ylang-charcoal mb-1 font-bold">
+                <h3 className="mb-1 font-bold" style={{ color: "var(--color-ink)" }}>
                   Email de confirmation envoyé
                 </h3>
-                <p className="text-ylang-charcoal/60 text-sm">
+                <p className="text-sm" style={{ color: "var(--color-ink-3)" }}>
                   Un récapitulatif détaillé de votre commande a été envoyé à{" "}
                   <span className="font-medium">{session?.customerEmail}</span>
                 </p>
@@ -184,14 +202,12 @@ function SuccessContent() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-ylang-beige flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                <Clock className="text-ylang-rose h-5 w-5" />
-              </div>
+              <Clock className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
               <div>
-                <h3 className="text-ylang-charcoal mb-1 font-bold">
+                <h3 className="mb-1 font-bold" style={{ color: "var(--color-ink)" }}>
                   Délai de fabrication
                 </h3>
-                <p className="text-ylang-charcoal/60 text-sm">
+                <p className="text-sm" style={{ color: "var(--color-ink-3)" }}>
                   Votre produit sera confectionné à la main dans notre atelier
                   sous 7 à 10 jours ouvrés.
                 </p>
@@ -199,14 +215,12 @@ function SuccessContent() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-ylang-beige flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                <MapPin className="text-ylang-rose h-5 w-5" />
-              </div>
+              <MapPin className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
               <div>
-                <h3 className="text-ylang-charcoal mb-1 font-bold">
+                <h3 className="mb-1 font-bold" style={{ color: "var(--color-ink)" }}>
                   Livraison suivie
                 </h3>
-                <p className="text-ylang-charcoal/60 text-sm">
+                <p className="text-sm" style={{ color: "var(--color-ink-3)" }}>
                   Vous recevrez un numéro de suivi dès l&apos;expédition de
                   votre colis.
                 </p>
@@ -220,44 +234,34 @@ function SuccessContent() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1 }}
-          className="bg-ylang-cream mb-6 rounded-2xl p-6"
+          className="mb-6 p-6"
+          style={{ background: "var(--color-paper-2)" }}
         >
-          <h3 className="font-display text-ylang-charcoal mb-4 text-lg font-bold">
+          <h3 className="font-display mb-4 text-lg font-bold" style={{ color: "var(--color-ink)" }}>
             Prochaines étapes
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="bg-ylang-rose flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
-                1
+            {[
+              "Notre atelier prépare votre commande avec soin",
+              "Confection artisanale de votre produit personnalisé",
+              "Expédition dans un emballage premium",
+              "Livraison à votre domicile sous 7-10 jours",
+            ].map((step, index) => (
+              <div key={step} className="flex items-center gap-3">
+                <div
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold"
+                  style={{
+                    border: "1.5px solid var(--color-accent)",
+                    color: "var(--color-accent)",
+                  }}
+                >
+                  {index + 1}
+                </div>
+                <p className="text-sm" style={{ color: "var(--color-ink-3)" }}>
+                  {step}
+                </p>
               </div>
-              <p className="text-ylang-charcoal/70 text-sm">
-                Notre atelier prépare votre commande avec soin
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-ylang-rose/60 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
-                2
-              </div>
-              <p className="text-ylang-charcoal/70 text-sm">
-                Confection artisanale de votre produit personnalisé
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-ylang-rose/40 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
-                3
-              </div>
-              <p className="text-ylang-charcoal/70 text-sm">
-                Expédition dans un emballage premium
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-ylang-rose/20 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
-                4
-              </div>
-              <p className="text-ylang-charcoal/70 text-sm">
-                Livraison à votre domicile sous 7-10 jours
-              </p>
-            </div>
+            ))}
           </div>
         </motion.div>
 
@@ -281,14 +285,16 @@ function SuccessContent() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.4 }}
-          className="border-ylang-beige mt-8 rounded-xl border bg-white p-6 text-center"
+          className="mt-8 p-6 text-center"
+          style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }}
         >
-          <p className="text-ylang-charcoal/60 mb-2 text-sm">
+          <p className="mb-2 text-sm" style={{ color: "var(--color-ink-3)" }}>
             Une question sur votre commande ?
           </p>
           <Link
             href="/contact"
-            className="text-ylang-rose text-sm font-medium hover:underline"
+            className="text-sm font-medium hover:underline"
+            style={{ color: "var(--color-accent)" }}
           >
             Contactez notre service client
           </Link>
@@ -300,10 +306,13 @@ function SuccessContent() {
 
 function LoadingFallback() {
   return (
-    <div className="from-ylang-cream to-ylang-beige flex min-h-screen items-center justify-center bg-linear-to-br pt-24 pb-12">
+    <div
+      className="flex min-h-screen items-center justify-center pt-24 pb-12"
+      style={{ background: "var(--color-paper)" }}
+    >
       <div className="text-center">
-        <Loader2 className="text-ylang-rose mx-auto mb-4 h-12 w-12 animate-spin" />
-        <p className="text-ylang-charcoal/60">Chargement...</p>
+        <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin" style={{ color: "var(--color-accent)" }} />
+        <p style={{ color: "var(--color-ink-3)" }}>Chargement...</p>
       </div>
     </div>
   );

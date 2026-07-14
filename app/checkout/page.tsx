@@ -1,5 +1,6 @@
 "use client";
 
+import { OrderSummary } from "@/components/checkout/order-summary";
 import { Button } from "@/components/ui/button";
 import { createCheckoutSession } from "@/lib/actions/checkout";
 import { useCartStore } from "@/lib/store/cart-store";
@@ -12,11 +13,9 @@ import {
   Lock,
   Package,
   Shield,
-  ShoppingBag,
   Truck,
   AlertTriangle,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
 import { useEffect, useState } from "react";
@@ -113,8 +112,11 @@ export default function CheckoutPage() {
   // Loading state
   if (isCheckingAuth) {
     return (
-      <div className="from-ylang-cream to-ylang-beige flex min-h-screen items-center justify-center bg-linear-to-br pt-24 pb-12">
-        <Loader2 className="text-ylang-rose h-12 w-12 animate-spin" />
+      <div
+        className="flex min-h-screen items-center justify-center pt-24 pb-12"
+        style={{ background: "var(--color-paper)" }}
+      >
+        <Loader2 className="h-12 w-12 animate-spin" style={{ color: "var(--color-accent)" }} />
       </div>
     );
   }
@@ -122,20 +124,26 @@ export default function CheckoutPage() {
   // Panier vide
   if (items.length === 0) {
     return (
-      <div className="from-ylang-cream to-ylang-beige min-h-screen bg-linear-to-br pt-24 pb-12">
+      <div className="min-h-screen pt-24 pb-12" style={{ background: "var(--color-paper)" }}>
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center justify-center py-20 text-center"
           >
-            <div className="bg-ylang-beige mb-6 flex h-24 w-24 items-center justify-center rounded-full">
-              <Package className="text-ylang-charcoal/40 h-12 w-12" />
+            <div
+              className="mb-6 flex h-24 w-24 items-center justify-center rounded-full"
+              style={{ background: "var(--color-paper-2)" }}
+            >
+              <Package className="h-12 w-12" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
             </div>
-            <h1 className="font-display text-ylang-charcoal mb-3 text-3xl font-bold">
+            <h1
+              className="font-display mb-3 text-3xl font-bold"
+              style={{ color: "var(--color-ink)" }}
+            >
               Votre panier est vide
             </h1>
-            <p className="text-ylang-charcoal/60 mb-8">
+            <p className="mb-8" style={{ color: "var(--color-ink-3)" }}>
               Ajoutez des créations à votre panier pour passer commande
             </p>
             <Button variant="primary" size="lg" asChild>
@@ -148,7 +156,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="from-ylang-cream to-ylang-beige min-h-screen bg-linear-to-br pt-24 pb-12">
+    <div className="min-h-screen pt-24 pb-12" style={{ background: "var(--color-paper)" }}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -158,12 +166,13 @@ export default function CheckoutPage() {
         >
           <Link
             href="/"
-            className="text-ylang-charcoal/60 hover:text-ylang-charcoal mb-4 inline-flex items-center gap-2 text-sm transition-colors"
+            className="mb-4 inline-flex items-center gap-2 text-sm transition-opacity hover:opacity-60"
+            style={{ color: "var(--color-ink-3)" }}
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
             Continuer mes achats
           </Link>
-          <h1 className="font-display text-ylang-charcoal text-4xl font-bold">
+          <h1 className="font-display text-4xl font-bold" style={{ color: "var(--color-ink)" }}>
             Finaliser ma commande
           </h1>
         </motion.div>
@@ -175,137 +184,13 @@ export default function CheckoutPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <div className="border-ylang-beige rounded-2xl border bg-white p-6 shadow-sm">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#b76e79]/10">
-                  <ShoppingBag className="h-5 w-5 text-[#b76e79]" />
-                </div>
-                <h2 className="font-display text-ylang-charcoal text-xl font-bold">
-                  Récapitulatif ({items.length} article
-                  {items.length > 1 ? "s" : ""})
-                </h2>
-              </div>
-
-              {/* Items */}
-              <div className="space-y-4">
-                {items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-ylang-cream flex gap-4 rounded-xl p-4"
-                  >
-                    {/* Thumbnail */}
-                    <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-white">
-                      {item.thumbnail ? (
-                        <Image
-                          src={item.thumbnail}
-                          alt={item.productName}
-                          width={80}
-                          height={80}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center">
-                          <span className="text-3xl">🛏️</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1">
-                      <h3 className="font-display text-ylang-charcoal font-semibold">
-                        {item.productName}
-                      </h3>
-                      <p className="text-ylang-charcoal/60 text-xs">
-                        Tissu: {item.configuration.fabricName}
-                      </p>
-                      {item.configuration.size && (
-                        <p className="text-ylang-charcoal/60 text-xs">
-                          Taille: {item.configuration.size}
-                        </p>
-                      )}
-                      {item.configuration.selectedColor && (
-                        <div className="flex items-center gap-1.5">
-                          <div
-                            className="h-2.5 w-2.5 shrink-0 rounded-full border border-black/10"
-                            style={{ backgroundColor: item.configuration.selectedColor }}
-                          />
-                          <span className="text-ylang-charcoal/60 text-xs">
-                            {item.configuration.selectedColorName ?? item.configuration.selectedColor}
-                          </span>
-                        </div>
-                      )}
-                      {item.configuration.embroidery && (
-                        <p className="text-ylang-charcoal/60 text-xs">
-                          Broderie: &quot;{item.configuration.embroidery}&quot;
-                        </p>
-                      )}
-                      {item.configuration.embroidery && item.configuration.embroideryFont && (
-                        <p className="text-ylang-charcoal/60 text-xs">
-                          Police: {item.configuration.embroideryFont}
-                        </p>
-                      )}
-                      {item.configuration.embroidery && item.configuration.embroideryColor && (
-                        <div className="flex items-center gap-1.5">
-                          <div
-                            className="h-2.5 w-2.5 shrink-0 rounded-full border border-black/10"
-                            style={{ backgroundColor: item.configuration.embroideryColor }}
-                          />
-                          <span className="text-ylang-charcoal/60 text-xs">
-                            Fil: {item.configuration.embroideryColorName ?? item.configuration.embroideryColor}
-                          </span>
-                        </div>
-                      )}
-                      <p className="text-ylang-charcoal/60 text-xs">
-                        Qté: {item.quantity}
-                      </p>
-                    </div>
-
-                    {/* Price */}
-                    <div className="text-right">
-                      <p className="font-display text-lg font-bold text-[#b76e79]">
-                        {(item.price * item.quantity).toFixed(2)}€
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Totaux */}
-              <div className="border-ylang-beige mt-6 space-y-3 border-t pt-6">
-                <div className="flex justify-between text-sm">
-                  <span className="text-ylang-charcoal/70">Sous-total</span>
-                  <span className="text-ylang-charcoal font-medium">
-                    {getTotalPrice().toFixed(2)}€
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-ylang-charcoal/70">Livraison</span>
-                  <span className="text-ylang-charcoal font-medium">
-                    {getShipping() === 0 ? (
-                      <span className="text-green-600">Offerte</span>
-                    ) : (
-                      `${getShipping().toFixed(2)}€`
-                    )}
-                  </span>
-                </div>
-                {getTotalPrice() < freeShippingThreshold && (
-                  <p className="text-ylang-charcoal/60 text-xs">
-                    Plus que{" "}
-                    {(freeShippingThreshold - getTotalPrice()).toFixed(2)}€ pour
-                    la livraison offerte
-                  </p>
-                )}
-
-                <div className="flex justify-between border-t border-[#e8dcc8] pt-3">
-                  <span className="font-display text-ylang-charcoal font-bold">
-                    Total TTC
-                  </span>
-                  <span className="font-display text-2xl font-bold text-[#b76e79]">
-                    {getFinalPrice().toFixed(2)}€
-                  </span>
-                </div>
-              </div>
-            </div>
+            <OrderSummary
+              items={items}
+              totalPrice={getTotalPrice()}
+              shipping={getShipping()}
+              finalPrice={getFinalPrice()}
+              freeShippingThreshold={freeShippingThreshold}
+            />
           </motion.div>
 
           {/* Colonne de paiement */}
@@ -328,51 +213,49 @@ export default function CheckoutPage() {
 
             {/* Section connexion ou paiement */}
             {!isSignedIn ? (
-              <div className="border-ylang-beige rounded-2xl border bg-white p-6 shadow-sm">
+              <div style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }} className="p-6">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#b76e79]/10">
-                    <Lock className="h-5 w-5 text-[#b76e79]" />
-                  </div>
-                  <h2 className="font-display text-ylang-charcoal text-xl font-bold">
+                  <Lock className="h-5 w-5" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
+                  <h2 className="font-display text-xl font-bold" style={{ color: "var(--color-ink)" }}>
                     Connexion requise
                   </h2>
                 </div>
-                <p className="text-ylang-charcoal/60 mb-6">
+                <p className="mb-6" style={{ color: "var(--color-ink-3)" }}>
                   Veuillez vous connecter pour finaliser votre commande
                 </p>
                 <Button variant="luxury" size="lg" className="w-full" asChild>
                   <Link href="/sign-in?redirect=/checkout">Se connecter</Link>
                 </Button>
-                <p className="text-ylang-charcoal/60 mt-4 text-center text-sm">
+                <p className="mt-4 text-center text-sm" style={{ color: "var(--color-ink-3)" }}>
                   Pas encore de compte ?{" "}
                   <Link
                     href="/sign-up?redirect=/checkout"
-                    className="text-[#b76e79] hover:underline"
+                    className="hover:underline"
+                    style={{ color: "var(--color-accent)" }}
                   >
                     Créer un compte
                   </Link>
                 </p>
               </div>
             ) : (
-              <div className="border-ylang-beige rounded-2xl border bg-white p-6 shadow-sm">
+              <div style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }} className="p-6">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#b76e79]/10">
-                    <CreditCard className="h-5 w-5 text-[#b76e79]" />
-                  </div>
-                  <h2 className="font-display text-ylang-charcoal text-xl font-bold">
+                  <CreditCard className="h-5 w-5" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
+                  <h2 className="font-display text-xl font-bold" style={{ color: "var(--color-ink)" }}>
                     Paiement sécurisé
                   </h2>
                 </div>
 
                 {checkoutId ? (
                   <div className="mt-4">
-                    <p className="text-ylang-charcoal/60 mb-4 text-sm">
+                    <p className="mb-4 text-sm" style={{ color: "var(--color-ink-3)" }}>
                       Veuillez saisir vos coordonnées bancaires ci-dessous :
                     </p>
                     {/* SumUp Widget Container */}
                     <div
                       id="sumup-card-container"
-                      className="bg-ylang-cream/30 border-ylang-beige min-h-[300px] w-full rounded-lg border p-4"
+                      className="min-h-[300px] w-full p-4"
+                      style={{ background: "var(--color-paper-2)", border: "var(--rule-soft)" }}
                     />
                   </div>
                 ) : (
@@ -383,7 +266,7 @@ export default function CheckoutPage() {
                         <div className="space-y-1 text-left">
                           <p className="text-sm font-bold">Limite de poids (30kg) dépassée</p>
                           <p className="text-xs opacity-90">
-                            Votre colis pèse {(getTotalWeight() / 1000).toFixed(1)}kg. 
+                            Votre colis pèse {(getTotalWeight() / 1000).toFixed(1)}kg.
                             Merci de diviser votre commande en plusieurs colis s'il vous plaît.
                           </p>
                         </div>
@@ -415,8 +298,11 @@ export default function CheckoutPage() {
                 )}
 
                 {/* Secure payment badge */}
-                <div className="text-ylang-charcoal/40 mt-4 flex items-center justify-center gap-2 text-xs">
-                  <Lock className="h-3 w-3" />
+                <div
+                  className="mt-4 flex items-center justify-center gap-2 text-xs"
+                  style={{ color: "var(--color-ink-3)" }}
+                >
+                  <Lock className="h-3 w-3" strokeWidth={1.5} />
                   Paiement sécurisé par SumUp
                 </div>
               </div>
@@ -424,43 +310,46 @@ export default function CheckoutPage() {
 
             {/* Avantages */}
             <div className="space-y-4">
-              <div className="border-ylang-beige flex items-start gap-4 rounded-xl border bg-white p-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100">
-                  <Shield className="h-5 w-5 text-green-600" />
-                </div>
+              <div
+                className="flex items-start gap-4 p-4"
+                style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }}
+              >
+                <Shield className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
                 <div>
-                  <h3 className="text-ylang-charcoal font-semibold">
+                  <h3 className="font-semibold" style={{ color: "var(--color-ink)" }}>
                     Paiement 100% sécurisé
                   </h3>
-                  <p className="text-ylang-charcoal/60 text-sm">
+                  <p className="text-sm" style={{ color: "var(--color-ink-3)" }}>
                     Vos données sont chiffrées et protégées par SumUp
                   </p>
                 </div>
               </div>
 
-              <div className="border-ylang-beige flex items-start gap-4 rounded-xl border bg-white p-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100">
-                  <Truck className="h-5 w-5 text-blue-600" />
-                </div>
+              <div
+                className="flex items-start gap-4 p-4"
+                style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }}
+              >
+                <Truck className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
                 <div>
-                  <h3 className="text-ylang-charcoal font-semibold">
+                  <h3 className="font-semibold" style={{ color: "var(--color-ink)" }}>
                     Livraison suivie
                   </h3>
-                  <p className="text-ylang-charcoal/60 text-sm">
+                  <p className="text-sm" style={{ color: "var(--color-ink-3)" }}>
                     Recevez votre colis sous 7-10 jours ouvrés
                   </p>
                 </div>
               </div>
 
-              <div className="border-ylang-beige flex items-start gap-4 rounded-xl border bg-white p-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-100">
-                  <Package className="h-5 w-5 text-purple-600" />
-                </div>
+              <div
+                className="flex items-start gap-4 p-4"
+                style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }}
+              >
+                <Package className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--color-accent)" }} strokeWidth={1.5} />
                 <div>
-                  <h3 className="text-ylang-charcoal font-semibold">
+                  <h3 className="font-semibold" style={{ color: "var(--color-ink)" }}>
                     Fabrication artisanale
                   </h3>
-                  <p className="text-ylang-charcoal/60 text-sm">
+                  <p className="text-sm" style={{ color: "var(--color-ink-3)" }}>
                     Chaque création est confectionnée à la main avec soin
                   </p>
                 </div>

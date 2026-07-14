@@ -610,19 +610,19 @@ export function SettingsClient({
                         <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />Ajouter un témoignage
                       </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+                    <div className="columns-2 gap-4 md:columns-3 lg:columns-4">
                       {settings.testimonials.map((testimonial: any, index: number) => (
-                        <div key={testimonial.id} className="group relative aspect-5/4 overflow-hidden" style={{ border: "var(--rule-soft)", background: "var(--color-paper-2)" }}>
+                        <div key={testimonial.id} className="group relative mb-4 break-inside-avoid overflow-hidden" style={{ border: "var(--rule-soft)", background: "var(--color-paper-2)" }}>
                           {testimonial.image ? (
                             <>
-                              <img src={testimonial.image} alt={`Capture ${index + 1}`} className="h-full w-full object-cover" />
+                              <img src={testimonial.image} alt={`Capture ${index + 1}`} className="block h-auto w-full object-cover" />
                               <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
                                 <label className="cursor-pointer p-2 text-white"><ImageIcon className="h-6 w-6" /><input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleImageSelect("testimonials", e.target.files[0], testimonial.id)} /></label>
                                 <button onClick={() => removeTestimonial(testimonial.id)} className="p-2 text-white hover:text-red-400 transition-colors"><Trash2 className="h-6 w-6" strokeWidth={1.5} /></button>
                               </div>
                             </>
                           ) : (
-                            <label className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center transition-opacity hover:opacity-70" style={{ color: "var(--color-ink-3)" }}>
+                            <label className="flex aspect-5/4 cursor-pointer flex-col items-center justify-center transition-opacity hover:opacity-70" style={{ color: "var(--color-ink-3)" }}>
                               <ImageIcon className="mb-2 h-8 w-8" strokeWidth={1} /><span className="font-body text-xs">Ajouter capture</span>
                               <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleImageSelect("testimonials", e.target.files[0], testimonial.id)} />
                             </label>
