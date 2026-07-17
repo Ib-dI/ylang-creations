@@ -5,14 +5,14 @@ import * as React from "react";
 
 const buttonVariants = cva(
   // Base styles LUXE - transitions ultra-fluides
-  "inline-flex items-center justify-center font-body text-sm tracking-wide transition-[background-color,border-color,color,fill,stroke,opacity,box-shadow,transform] duration-500 disabled:opacity-50 disabled:pointer-events-none group relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose focus-visible:ring-offset-2",
+  "inline-flex items-center justify-center font-body text-sm tracking-wide transition-[background-color,border-color,color,fill,stroke,opacity,box-shadow] duration-300 disabled:opacity-50 disabled:pointer-events-none group relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose focus-visible:ring-offset-2",
   {
     variants: {
       variant: {
         primary: [
           "bg-ylang-rose text-white",
           "hover:bg-ylang-charcoal hover:shadow-[0_8px_30px_rgba(183,110,121,0.3)]",
-          "hover:scale-[1.02] active:scale-[0.98]",
+          "transition-transform duration-150 ease-[var(--ease-out)] hover:scale-[1.02] active:scale-[0.98] active:duration-100",
           // Effet shimmer premium
           "before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent",
           "before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700",
@@ -21,7 +21,7 @@ const buttonVariants = cva(
           "border-2 border-ylang-rose text-ylang-rose bg-transparent",
           "hover:bg-ylang-rose hover:text-ylang-white",
           "hover:shadow-[0_4px_20px_rgba(183,110,121,0.25)]",
-          "hover:scale-[1.02] active:scale-[0.98]",
+          "transition-transform duration-150 ease-[var(--ease-out)] hover:scale-[1.02] active:scale-[0.98] active:duration-100",
         ],
         ghost: [
           "text-[var(--color-ylang-charcoal)] hover:bg-[var(--color-ylang-beige)]/60",
@@ -31,7 +31,7 @@ const buttonVariants = cva(
           "bg-ylang-rose bg-gradient-to-r from-[var(--color-ylang-rose)] via-[var(--color-ylang-terracotta)] to-[var(--color-ylang-rose)] bg-[length:200%_auto]",
           "text-white font-medium",
           "hover:bg-[position:100%_0%] hover:shadow-[0_5px_15px_rgba(183,110,121,0.4)]",
-          "hover:scale-[1.03] active:scale-[0.99]",
+          "transition-transform duration-150 ease-[var(--ease-out)] hover:scale-[1.03] active:scale-[0.99] active:duration-100",
           "animate-gradient",
         ],
         link: [

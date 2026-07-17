@@ -3,24 +3,18 @@
 import StatusBadge from "@/components/admin/status-badge";
 import type { Order, OrderStatus } from "@/types/admin";
 import { motion } from "framer-motion";
-import {
-  Download,
-  Eye,
-  Package,
-  RefreshCw,
-  Search,
-} from "lucide-react";
+import { Download, Eye, Package, RefreshCw, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
 const STATUS_TABS: { value: OrderStatus | "all"; label: string }[] = [
-  { value: "all",           label: "Toutes" },
-  { value: "pending",       label: "En attente" },
-  { value: "paid",          label: "Payées" },
+  { value: "all", label: "Toutes" },
+  { value: "pending", label: "En attente" },
+  { value: "paid", label: "Payées" },
   { value: "in_production", label: "En production" },
-  { value: "shipped",       label: "Expédiées" },
-  { value: "delivered",     label: "Livrées" },
+  { value: "shipped", label: "Expédiées" },
+  { value: "delivered", label: "Livrées" },
 ];
 
 interface OrdersClientProps {
@@ -29,12 +23,16 @@ interface OrdersClientProps {
 
 export function OrdersClient({ initialOrders }: OrdersClientProps) {
   const router = useRouter();
-  const [statusFilter, setStatusFilter] = React.useState<OrderStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = React.useState<OrderStatus | "all">(
+    "all",
+  );
   const [searchQuery, setSearchQuery] = React.useState("");
 
   let filteredOrders = initialOrders;
   if (statusFilter !== "all") {
-    filteredOrders = filteredOrders.filter((order) => order.status === statusFilter);
+    filteredOrders = filteredOrders.filter(
+      (order) => order.status === statusFilter,
+    );
   }
   if (searchQuery) {
     const lowerQuery = searchQuery.toLowerCase();
@@ -60,14 +58,29 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
   };
 
   const handleExportCSV = () => {
-    const headers = ["No Commande", "Date", "Client", "Email", "Statut", "Total", "Rue", "Code Postal", "Ville", "Pays", "Articles"];
+    const headers = [
+      "No Commande",
+      "Date",
+      "Client",
+      "Email",
+      "Statut",
+      "Total",
+      "Rue",
+      "Code Postal",
+      "Ville",
+      "Pays",
+      "Articles",
+    ];
     const escape = (field: string | undefined | null) => {
       if (!field) return "";
       return `"${String(field).replace(/"/g, '""')}"`;
     };
     const rows = filteredOrders.map((order) => {
       const itemsList = order.items
-        .map((i) => `${i.quantity}x ${i.productName}${i.configuration ? ` (${i.configuration.fabricName})` : ""}`)
+        .map(
+          (i) =>
+            `${i.quantity}x ${i.productName}${i.configuration ? ` (${i.configuration.fabricName})` : ""}`,
+        )
         .join(", ");
       const addr = order.shippingAddress || {};
       return [
@@ -100,7 +113,10 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>
+          <p
+            className="type-overline mb-2"
+            style={{ color: "var(--color-accent)" }}
+          >
             Administration
           </p>
           <h1
@@ -113,15 +129,19 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
           >
             Commandes
           </h1>
-          <p className="font-body mt-1 text-sm" style={{ color: "var(--color-ink-3)" }}>
-            {filteredOrders.length} commande{filteredOrders.length !== 1 ? "s" : ""}
+          <p
+            className="font-body mt-1 text-sm"
+            style={{ color: "var(--color-ink-3)" }}
+          >
+            {filteredOrders.length} commande
+            {filteredOrders.length !== 1 ? "s" : ""}
           </p>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
           <button
             onClick={() => router.refresh()}
-            className="flex items-center gap-2 px-4 py-2 font-body text-sm transition-opacity hover:opacity-70"
+            className="font-body flex items-center gap-2 px-4 py-2 text-sm transition-opacity hover:opacity-70"
             style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}
           >
             <RefreshCw className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -129,7 +149,7 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
           </button>
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-4 py-2 font-body text-sm transition-opacity hover:opacity-70"
+            className="font-body flex items-center gap-2 px-4 py-2 text-sm transition-opacity hover:opacity-70"
             style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}
           >
             <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -139,7 +159,10 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
       </div>
 
       {/* Search + filters */}
-      <div className="mb-6" style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}>
+      <div
+        className="mb-6"
+        style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}
+      >
         <div className="px-6 py-4" style={{ borderBottom: "var(--rule-hair)" }}>
           <div className="relative">
             <Search
@@ -164,23 +187,31 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
 
         <div className="flex gap-0 overflow-x-auto">
           {STATUS_TABS.map((tab) => {
-            const count = tab.value === "all" ? initialOrders.length : initialOrders.filter((o) => o.status === tab.value).length;
+            const count =
+              tab.value === "all"
+                ? initialOrders.length
+                : initialOrders.filter((o) => o.status === tab.value).length;
             const isActive = statusFilter === tab.value;
             return (
               <button
                 key={tab.value}
                 onClick={() => setStatusFilter(tab.value)}
-                className="flex shrink-0 items-center gap-2 px-5 py-3 font-body text-sm whitespace-nowrap transition-all"
+                className="font-body flex shrink-0 items-center gap-2 px-5 py-3 text-sm whitespace-nowrap transition-colors"
                 style={{
                   color: isActive ? "var(--color-ink)" : "var(--color-ink-3)",
-                  borderBottom: isActive ? "2px solid var(--color-ink)" : "2px solid transparent",
+                  borderBottom: isActive
+                    ? "2px solid var(--color-ink)"
+                    : "2px solid transparent",
                   background: isActive ? "var(--color-paper-2)" : "transparent",
                 }}
               >
                 {tab.label}
                 <span
                   className="type-overline"
-                  style={{ color: isActive ? "var(--color-ink)" : "var(--color-ink-3)", opacity: isActive ? 1 : 0.6 }}
+                  style={{
+                    color: isActive ? "var(--color-ink)" : "var(--color-ink-3)",
+                    opacity: isActive ? 1 : 0.6,
+                  }}
                 >
                   {count}
                 </span>
@@ -194,7 +225,10 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
       {filteredOrders.length === 0 ? (
         <div
           className="py-20 text-center"
-          style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}
+          style={{
+            border: "var(--rule-hair)",
+            background: "var(--color-paper)",
+          }}
         >
           <Package
             className="mx-auto mb-4 h-8 w-8"
@@ -212,7 +246,10 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
           >
             Aucune commande
           </p>
-          <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+          <p
+            className="font-body text-sm"
+            style={{ color: "var(--color-ink-3)" }}
+          >
             Les commandes apparaîtront ici après les achats
           </p>
         </div>
@@ -223,9 +260,15 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
             {filteredOrders.map((order) => (
               <div
                 key={order.id}
-                style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}
+                style={{
+                  border: "var(--rule-hair)",
+                  background: "var(--color-paper)",
+                }}
               >
-                <div className="flex items-start justify-between p-4" style={{ borderBottom: "var(--rule-soft)" }}>
+                <div
+                  className="flex items-start justify-between p-4"
+                  style={{ borderBottom: "var(--rule-soft)" }}
+                >
                   <div>
                     <p
                       style={{
@@ -237,7 +280,10 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
                     >
                       {order.orderNumber}
                     </p>
-                    <p className="font-body mt-0.5 text-xs" style={{ color: "var(--color-ink-3)" }}>
+                    <p
+                      className="font-body mt-0.5 text-xs"
+                      style={{ color: "var(--color-ink-3)" }}
+                    >
                       {new Date(order.createdAt).toLocaleDateString("fr-FR")}
                     </p>
                   </div>
@@ -246,12 +292,20 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
 
                 <div className="flex items-center justify-between p-4">
                   <div>
-                    <p className="font-body text-sm font-medium" style={{ color: "var(--color-ink)" }}>
+                    <p
+                      className="font-body text-sm font-medium"
+                      style={{ color: "var(--color-ink)" }}
+                    >
                       {order.customerName}
                     </p>
-                    <p className="font-body mt-0.5 text-xs" style={{ color: "var(--color-ink-3)" }}>
+                    <p
+                      className="font-body mt-0.5 text-xs"
+                      style={{ color: "var(--color-ink-3)" }}
+                    >
                       {order.items?.[0]?.productName || "Produit"}
-                      {order.items?.length > 1 ? ` +${order.items.length - 1}` : ""}
+                      {order.items?.length > 1
+                        ? ` +${order.items.length - 1}`
+                        : ""}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -267,8 +321,11 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
                     </span>
                     <Link
                       href={`/admin/orders/${order.id}`}
-                      className="flex items-center gap-1.5 px-3 py-1.5 font-body text-xs transition-opacity hover:opacity-70"
-                      style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}
+                      className="font-body flex items-center gap-1.5 px-3 py-1.5 text-xs transition-opacity hover:opacity-70"
+                      style={{
+                        border: "var(--rule-soft)",
+                        color: "var(--color-ink-3)",
+                      }}
                     >
                       <Eye className="h-3.5 w-3.5" strokeWidth={1.5} />
                       Voir
@@ -282,12 +339,23 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
           {/* Desktop table */}
           <div
             className="hidden overflow-hidden lg:block"
-            style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}
+            style={{
+              border: "var(--rule-hair)",
+              background: "var(--color-paper)",
+            }}
           >
             <table className="w-full">
               <thead>
                 <tr style={{ background: "var(--color-paper-2)" }}>
-                  {["N° Commande", "Client", "Articles", "Statut", "Montant", "Date", "Actions"].map((th) => (
+                  {[
+                    "N° Commande",
+                    "Client",
+                    "Articles",
+                    "Statut",
+                    "Montant",
+                    "Date",
+                    "Actions",
+                  ].map((th) => (
                     <th
                       key={th}
                       className="type-overline px-6 py-3 text-left"
@@ -312,33 +380,54 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
                       <Link
                         href={`/admin/orders/${order.id}`}
                         className="font-body text-sm transition-opacity hover:opacity-70"
-                        style={{ color: "var(--color-ink)", borderBottom: "1px solid var(--color-accent)" }}
+                        style={{
+                          color: "var(--color-ink)",
+                          borderBottom: "1px solid var(--color-accent)",
+                        }}
                       >
                         {order.orderNumber}
                       </Link>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="font-body text-sm font-medium" style={{ color: "var(--color-ink)" }}>
+                      <p
+                        className="font-body text-sm font-medium"
+                        style={{ color: "var(--color-ink)" }}
+                      >
                         {order.customerName}
                       </p>
-                      <p className="font-body mt-0.5 text-xs" style={{ color: "var(--color-ink-3)" }}>
+                      <p
+                        className="font-body mt-0.5 text-xs"
+                        style={{ color: "var(--color-ink-3)" }}
+                      >
                         {order.customerEmail}
                       </p>
                     </td>
                     <td className="px-6 py-4">
                       {order.items?.length > 0 ? (
                         <>
-                          <p className="font-body text-sm" style={{ color: "var(--color-ink)" }}>
+                          <p
+                            className="font-body text-sm"
+                            style={{ color: "var(--color-ink)" }}
+                          >
                             {order.items[0]?.productName || "Produit"}
                           </p>
                           {order.items.length > 1 && (
-                            <p className="font-body mt-0.5 text-xs" style={{ color: "var(--color-ink-3)" }}>
-                              +{order.items.length - 1} autre{order.items.length > 2 ? "s" : ""}
+                            <p
+                              className="font-body mt-0.5 text-xs"
+                              style={{ color: "var(--color-ink-3)" }}
+                            >
+                              +{order.items.length - 1} autre
+                              {order.items.length > 2 ? "s" : ""}
                             </p>
                           )}
                         </>
                       ) : (
-                        <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>—</span>
+                        <span
+                          className="font-body text-sm"
+                          style={{ color: "var(--color-ink-3)" }}
+                        >
+                          —
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -357,7 +446,10 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                      <span
+                        className="font-body text-sm"
+                        style={{ color: "var(--color-ink-3)" }}
+                      >
                         {new Date(order.createdAt).toLocaleDateString("fr-FR")}
                       </span>
                     </td>
@@ -365,26 +457,39 @@ export function OrdersClient({ initialOrders }: OrdersClientProps) {
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/admin/orders/${order.id}`}
-                          className="flex items-center gap-1.5 px-3 py-1.5 font-body text-xs transition-opacity hover:opacity-70"
-                          style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}
+                          className="font-body flex items-center gap-1.5 px-3 py-1.5 text-xs transition-opacity hover:opacity-70"
+                          style={{
+                            border: "var(--rule-soft)",
+                            color: "var(--color-ink-3)",
+                          }}
                         >
                           <Eye className="h-3.5 w-3.5" strokeWidth={1.5} />
                           Voir
                         </Link>
                         {order.status === "paid" && (
                           <button
-                            onClick={() => handleUpdateStatus(order.id, "in_production")}
-                            className="px-3 py-1.5 font-body text-xs transition-opacity hover:opacity-70"
-                            style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}
+                            onClick={() =>
+                              handleUpdateStatus(order.id, "in_production")
+                            }
+                            className="font-body px-3 py-1.5 text-xs transition-opacity hover:opacity-70"
+                            style={{
+                              border: "var(--rule-soft)",
+                              color: "var(--color-ink-3)",
+                            }}
                           >
                             → Production
                           </button>
                         )}
                         {order.status === "in_production" && (
                           <button
-                            onClick={() => handleUpdateStatus(order.id, "shipped")}
-                            className="px-3 py-1.5 font-body text-xs transition-opacity hover:opacity-70"
-                            style={{ border: "var(--rule-soft)", color: "var(--color-ink-3)" }}
+                            onClick={() =>
+                              handleUpdateStatus(order.id, "shipped")
+                            }
+                            className="font-body px-3 py-1.5 text-xs transition-opacity hover:opacity-70"
+                            style={{
+                              border: "var(--rule-soft)",
+                              color: "var(--color-ink-3)",
+                            }}
                           >
                             → Expédier
                           </button>

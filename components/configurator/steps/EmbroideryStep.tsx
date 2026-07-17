@@ -4,7 +4,10 @@ import { X } from "lucide-react";
 import EmbroideryPreview from "@/components/configurator/EmbroideryPreview";
 import { normalizeForFont } from "@/lib/embroidery/normalize";
 import { getEmbroideryZoneForFont } from "@/lib/configurator/get-embroidery-zone-for-font";
-import type { ConfigurateurEmbroideryFont, ConfigurateurProduct } from "@/types/configurateur-page";
+import type {
+  ConfigurateurEmbroideryFont,
+  ConfigurateurProduct,
+} from "@/types/configurateur-page";
 
 interface EmbroideryStepProps {
   product: ConfigurateurProduct | null;
@@ -33,12 +36,16 @@ export default function EmbroideryStep({
   onSelectColor,
   onSelectFont,
 }: EmbroideryStepProps) {
-  const multiNameEnabled = getEmbroideryZoneForFont(product, font?.id)?.multiNameEnabled !== false;
+  const multiNameEnabled =
+    getEmbroideryZoneForFont(product, font?.id)?.multiNameEnabled !== false;
 
   return (
     <>
       <div>
-        <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>
+        <p
+          className="type-overline mb-2"
+          style={{ color: "var(--color-accent)" }}
+        >
           Étape 03
         </p>
         <h2
@@ -51,19 +58,29 @@ export default function EmbroideryStep({
         >
           Broderie personnalisée
         </h2>
-        <p className="font-body mt-1 text-sm" style={{ color: "var(--color-ink-3)" }}>
-          +{((font?.price ?? 0) / 100).toFixed(2)} € · Aperçu immédiat sur le produit
+        <p
+          className="font-body mt-1 text-sm"
+          style={{ color: "var(--color-ink-3)" }}
+        >
+          +{((font?.price ?? 0) / 100).toFixed(2)} € · Aperçu immédiat sur le
+          produit
         </p>
       </div>
 
       {/* Noms à broder */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+          <span
+            className="type-overline"
+            style={{ color: "var(--color-ink-3)" }}
+          >
             Noms à broder
           </span>
           {multiNameEnabled && (
-            <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+            <span
+              className="font-body text-xs"
+              style={{ color: "var(--color-ink-3)" }}
+            >
               {texts.length} / 3
             </span>
           )}
@@ -72,24 +89,44 @@ export default function EmbroideryStep({
         <div className="space-y-4">
           {texts.map((name, index) => (
             <div key={index} className="flex items-center gap-3">
-              <div className="relative flex-1" style={{ borderBottom: "var(--rule-soft)" }}>
+              <div
+                className="relative flex-1"
+                style={{ borderBottom: "var(--rule-soft)" }}
+              >
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => {
                     // Noms uniquement : lettres (accents compris), espaces,
                     // apostrophes et tirets — pas de chiffres ni symboles.
-                    const sanitized = e.target.value.replace(/[^\p{L}\s'-]/gu, "");
+                    const sanitized = e.target.value.replace(
+                      /[^\p{L}\s'-]/gu,
+                      "",
+                    );
                     onTextChange(index, sanitized.slice(0, 15));
                   }}
-                  placeholder={index === 0 ? "Ex : Cara" : index === 1 ? "Ex : Maina" : "Ex : Fayel"}
-                  className="w-full bg-transparent py-3 font-body text-base outline-none placeholder:opacity-30"
-                  style={{ color: "var(--color-ink)", caretColor: "var(--color-accent)" }}
+                  placeholder={
+                    index === 0
+                      ? "Ex : Cara"
+                      : index === 1
+                        ? "Ex : Maina"
+                        : "Ex : Fayel"
+                  }
+                  className="font-body w-full bg-transparent py-3 text-base outline-none placeholder:opacity-30"
+                  style={{
+                    color: "var(--color-ink)",
+                    caretColor: "var(--color-accent)",
+                  }}
                   maxLength={15}
                 />
                 <span
-                  className="absolute top-1/2 right-0 -translate-y-1/2 font-body text-xs opacity-50"
-                  style={{ color: name.length >= 12 ? "var(--color-accent)" : "var(--color-ink-3)" }}
+                  className="font-body absolute top-1/2 right-0 -translate-y-1/2 text-xs opacity-50"
+                  style={{
+                    color:
+                      name.length >= 12
+                        ? "var(--color-accent)"
+                        : "var(--color-ink-3)",
+                  }}
                 >
                   {name.length}/15
                 </span>
@@ -109,18 +146,26 @@ export default function EmbroideryStep({
           ))}
         </div>
 
-        {multiNameEnabled && texts.length < 3 && texts[texts.length - 1].length > 0 && (
-          <button
-            type="button"
-            onClick={onAddText}
-            className="mt-4 font-body text-sm transition-opacity hover:opacity-70"
-            style={{ color: "var(--color-ink-3)", borderBottom: "1px solid var(--color-accent)" }}
-          >
-            + Ajouter un nom
-          </button>
-        )}
+        {multiNameEnabled &&
+          texts.length < 3 &&
+          texts[texts.length - 1].length > 0 && (
+            <button
+              type="button"
+              onClick={onAddText}
+              className="font-body mt-4 text-sm transition-opacity hover:opacity-70"
+              style={{
+                color: "var(--color-ink-3)",
+                borderBottom: "1px solid var(--color-accent)",
+              }}
+            >
+              + Ajouter un nom
+            </button>
+          )}
 
-        <p className="mt-4 font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+        <p
+          className="font-body mt-4 text-xs"
+          style={{ color: "var(--color-ink-3)" }}
+        >
           Aperçu en temps réel sur l&apos;image ci-dessus
         </p>
       </div>
@@ -129,11 +174,17 @@ export default function EmbroideryStep({
       {font?.supportsThreadColor !== false && (
         <div style={{ borderTop: "var(--rule-soft)", paddingTop: "1.5rem" }}>
           <div className="mb-4 flex items-center justify-between">
-            <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+            <span
+              className="type-overline"
+              style={{ color: "var(--color-ink-3)" }}
+            >
               Couleur du fil
             </span>
             {color && (
-              <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+              <span
+                className="font-body text-xs"
+                style={{ color: "var(--color-ink-3)" }}
+              >
                 {embroideryColors.find((c) => c.hex === color)?.name}
               </span>
             )}
@@ -145,12 +196,14 @@ export default function EmbroideryStep({
                 <button
                   key={c.hex}
                   onClick={() => onSelectColor(c.hex)}
-                  className={`relative h-10 w-10 shrink-0 rounded-full transition-all duration-200 ${
+                  className={`relative h-10 w-10 shrink-0 rounded-full transition-transform duration-200 ${
                     isSelected ? "scale-110" : "hover:scale-105"
                   }`}
                   style={{
                     backgroundColor: c.hex,
-                    outline: isSelected ? "2px solid var(--color-accent)" : "none",
+                    outline: isSelected
+                      ? "2px solid var(--color-accent)"
+                      : "none",
                     outlineOffset: "2px",
                   }}
                   title={c.name}
@@ -171,11 +224,17 @@ export default function EmbroideryStep({
       {embroideryFonts.length > 1 && (
         <div style={{ borderTop: "var(--rule-soft)", paddingTop: "1.5rem" }}>
           <div className="mb-4 flex items-center justify-between">
-            <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+            <span
+              className="type-overline"
+              style={{ color: "var(--color-ink-3)" }}
+            >
               Police de broderie
             </span>
             {font && (
-              <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+              <span
+                className="font-body text-xs"
+                style={{ color: "var(--color-ink-3)" }}
+              >
                 {font.name}
               </span>
             )}
@@ -189,10 +248,14 @@ export default function EmbroideryStep({
                   key={f.id}
                   type="button"
                   onClick={() => onSelectFont(f)}
-                  className="flex flex-col items-center gap-2 p-4 transition-all"
+                  className="flex flex-col items-center gap-2 p-4 transition-colors"
                   style={{
-                    border: isSelected ? "2px solid var(--color-accent)" : "var(--rule-soft)",
-                    background: isSelected ? "var(--color-paper-2)" : "var(--color-paper)",
+                    border: isSelected
+                      ? "2px solid var(--color-accent)"
+                      : "var(--rule-soft)",
+                    background: isSelected
+                      ? "var(--color-paper-2)"
+                      : "var(--color-paper)",
                   }}
                 >
                   <EmbroideryPreview
@@ -204,7 +267,10 @@ export default function EmbroideryStep({
                     fontFormat={f.format}
                     supportsThreadColor={f.supportsThreadColor}
                   />
-                  <span className="font-body text-xs" style={{ color: "var(--color-ink)" }}>
+                  <span
+                    className="font-body text-xs"
+                    style={{ color: "var(--color-ink)" }}
+                  >
                     {f.name}
                   </span>
                 </button>

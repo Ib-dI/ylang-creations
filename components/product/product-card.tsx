@@ -59,12 +59,12 @@ export function ProductCard({
       className={cn("group", className)}
       style={{
         // Animation CSS pure au lieu de framer-motion
-        animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`,
+        animation: `fadeInUp 0.3s ease-out both`,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card className="relative overflow-hidden border-0 bg-white transition-[transform,box-shadow] duration-500">
+      <Card className="relative overflow-hidden border-0 bg-white transition-[transform,box-shadow] duration-200">
         {/* Image Container */}
         <Link href={`/produits/${product.id}`}>
           <div className="bg-ylang-beige/30 relative aspect-4/5 overflow-hidden">
@@ -95,7 +95,7 @@ export function ProductCard({
                     }}
                     aria-label={`Voir image ${imgIndex + 1}`}
                     className={cn(
-                      "h-2 w-2 rounded-full transition-all duration-300",
+                      "h-2 w-2 rounded-full transition-[width,background-color] duration-300",
                       currentImageIndex === imgIndex
                         ? "w-6 bg-white"
                         : "bg-white/50 hover:bg-white/80",
@@ -112,7 +112,12 @@ export function ProductCard({
           {product.new && (
             <span
               className="text-xs font-semibold tracking-[0.14em] uppercase"
-              style={{ fontFamily: "var(--font-brand)", color: "var(--color-paper)", background: "var(--color-ink)", padding: "2px 8px" }}
+              style={{
+                fontFamily: "var(--font-brand)",
+                color: "var(--color-paper)",
+                background: "var(--color-ink)",
+                padding: "2px 8px",
+              }}
             >
               Nouveau
             </span>
@@ -120,7 +125,12 @@ export function ProductCard({
           {product.customizable && (
             <span
               className="text-xs font-semibold tracking-[0.14em] uppercase"
-              style={{ fontFamily: "var(--font-brand)", color: "var(--color-ink)", background: "var(--color-paper-2)", padding: "2px 8px" }}
+              style={{
+                fontFamily: "var(--font-brand)",
+                color: "var(--color-ink)",
+                background: "var(--color-paper-2)",
+                padding: "2px 8px",
+              }}
             >
               Sur mesure
             </span>
@@ -154,7 +164,7 @@ export function ProductCard({
         >
           <Heart
             className={cn(
-              "h-4 w-4 transition-all duration-300 sm:h-5 sm:w-5",
+              "h-4 w-4 transition-[fill,color,transform] duration-300 sm:h-5 sm:w-5",
               isWishlisted
                 ? "fill-ylang-rose text-ylang-rose scale-110"
                 : "text-ylang-charcoal/60 group-hover/heart:text-ylang-rose group-hover/heart:scale-110",
@@ -163,16 +173,22 @@ export function ProductCard({
         </button>
 
         {/* Infos produit */}
-        <div className="space-y-1.5 p-2.5 sm:p-3" style={{ background: "var(--color-paper-2)" }}>
+        <div
+          className="space-y-1.5 p-2.5 sm:p-3"
+          style={{ background: "var(--color-paper-2)" }}
+        >
           <div>
             <p
               className="mb-0.5 text-xs font-semibold tracking-[0.18em] uppercase"
-              style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+              style={{
+                fontFamily: "var(--font-brand)",
+                color: "var(--color-accent)",
+              }}
             >
               {product.category}
             </p>
             <Link href={`/produits/${product.id}`}>
-              <h3 className="font-display text-ylang-charcoal hover:text-ylang-rose line-clamp-2 text-lg tracking-tight transition-colors duration-300 truncate">
+              <h3 className="font-display text-ylang-charcoal hover:text-ylang-rose line-clamp-2 truncate text-lg tracking-tight transition-colors duration-300">
                 {product.name}
               </h3>
             </Link>
@@ -214,8 +230,14 @@ export function ProductCard({
       {/* Animations CSS dans un style tag */}
       <style jsx>{`
         @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to   { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       `}</style>
     </div>

@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
+import { EASE_OUT } from "@/lib/motion-tokens";
 import Image from "next/image";
 import * as React from "react";
 
@@ -25,7 +26,10 @@ export function TestimonialsSection({
   );
 
   return (
-    <section className="relative overflow-hidden py-20" style={{ background: "var(--color-paper-2)" }}>
+    <section
+      className="relative overflow-hidden py-20"
+      style={{ background: "var(--color-paper-2)" }}
+    >
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -35,16 +39,23 @@ export function TestimonialsSection({
           className="mb-16 text-center"
         >
           <p
-            className="mb-3 text-xs tracking-[0.2em] uppercase font-semibold"
-            style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+            className="mb-3 text-xs font-semibold tracking-[0.2em] uppercase"
+            style={{
+              fontFamily: "var(--font-brand)",
+              color: "var(--color-accent)",
+            }}
           >
             Vos retours en images
           </p>
-          <h2 className="text-ylang-charcoal font-display mb-6 font-semibold tracking-tight" style={{ fontSize: "var(--text-headline)" }}>
+          <h2
+            className="text-ylang-charcoal font-display mb-6 font-semibold tracking-tight"
+            style={{ fontSize: "var(--text-headline)" }}
+          >
             Ils adorent Ylang Créations
           </h2>
           <p className="text-ylang-charcoal/60 mx-auto max-w-2xl">
-            Cliquez sur les images pour découvrir les moments de bonheur partagés par notre communauté.
+            Cliquez sur les images pour découvrir les moments de bonheur
+            partagés par notre communauté.
           </p>
         </motion.div>
 
@@ -58,7 +69,11 @@ export function TestimonialsSection({
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.05,
+                ease: EASE_OUT,
+              }}
             >
               <div
                 className="overflow-hidden transition-opacity duration-300 group-hover:opacity-90"
@@ -66,9 +81,7 @@ export function TestimonialsSection({
               >
                 <Image
                   src={testimonial.image}
-                  alt={
-                    testimonial.name || "Témoignage client Ylang Créations"
-                  }
+                  alt={testimonial.name || "Témoignage client Ylang Créations"}
                   width={400}
                   height={600}
                   className="block h-auto w-full object-cover"

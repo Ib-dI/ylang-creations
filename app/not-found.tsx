@@ -15,7 +15,10 @@ const fadeUp = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.72, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: {
+      duration: 0.72,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+    },
   },
 };
 
@@ -109,7 +112,8 @@ export default function NotFound() {
       <motion.div
         className="absolute -top-32 -left-32 h-[480px] w-[480px] rounded-full"
         style={{
-          background: "radial-gradient(circle, rgba(25,25,28,0.04) 0%, transparent 65%)",
+          background:
+            "radial-gradient(circle, rgba(25,25,28,0.04) 0%, transparent 65%)",
         }}
         animate={{ x: [0, 18, 0], y: [0, -14, 0] }}
         transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
@@ -117,10 +121,16 @@ export default function NotFound() {
       <motion.div
         className="absolute -right-40 -bottom-40 h-[520px] w-[520px] rounded-full"
         style={{
-          background: "radial-gradient(circle, rgba(25,25,28,0.03) 0%, transparent 65%)",
+          background:
+            "radial-gradient(circle, rgba(25,25,28,0.03) 0%, transparent 65%)",
         }}
         animate={{ x: [0, -16, 0], y: [0, 16, 0] }}
-        transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        transition={{
+          duration: 11,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
       />
 
       <AnimatedThread
@@ -132,7 +142,7 @@ export default function NotFound() {
         viewBox="0 0 320 40"
       />
       <AnimatedThread
-        className="bottom-[20%] right-0 opacity-70"
+        className="right-0 bottom-[20%] opacity-70"
         delay={2.2}
         d="M320 20 Q 240 5, 160 20 Q 80 35, 0 20"
         width={320}
@@ -148,14 +158,20 @@ export default function NotFound() {
       >
         {/* Étiquette de marque */}
         <motion.div variants={fadeUp} className="mb-10 flex items-center gap-3">
-          <span className="h-px w-10" style={{ background: "var(--color-ink-3)", opacity: 0.3 }} />
           <span
-            className="font-abramo text-xs uppercase tracking-[0.32em]"
+            className="h-px w-10"
+            style={{ background: "var(--color-ink-3)", opacity: 0.3 }}
+          />
+          <span
+            className="font-abramo text-xs tracking-[0.32em] uppercase"
             style={{ color: "var(--color-ink-3)" }}
           >
             Ylang Créations
           </span>
-          <span className="h-px w-10" style={{ background: "var(--color-ink-3)", opacity: 0.3 }} />
+          <span
+            className="h-px w-10"
+            style={{ background: "var(--color-ink-3)", opacity: 0.3 }}
+          />
         </motion.div>
 
         {/* 404 */}
@@ -198,8 +214,14 @@ export default function NotFound() {
         </div>
 
         {/* Séparateur */}
-        <motion.div variants={fadeUp} className="my-8 flex w-full items-center gap-4">
-          <span className="h-px flex-1" style={{ background: "rgba(25,25,28,0.12)" }} />
+        <motion.div
+          variants={fadeUp}
+          className="my-8 flex w-full items-center gap-4"
+        >
+          <span
+            className="h-px flex-1"
+            style={{ background: "rgba(25,25,28,0.12)" }}
+          />
           <span
             style={{
               color: "var(--color-ink-3)",
@@ -209,7 +231,10 @@ export default function NotFound() {
           >
             PAGE INTROUVABLE
           </span>
-          <span className="h-px flex-1" style={{ background: "rgba(25,25,28,0.12)" }} />
+          <span
+            className="h-px flex-1"
+            style={{ background: "rgba(25,25,28,0.12)" }}
+          />
         </motion.div>
 
         {/* Titre */}
@@ -254,16 +279,18 @@ export default function NotFound() {
           </Link>
           <Link
             href="/collections"
-            className="font-body inline-flex h-12 items-center border px-8 text-sm tracking-wide transition-all duration-200"
+            className="font-body inline-flex h-12 items-center border px-8 text-sm tracking-wide transition-colors duration-200"
             style={{
               borderColor: "var(--rule-soft)",
               color: "var(--color-ink)",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor = "var(--color-ink)";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "var(--color-ink)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor = "var(--rule-soft)";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "var(--rule-soft)";
             }}
           >
             Voir les collections
@@ -275,7 +302,7 @@ export default function NotFound() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.6, duration: 0.8 }}
-          className="font-abramo mt-16 text-[0.65rem] uppercase tracking-[0.28em]"
+          className="font-abramo mt-16 text-[0.65rem] tracking-[0.28em] uppercase"
           style={{ color: "rgba(25,25,28,0.22)" }}
         >
           Erreur 404 &nbsp;—&nbsp; Atelier Ylang Créations

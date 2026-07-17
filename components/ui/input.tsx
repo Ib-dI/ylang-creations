@@ -13,7 +13,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className="group relative w-full">
         {/* Label flottant premium */}
         {label && (
-          <label className="font-body absolute -top-2.5 left-3 bg-white px-2 text-xs uppercase tracking-wide text-gray-400 transition-all duration-200 group-focus-within:text-gray-600">
+          <label className="font-body absolute -top-2.5 left-3 bg-white px-2 text-xs tracking-wide text-gray-400 uppercase transition-colors duration-200 group-focus-within:text-gray-600">
             {label}
           </label>
         )}

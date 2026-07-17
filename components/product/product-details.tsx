@@ -106,7 +106,10 @@ export default function ProductDetails({
   };
 
   return (
-    <div className="section-padding min-h-screen" style={{ background: "var(--color-paper)" }}>
+    <div
+      className="section-padding min-h-screen"
+      style={{ background: "var(--color-paper)" }}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="font-body text-ylang-charcoal/60 mb-4 flex items-center text-sm lg:mb-8">
@@ -129,7 +132,7 @@ export default function ProductDetails({
           {/* Galerie d'images */}
           <div className="flex flex-col gap-3 lg:flex-row lg:gap-4">
             {/* Thumbnails — colonne à gauche sur desktop, rangée sous l'image sur mobile */}
-            <div className="order-2 lg:order-1 flex flex-row lg:flex-col gap-2 lg:w-[76px] shrink-0 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:h-[min(75vh,720px)]">
+            <div className="order-2 flex shrink-0 flex-row gap-2 overflow-x-auto lg:order-1 lg:h-[min(75vh,720px)] lg:w-[76px] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto">
               {productImages.map((img, idx) => (
                 <motion.button
                   key={idx}
@@ -138,10 +141,10 @@ export default function ProductDetails({
                   onClick={() => setSelectedImage(idx)}
                   aria-label={`Voir l'image ${idx + 1}`}
                   aria-pressed={selectedImage === idx}
-                  className={`relative aspect-square shrink-0 w-16 lg:w-full overflow-hidden rounded-lg border-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50 ${
+                  className={`focus-visible:ring-ylang-rose/50 relative aspect-square w-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors focus:outline-none focus-visible:ring-2 lg:w-full ${
                     selectedImage === idx
                       ? "border-ylang-rose"
-                      : "border-transparent hover:border-ylang-rose/40"
+                      : "hover:border-ylang-rose/40 border-transparent"
                   }`}
                 >
                   <Image
@@ -149,7 +152,7 @@ export default function ProductDetails({
                     alt={`Vue ${idx + 1}`}
                     fill
                     sizes="(max-width: 1024px) 64px, 76px"
-                    className={`object-cover transition-transform duration-500 ${
+                    className={`object-cover transition-transform duration-200 ${
                       selectedImage === idx ? "scale-110" : "scale-100"
                     }`}
                   />
@@ -164,7 +167,10 @@ export default function ProductDetails({
             </div>
 
             {/* Image principale */}
-            <div className="order-1 lg:order-2 relative flex-1 aspect-3/4 lg:aspect-auto lg:h-[min(75vh,720px)] overflow-hidden" style={{ background: "var(--color-paper-3)" }}>
+            <div
+              className="relative order-1 aspect-3/4 flex-1 overflow-hidden lg:order-2 lg:aspect-auto lg:h-[min(75vh,720px)]"
+              style={{ background: "var(--color-paper-3)" }}
+            >
               <motion.div style={{ x: xPct }} className="flex h-full">
                 {productImages.map((img, i) => (
                   <div key={i} className="relative h-full w-full shrink-0">
@@ -195,19 +201,19 @@ export default function ProductDetails({
               {/* Boutons navigation */}
               <motion.button
                 whileHover={{ scale: 1.1, backgroundColor: "white" }}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={prevImage}
                 aria-label="Image précédente"
-                className="absolute top-1/2 left-4 z-10 -translate-y-1/2 select-none rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50"
+                className="focus-visible:ring-ylang-rose/50 absolute top-1/2 left-4 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 select-none focus:outline-none focus-visible:ring-2"
               >
                 <ChevronLeft className="text-ylang-charcoal h-6 w-6" />
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.1, backgroundColor: "white" }}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={nextImage}
                 aria-label="Image suivante"
-                className="absolute top-1/2 right-4 z-10 -translate-y-1/2 select-none rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50"
+                className="focus-visible:ring-ylang-rose/50 absolute top-1/2 right-4 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 select-none focus:outline-none focus-visible:ring-2"
               >
                 <ChevronRight className="text-ylang-charcoal h-6 w-6" />
               </motion.button>
@@ -215,10 +221,10 @@ export default function ProductDetails({
               {/* Bouton zoom */}
               <motion.button
                 whileHover={{ scale: 1.1, backgroundColor: "white" }}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={() => setShowZoom(true)}
                 aria-label="Agrandir l'image"
-                className="absolute right-4 bottom-4 z-10 select-none rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50"
+                className="focus-visible:ring-ylang-rose/50 absolute right-4 bottom-4 z-10 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 select-none focus:outline-none focus-visible:ring-2"
               >
                 <ZoomIn className="text-ylang-charcoal h-5 w-5" />
               </motion.button>
@@ -229,11 +235,14 @@ export default function ProductDetails({
           <div className="space-y-5 lg:space-y-6">
             {/* En-tête */}
             <div>
-              <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>
+              <p
+                className="type-overline mb-2"
+                style={{ color: "var(--color-accent)" }}
+              >
                 {product.category}
               </p>
               <h1
-                className="mb-2 type-headline"
+                className="type-headline mb-2"
                 style={{ color: "var(--color-ink)" }}
               >
                 {product.name}
@@ -303,7 +312,7 @@ export default function ProductDetails({
                       key={size}
                       type="button"
                       onClick={() => setSelectedSize(size)}
-                      className={`font-body min-w-11 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50 ${
+                      className={`font-body focus-visible:ring-ylang-rose/50 min-w-11 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 ${
                         selectedSize === size
                           ? "border-ylang-rose bg-ylang-rose/10 text-ylang-rose"
                           : "border-ylang-beige/60 text-ylang-charcoal hover:border-ylang-rose/40 hover:text-ylang-rose"
@@ -349,7 +358,10 @@ export default function ProductDetails({
               variant="maison"
               size="lg"
               className="w-full"
-              style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
+              style={{
+                background: "var(--color-ink)",
+                color: "var(--color-paper)",
+              }}
               onClick={() => {
                 const item: CartItem = {
                   id: `${product.id}-standard-${selectedSize ?? "unique"}-${Date.now()}`,
@@ -375,7 +387,7 @@ export default function ProductDetails({
 
             {/* Actions secondaires */}
             <div className="flex gap-3">
-              <button
+              <motion.button
                 onClick={() =>
                   toggleItem({
                     id: `wishlist-${product.id}`,
@@ -388,19 +400,30 @@ export default function ProductDetails({
                     customizable: product.customizable,
                   })
                 }
-                aria-label={isWishlisted ? "Retirer des favoris" : "Ajouter aux favoris"}
+                whileTap={{ scale: 0.96 }}
+                aria-label={
+                  isWishlisted ? "Retirer des favoris" : "Ajouter aux favoris"
+                }
                 aria-pressed={isWishlisted}
-                className={`font-body group flex flex-1 items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ylang-rose/50 ${
+                className={`font-body group focus-visible:ring-ylang-rose/50 flex flex-1 items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm transition-colors focus:outline-none focus-visible:ring-2 ${
                   isWishlisted
                     ? "border-ylang-rose bg-ylang-rose/10 text-ylang-rose"
                     : "border-ylang-beige/80 bg-ylang-beige/60 text-ylang-charcoal hover:border-ylang-rose/50 hover:text-ylang-rose"
                 }`}
               >
-                <Heart
-                  className={`h-5 w-5 transition-colors group-hover:text-ylang-rose ${isWishlisted ? "fill-current" : ""}`}
-                />
+                <motion.span
+                  key={isWishlisted ? "filled" : "empty"}
+                  initial={{ scale: 0.7 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", duration: 0.4, bounce: 0.3 }}
+                  className="inline-flex"
+                >
+                  <Heart
+                    className={`group-hover:text-ylang-rose h-5 w-5 transition-colors ${isWishlisted ? "fill-current" : ""}`}
+                  />
+                </motion.span>
                 {isWishlisted ? "Ajouté aux favoris" : "Ajouter aux favoris"}
-              </button>
+              </motion.button>
             </div>
 
             {/* Points forts */}
@@ -410,10 +433,16 @@ export default function ProductDetails({
                   <Truck className="text-ylang-charcoal h-5 w-5" />
                 </div>
                 <div>
-                  <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
+                  <p
+                    className="type-caption font-medium"
+                    style={{ color: "var(--color-ink)" }}
+                  >
                     Livraison offerte
                   </p>
-                  <p className="type-caption" style={{ color: "var(--color-ink-3)" }}>
+                  <p
+                    className="type-caption"
+                    style={{ color: "var(--color-ink-3)" }}
+                  >
                     Dès {freeShippingThreshold}€ d&apos;achat
                   </p>
                 </div>
@@ -423,10 +452,16 @@ export default function ProductDetails({
                   <Shield className="text-ylang-charcoal h-5 w-5" />
                 </div>
                 <div>
-                  <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
+                  <p
+                    className="type-caption font-medium"
+                    style={{ color: "var(--color-ink)" }}
+                  >
                     Paiement sécurisé
                   </p>
-                  <p className="type-caption" style={{ color: "var(--color-ink-3)" }}>
+                  <p
+                    className="type-caption"
+                    style={{ color: "var(--color-ink-3)" }}
+                  >
                     Cryptage SSL
                   </p>
                 </div>
@@ -436,10 +471,16 @@ export default function ProductDetails({
                   <Package className="text-ylang-charcoal h-5 w-5" />
                 </div>
                 <div>
-                  <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
+                  <p
+                    className="type-caption font-medium"
+                    style={{ color: "var(--color-ink)" }}
+                  >
                     Fait main
                   </p>
-                  <p className="type-caption" style={{ color: "var(--color-ink-3)" }}>
+                  <p
+                    className="type-caption"
+                    style={{ color: "var(--color-ink-3)" }}
+                  >
                     Artisanat français
                   </p>
                 </div>
@@ -450,10 +491,16 @@ export default function ProductDetails({
                     <Wand2 className="text-ylang-charcoal h-5 w-5" />
                   </div>
                   <div>
-                    <p className="type-caption font-medium" style={{ color: "var(--color-ink)" }}>
+                    <p
+                      className="type-caption font-medium"
+                      style={{ color: "var(--color-ink)" }}
+                    >
                       Sur mesure
                     </p>
-                    <p className="type-caption" style={{ color: "var(--color-ink-3)" }}>
+                    <p
+                      className="type-caption"
+                      style={{ color: "var(--color-ink-3)" }}
+                    >
                       100% personnalisable
                     </p>
                   </div>
@@ -469,24 +516,36 @@ export default function ProductDetails({
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           className="mb-8 lg:mb-16"
-          style={{ borderTop: "var(--rule-hair)", borderBottom: "var(--rule-hair)", padding: "2.5rem 0" }}
+          style={{
+            borderTop: "var(--rule-hair)",
+            borderBottom: "var(--rule-hair)",
+            padding: "2.5rem 0",
+          }}
         >
           <div className="grid gap-10 lg:grid-cols-[1fr_350px]">
             <div>
               <h2
-                className="mb-6 type-headline"
+                className="type-headline mb-6"
                 style={{ color: "var(--color-ink)" }}
               >
                 Description détaillée
               </h2>
-              <p className="font-body leading-relaxed" style={{ color: "var(--color-ink)", opacity: 0.8 }}>
+              <p
+                className="font-body leading-relaxed"
+                style={{ color: "var(--color-ink)", opacity: 0.8 }}
+              >
                 {product.longDescription}
               </p>
             </div>
 
-            <div style={{ background: "var(--color-paper-2)", padding: "1.5rem 2rem" }}>
+            <div
+              style={{
+                background: "var(--color-paper-2)",
+                padding: "1.5rem 2rem",
+              }}
+            >
               <h3
-                className="mb-6 type-title"
+                className="type-title mb-6"
                 style={{ color: "var(--color-ink)" }}
               >
                 Caractéristiques
@@ -502,7 +561,10 @@ export default function ProductDetails({
                       className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center"
                       style={{ background: "var(--color-ink)" }}
                     >
-                      <Check className="h-3 w-3" style={{ color: "var(--color-paper)" }} />
+                      <Check
+                        className="h-3 w-3"
+                        style={{ color: "var(--color-paper)" }}
+                      />
                     </div>
                     <span>{feature}</span>
                   </li>
@@ -532,10 +594,16 @@ export default function ProductDetails({
               viewport={{ once: true }}
               className="mb-6 text-center lg:mb-8"
             >
-              <p className="type-overline mb-3" style={{ color: "var(--color-accent)" }}>
+              <p
+                className="type-overline mb-3"
+                style={{ color: "var(--color-accent)" }}
+              >
                 Inspirations
               </p>
-              <h2 className="type-headline mb-2" style={{ color: "var(--color-ink)" }}>
+              <h2
+                className="type-headline mb-2"
+                style={{ color: "var(--color-ink)" }}
+              >
                 Vous aimerez aussi
               </h2>
               <p className="font-body text-ylang-charcoal/60">

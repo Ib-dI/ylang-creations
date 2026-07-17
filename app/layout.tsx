@@ -1,5 +1,6 @@
 import { ClientLayoutWrapper } from "@/components/layout/client-layout-wrapper";
 import FontPreloader from "@/components/layout/font-preloader";
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter, Playfair_Display } from "next/font/google";
 import { Suspense } from "react";
@@ -125,6 +126,7 @@ export default function RootLayout({
         <Suspense>
           <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
         </Suspense>
+        <Toaster position="bottom-center" />
       </body>
     </html>
   );

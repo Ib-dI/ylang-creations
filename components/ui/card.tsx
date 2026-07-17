@@ -9,7 +9,7 @@ const Card = React.forwardRef<
     ref={ref}
     className={cn(
       "bg-ylang-cream",
-      "transition-all duration-500",
+      "transition-colors duration-200",
       className
     )}
     {...props}

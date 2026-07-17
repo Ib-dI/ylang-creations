@@ -77,33 +77,54 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
 
   const imgFade = {
     initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { duration: shouldReduce ? 0 : 0.55, ease } },
-    exit: { opacity: 0, transition: { duration: shouldReduce ? 0 : 0.55, ease } },
+    animate: {
+      opacity: 1,
+      transition: { duration: shouldReduce ? 0 : 0.55, ease },
+    },
+    exit: {
+      opacity: 0,
+      transition: { duration: shouldReduce ? 0 : 0.55, ease },
+    },
   };
 
   // opacity-only per spec — no translateY
   const textBlock = (delay = 0) => ({
     initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { duration: shouldReduce ? 0 : 0.4, delay: shouldReduce ? 0 : delay, ease } },
-    exit: { opacity: 0, transition: { duration: shouldReduce ? 0 : 0.15, ease } },
+    animate: {
+      opacity: 1,
+      transition: {
+        duration: shouldReduce ? 0 : 0.4,
+        delay: shouldReduce ? 0 : delay,
+        ease,
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: { duration: shouldReduce ? 0 : 0.15, ease },
+    },
   });
 
   return (
     <section
       aria-label="Présentation Ylang Créations"
       className="relative grid overflow-hidden lg:grid-cols-[2fr_3fr]"
-      style={{ minHeight: "calc(100svh - 88px)", background: "var(--color-paper)" }}
+      style={{
+        minHeight: "calc(100svh - 88px)",
+        background: "var(--color-paper)",
+      }}
     >
       {/* ── Colonne texte (gauche) ── */}
-      <div className="flex flex-col justify-center px-8 py-20 sm:px-12 lg:px-16 xl:px-20 order-2 lg:order-1">
+      <div className="order-2 flex flex-col justify-center px-8 py-20 sm:px-12 lg:order-1 lg:px-16 xl:px-20">
         <AnimatePresence mode="wait">
           <motion.div key={slide.id} className="max-w-lg">
-
             {/* Eyebrow */}
             <motion.p
               {...textBlock(0)}
-              className="mb-7 text-xs uppercase font-semibold tracking-[0.22em]"
-              style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+              className="mb-7 text-xs font-semibold tracking-[0.22em] uppercase"
+              style={{
+                fontFamily: "var(--font-brand)",
+                color: "var(--color-accent)",
+              }}
             >
               Ylang Créations — Artisan Mahorais
             </motion.p>
@@ -111,8 +132,11 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
             {/* H1 — Adobe Garamond Pro, regular italic */}
             <motion.h1
               {...textBlock(0.06)}
-              className="mb-5 type-display text-4xl"
-              style={{ color: "var(--color-ink)", fontFamily: "var(--font-display)" }}
+              className="type-display mb-5 text-4xl"
+              style={{
+                color: "var(--color-ink)",
+                fontFamily: "var(--font-display)",
+              }}
             >
               {slide.title}
             </motion.h1>
@@ -120,8 +144,11 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
             {/* Sous-titre — Inter uppercase */}
             <motion.p
               {...textBlock(0.12)}
-              className="mb-10 type-overline leading-relaxed"
-              style={{ fontSize: "var(--text-caption)", color: "var(--color-ink-2)" }}
+              className="type-overline mb-10 leading-relaxed"
+              style={{
+                fontSize: "var(--text-caption)",
+                color: "var(--color-ink-2)",
+              }}
             >
               {slide.subtitle}
             </motion.p>
@@ -130,11 +157,14 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
             <motion.div {...textBlock(0.18)}>
               <Link
                 href={slide.link}
-                className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.14em]"
-                style={{ fontFamily: "var(--font-body)", color: "var(--color-ink)" }}
+                className="group inline-flex items-center gap-2 text-sm tracking-[0.14em] uppercase"
+                style={{
+                  fontFamily: "var(--font-body)",
+                  color: "var(--color-ink)",
+                }}
               >
                 <span
-                  className="border-b pb-px transition-all duration-300"
+                  className="border-b pb-px transition-colors duration-300"
                   style={{ borderColor: "var(--color-accent)" }}
                 >
                   {slide.cta}
@@ -152,7 +182,11 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
 
         {/* Dots de navigation */}
         {slides.length > 1 && (
-          <div className="mt-14 flex items-center gap-3" role="tablist" aria-label="Navigation des diapositives">
+          <div
+            className="mt-14 flex items-center gap-3"
+            role="tablist"
+            aria-label="Navigation des diapositives"
+          >
             {slides.map((_, i) => (
               <button
                 key={i}
@@ -160,10 +194,11 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
                 aria-selected={i === index}
                 aria-label={`Diapositive ${i + 1}`}
                 onClick={() => go(i)}
-                className="h-px transition-all duration-500 focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="h-px transition-[width,background-color] duration-500 focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
                   width: i === index ? "2.5rem" : "1rem",
-                  background: i === index ? "var(--color-accent)" : "var(--color-ink-2)",
+                  background:
+                    i === index ? "var(--color-accent)" : "var(--color-ink-2)",
                   border: "none",
                   cursor: "pointer",
                   outlineColor: "var(--color-accent)",
@@ -176,7 +211,7 @@ export function HeroSection({ initialSlides }: { initialSlides?: Slide[] }) {
 
       {/* ── Colonne image (droite) ── */}
       <div
-        className="relative h-[56vw] lg:h-auto order-1 lg:order-2"
+        className="relative order-1 h-[56vw] lg:order-2 lg:h-auto"
         style={{ background: "var(--color-paper-3)" }}
       >
         <AnimatePresence mode="sync">

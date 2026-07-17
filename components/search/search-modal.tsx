@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   Clock,
@@ -10,6 +10,7 @@ import {
   TrendingUp,
   X,
 } from "lucide-react";
+import { EASE_OUT } from "@/lib/motion-tokens";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
@@ -51,6 +52,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const shouldReduce = useReducedMotion();
 
   const [debouncedQuery, setDebouncedQuery] = React.useState(query);
 
@@ -117,7 +119,10 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   }, [onClose]);
 
   const saveSearch = (searchTerm: string) => {
-    const updated = [searchTerm, ...recentSearches.filter((s) => s !== searchTerm)].slice(0, 5);
+    const updated = [
+      searchTerm,
+      ...recentSearches.filter((s) => s !== searchTerm),
+    ].slice(0, 5);
     setRecentSearches(updated);
     localStorage.setItem("ylang-recent-searches", JSON.stringify(updated));
   };
@@ -171,31 +176,61 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ type: "tween", duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            initial={{
+              opacity: 0,
+              transform: shouldReduce
+                ? "translateY(0px)"
+                : "translateY(-12px)",
+            }}
+            animate={{ opacity: 1, transform: "translateY(0px)" }}
+            exit={{
+              opacity: 0,
+              transform: shouldReduce
+                ? "translateY(0px)"
+                : "translateY(-12px)",
+            }}
+            transition={{
+              type: "tween",
+              duration: shouldReduce ? 0.15 : 0.25,
+              ease: EASE_OUT,
+            }}
             className="fixed inset-0 z-60 flex items-start justify-center p-0 sm:p-4 sm:pt-20 lg:pt-24"
           >
             <div
               className="flex h-full w-full flex-col overflow-hidden sm:h-auto sm:max-w-2xl"
-              style={{ background: "var(--color-paper)", boxShadow: "0 8px 60px rgba(0,0,0,0.12)" }}
+              style={{
+                background: "var(--color-paper)",
+                boxShadow: "0 8px 60px rgba(0,0,0,0.12)",
+              }}
             >
               {/* Search Input */}
               <div
                 className="sticky top-0 z-10 flex items-center gap-3 px-5 py-4"
-                style={{ background: "var(--color-paper)", borderBottom: "var(--rule-hair)" }}
+                style={{
+                  background: "var(--color-paper)",
+                  borderBottom: "var(--rule-hair)",
+                }}
               >
-                <Search className="h-4 w-4 shrink-0" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
-                <form onSubmit={handleSearchSubmit} className="flex flex-1 items-center">
+                <Search
+                  className="h-4 w-4 shrink-0"
+                  style={{ color: "var(--color-ink-3)" }}
+                  strokeWidth={1.5}
+                />
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="flex flex-1 items-center"
+                >
                   <input
                     ref={inputRef}
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Rechercher une création…"
-                    className="flex-1 bg-transparent font-body text-base outline-none placeholder:opacity-40"
-                    style={{ color: "var(--color-ink)", WebkitAppearance: "none" }}
+                    className="font-body flex-1 bg-transparent text-base outline-none placeholder:opacity-40"
+                    style={{
+                      color: "var(--color-ink)",
+                      WebkitAppearance: "none",
+                    }}
                   />
                 </form>
                 <div className="flex items-center gap-2">
@@ -226,13 +261,21 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               <div className="flex-1 overflow-y-auto">
                 {isLoading ? (
                   <div className="flex h-40 items-center justify-center">
-                    <Loader2 className="h-5 w-5 animate-spin" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+                    <Loader2
+                      className="h-5 w-5 animate-spin"
+                      style={{ color: "var(--color-ink-3)" }}
+                      strokeWidth={1.5}
+                    />
                   </div>
                 ) : results.length > 0 ? (
                   /* Résultats */
                   <div className="px-5 py-4">
-                    <p className="font-body mb-4 text-xs" style={{ color: "var(--color-ink-3)" }}>
-                      {results.length} résultat{results.length > 1 ? "s" : ""} pour « {query} »
+                    <p
+                      className="font-body mb-4 text-xs"
+                      style={{ color: "var(--color-ink-3)" }}
+                    >
+                      {results.length} résultat{results.length > 1 ? "s" : ""}{" "}
+                      pour « {query} »
                     </p>
                     <div>
                       {results.map((product) => (
@@ -255,12 +298,15 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           </div>
                           <div className="min-w-0 flex-1">
                             <h4
-                              className="truncate font-body text-sm font-medium"
+                              className="font-body truncate text-sm font-medium"
                               style={{ color: "var(--color-ink)" }}
                             >
                               {product.name}
                             </h4>
-                            <p className="font-body text-xs mt-0.5" style={{ color: "var(--color-ink-3)" }}>
+                            <p
+                              className="font-body mt-0.5 text-xs"
+                              style={{ color: "var(--color-ink-3)" }}
+                            >
                               {product.category}
                             </p>
                           </div>
@@ -275,12 +321,19 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               {product.price} €
                             </p>
                             {product.customizable && (
-                              <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
+                              <span
+                                className="font-body text-xs"
+                                style={{ color: "var(--color-ink-3)" }}
+                              >
                                 Personnalisable
                               </span>
                             )}
                           </div>
-                          <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+                          <ArrowRight
+                            className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                            style={{ color: "var(--color-ink-3)" }}
+                            strokeWidth={1.5}
+                          />
                         </button>
                       ))}
                     </div>
@@ -288,8 +341,11 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     {/* Voir tous */}
                     <button
                       onClick={() => handleQuickSearch(query)}
-                      className="mt-4 flex w-full items-center justify-center gap-2 py-4 font-body text-sm transition-opacity hover:opacity-70"
-                      style={{ borderTop: "var(--rule-soft)", color: "var(--color-ink)" }}
+                      className="font-body mt-4 flex w-full items-center justify-center gap-2 py-4 text-sm transition-opacity hover:opacity-70"
+                      style={{
+                        borderTop: "var(--rule-soft)",
+                        color: "var(--color-ink)",
+                      }}
                     >
                       Voir tous les résultats
                       <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -298,7 +354,11 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 ) : query.length >= 2 ? (
                   /* Aucun résultat */
                   <div className="px-5 py-16 text-center">
-                    <Search className="mx-auto mb-5 h-8 w-8" style={{ color: "var(--color-ink-3)" }} strokeWidth={1} />
+                    <Search
+                      className="mx-auto mb-5 h-8 w-8"
+                      style={{ color: "var(--color-ink-3)" }}
+                      strokeWidth={1}
+                    />
                     <p
                       className="mb-2"
                       style={{
@@ -309,20 +369,31 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     >
                       Aucun résultat pour « {query} »
                     </p>
-                    <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
-                      Essayez avec d&apos;autres mots-clés ou explorez nos suggestions
+                    <p
+                      className="font-body text-sm"
+                      style={{ color: "var(--color-ink-3)" }}
+                    >
+                      Essayez avec d&apos;autres mots-clés ou explorez nos
+                      suggestions
                     </p>
                   </div>
                 ) : (
                   /* État initial */
-                  <div className="px-5 py-6 space-y-8">
+                  <div className="space-y-8 px-5 py-6">
                     {/* Recherches récentes */}
                     {recentSearches.length > 0 && (
                       <div>
                         <div className="mb-4 flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Clock className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
-                            <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+                            <Clock
+                              className="h-3.5 w-3.5"
+                              style={{ color: "var(--color-ink-3)" }}
+                              strokeWidth={1.5}
+                            />
+                            <span
+                              className="type-overline"
+                              style={{ color: "var(--color-ink-3)" }}
+                            >
                               Récentes
                             </span>
                           </div>
@@ -368,8 +439,15 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     {/* Suggestions */}
                     <div>
                       <div className="mb-4 flex items-center gap-2">
-                        <TrendingUp className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
-                        <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+                        <TrendingUp
+                          className="h-3.5 w-3.5"
+                          style={{ color: "var(--color-ink-3)" }}
+                          strokeWidth={1.5}
+                        />
+                        <span
+                          className="type-overline"
+                          style={{ color: "var(--color-ink-3)" }}
+                        >
                           Suggestions
                         </span>
                       </div>
@@ -379,7 +457,10 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                             key={term}
                             onClick={() => handleQuickSearch(term)}
                             className="font-body px-4 py-2 text-sm transition-opacity hover:opacity-70"
-                            style={{ border: "var(--rule-soft)", color: "var(--color-ink)" }}
+                            style={{
+                              border: "var(--rule-soft)",
+                              color: "var(--color-ink)",
+                            }}
                           >
                             {term}
                           </button>
@@ -389,10 +470,22 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
                     {/* Produits populaires */}
                     {popularProducts.length > 0 && (
-                      <div style={{ borderTop: "var(--rule-hair)", paddingTop: "1.5rem" }}>
+                      <div
+                        style={{
+                          borderTop: "var(--rule-hair)",
+                          paddingTop: "1.5rem",
+                        }}
+                      >
                         <div className="mb-4 flex items-center gap-2">
-                          <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
-                          <span className="type-overline" style={{ color: "var(--color-ink-3)" }}>
+                          <Sparkles
+                            className="h-3.5 w-3.5"
+                            style={{ color: "var(--color-ink-3)" }}
+                            strokeWidth={1.5}
+                          />
+                          <span
+                            className="type-overline"
+                            style={{ color: "var(--color-ink-3)" }}
+                          >
                             Populaires
                           </span>
                         </div>
@@ -403,7 +496,8 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               onClick={() => handleProductClick(product)}
                               className="group flex flex-col items-center py-5 text-center transition-opacity hover:opacity-70 sm:py-4"
                               style={{
-                                borderLeft: i > 0 ? "var(--rule-soft)" : undefined,
+                                borderLeft:
+                                  i > 0 ? "var(--rule-soft)" : undefined,
                                 borderTop: "var(--rule-soft)",
                               }}
                             >
@@ -418,15 +512,18 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 />
                                 {product.new && (
                                   <span
-                                    className="absolute top-1 right-1 px-1.5 py-0.5 font-body text-[10px]"
-                                    style={{ background: "var(--color-paper)", color: "var(--color-accent)" }}
+                                    className="font-body absolute top-1 right-1 px-1.5 py-0.5 text-[10px]"
+                                    style={{
+                                      background: "var(--color-paper)",
+                                      color: "var(--color-accent)",
+                                    }}
                                   >
                                     Nouveau
                                   </span>
                                 )}
                               </div>
                               <h4
-                                className="line-clamp-2 font-body text-xs font-medium leading-snug"
+                                className="font-body line-clamp-2 text-xs leading-snug font-medium"
                                 style={{ color: "var(--color-ink)" }}
                               >
                                 {product.name}

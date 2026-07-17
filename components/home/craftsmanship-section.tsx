@@ -206,7 +206,7 @@ export function CraftsmanshipSection({ craftsmanshipImage = "/images/atelier.png
         @keyframes scaleIn {
           from {
             opacity: 0;
-            transform: scale(0.8);
+            transform: scale(0.92);
           }
           to {
             opacity: 1;

@@ -8,8 +8,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { EASE_OUT } from "@/lib/motion-tokens";
+import { AnimatePresence, motion } from "framer-motion";
 import { Check } from "lucide-react";
-import type { ConfigurateurFabric, ConfigurateurFabricCategory } from "@/types/configurateur-page";
+import type {
+  ConfigurateurFabric,
+  ConfigurateurFabricCategory,
+} from "@/types/configurateur-page";
 
 interface FabricStepProps {
   categories: ConfigurateurFabricCategory[];
@@ -45,9 +50,11 @@ function FabricGridItem({ fabric, isSelected, onSelect }: FabricGridItemProps) {
   return (
     <button
       onClick={onSelect}
-      className="group relative flex flex-col overflow-hidden transition-all duration-300"
+      className="group relative flex flex-col overflow-hidden transition-[border-color,transform] duration-200 active:scale-[0.97]"
       style={{
-        border: isSelected ? "2px solid var(--color-accent)" : "2px solid transparent",
+        border: isSelected
+          ? "2px solid var(--color-accent)"
+          : "2px solid transparent",
         outline: "none",
       }}
     >
@@ -55,25 +62,40 @@ function FabricGridItem({ fabric, isSelected, onSelect }: FabricGridItemProps) {
         className="aspect-square w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
         style={{ backgroundImage: `url('${fabric.image}')` }}
       />
-      {isSelected && (
-        <div
-          className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center"
-          style={{ background: "var(--color-accent)" }}
-        >
-          <Check className="h-2.5 w-2.5 text-white" strokeWidth={2.5} />
-        </div>
-      )}
+      <AnimatePresence>
+        {isSelected && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.15, ease: EASE_OUT }}
+            className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center"
+            style={{ background: "var(--color-accent)" }}
+          >
+            <Check className="h-2.5 w-2.5 text-white" strokeWidth={2.5} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </button>
   );
 }
 
-function SeeAllDialog({ title, description, fabrics, selectedFabricId, onSelectFabric }: SeeAllDialogProps) {
+function SeeAllDialog({
+  title,
+  description,
+  fabrics,
+  selectedFabricId,
+  onSelectFabric,
+}: SeeAllDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <button
           className="font-body text-xs transition-opacity hover:opacity-70"
-          style={{ color: "var(--color-ink-3)", borderBottom: "1px solid var(--color-accent)" }}
+          style={{
+            color: "var(--color-ink-3)",
+            borderBottom: "1px solid var(--color-accent)",
+          }}
         >
           Voir tout →
         </button>
@@ -85,7 +107,10 @@ function SeeAllDialog({ title, description, fabrics, selectedFabricId, onSelectF
       >
         <div
           className="sticky top-0 z-20 px-8 py-6"
-          style={{ background: "var(--color-paper)", borderBottom: "var(--rule-hair)" }}
+          style={{
+            background: "var(--color-paper)",
+            borderBottom: "var(--rule-hair)",
+          }}
         >
           <DialogHeader>
             <DialogTitle
@@ -98,13 +123,19 @@ function SeeAllDialog({ title, description, fabrics, selectedFabricId, onSelectF
             >
               {title}
             </DialogTitle>
-            <DialogDescription className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+            <DialogDescription
+              className="font-body text-sm"
+              style={{ color: "var(--color-ink-3)" }}
+            >
               {description}
             </DialogDescription>
           </DialogHeader>
         </div>
 
-        <div className="overflow-y-auto px-8 py-8" style={{ maxHeight: "calc(90vh - 120px)" }}>
+        <div
+          className="overflow-y-auto px-8 py-8"
+          style={{ maxHeight: "calc(90vh - 120px)" }}
+        >
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {fabrics.map((fabric) => (
               <FabricGridItem
@@ -149,7 +180,10 @@ function FabricCategorySection({
           >
             {title}
           </h3>
-          <p className="font-body mt-1 text-xs" style={{ color: "var(--color-ink-3)" }}>
+          <p
+            className="font-body mt-1 text-xs"
+            style={{ color: "var(--color-ink-3)" }}
+          >
             {description}
           </p>
         </div>
@@ -177,11 +211,19 @@ function FabricCategorySection({
   );
 }
 
-export default function FabricStep({ categories, fabrics, selectedFabricId, onSelectFabric }: FabricStepProps) {
+export default function FabricStep({
+  categories,
+  fabrics,
+  selectedFabricId,
+  onSelectFabric,
+}: FabricStepProps) {
   return (
     <>
       <div>
-        <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>
+        <p
+          className="type-overline mb-2"
+          style={{ color: "var(--color-accent)" }}
+        >
           Étape 02
         </p>
         <h2
@@ -194,7 +236,10 @@ export default function FabricStep({ categories, fabrics, selectedFabricId, onSe
         >
           Choisissez votre tissu
         </h2>
-        <p className="font-body mt-1 text-sm" style={{ color: "var(--color-ink-3)" }}>
+        <p
+          className="font-body mt-1 text-sm"
+          style={{ color: "var(--color-ink-3)" }}
+        >
           Visible en temps réel · Collection premium
         </p>
       </div>

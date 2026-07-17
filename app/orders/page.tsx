@@ -4,12 +4,7 @@ import { customer, order } from "@/db/schema";
 import { db } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { desc, eq, type InferSelectModel } from "drizzle-orm";
-import {
-  ArrowLeft,
-  Calendar,
-  ChevronRight,
-  ShoppingBag,
-} from "lucide-react";
+import { ArrowLeft, Calendar, ChevronRight, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -97,7 +92,7 @@ export default async function OrdersPage() {
               return (
                 <div
                   key={order.id}
-                  className="border-ylang-beige overflow-hidden rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md"
+                  className="border-ylang-beige overflow-hidden rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md"
                 >
                   <div className="border-ylang-beige bg-ylang-cream/50 flex flex-wrap items-center justify-between gap-4 border-b px-6 py-4">
                     <div className="flex flex-wrap gap-4 sm:gap-8">
