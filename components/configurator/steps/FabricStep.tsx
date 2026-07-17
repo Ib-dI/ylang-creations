@@ -8,6 +8,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { EASE_OUT } from "@/lib/motion-tokens";
+import { AnimatePresence, motion } from "framer-motion";
 import { Check } from "lucide-react";
 import type {
   ConfigurateurFabric,
@@ -60,14 +62,20 @@ function FabricGridItem({ fabric, isSelected, onSelect }: FabricGridItemProps) {
         className="aspect-square w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
         style={{ backgroundImage: `url('${fabric.image}')` }}
       />
-      {isSelected && (
-        <div
-          className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center"
-          style={{ background: "var(--color-accent)" }}
-        >
-          <Check className="h-2.5 w-2.5 text-white" strokeWidth={2.5} />
-        </div>
-      )}
+      <AnimatePresence>
+        {isSelected && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.15, ease: EASE_OUT }}
+            className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center"
+            style={{ background: "var(--color-accent)" }}
+          >
+            <Check className="h-2.5 w-2.5 text-white" strokeWidth={2.5} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </button>
   );
 }

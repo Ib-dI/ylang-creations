@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Check, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useNavigationStore } from "@/lib/store/navigation-store";
@@ -417,58 +418,92 @@ const ConfiguratorClient = ({
 
             {/* Content */}
             <div className="space-y-6">
-              {activeTab === "product" && (
-                <ProductStep
-                  products={products}
-                  productColors={productColors}
-                  selectedProduct={configuration.product}
-                  selectedSize={configuration.size}
-                  selectedColor={configuration.selectedColor}
-                  onSelectProduct={handleSelectProduct}
-                  onSelectSize={handleSelectSize}
-                  onSelectColor={handleSelectProductColor}
-                />
-              )}
+              <AnimatePresence mode="wait">
+                {activeTab === "product" && (
+                  <motion.div
+                    key="product"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <ProductStep
+                      products={products}
+                      productColors={productColors}
+                      selectedProduct={configuration.product}
+                      selectedSize={configuration.size}
+                      selectedColor={configuration.selectedColor}
+                      onSelectProduct={handleSelectProduct}
+                      onSelectSize={handleSelectSize}
+                      onSelectColor={handleSelectProductColor}
+                    />
+                  </motion.div>
+                )}
 
-              {activeTab === "fabric" && (
-                <FabricStep
-                  categories={categories}
-                  fabrics={fabrics}
-                  selectedFabricId={configuration.fabric?.id}
-                  onSelectFabric={handleSelectFabric}
-                />
-              )}
+                {activeTab === "fabric" && (
+                  <motion.div
+                    key="fabric"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <FabricStep
+                      categories={categories}
+                      fabrics={fabrics}
+                      selectedFabricId={configuration.fabric?.id}
+                      onSelectFabric={handleSelectFabric}
+                    />
+                  </motion.div>
+                )}
 
-              {activeTab === "embroidery" && (
-                <EmbroideryStep
-                  product={configuration.product}
-                  texts={configuration.embroideries}
-                  color={configuration.embroideryColor}
-                  font={configuration.embroideryFont}
-                  embroideryColors={embroideryColors}
-                  embroideryFonts={embroideryFonts}
-                  onTextChange={handleTextChange}
-                  onAddText={handleAddText}
-                  onRemoveText={handleRemoveText}
-                  onSelectColor={handleSelectEmbroideryColor}
-                  onSelectFont={handleSelectFont}
-                />
-              )}
+                {activeTab === "embroidery" && (
+                  <motion.div
+                    key="embroidery"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <EmbroideryStep
+                      product={configuration.product}
+                      texts={configuration.embroideries}
+                      color={configuration.embroideryColor}
+                      font={configuration.embroideryFont}
+                      embroideryColors={embroideryColors}
+                      embroideryFonts={embroideryFonts}
+                      onTextChange={handleTextChange}
+                      onAddText={handleAddText}
+                      onRemoveText={handleRemoveText}
+                      onSelectColor={handleSelectEmbroideryColor}
+                      onSelectFont={handleSelectFont}
+                    />
+                  </motion.div>
+                )}
 
-              {activeTab === "summary" && (
-                <SummaryStep
-                  product={configuration.product}
-                  fabric={configuration.fabric}
-                  size={configuration.size}
-                  selectedColor={configuration.selectedColor}
-                  productColors={productColors}
-                  embroideries={configuration.embroideries}
-                  embroideryColor={configuration.embroideryColor}
-                  embroideryColors={embroideryColors}
-                  embroideryFont={configuration.embroideryFont}
-                  totalPriceCents={totalPrice()}
-                />
-              )}
+                {activeTab === "summary" && (
+                  <motion.div
+                    key="summary"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <SummaryStep
+                      product={configuration.product}
+                      fabric={configuration.fabric}
+                      size={configuration.size}
+                      selectedColor={configuration.selectedColor}
+                      productColors={productColors}
+                      embroideries={configuration.embroideries}
+                      embroideryColor={configuration.embroideryColor}
+                      embroideryColors={embroideryColors}
+                      embroideryFont={configuration.embroideryFont}
+                      totalPriceCents={totalPrice()}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 

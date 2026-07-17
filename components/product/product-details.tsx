@@ -387,7 +387,7 @@ export default function ProductDetails({
 
             {/* Actions secondaires */}
             <div className="flex gap-3">
-              <button
+              <motion.button
                 onClick={() =>
                   toggleItem({
                     id: `wishlist-${product.id}`,
@@ -400,6 +400,7 @@ export default function ProductDetails({
                     customizable: product.customizable,
                   })
                 }
+                whileTap={{ scale: 0.96 }}
                 aria-label={
                   isWishlisted ? "Retirer des favoris" : "Ajouter aux favoris"
                 }
@@ -410,11 +411,19 @@ export default function ProductDetails({
                     : "border-ylang-beige/80 bg-ylang-beige/60 text-ylang-charcoal hover:border-ylang-rose/50 hover:text-ylang-rose"
                 }`}
               >
-                <Heart
-                  className={`group-hover:text-ylang-rose h-5 w-5 transition-colors ${isWishlisted ? "fill-current" : ""}`}
-                />
+                <motion.span
+                  key={isWishlisted ? "filled" : "empty"}
+                  initial={{ scale: 0.7 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", duration: 0.4, bounce: 0.3 }}
+                  className="inline-flex"
+                >
+                  <Heart
+                    className={`group-hover:text-ylang-rose h-5 w-5 transition-colors ${isWishlisted ? "fill-current" : ""}`}
+                  />
+                </motion.span>
                 {isWishlisted ? "Ajouté aux favoris" : "Ajouter aux favoris"}
-              </button>
+              </motion.button>
             </div>
 
             {/* Points forts */}
