@@ -2,6 +2,10 @@
 
 import type { ConfigurateurProduct } from "@/types/configurateur-page";
 
+// Variante plus foncée de --color-accent (oklch 58%), utilisée pour le texte
+// afin d'atteindre le contraste AA (--color-accent seul échoue en dessous de 4.5:1).
+const ACCENT_TEXT = "oklch(42% 0.070 28)";
+
 interface ProductMarketingSectionProps {
   product: ConfigurateurProduct;
   products: ConfigurateurProduct[];
@@ -12,7 +16,7 @@ export default function ProductMarketingSection({ product, products, onSelectPro
   const similarProducts = products.filter((p) => p.id !== product.id);
 
   return (
-    <div className="px-6 py-20 sm:px-12 lg:px-20" style={{ background: "var(--color-ink-2)" }}>
+    <div className="px-6 py-20 sm:px-12 lg:px-20" style={{ background: "var(--color-paper-3)" }}>
       <div className="mx-auto max-w-6xl">
         {/* Description */}
         <div className="mb-24 grid grid-cols-1 gap-16 lg:grid-cols-2">
@@ -24,7 +28,7 @@ export default function ProductMarketingSection({ product, products, onSelectPro
                 className="absolute top-5 left-5 px-3 py-1.5"
                 style={{ background: "var(--color-ink-2)", border: "var(--rule-hair)" }}
               >
-                <p className="type-overline" style={{ color: "var(--color-accent)" }}>
+                <p className="type-overline" style={{ color: ACCENT_TEXT }}>
                   100% Personnalisable
                 </p>
               </div>
@@ -33,7 +37,7 @@ export default function ProductMarketingSection({ product, products, onSelectPro
 
           {/* Texte */}
           <div className="flex flex-col justify-center">
-            <p className="type-overline mb-3" style={{ color: "var(--color-accent)" }}>
+            <p className="type-overline mb-3" style={{ color: ACCENT_TEXT }}>
               Création artisanale
             </p>
             <h2
@@ -63,7 +67,7 @@ export default function ProductMarketingSection({ product, products, onSelectPro
                     fontFamily: "var(--font-display)",
                     fontWeight: 400,
                     fontSize: "var(--text-title)",
-                    color: "var(--color-accent)",
+                    color: ACCENT_TEXT,
                   }}
                 >
                   {(product.basePrice / 100).toFixed(2)} €
@@ -95,7 +99,7 @@ export default function ProductMarketingSection({ product, products, onSelectPro
                 "Livraison soignée dans un emballage cadeau",
               ].map((point) => (
                 <li key={point} className="flex items-start gap-3">
-                  <span className="font-body mt-0.5 shrink-0 text-sm" style={{ color: "var(--color-accent)" }}>
+                  <span className="font-body mt-0.5 shrink-0 text-sm" style={{ color: ACCENT_TEXT }}>
                     ✓
                   </span>
                   <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
@@ -111,7 +115,7 @@ export default function ProductMarketingSection({ product, products, onSelectPro
         {similarProducts.length > 0 && (
           <div style={{ borderTop: "var(--rule-soft)", paddingTop: "4rem" }}>
             <div className="mb-10">
-              <p className="type-overline mb-3" style={{ color: "var(--color-accent)" }}>
+              <p className="type-overline mb-3" style={{ color: ACCENT_TEXT }}>
                 Découvrir aussi
               </p>
               <h3
@@ -154,7 +158,7 @@ export default function ProductMarketingSection({ product, products, onSelectPro
                   >
                     {p.name}
                   </p>
-                  <p className="font-body text-xs" style={{ color: "var(--color-accent)" }}>
+                  <p className="font-body text-xs" style={{ color: ACCENT_TEXT }}>
                     À partir de {(p.basePrice / 100).toFixed(2)} €
                   </p>
                 </button>

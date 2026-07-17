@@ -4,6 +4,10 @@ import { useState } from "react";
 import { Check, ChevronRight, Palette, X } from "lucide-react";
 import type { ConfigurateurProduct } from "@/types/configurateur-page";
 
+// Variante plus foncée de --color-accent (oklch 58%), utilisée pour le texte
+// afin d'atteindre le contraste AA (--color-accent seul échoue en dessous de 4.5:1).
+const ACCENT_TEXT = "oklch(42% 0.070 28)";
+
 interface ProductStepProps {
   products: ConfigurateurProduct[];
   productColors: { name: string; hex: string }[];
@@ -31,7 +35,7 @@ export default function ProductStep({
   return (
     <>
       <div>
-        <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>
+        <p className="type-overline mb-2" style={{ color: ACCENT_TEXT }}>
           Étape 01
         </p>
         <h2
@@ -59,10 +63,12 @@ export default function ProductStep({
                 onSelectProduct(product);
                 if (product.colorMaskImage) setShowColorBubble(true);
               }}
-              className="w-full text-left transition-all duration-200"
+              className={`w-full text-left transition-all duration-200 ${
+                isSelected ? "" : "bg-[var(--color-paper)] hover:bg-[var(--color-paper-2)] hover:shadow-[var(--shadow-card)]"
+              }`}
               style={{
-                border: isSelected ? "2px solid var(--color-accent)" : "var(--rule-soft)",
-                background: isSelected ? "var(--color-paper-2)" : "var(--color-paper)",
+                border: isSelected ? "2px solid var(--color-accent)" : "var(--rule-hair)",
+                ...(isSelected ? { background: "var(--color-paper-2)" } : {}),
               }}
             >
               {/* Ligne principale */}
@@ -85,7 +91,7 @@ export default function ProductStep({
                       fontFamily: "var(--font-display)",
                       fontWeight: 400,
                       fontSize: "var(--text-caption)",
-                      color: "var(--color-accent)",
+                      color: ACCENT_TEXT,
                       marginTop: "0.125rem",
                     }}
                   >
@@ -127,7 +133,7 @@ export default function ProductStep({
                   </span>
                   <span
                     className="ml-auto font-body text-xs"
-                    style={{ color: "var(--color-accent)", borderBottom: "1px solid var(--color-accent)" }}
+                    style={{ color: ACCENT_TEXT, borderBottom: `1px solid ${ACCENT_TEXT}` }}
                   >
                     Modifier
                   </span>
@@ -146,7 +152,7 @@ export default function ProductStep({
               Taille
             </span>
             {selectedSize && (
-              <span className="font-body text-sm" style={{ color: "var(--color-accent)" }}>
+              <span className="font-body text-sm" style={{ color: ACCENT_TEXT }}>
                 {selectedSize}
               </span>
             )}
@@ -160,7 +166,7 @@ export default function ProductStep({
                 className="font-body px-4 py-2 text-sm transition-opacity hover:opacity-70"
                 style={{
                   border: selectedSize === size ? "2px solid var(--color-accent)" : "var(--rule-soft)",
-                  color: selectedSize === size ? "var(--color-accent)" : "var(--color-ink)",
+                  color: selectedSize === size ? ACCENT_TEXT : "var(--color-ink)",
                 }}
               >
                 {size}
@@ -168,7 +174,7 @@ export default function ProductStep({
             ))}
           </div>
           {productNeedsSize && !selectedSize && (
-            <p className="font-body mt-2 text-xs" style={{ color: "var(--color-accent)" }}>
+            <p className="font-body mt-2 text-xs" style={{ color: ACCENT_TEXT }}>
               Veuillez sélectionner une taille pour continuer
             </p>
           )}
