@@ -1,6 +1,7 @@
 "use client";
 
 import StatusBadge from "@/components/admin/status-badge";
+import { EASE_OUT } from "@/lib/motion-tokens";
 import { useAdminStore } from "@/lib/store/admin-store";
 import type { Order, OrderStatus } from "@/types/admin";
 import { motion } from "framer-motion";
@@ -25,12 +26,16 @@ import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
-const STATUS_STEPS: { value: OrderStatus; label: string; icon: React.ElementType<{ className?: string; strokeWidth?: number }> }[] = [
-  { value: "pending",       label: "En attente",    icon: Clock },
-  { value: "paid",          label: "Payée",         icon: CheckCircle2 },
+const STATUS_STEPS: {
+  value: OrderStatus;
+  label: string;
+  icon: React.ElementType<{ className?: string; strokeWidth?: number }>;
+}[] = [
+  { value: "pending", label: "En attente", icon: Clock },
+  { value: "paid", label: "Payée", icon: CheckCircle2 },
   { value: "in_production", label: "En production", icon: Scissors },
-  { value: "shipped",       label: "Expédiée",      icon: Truck },
-  { value: "delivered",     label: "Livrée",        icon: Package },
+  { value: "shipped", label: "Expédiée", icon: Truck },
+  { value: "delivered", label: "Livrée", icon: Package },
 ];
 
 export default function OrderDetailPage() {
@@ -64,7 +69,11 @@ export default function OrderDetailPage() {
   if (isLoading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+        <Loader2
+          className="h-6 w-6 animate-spin"
+          style={{ color: "var(--color-ink-3)" }}
+          strokeWidth={1.5}
+        />
       </div>
     );
   }
@@ -86,7 +95,10 @@ export default function OrderDetailPage() {
         <button
           onClick={() => router.push("/admin/orders")}
           className="font-body text-sm transition-opacity hover:opacity-70"
-          style={{ color: "var(--color-ink-3)", borderBottom: "1px solid var(--color-accent)" }}
+          style={{
+            color: "var(--color-ink-3)",
+            borderBottom: "1px solid var(--color-accent)",
+          }}
         >
           Retour aux commandes
         </button>
@@ -94,7 +106,9 @@ export default function OrderDetailPage() {
     );
   }
 
-  const currentStatusIndex = STATUS_STEPS.findIndex((s) => s.value === order.status);
+  const currentStatusIndex = STATUS_STEPS.findIndex(
+    (s) => s.value === order.status,
+  );
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
     if (newStatus === order.status) return;
@@ -141,8 +155,13 @@ export default function OrderDetailPage() {
   const handleOpenMaps = () => {
     if (!order?.shippingAddress) return;
     const { address, city, postalCode, country } = order.shippingAddress;
-    const query = encodeURIComponent(`${address}, ${postalCode} ${city}, ${country}`);
-    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, "_blank");
+    const query = encodeURIComponent(
+      `${address}, ${postalCode} ${city}, ${country}`,
+    );
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${query}`,
+      "_blank",
+    );
   };
 
   return (
@@ -150,7 +169,7 @@ export default function OrderDetailPage() {
       {/* Back */}
       <Link
         href="/admin/orders"
-        className="mb-8 flex items-center gap-2 font-body text-sm transition-opacity hover:opacity-70"
+        className="font-body mb-8 flex items-center gap-2 text-sm transition-opacity hover:opacity-70"
         style={{ color: "var(--color-ink-3)" }}
       >
         <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
@@ -160,7 +179,10 @@ export default function OrderDetailPage() {
       {/* Header */}
       <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="type-overline mb-2" style={{ color: "var(--color-accent)" }}>
+          <p
+            className="type-overline mb-2"
+            style={{ color: "var(--color-accent)" }}
+          >
             Commande {order.orderNumber}
           </p>
           <h1
@@ -173,7 +195,10 @@ export default function OrderDetailPage() {
           >
             Détails de la commande
           </h1>
-          <p className="font-body mt-1 text-sm" style={{ color: "var(--color-ink-3)" }}>
+          <p
+            className="font-body mt-1 text-sm"
+            style={{ color: "var(--color-ink-3)" }}
+          >
             {new Date(order.createdAt).toLocaleDateString("fr-FR", {
               day: "numeric",
               month: "long",
@@ -206,7 +231,7 @@ export default function OrderDetailPage() {
             animate={{
               width: `${(currentStatusIndex / (STATUS_STEPS.length - 1)) * 100}%`,
             }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.5, ease: EASE_OUT }}
           />
 
           {STATUS_STEPS.map((step, index) => {
@@ -216,23 +241,35 @@ export default function OrderDetailPage() {
             const isInactive = index > currentStatusIndex;
 
             return (
-              <div key={step.value} className="relative z-10 flex flex-col items-center">
+              <div
+                key={step.value}
+                className="relative z-10 flex flex-col items-center"
+              >
                 <button
                   onClick={() => handleStatusChange(step.value)}
                   disabled={isUpdating}
-                  className="flex h-9 w-9 items-center justify-center transition-all"
+                  className="flex h-9 w-9 items-center justify-center transition-colors"
                   style={{
-                    background: isCurrent ? "var(--color-ink)" : isCompleted ? "var(--color-accent)" : "var(--color-paper)",
+                    background: isCurrent
+                      ? "var(--color-ink)"
+                      : isCompleted
+                        ? "var(--color-accent)"
+                        : "var(--color-paper)",
                     border: isInactive ? "var(--rule-soft)" : "none",
-                    color: isCurrent || isCompleted ? "var(--color-paper)" : "var(--color-ink-3)",
+                    color:
+                      isCurrent || isCompleted
+                        ? "var(--color-paper)"
+                        : "var(--color-ink-3)",
                   }}
                 >
                   <Icon className="h-4 w-4" strokeWidth={1.5} />
                 </button>
                 <p
-                  className="mt-3 text-center font-body text-xs whitespace-nowrap"
+                  className="font-body mt-3 text-center text-xs whitespace-nowrap"
                   style={{
-                    color: isInactive ? "var(--color-ink-3)" : "var(--color-ink)",
+                    color: isInactive
+                      ? "var(--color-ink-3)"
+                      : "var(--color-ink)",
                     opacity: isInactive ? 0.4 : 1,
                   }}
                 >
@@ -254,9 +291,21 @@ export default function OrderDetailPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left: items */}
         <div className="space-y-6 lg:col-span-2">
-          <div style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}>
-            <div className="flex items-center gap-3 px-6 py-4" style={{ borderBottom: "var(--rule-hair)" }}>
-              <ShoppingBag className="h-4 w-4" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+          <div
+            style={{
+              border: "var(--rule-hair)",
+              background: "var(--color-paper)",
+            }}
+          >
+            <div
+              className="flex items-center gap-3 px-6 py-4"
+              style={{ borderBottom: "var(--rule-hair)" }}
+            >
+              <ShoppingBag
+                className="h-4 w-4"
+                style={{ color: "var(--color-ink-3)" }}
+                strokeWidth={1.5}
+              />
               <h2
                 style={{
                   fontFamily: "var(--font-display)",
@@ -269,7 +318,10 @@ export default function OrderDetailPage() {
               </h2>
             </div>
 
-            <div className="divide-y" style={{ "--tw-divide-opacity": 1 } as React.CSSProperties}>
+            <div
+              className="divide-y"
+              style={{ "--tw-divide-opacity": 1 } as React.CSSProperties}
+            >
               {order.items.map((item, index) => (
                 <motion.div
                   key={index}
@@ -296,7 +348,11 @@ export default function OrderDetailPage() {
                         className="flex h-full w-full items-center justify-center"
                         style={{ background: "var(--color-paper-2)" }}
                       >
-                        <Package className="h-6 w-6" style={{ color: "var(--color-ink-3)", opacity: 0.3 }} strokeWidth={1} />
+                        <Package
+                          className="h-6 w-6"
+                          style={{ color: "var(--color-ink-3)", opacity: 0.3 }}
+                          strokeWidth={1}
+                        />
                       </div>
                     )}
                   </div>
@@ -317,16 +373,36 @@ export default function OrderDetailPage() {
                       {item.configuration ? (
                         <div className="mt-3 space-y-1.5">
                           <div className="flex items-center gap-2">
-                            <Palette className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
-                            <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
-                              Tissu : <span style={{ color: "var(--color-ink)" }}>{item.configuration.fabricName}</span>
+                            <Palette
+                              className="h-3.5 w-3.5"
+                              style={{ color: "var(--color-ink-3)" }}
+                              strokeWidth={1.5}
+                            />
+                            <span
+                              className="font-body text-sm"
+                              style={{ color: "var(--color-ink-3)" }}
+                            >
+                              Tissu :{" "}
+                              <span style={{ color: "var(--color-ink)" }}>
+                                {item.configuration.fabricName}
+                              </span>
                             </span>
                           </div>
                           {item.configuration.size && (
                             <div className="flex items-center gap-2">
-                              <Package className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
-                              <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
-                                Taille : <span style={{ color: "var(--color-ink)" }}>{item.configuration.size}</span>
+                              <Package
+                                className="h-3.5 w-3.5"
+                                style={{ color: "var(--color-ink-3)" }}
+                                strokeWidth={1.5}
+                              />
+                              <span
+                                className="font-body text-sm"
+                                style={{ color: "var(--color-ink-3)" }}
+                              >
+                                Taille :{" "}
+                                <span style={{ color: "var(--color-ink)" }}>
+                                  {item.configuration.size}
+                                </span>
                               </span>
                             </div>
                           )}
@@ -334,32 +410,66 @@ export default function OrderDetailPage() {
                             <div className="flex items-center gap-2">
                               <span
                                 className="h-3.5 w-3.5 shrink-0 rounded-full"
-                                style={{ backgroundColor: item.configuration.selectedColor, border: "var(--rule-soft)" }}
+                                style={{
+                                  backgroundColor:
+                                    item.configuration.selectedColor,
+                                  border: "var(--rule-soft)",
+                                }}
                               />
-                              <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
-                                Couleur : <span style={{ color: "var(--color-ink)" }}>{item.configuration.selectedColorName ?? item.configuration.selectedColor}</span>
+                              <span
+                                className="font-body text-sm"
+                                style={{ color: "var(--color-ink-3)" }}
+                              >
+                                Couleur :{" "}
+                                <span style={{ color: "var(--color-ink)" }}>
+                                  {item.configuration.selectedColorName ??
+                                    item.configuration.selectedColor}
+                                </span>
                               </span>
                             </div>
                           )}
                           {item.configuration.embroidery && (
                             <div className="flex items-center gap-2">
-                              <Scissors className="h-3.5 w-3.5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
-                              <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
-                                Broderie : <span style={{ color: "var(--color-ink)" }}>&ldquo;{item.configuration.embroidery}&rdquo;</span>
+                              <Scissors
+                                className="h-3.5 w-3.5"
+                                style={{ color: "var(--color-ink-3)" }}
+                                strokeWidth={1.5}
+                              />
+                              <span
+                                className="font-body text-sm"
+                                style={{ color: "var(--color-ink-3)" }}
+                              >
+                                Broderie :{" "}
+                                <span style={{ color: "var(--color-ink)" }}>
+                                  &ldquo;{item.configuration.embroidery}&rdquo;
+                                </span>
                                 {item.configuration.embroideryColor && (
                                   <>
                                     <span
                                       className="ml-2 inline-block h-3 w-3 rounded-full align-middle"
-                                      style={{ backgroundColor: item.configuration.embroideryColor, border: "var(--rule-soft)" }}
+                                      style={{
+                                        backgroundColor:
+                                          item.configuration.embroideryColor,
+                                        border: "var(--rule-soft)",
+                                      }}
                                     />
-                                    <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
-                                      {" "}{item.configuration.embroideryColorName ?? item.configuration.embroideryColor}
+                                    <span
+                                      className="font-body text-xs"
+                                      style={{ color: "var(--color-ink-3)" }}
+                                    >
+                                      {" "}
+                                      {item.configuration.embroideryColorName ??
+                                        item.configuration.embroideryColor}
                                     </span>
                                   </>
                                 )}
                                 {item.configuration.embroideryFont && (
-                                  <span className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
-                                    {" "}({item.configuration.embroideryFont})
+                                  <span
+                                    className="font-body text-xs"
+                                    style={{ color: "var(--color-ink-3)" }}
+                                  >
+                                    {" "}
+                                    ({item.configuration.embroideryFont})
                                   </span>
                                 )}
                               </span>
@@ -367,14 +477,20 @@ export default function OrderDetailPage() {
                           )}
                         </div>
                       ) : (
-                        <p className="font-body mt-2 text-sm italic" style={{ color: "var(--color-ink-3)", opacity: 0.5 }}>
+                        <p
+                          className="font-body mt-2 text-sm italic"
+                          style={{ color: "var(--color-ink-3)", opacity: 0.5 }}
+                        >
                           Modèle standard
                         </p>
                       )}
                     </div>
 
                     <div className="mt-4 flex items-center justify-between">
-                      <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                      <span
+                        className="font-body text-sm"
+                        style={{ color: "var(--color-ink-3)" }}
+                      >
                         Qté : {item.quantity}
                       </span>
                       <span
@@ -397,7 +513,10 @@ export default function OrderDetailPage() {
               className="flex items-center justify-between px-6 py-4"
               style={{ borderTop: "var(--rule-hair)" }}
             >
-              <span className="font-body text-sm font-medium" style={{ color: "var(--color-ink-3)" }}>
+              <span
+                className="font-body text-sm font-medium"
+                style={{ color: "var(--color-ink-3)" }}
+              >
                 Total de la commande
               </span>
               <span
@@ -415,9 +534,21 @@ export default function OrderDetailPage() {
 
           {/* Tracking */}
           {order.status === "shipped" && (
-            <div style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}>
-              <div className="flex items-center gap-3 px-6 py-4" style={{ borderBottom: "var(--rule-hair)" }}>
-                <Truck className="h-4 w-4" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+            <div
+              style={{
+                border: "var(--rule-hair)",
+                background: "var(--color-paper)",
+              }}
+            >
+              <div
+                className="flex items-center gap-3 px-6 py-4"
+                style={{ borderBottom: "var(--rule-hair)" }}
+              >
+                <Truck
+                  className="h-4 w-4"
+                  style={{ color: "var(--color-ink-3)" }}
+                  strokeWidth={1.5}
+                />
                 <h2
                   style={{
                     fontFamily: "var(--font-display)",
@@ -433,7 +564,10 @@ export default function OrderDetailPage() {
                 {order.trackingNumber ? (
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="type-overline mb-1" style={{ color: "var(--color-ink-3)" }}>
+                      <p
+                        className="type-overline mb-1"
+                        style={{ color: "var(--color-ink-3)" }}
+                      >
                         Référence transporteur
                       </p>
                       <p
@@ -461,12 +595,17 @@ export default function OrderDetailPage() {
                         color: "var(--color-ink)",
                         background: "var(--color-paper)",
                       }}
-                      onKeyDown={(e) => e.key === "Enter" && handleAddTracking()}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleAddTracking()
+                      }
                     />
                     <button
                       onClick={handleAddTracking}
-                      className="px-5 py-2.5 font-body text-sm transition-opacity hover:opacity-80"
-                      style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
+                      className="font-body px-5 py-2.5 text-sm transition-opacity hover:opacity-80"
+                      style={{
+                        background: "var(--color-ink)",
+                        color: "var(--color-paper)",
+                      }}
                     >
                       Valider
                     </button>
@@ -480,9 +619,21 @@ export default function OrderDetailPage() {
         {/* Right: customer + address + actions */}
         <div className="space-y-6">
           {/* Customer */}
-          <div style={{ border: "var(--rule-hair)", background: "var(--color-paper)" }}>
-            <div className="flex items-center gap-3 px-6 py-4" style={{ borderBottom: "var(--rule-hair)" }}>
-              <User className="h-4 w-4" style={{ color: "var(--color-ink-3)" }} strokeWidth={1.5} />
+          <div
+            style={{
+              border: "var(--rule-hair)",
+              background: "var(--color-paper)",
+            }}
+          >
+            <div
+              className="flex items-center gap-3 px-6 py-4"
+              style={{ borderBottom: "var(--rule-hair)" }}
+            >
+              <User
+                className="h-4 w-4"
+                style={{ color: "var(--color-ink-3)" }}
+                strokeWidth={1.5}
+              />
               <h2
                 style={{
                   fontFamily: "var(--font-display)",
@@ -496,18 +647,30 @@ export default function OrderDetailPage() {
             </div>
             <div className="space-y-4 p-6">
               <div>
-                <p className="type-overline mb-1" style={{ color: "var(--color-ink-3)" }}>
+                <p
+                  className="type-overline mb-1"
+                  style={{ color: "var(--color-ink-3)" }}
+                >
                   Nom complet
                 </p>
-                <p className="font-body text-sm font-medium" style={{ color: "var(--color-ink)" }}>
+                <p
+                  className="font-body text-sm font-medium"
+                  style={{ color: "var(--color-ink)" }}
+                >
                   {order.customerName}
                 </p>
               </div>
               <div>
-                <p className="type-overline mb-1" style={{ color: "var(--color-ink-3)" }}>
+                <p
+                  className="type-overline mb-1"
+                  style={{ color: "var(--color-ink-3)" }}
+                >
                   Adresse email
                 </p>
-                <p className="font-body text-sm" style={{ color: "var(--color-ink)" }}>
+                <p
+                  className="font-body text-sm"
+                  style={{ color: "var(--color-ink)" }}
+                >
                   {order.customerEmail}
                 </p>
               </div>
@@ -516,8 +679,15 @@ export default function OrderDetailPage() {
 
           {/* Shipping address */}
           <div style={{ background: "var(--color-ink)", border: "none" }}>
-            <div className="flex items-center gap-3 px-6 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-              <MapPin className="h-4 w-4" style={{ color: "var(--color-paper)", opacity: 0.5 }} strokeWidth={1.5} />
+            <div
+              className="flex items-center gap-3 px-6 py-4"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              <MapPin
+                className="h-4 w-4"
+                style={{ color: "var(--color-paper)", opacity: 0.5 }}
+                strokeWidth={1.5}
+              />
               <h2
                 style={{
                   fontFamily: "var(--font-display)",
@@ -542,17 +712,30 @@ export default function OrderDetailPage() {
               >
                 {order.customerName}
               </p>
-              <div className="space-y-1 font-body text-sm" style={{ color: "var(--color-paper)", opacity: 0.6 }}>
+              <div
+                className="font-body space-y-1 text-sm"
+                style={{ color: "var(--color-paper)", opacity: 0.6 }}
+              >
                 <p>{order.shippingAddress.address}</p>
-                <p>{order.shippingAddress.postalCode} {order.shippingAddress.city}</p>
-                <p className="type-overline" style={{ color: "var(--color-paper)", opacity: 1 }}>
+                <p>
+                  {order.shippingAddress.postalCode}{" "}
+                  {order.shippingAddress.city}
+                </p>
+                <p
+                  className="type-overline"
+                  style={{ color: "var(--color-paper)", opacity: 1 }}
+                >
                   {order.shippingAddress.country}
                 </p>
               </div>
               <button
                 onClick={handleOpenMaps}
-                className="mt-5 flex w-full items-center justify-center gap-2 py-2.5 font-body text-xs transition-colors"
-                style={{ color: "var(--color-paper)", opacity: 0.5, border: "1px solid rgba(255,255,255,0.12)" }}
+                className="font-body mt-5 flex w-full items-center justify-center gap-2 py-2.5 text-xs transition-colors"
+                style={{
+                  color: "var(--color-paper)",
+                  opacity: 0.5,
+                  border: "1px solid rgba(255,255,255,0.12)",
+                }}
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
                 onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
               >
@@ -564,9 +747,14 @@ export default function OrderDetailPage() {
 
           {/* Invoice */}
           <button
-            onClick={() => window.open(`/admin/orders/${order.id}/invoice`, "_blank")}
-            className="flex w-full items-center justify-center gap-3 py-3.5 font-body text-sm font-medium transition-opacity hover:opacity-80"
-            style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
+            onClick={() =>
+              window.open(`/admin/orders/${order.id}/invoice`, "_blank")
+            }
+            className="font-body flex w-full items-center justify-center gap-3 py-3.5 text-sm font-medium transition-opacity hover:opacity-80"
+            style={{
+              background: "var(--color-ink)",
+              color: "var(--color-paper)",
+            }}
           >
             <Download className="h-4 w-4" strokeWidth={1.5} />
             Générer la facture

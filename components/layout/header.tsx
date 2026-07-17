@@ -10,10 +10,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCartStore } from "@/lib/store/cart-store";
+import { EASE_OUT } from "@/lib/motion-tokens";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
 import { type Session } from "@supabase/supabase-js";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
   ChevronRight,
@@ -256,16 +258,25 @@ const megaMenuCategories = [
 
 // Badge de compteur animé (composant léger)
 const AnimatedBadge = React.memo(({ count }: { count: number }) => {
-  if (count === 0) return null;
-
   return (
-    <span
-      className="animate-scale-in absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px]"
-      style={{ background: "var(--color-paper)", color: "var(--color-ink)" }}
-      aria-hidden="true"
-    >
-      {count}
-    </span>
+    <AnimatePresence>
+      {count > 0 && (
+        <motion.span
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ duration: 0.2, ease: EASE_OUT }}
+          className="absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[8px] font-medium lg:-top-1 lg:-right-1 lg:h-4 lg:w-4 lg:text-[10px]"
+          style={{
+            background: "var(--color-paper)",
+            color: "var(--color-ink)",
+          }}
+          aria-hidden="true"
+        >
+          {count}
+        </motion.span>
+      )}
+    </AnimatePresence>
   );
 });
 AnimatedBadge.displayName = "AnimatedBadge";
@@ -348,7 +359,9 @@ export function Header() {
   // Bloquer le scroll arrière-plan quand le mega menu est ouvert
   React.useEffect(() => {
     document.documentElement.style.overflow = isMegaMenuOpen ? "hidden" : "";
-    return () => { document.documentElement.style.overflow = ""; };
+    return () => {
+      document.documentElement.style.overflow = "";
+    };
   }, [isMegaMenuOpen]);
 
   // Click outside effect
@@ -396,13 +409,25 @@ export function Header() {
     <>
       <header
         className={cn(
-          "bg-ylang-rose fixed top-0 right-0 left-0 z-50 transition-all duration-500",
+          "bg-ylang-rose fixed top-0 right-0 left-0 z-50 transition-shadow duration-500",
           isScrolled && "shadow-[0_2px_20px_rgba(0,0,0,0.08)]",
         )}
       >
         {/* Barre d'annonce */}
-        <div className="border-b px-4 py-2 sm:px-6 lg:px-8" style={{ background: "var(--color-paper-2)", borderColor: "var(--color-ink-2)" }}>
-          <p className="text-center font-medium uppercase tracking-[0.18em] text-[10px] sm:text-md" style={{ fontFamily: "var(--font-body)", color: "var(--color-ink-3)" }}>
+        <div
+          className="border-b px-4 py-2 sm:px-6 lg:px-8"
+          style={{
+            background: "var(--color-paper-2)",
+            borderColor: "var(--color-ink-2)",
+          }}
+        >
+          <p
+            className="sm:text-md text-center text-[10px] font-medium tracking-[0.18em] uppercase"
+            style={{
+              fontFamily: "var(--font-body)",
+              color: "var(--color-ink-3)",
+            }}
+          >
             Livraison offerte dès {freeShippingThreshold}&nbsp;€ d&apos;achat
           </p>
         </div>
@@ -419,9 +444,11 @@ export function Header() {
                 }
                 aria-expanded={isMegaMenuOpen}
                 className={cn(
-                  "flex h-9 w-9 items-center justify-center transition-all duration-300 rounded-full sm:rounded-none lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2 cursor-pointer",
+                  "flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 sm:rounded-none lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2",
                   "hover:text-ylang-rose hover:bg-white/80",
-                  isMegaMenuOpen ? "text-ylang-rose bg-white/80" : "text-ylang-white bg-white/20",
+                  isMegaMenuOpen
+                    ? "text-ylang-rose bg-white/80"
+                    : "text-ylang-white bg-white/20",
                 )}
               >
                 {isMegaMenuOpen ? (
@@ -438,7 +465,7 @@ export function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Rechercher"
-                className="text-ylang-white hover:text-ylang-rose flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all duration-300 hover:bg-white/80 sm:hidden"
+                className="text-ylang-white hover:text-ylang-rose flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors duration-300 hover:bg-white/80 sm:hidden"
               >
                 <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
               </button>
@@ -467,7 +494,7 @@ export function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Rechercher"
-                className="text-ylang-white hover:text-ylang-rose hidden rounded-full bg-white/20 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white/80 sm:block"
+                className="text-ylang-white hover:text-ylang-rose hidden rounded-full bg-white/20 p-2 backdrop-blur-sm transition-colors duration-300 hover:bg-white/80 sm:block"
               >
                 <Search className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
               </button>
@@ -479,7 +506,7 @@ export function Header() {
                   <DropdownMenuTrigger asChild>
                     <button
                       aria-label="Mon compte"
-                      className="h-9 w-9 overflow-hidden rounded-full border-2 transition-all duration-300 focus:outline-none"
+                      className="h-9 w-9 overflow-hidden rounded-full border-2 transition-colors duration-300 focus:outline-none"
                       style={{ borderColor: "rgba(255,255,255,0.55)" }}
                     >
                       {session.user.user_metadata?.avatar_url ? (
@@ -496,7 +523,10 @@ export function Header() {
                       ) : (
                         <div
                           className="flex h-full w-full items-center justify-center text-xs font-bold uppercase"
-                          style={{ background: "var(--color-paper)", color: "var(--color-ink)" }}
+                          style={{
+                            background: "var(--color-paper)",
+                            color: "var(--color-ink)",
+                          }}
                         >
                           {session.user.email?.charAt(0).toUpperCase() || "U"}
                         </div>
@@ -506,12 +536,18 @@ export function Header() {
                   <DropdownMenuContent
                     align="end"
                     className="w-64 p-2 shadow-xl"
-                    style={{ background: "var(--color-paper)", border: "var(--rule-soft)" }}
+                    style={{
+                      background: "var(--color-paper)",
+                      border: "var(--rule-soft)",
+                    }}
                   >
                     <div className="flex items-center gap-3 px-2 py-3">
                       <div
                         className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border"
-                        style={{ borderColor: "var(--rule-soft)", background: "var(--color-paper-2)" }}
+                        style={{
+                          borderColor: "var(--rule-soft)",
+                          background: "var(--color-paper-2)",
+                        }}
                       >
                         {session.user.user_metadata?.avatar_url ? (
                           <div className="relative h-full w-full">
@@ -560,7 +596,10 @@ export function Header() {
                             className="font-body flex cursor-pointer items-center px-2 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
                             style={{ color: "var(--color-ink-3)" }}
                           >
-                            <LayoutDashboard className="mr-3 h-4 w-4" style={{ color: "var(--color-ink-3)" }} />
+                            <LayoutDashboard
+                              className="mr-3 h-4 w-4"
+                              style={{ color: "var(--color-ink-3)" }}
+                            />
                             <span>Tableau de bord</span>
                           </Link>
                         </DropdownMenuItem>
@@ -571,7 +610,10 @@ export function Header() {
                             className="font-body flex cursor-pointer items-center px-2 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
                             style={{ color: "var(--color-ink-3)" }}
                           >
-                            <Package className="mr-3 h-4 w-4" style={{ color: "var(--color-ink-3)" }} />
+                            <Package
+                              className="mr-3 h-4 w-4"
+                              style={{ color: "var(--color-ink-3)" }}
+                            />
                             <span>Mes Commandes</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
@@ -579,7 +621,10 @@ export function Header() {
                             className="font-body flex cursor-pointer items-center px-2 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
                             style={{ color: "var(--color-ink-3)" }}
                           >
-                            <User className="mr-3 h-4 w-4" style={{ color: "var(--color-ink-3)" }} />
+                            <User
+                              className="mr-3 h-4 w-4"
+                              style={{ color: "var(--color-ink-3)" }}
+                            />
                             <span>Mon Profil</span>
                           </DropdownMenuItem>
                         </>
@@ -601,7 +646,7 @@ export function Header() {
                 <button
                   onClick={() => router.push("/sign-in")}
                   aria-label="Se connecter"
-                  className="text-ylang-white hover:text-ylang-rose flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
+                  className="text-ylang-white hover:text-ylang-rose flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors duration-300 hover:bg-white/80"
                 >
                   <User className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
                 </button>
@@ -611,7 +656,7 @@ export function Header() {
               <button
                 onClick={() => useWishlistStore.getState().openWishlist()}
                 aria-label="Ma liste d'envies"
-                className="text-ylang-white hover:text-ylang-rose relative flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
+                className="text-ylang-white hover:text-ylang-rose relative flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors duration-300 hover:bg-white/80"
               >
                 <Heart className="h-4 w-4 lg:h-5 lg:w-5" strokeWidth={1.2} />
                 <AnimatedBadge count={wishlistCount} />
@@ -621,7 +666,7 @@ export function Header() {
               <button
                 onClick={() => useCartStore.getState().openCart()}
                 aria-label="Mon panier"
-                className="text-ylang-white hover:text-ylang-rose group relative flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all duration-300 hover:bg-white/80"
+                className="text-ylang-white hover:text-ylang-rose group relative flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors duration-300 hover:bg-white/80"
               >
                 <ShoppingBag
                   className="h-4 w-4 lg:h-5 lg:w-5"
@@ -635,7 +680,7 @@ export function Header() {
                 onClick={() => router.push("/configurateur")}
                 variant="luxury"
                 size="sm"
-                className="ml-2 hidden lg:flex border duration-300 transition-all border-ylang-beige/20 hover:border-ylang-beige"
+                className="border-ylang-beige/20 hover:border-ylang-beige ml-2 hidden border transition-colors duration-300 lg:flex"
               >
                 Configurer
               </Button>
@@ -647,313 +692,397 @@ export function Header() {
       </header>
 
       {/* Mega Menu Desktop */}
-      {isMegaMenuOpen && (
-        <div
-          ref={desktopMegaMenuRef}
-          className="animate-fade-in-down fixed top-20 right-0 left-0 z-40 hidden lg:flex"
-          style={{ height: "calc(100vh - 5rem)", boxShadow: "0 12px 48px rgba(0,0,0,0.12)", animation: "fadeInDown 0.25s ease-out" }}
-        >
-          {/* ── Colonne éditoriale gauche 40% ── */}
-          <div className="flex w-[40%] shrink-0 flex-col overflow-hidden bg-ylang-beige px-14 py-10">
-            <p className="type-overline mb-10" style={{ color: "var(--color-ink-3)" }}>
-              La boutique
-            </p>
-            <nav className="space-y-0">
-              {mainNavigation.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    onClick={closeMegaMenu}
-                    className={cn(
-                      "group flex items-center justify-between py-3 text-[1.65rem] font-light tracking-wide transition-all duration-200",
-                      isActive ? "text-ylang-rose" : "hover:text-ylang-rose hover:pl-1",
-                    )}
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      color: isActive ? undefined : "var(--color-ink)",
-                      borderBottom: "var(--rule-soft)",
-                    }}
-                  >
-                    <span>{item.name}</span>
-                    <ChevronRight
+      <AnimatePresence>
+        {isMegaMenuOpen && (
+          <motion.div
+            ref={desktopMegaMenuRef}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: EASE_OUT }}
+            className="fixed top-20 right-0 left-0 z-40 hidden lg:flex"
+            style={{
+              height: "calc(100vh - 5rem)",
+              boxShadow: "0 12px 48px rgba(0,0,0,0.12)",
+            }}
+          >
+            {/* ── Colonne éditoriale gauche 40% ── */}
+            <div className="bg-ylang-beige flex w-[40%] shrink-0 flex-col overflow-hidden px-14 py-10">
+              <p
+                className="type-overline mb-10"
+                style={{ color: "var(--color-ink-3)" }}
+              >
+                La boutique
+              </p>
+              <nav className="space-y-0">
+                {mainNavigation.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={closeMegaMenu}
                       className={cn(
-                        "h-4 w-4 shrink-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
-                        isActive && "opacity-100 text-ylang-rose",
+                        "group flex items-center justify-between py-3 text-[1.65rem] font-light tracking-wide transition-[color,padding-left] duration-200",
+                        isActive
+                          ? "text-ylang-rose"
+                          : "hover:text-ylang-rose hover:pl-1",
                       )}
-                    />
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* ── Colonne catégories droite 60% ── */}
-          <div className="relative w-[60%] overflow-hidden bg-ylang-cream">
-            {/* Image d'ambiance en fond */}
-            <div className="absolute inset-0">
-              <Image
-                src="/images/products/ensemble.jpg"
-                alt=""
-                fill
-                className="object-cover opacity-[0.07]"
-                sizes="60vw"
-                aria-hidden="true"
-              />
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        color: isActive ? undefined : "var(--color-ink)",
+                        borderBottom: "var(--rule-soft)",
+                      }}
+                    >
+                      <span>{item.name}</span>
+                      <ChevronRight
+                        className={cn(
+                          "h-4 w-4 shrink-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
+                          isActive && "text-ylang-rose opacity-100",
+                        )}
+                      />
+                    </Link>
+                  );
+                })}
+              </nav>
             </div>
 
-            <div className="relative h-full overflow-y-auto px-12 py-10">
-              <p className="type-overline mb-8" style={{ color: "var(--color-ink-3)" }}>
-                Nos créations
-              </p>
-              <div className="grid grid-cols-4 gap-x-8 gap-y-8">
-                {megaMenuCategories.map((category) => {
-                  const isChambre = category.title === "LA CHAMBRE";
+            {/* ── Colonne catégories droite 60% ── */}
+            <div className="bg-ylang-cream relative w-[60%] overflow-hidden">
+              {/* Image d'ambiance en fond */}
+              <div className="absolute inset-0">
+                <Image
+                  src="/images/products/ensemble.jpg"
+                  alt=""
+                  fill
+                  className="object-cover opacity-[0.07]"
+                  sizes="60vw"
+                  aria-hidden="true"
+                />
+              </div>
 
-                  if (isChambre) {
+              <div className="relative h-full overflow-y-auto px-12 py-10">
+                <p
+                  className="type-overline mb-8"
+                  style={{ color: "var(--color-ink-3)" }}
+                >
+                  Nos créations
+                </p>
+                <div className="grid grid-cols-4 gap-x-8 gap-y-8">
+                  {megaMenuCategories.map((category) => {
+                    const isChambre = category.title === "LA CHAMBRE";
+
+                    if (isChambre) {
+                      return (
+                        <div
+                          key={category.title}
+                          className="col-span-2 space-y-4"
+                        >
+                          {/* Titre */}
+                          <Link
+                            href={category.href}
+                            onClick={closeMegaMenu}
+                            className="group block"
+                          >
+                            <p
+                              className="type-overline group-hover:text-ylang-rose transition-colors"
+                              style={{ color: "var(--color-accent)" }}
+                            >
+                              {category.title}
+                            </p>
+                          </Link>
+
+                          {/* Items en grille 2 colonnes */}
+                          <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                            {category.items.map((item) => (
+                              <li key={item.name}>
+                                <Link
+                                  href={item.href}
+                                  onClick={closeMegaMenu}
+                                  className="font-body hover:text-ylang-rose block text-sm font-light underline-offset-4 transition-colors duration-200 hover:underline"
+                                  style={{ color: "var(--color-ink-3)" }}
+                                >
+                                  {item.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+
+                          {/* Sections gigoteuses côte à côte */}
+                          <div
+                            className="grid grid-cols-2 gap-x-6 pt-2"
+                            style={{ borderTop: "var(--rule-soft)" }}
+                          >
+                            {category.sections?.map((section) => (
+                              <div key={section.title} className="space-y-1.5">
+                                <p
+                                  className="font-body pb-1 text-[10px] font-semibold tracking-wider uppercase"
+                                  style={{
+                                    color: "var(--color-ink-3)",
+                                    borderBottom: "var(--rule-soft)",
+                                  }}
+                                >
+                                  {section.title}
+                                </p>
+                                <ul className="space-y-1">
+                                  {section.items.map((item) => (
+                                    <li key={item.name}>
+                                      <Link
+                                        href={item.href}
+                                        onClick={closeMegaMenu}
+                                        className="font-body hover:text-ylang-rose block text-sm font-light underline-offset-4 transition-colors duration-200 hover:underline"
+                                        style={{ color: "var(--color-ink-3)" }}
+                                      >
+                                        {item.name}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+
                     return (
-                      <div key={category.title} className="col-span-2 space-y-4">
-                        {/* Titre */}
-                        <Link href={category.href} onClick={closeMegaMenu} className="group block">
-                          <p className="type-overline transition-colors group-hover:text-ylang-rose" style={{ color: "var(--color-accent)" }}>
+                      <div
+                        key={category.title}
+                        className="min-w-0 space-y-3 overflow-hidden"
+                      >
+                        <Link
+                          href={category.href}
+                          onClick={closeMegaMenu}
+                          className="group block"
+                        >
+                          <p
+                            className="type-overline group-hover:text-ylang-rose wrap-break-word transition-colors"
+                            style={{ color: "var(--color-accent)" }}
+                          >
                             {category.title}
                           </p>
+                          {category.subtitle && (
+                            <span
+                              className="mt-0.5 block text-[10px] italic"
+                              style={{ color: "var(--color-ink-3)" }}
+                            >
+                              {category.subtitle}
+                            </span>
+                          )}
                         </Link>
-
-                        {/* Items en grille 2 colonnes */}
-                        <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5">
-                          {category.items.map((item) => (
+                        <ul className="space-y-1.5">
+                          {category.items.slice(0, 5).map((item) => (
                             <li key={item.name}>
                               <Link
                                 href={item.href}
                                 onClick={closeMegaMenu}
-                                className="font-body block text-sm font-light transition-colors duration-200 hover:text-ylang-rose hover:underline underline-offset-4"
+                                className="font-body hover:text-ylang-rose block text-sm font-light underline-offset-4 transition-colors duration-200 hover:underline"
                                 style={{ color: "var(--color-ink-3)" }}
                               >
                                 {item.name}
                               </Link>
                             </li>
                           ))}
-                        </ul>
-
-                        {/* Sections gigoteuses côte à côte */}
-                        <div className="grid grid-cols-2 gap-x-6 pt-2" style={{ borderTop: "var(--rule-soft)" }}>
-                          {category.sections?.map((section) => (
-                            <div key={section.title} className="space-y-1.5">
-                              <p
-                                className="font-body pb-1 text-[10px] font-semibold tracking-wider uppercase"
-                                style={{ color: "var(--color-ink-3)", borderBottom: "var(--rule-soft)" }}
+                          {category.items.length > 5 && (
+                            <li>
+                              <Link
+                                href={category.href}
+                                onClick={closeMegaMenu}
+                                className="text-overline text-ylang-rose font-medium underline-offset-4 hover:underline"
                               >
-                                {section.title}
-                              </p>
-                              <ul className="space-y-1">
-                                {section.items.map((item) => (
-                                  <li key={item.name}>
-                                    <Link
-                                      href={item.href}
-                                      onClick={closeMegaMenu}
-                                      className="font-body block text-sm font-light transition-colors duration-200 hover:text-ylang-rose hover:underline underline-offset-4"
-                                      style={{ color: "var(--color-ink-3)" }}
-                                    >
-                                      {item.name}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
-                        </div>
+                                Voir tout →
+                              </Link>
+                            </li>
+                          )}
+                        </ul>
                       </div>
                     );
-                  }
+                  })}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMegaMenuOpen && (
+          <motion.div
+            ref={mobileMenuRef}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed top-16 right-0 left-0 z-40 overflow-y-auto lg:hidden"
+            style={{
+              height: "calc(100vh - 4rem)",
+              boxShadow: "0 12px 48px rgba(0,0,0,0.12)",
+            }}
+          >
+            {/* Section nav principale — bg-ylang-beige */}
+            <div className="bg-ylang-beige px-6 py-8">
+              <p
+                className="type-overline mb-6"
+                style={{ color: "var(--color-ink-3)" }}
+              >
+                La boutique
+              </p>
+              <nav>
+                {mainNavigation.map((item) => {
+                  const isActive = pathname === item.href;
                   return (
-                    <div key={category.title} className="min-w-0 space-y-3 overflow-hidden">
-                      <Link href={category.href} onClick={closeMegaMenu} className="group block">
-                        <p className="type-overline wrap-break-word transition-colors group-hover:text-ylang-rose" style={{ color: "var(--color-accent)" }}>
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={closeMegaMenu}
+                      className={cn(
+                        "flex items-center justify-between py-4 text-2xl font-light transition-colors duration-200",
+                        isActive ? "text-ylang-rose" : "hover:text-ylang-rose",
+                      )}
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        color: isActive ? undefined : "var(--color-ink)",
+                        borderBottom: "var(--rule-soft)",
+                      }}
+                    >
+                      <span>{item.name}</span>
+                      <ChevronRight
+                        className="h-4 w-4 shrink-0 opacity-50"
+                        strokeWidth={1}
+                      />
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Section catégories — bg-ylang-cream */}
+            <div className="bg-ylang-cream px-6 py-8">
+              <p
+                className="type-overline mb-6"
+                style={{ color: "var(--color-ink-3)" }}
+              >
+                Nos créations
+              </p>
+              <div>
+                {megaMenuCategories.map((category) => {
+                  const isOpen = expandedCategory === category.title;
+                  return (
+                    <div key={category.title}>
+                      <button
+                        ref={(el) => {
+                          if (el) categoryRefs.current.set(category.title, el);
+                          else categoryRefs.current.delete(category.title);
+                        }}
+                        onClick={() => {
+                          const opening = !isOpen;
+                          setExpandedCategory(opening ? category.title : null);
+                          if (opening) {
+                            requestAnimationFrame(() => {
+                              requestAnimationFrame(() => {
+                                const btn = categoryRefs.current.get(
+                                  category.title,
+                                );
+                                const container = mobileMenuRef.current;
+                                if (btn && container) {
+                                  const containerRect =
+                                    container.getBoundingClientRect();
+                                  const btnRect = btn.getBoundingClientRect();
+                                  container.scrollTo({
+                                    top:
+                                      container.scrollTop +
+                                      (btnRect.top - containerRect.top) -
+                                      16,
+                                    behavior: "smooth",
+                                  });
+                                }
+                              });
+                            });
+                          }
+                        }}
+                        className="flex w-full items-center justify-between py-3 transition-colors"
+                        style={{ borderBottom: "var(--rule-soft)" }}
+                      >
+                        <span
+                          className="type-overline transition-colors duration-200"
+                          style={{
+                            color: isOpen
+                              ? "var(--color-ylang-rose)"
+                              : "var(--color-accent)",
+                          }}
+                        >
                           {category.title}
-                        </p>
-                        {category.subtitle && (
-                          <span className="mt-0.5 block text-[10px] italic" style={{ color: "var(--color-ink-3)" }}>
-                            {category.subtitle}
-                          </span>
-                        )}
-                      </Link>
-                      <ul className="space-y-1.5">
-                        {category.items.slice(0, 5).map((item) => (
-                          <li key={item.name}>
-                            <Link
-                              href={item.href}
-                              onClick={closeMegaMenu}
-                              className="font-body block text-sm font-light transition-colors duration-200 hover:text-ylang-rose hover:underline underline-offset-4"
-                              style={{ color: "var(--color-ink-3)" }}
-                            >
-                              {item.name}
-                            </Link>
-                          </li>
-                        ))}
-                        {category.items.length > 5 && (
-                          <li>
-                            <Link
-                              href={category.href}
-                              onClick={closeMegaMenu}
-                              className=" font-medium text-overline text-ylang-rose hover:underline underline-offset-4"
-                            >
-                              Voir tout →
-                            </Link>
-                          </li>
-                        )}
-                      </ul>
+                        </span>
+                        <ChevronDown
+                          className={cn(
+                            "h-4 w-4 shrink-0 transition-transform duration-300",
+                            isOpen && "rotate-180",
+                          )}
+                          style={{ color: "var(--color-ink-3)" }}
+                          strokeWidth={1.5}
+                        />
+                      </button>
+
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateRows: isOpen ? "1fr" : "0fr",
+                          transition:
+                            "grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        }}
+                      >
+                        <div className="overflow-hidden">
+                          <div className="space-y-2 py-4 pl-2">
+                            {category.items.map((item) => (
+                              <Link
+                                key={item.name}
+                                href={item.href}
+                                onClick={closeMegaMenu}
+                                className="font-body hover:text-ylang-rose block py-1.5 text-sm font-light underline-offset-4 transition-colors hover:underline"
+                                style={{ color: "var(--color-ink-3)" }}
+                              >
+                                {item.name}
+                              </Link>
+                            ))}
+                            {category.sections?.map((section) => (
+                              <div
+                                key={section.title}
+                                className="mt-4 space-y-2"
+                              >
+                                <p
+                                  className="font-body pb-1 text-[10px] font-semibold tracking-wider uppercase"
+                                  style={{
+                                    color: "var(--color-ink-3)",
+                                    borderBottom: "var(--rule-soft)",
+                                  }}
+                                >
+                                  {section.title}
+                                </p>
+                                {section.items.map((item) => (
+                                  <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    onClick={closeMegaMenu}
+                                    className="font-body hover:text-ylang-rose block py-1 text-sm font-light underline-offset-4 transition-colors hover:underline"
+                                    style={{ color: "var(--color-ink-3)" }}
+                                  >
+                                    {item.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Menu */}
-      {isMegaMenuOpen && (
-        <div
-          ref={mobileMenuRef}
-          className="animate-fade-in fixed top-16 right-0 left-0 z-40 overflow-y-auto lg:hidden"
-          style={{ height: "calc(100vh - 4rem)", animation: "fadeIn 0.25s ease-out", boxShadow: "0 12px 48px rgba(0,0,0,0.12)" }}
-        >
-          {/* Section nav principale — bg-ylang-beige */}
-          <div className="bg-ylang-beige px-6 py-8">
-            <p className="type-overline mb-6" style={{ color: "var(--color-ink-3)" }}>
-              La boutique
-            </p>
-            <nav>
-              {mainNavigation.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    onClick={closeMegaMenu}
-                    className={cn(
-                      "flex items-center justify-between py-4 text-2xl font-light transition-colors duration-200",
-                      isActive ? "text-ylang-rose" : "hover:text-ylang-rose",
-                    )}
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      color: isActive ? undefined : "var(--color-ink)",
-                      borderBottom: "var(--rule-soft)",
-                    }}
-                  >
-                    <span>{item.name}</span>
-                    <ChevronRight className="h-4 w-4 shrink-0 opacity-50" strokeWidth={1} />
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Section catégories — bg-ylang-cream */}
-          <div className="bg-ylang-cream px-6 py-8">
-            <p className="type-overline mb-6" style={{ color: "var(--color-ink-3)" }}>
-              Nos créations
-            </p>
-            <div>
-              {megaMenuCategories.map((category) => {
-                const isOpen = expandedCategory === category.title;
-                return (
-                  <div key={category.title}>
-                    <button
-                      ref={(el) => {
-                        if (el) categoryRefs.current.set(category.title, el);
-                        else categoryRefs.current.delete(category.title);
-                      }}
-                      onClick={() => {
-                        const opening = !isOpen;
-                        setExpandedCategory(opening ? category.title : null);
-                        if (opening) {
-                          requestAnimationFrame(() => {
-                            requestAnimationFrame(() => {
-                              const btn = categoryRefs.current.get(category.title);
-                              const container = mobileMenuRef.current;
-                              if (btn && container) {
-                                const containerRect = container.getBoundingClientRect();
-                                const btnRect = btn.getBoundingClientRect();
-                                container.scrollTo({
-                                  top: container.scrollTop + (btnRect.top - containerRect.top) - 16,
-                                  behavior: "smooth",
-                                });
-                              }
-                            });
-                          });
-                        }
-                      }}
-                      className="flex w-full items-center justify-between py-3 transition-colors"
-                      style={{ borderBottom: "var(--rule-soft)" }}
-                    >
-                      <span
-                        className="type-overline transition-colors duration-200"
-                        style={{ color: isOpen ? "var(--color-ylang-rose)" : "var(--color-accent)" }}
-                      >
-                        {category.title}
-                      </span>
-                      <ChevronDown
-                        className={cn("h-4 w-4 shrink-0 transition-transform duration-300", isOpen && "rotate-180")}
-                        style={{ color: "var(--color-ink-3)" }}
-                        strokeWidth={1.5}
-                      />
-                    </button>
-
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateRows: isOpen ? "1fr" : "0fr",
-                        transition: "grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                      }}
-                    >
-                      <div className="overflow-hidden">
-                        <div className="space-y-2 py-4 pl-2">
-                          {category.items.map((item) => (
-                            <Link
-                              key={item.name}
-                              href={item.href}
-                              onClick={closeMegaMenu}
-                              className="font-body block py-1.5 text-sm font-light transition-colors hover:text-ylang-rose hover:underline underline-offset-4"
-                              style={{ color: "var(--color-ink-3)" }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                          {category.sections?.map((section) => (
-                            <div key={section.title} className="mt-4 space-y-2">
-                              <p
-                                className="font-body pb-1 text-[10px] font-semibold tracking-wider uppercase"
-                                style={{ color: "var(--color-ink-3)", borderBottom: "var(--rule-soft)" }}
-                              >
-                                {section.title}
-                              </p>
-                              {section.items.map((item) => (
-                                <Link
-                                  key={item.name}
-                                  href={item.href}
-                                  onClick={closeMegaMenu}
-                                  className="font-body block py-1 text-sm font-light transition-colors hover:text-ylang-rose hover:underline underline-offset-4"
-                                  style={{ color: "var(--color-ink-3)" }}
-                                >
-                                  {item.name}
-                                </Link>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <SearchModal
         isOpen={isSearchOpen}
@@ -962,26 +1091,6 @@ export function Header() {
 
       {/* Animations CSS */}
       <style jsx>{`
-        @keyframes fadeInDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
         @keyframes slideInLeft {
           from {
             opacity: 0;
@@ -1004,29 +1113,8 @@ export function Header() {
           }
         }
 
-        @keyframes scaleIn {
-          from {
-            transform: scale(0);
-          }
-          to {
-            transform: scale(1);
-          }
-        }
-
-        .animate-fade-in-down {
-          animation: fadeInDown 0.3s ease-out;
-        }
-
-        .animate-fade-in {
-          animation: fadeIn 0.3s ease-out;
-        }
-
         .animate-slide-down {
           animation: slideDown 0.2s ease-out;
-        }
-
-        .animate-scale-in {
-          animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
       `}</style>
     </>

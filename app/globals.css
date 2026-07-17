@@ -82,7 +82,9 @@
   --color-ylang-green: #7aa769;
 
   /* Typography */
-  --font-family-display: "The Seasons", "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
+  --font-family-display:
+    "The Seasons", "adobe-garamond-pro",
+    var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
   --font-family-body: "Inter", sans-serif;
   --font-family-abramo-script: "Abramo Script", serif;
   --font-family-abramo: "Abramo", serif;
@@ -109,42 +111,53 @@
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.12);
-
-
-  /* Transitions */
-  --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Hallmark OKLCH tokens ───────────────────────────────────────────── */
 :root {
-  --color-paper:        oklch(98.5% 0.018 20);
-  --color-paper-2:      oklch(96% 0.025 20);
-  --color-paper-3:      oklch(93% 0.032 20);
-  --color-ink:          oklch(14% 0.022 25);
-  --color-ink-2:        oklch(81% 0.020 18);
-  --color-ink-3:        oklch(50% 0.012 18);
-  --color-accent:       oklch(58% 0.070 28);
-  --color-accent-light: oklch(77% 0.040 18);
-  --color-accent-gold:  oklch(84% 0.070 70);
-  --color-accent-green: oklch(66% 0.100 140);
-  --font-display:        "The Seasons", "adobe-garamond-pro", var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
-  --font-body:          "Inter", sans-serif;
-  --font-accent:        "Abramo Script", serif;
-  --font-brand:         "Abramo", serif;
-  --ease-out:           cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in:            cubic-bezier(0.4, 0, 1, 1);
-  --ease-in-out:        cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-fast:           150ms;
-  --dur-base:           300ms;
-  --dur-slow:           500ms;
-  --dur-reveal:         600ms;
-  --rule-hair:          1px solid oklch(81% 0.020 18 / 0.3);
-  --rule-soft:          1px solid oklch(81% 0.020 18 / 0.15);
+  --color-paper: oklch(98.5% 0.018 20);
+  --color-paper-2: oklch(96% 0.025 20);
+  --color-paper-3: oklch(93% 0.032 20);
+  --color-ink: oklch(14% 0.022 25);
+  --color-ink-2: oklch(81% 0.02 18);
+  --color-ink-3: oklch(50% 0.012 18);
+  --color-accent: oklch(58% 0.07 28);
+  --color-accent-light: oklch(77% 0.04 18);
+  --color-accent-gold: oklch(84% 0.07 70);
+  --color-accent-green: oklch(66% 0.1 140);
+  --font-display:
+    "The Seasons", "adobe-garamond-pro",
+    var(--font-cormorant-garamond, "Cormorant Garamond"), serif;
+  --font-body: "Inter", sans-serif;
+  --font-accent: "Abramo Script", serif;
+  --font-brand: "Abramo", serif;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 150ms;
+  --dur-base: 300ms;
+  --dur-slow: 500ms;
+  --dur-reveal: 600ms;
+  --rule-hair: 1px solid oklch(81% 0.02 18 / 0.3);
+  --rule-soft: 1px solid oklch(81% 0.02 18 / 0.15);
 }
 
 /* ── Base reset ──────────────────────────────────────────────────────── */
-html, body { overflow-x: clip; }
+html,
+body {
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* Custom Classes Premium */
 /* ── Essai Adobe Garamond Pro Bold Italic ── */
@@ -175,7 +188,7 @@ html, body { overflow-x: clip; }
   font-size: var(--text-display);
   font-weight: 400;
   font-style: normal;
-  line-height: 1.0;
+  line-height: 1;
   letter-spacing: -0.02em;
 }
 
@@ -264,34 +277,10 @@ html, body { overflow-x: clip; }
   animation: fade-in 0.6s ease-out;
 }
 
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.4s ease-out;
-}
-
 .animate-slide-in {
   animation: slide-in-right 0.5s ease-out;
 }
 
-/* Premium Hover Effects */
-.hover-lift {
-  transition: var(--transition-base);
-}
-
-.hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-elevated);
-}
 .bg-pattern {
   background-image: url("/images/polyligne-patern.webp");
   background-repeat: no-repeat;

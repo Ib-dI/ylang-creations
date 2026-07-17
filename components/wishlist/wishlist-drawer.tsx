@@ -3,9 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { euros } from "@/lib/currency";
 import { useCartStore } from "@/lib/store/cart-store";
-import { DEFAULT_BROWSE, useNavigationStore } from "@/lib/store/navigation-store";
+import {
+  DEFAULT_BROWSE,
+  useNavigationStore,
+} from "@/lib/store/navigation-store";
 import { useWishlistStore } from "@/lib/store/wishlist-store";
-import { AnimatePresence, motion } from "framer-motion";
+import { EASE_OUT } from "@/lib/motion-tokens";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Heart, ShoppingBag, Sparkles, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +18,9 @@ export function WishlistDrawer() {
   const { items, isOpen, closeWishlist, removeItem, getTotalItems } =
     useWishlistStore();
   const { addItem: addToCart, openCart } = useCartStore();
-  const lastBrowse = useNavigationStore((state) => state.lastBrowse) ?? DEFAULT_BROWSE;
+  const lastBrowse =
+    useNavigationStore((state) => state.lastBrowse) ?? DEFAULT_BROWSE;
+  const shouldReduce = useReducedMotion();
 
   const handleAddToCart = (item: (typeof items)[0]) => {
     addToCart({
@@ -55,12 +61,25 @@ export function WishlistDrawer() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "tween", duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            initial={{
+              x: shouldReduce ? 0 : "100%",
+              opacity: shouldReduce ? 0 : 1,
+            }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{
+              x: shouldReduce ? 0 : "100%",
+              opacity: shouldReduce ? 0 : 1,
+            }}
+            transition={{
+              type: "tween",
+              duration: shouldReduce ? 0.15 : 0.35,
+              ease: EASE_OUT,
+            }}
             className="fixed top-0 right-0 bottom-0 z-50 flex w-full max-w-md flex-col"
-            style={{ background: "var(--color-paper)", boxShadow: "-4px 0 40px rgba(0,0,0,0.10)" }}
+            style={{
+              background: "var(--color-paper)",
+              boxShadow: "-4px 0 40px rgba(0,0,0,0.10)",
+            }}
           >
             {/* Header */}
             <div
@@ -68,7 +87,10 @@ export function WishlistDrawer() {
               style={{ borderBottom: "var(--rule-hair)" }}
             >
               <div>
-                <p className="type-overline mb-1" style={{ color: "var(--color-accent)" }}>
+                <p
+                  className="type-overline mb-1"
+                  style={{ color: "var(--color-accent)" }}
+                >
                   Votre sélection
                 </p>
                 <h2
@@ -83,7 +105,10 @@ export function WishlistDrawer() {
                 </h2>
               </div>
               <div className="flex items-center gap-4">
-                <span className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                <span
+                  className="font-body text-sm"
+                  style={{ color: "var(--color-ink-3)" }}
+                >
                   {getTotalItems()} article{getTotalItems() > 1 ? "s" : ""}
                 </span>
                 <button
@@ -117,7 +142,10 @@ export function WishlistDrawer() {
                   >
                     Aucun favori
                   </p>
-                  <p className="font-body mb-8 text-sm" style={{ color: "var(--color-ink-3)" }}>
+                  <p
+                    className="font-body mb-8 text-sm"
+                    style={{ color: "var(--color-ink-3)" }}
+                  >
                     Découvrez nos créations et ajoutez vos coups de cœur
                   </p>
                   <Button variant="luxury" onClick={closeWishlist} asChild>
@@ -153,7 +181,11 @@ export function WishlistDrawer() {
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center">
-                              <Heart className="h-5 w-5" style={{ color: "var(--color-ink-3)" }} strokeWidth={1} />
+                              <Heart
+                                className="h-5 w-5"
+                                style={{ color: "var(--color-ink-3)" }}
+                                strokeWidth={1}
+                              />
                             </div>
                           )}
                         </Link>
@@ -161,7 +193,10 @@ export function WishlistDrawer() {
                         {/* Info */}
                         <div className="min-w-0 flex-1">
                           {item.category && (
-                            <p className="type-overline mb-1" style={{ color: "var(--color-ink-3)" }}>
+                            <p
+                              className="type-overline mb-1"
+                              style={{ color: "var(--color-ink-3)" }}
+                            >
                               {item.category}
                             </p>
                           )}
@@ -171,7 +206,7 @@ export function WishlistDrawer() {
                             className="transition-opacity hover:opacity-70"
                           >
                             <h3
-                              className="mb-1 font-body text-sm font-medium leading-tight"
+                              className="font-body mb-1 text-sm leading-tight font-medium"
                               style={{ color: "var(--color-ink)" }}
                             >
                               {item.name}
@@ -204,26 +239,32 @@ export function WishlistDrawer() {
                       <div className="mt-4 flex gap-3">
                         <button
                           onClick={() => handleAddToCart(item)}
-                          className="flex flex-1 items-center justify-center gap-2 py-2.5 font-body text-sm transition-opacity hover:opacity-70"
+                          className="font-body flex flex-1 items-center justify-center gap-2 py-2.5 text-sm transition-opacity hover:opacity-70"
                           style={{
                             border: "var(--rule-soft)",
                             color: "var(--color-ink)",
                           }}
                         >
-                          <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.5} />
+                          <ShoppingBag
+                            className="h-3.5 w-3.5"
+                            strokeWidth={1.5}
+                          />
                           Ajouter au panier
                         </button>
                         {item.customizable && (
                           <Link
                             href={`/configurateur?product=${item.productId}`}
                             onClick={closeWishlist}
-                            className="flex items-center gap-1.5 px-4 py-2.5 font-body text-sm transition-opacity hover:opacity-70"
+                            className="font-body flex items-center gap-1.5 px-4 py-2.5 text-sm transition-opacity hover:opacity-70"
                             style={{
                               background: "var(--color-paper-2)",
                               color: "var(--color-ink-3)",
                             }}
                           >
-                            <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />
+                            <Sparkles
+                              className="h-3.5 w-3.5"
+                              strokeWidth={1.5}
+                            />
                             Personnaliser
                           </Link>
                         )}
@@ -238,7 +279,10 @@ export function WishlistDrawer() {
             {items.length > 0 && (
               <div
                 className="px-8 py-6"
-                style={{ background: "var(--color-paper-2)", borderTop: "var(--rule-hair)" }}
+                style={{
+                  background: "var(--color-paper-2)",
+                  borderTop: "var(--rule-hair)",
+                }}
               >
                 <Button
                   variant="luxury"
@@ -255,7 +299,7 @@ export function WishlistDrawer() {
 
                 <button
                   onClick={closeWishlist}
-                  className="mt-4 w-full font-body text-sm transition-opacity hover:opacity-60"
+                  className="font-body mt-4 w-full text-sm transition-opacity hover:opacity-60"
                   style={{ color: "var(--color-ink-3)" }}
                 >
                   Fermer

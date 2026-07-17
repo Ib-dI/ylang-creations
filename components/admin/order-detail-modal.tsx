@@ -177,7 +177,7 @@ export default function OrderDetailModal({
 
                 <button
                   onClick={onClose}
-                  className="bg-ylang-cream text-ylang-charcoal hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-2xl shadow-sm transition-all duration-300 hover:text-white"
+                  className="bg-ylang-cream text-ylang-charcoal hover:bg-ylang-rose flex h-12 w-12 items-center justify-center rounded-2xl shadow-sm transition-colors duration-300 hover:text-white"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -189,7 +189,7 @@ export default function OrderDetailModal({
                   {/* Progress Line */}
                   <div className="absolute top-[22px] left-0 h-0.5 w-full bg-[#eee]" />
                   <motion.div
-                    className="bg-ylang-rose absolute top-[22px] left-0 h-0.5 transition-all duration-500"
+                    className="bg-ylang-rose absolute top-[22px] left-0 h-0.5"
                     initial={{ width: "0%" }}
                     animate={{
                       width: `${(currentStatusIndex / (statuses.length - 1)) * 100}%`,
@@ -211,7 +211,7 @@ export default function OrderDetailModal({
                           whileTap={{ scale: 0.95 }}
                           onClick={() => handleStatusChange(status.value)}
                           disabled={isUpdating}
-                          className={`flex h-11 w-11 items-center justify-center rounded-full border-2 transition-all duration-300 ${
+                          className={`flex h-11 w-11 items-center justify-center rounded-full border-2 transition-[border-color,color,background-color,box-shadow,transform] duration-300 ${
                             isActive
                               ? "border-ylang-rose text-ylang-rose bg-white shadow-[0_0_15px_rgba(183,110,121,0.3)]"
                               : "border-[#eee] bg-white text-[#ccc]"
@@ -258,7 +258,7 @@ export default function OrderDetailModal({
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
-                          className="group bg-ylang-cream/30 hover:bg-ylang-cream/50 relative flex gap-6 overflow-hidden rounded-2xl p-4 transition-all"
+                          className="group bg-ylang-cream/30 hover:bg-ylang-cream/50 relative flex gap-6 overflow-hidden rounded-2xl p-4 transition-colors"
                         >
                           {/* Item Thumbnail */}
                           <div className="h-32 w-32 shrink-0 overflow-hidden rounded-2xl border border-white bg-white shadow-inner">
@@ -310,12 +310,17 @@ export default function OrderDetailModal({
                                     <div className="text-ylang-charcoal/60 flex items-center gap-2 text-sm">
                                       <div
                                         className="h-4 w-4 shrink-0 rounded-full border border-black/10 shadow-sm"
-                                        style={{ backgroundColor: item.configuration.selectedColor }}
+                                        style={{
+                                          backgroundColor:
+                                            item.configuration.selectedColor,
+                                        }}
                                       />
                                       <span>
                                         Couleur:{" "}
                                         <strong className="text-ylang-charcoal font-semibold">
-                                          {item.configuration.selectedColorName ?? item.configuration.selectedColor}
+                                          {item.configuration
+                                            .selectedColorName ??
+                                            item.configuration.selectedColor}
                                         </strong>
                                       </span>
                                     </div>
@@ -326,23 +331,35 @@ export default function OrderDetailModal({
                                       <span>
                                         Broderie:{" "}
                                         <strong className="text-ylang-charcoal font-semibold">
-                                          &quot;{item.configuration.embroidery}&quot;
+                                          &quot;{item.configuration.embroidery}
+                                          &quot;
                                         </strong>
                                         {item.configuration.embroideryColor && (
                                           <>
                                             <span
                                               className="ml-1.5 inline-block h-3 w-3 rounded-full border border-black/10 align-middle"
-                                              style={{ backgroundColor: item.configuration.embroideryColor }}
-                                              title={item.configuration.embroideryColor}
+                                              style={{
+                                                backgroundColor:
+                                                  item.configuration
+                                                    .embroideryColor,
+                                              }}
+                                              title={
+                                                item.configuration
+                                                  .embroideryColor
+                                              }
                                             />
                                             <span className="text-ylang-charcoal/60 ml-1 text-xs">
-                                              {item.configuration.embroideryColorName ?? item.configuration.embroideryColor}
+                                              {item.configuration
+                                                .embroideryColorName ??
+                                                item.configuration
+                                                  .embroideryColor}
                                             </span>
                                           </>
                                         )}
                                         {item.configuration.embroideryFont && (
                                           <span className="text-ylang-charcoal/60 ml-1.5 text-xs">
-                                            ({item.configuration.embroideryFont})
+                                            ({item.configuration.embroideryFont}
+                                            )
                                           </span>
                                         )}
                                       </span>

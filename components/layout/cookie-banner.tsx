@@ -48,14 +48,14 @@ export function CookieBanner() {
           <div className="flex flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
             <Button
               onClick={handleAccept}
-              className="bg-ylang-charcoal hover:bg-ylang-charcoal/90 flex-1 text-white transition-all"
+              className="bg-ylang-charcoal hover:bg-ylang-charcoal/90 flex-1 text-white transition-colors"
             >
               Accepter tout
             </Button>
             <Button
               variant="secondary"
               onClick={handleDecline}
-              className="border-ylang-beige hover:bg-ylang-beige/10 text-ylang-charcoal flex-1 transition-all"
+              className="border-ylang-beige hover:bg-ylang-beige/10 text-ylang-charcoal flex-1 transition-colors"
             >
               Refuser
             </Button>

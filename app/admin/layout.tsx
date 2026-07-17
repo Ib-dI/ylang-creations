@@ -21,15 +21,19 @@ import { useState } from "react";
 import { Toaster } from "sonner";
 
 const navItems = [
-  { name: "Dashboard",     href: "/admin",              icon: LayoutDashboard },
-  { name: "Commandes",     href: "/admin/orders",        icon: ShoppingBag },
-  { name: "Produits",      href: "/admin/products",      icon: Package },
-  { name: "Configurateur", href: "/admin/configurator",  icon: Palette },
-  { name: "Clients",       href: "/admin/users",         icon: Users },
-  { name: "Newsletter",    href: "/admin/newsletter",    icon: Mail },
+  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Commandes", href: "/admin/orders", icon: ShoppingBag },
+  { name: "Produits", href: "/admin/products", icon: Package },
+  { name: "Configurateur", href: "/admin/configurator", icon: Palette },
+  { name: "Clients", href: "/admin/users", icon: Users },
+  { name: "Newsletter", href: "/admin/newsletter", icon: Mail },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const { push } = useRouter();
   const supabase = createClient();
@@ -43,11 +47,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen" style={{ background: "var(--color-paper)" }}>
-
       {/* Mobile top bar */}
       <div
         className="fixed top-0 right-0 left-0 z-40 flex items-center justify-between px-4 py-3 lg:hidden"
-        style={{ background: "var(--color-ink)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+        style={{
+          background: "var(--color-ink)",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+        }}
       >
         <Link href="/" className="flex items-center gap-2.5">
           <Image src="/logo/logo-2.png" alt="Ylang" width={28} height={28} />
@@ -64,31 +70,43 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           style={{ color: "var(--color-paper)" }}
           aria-label="Menu"
         >
-          {mobileMenuOpen
-            ? <X className="h-5 w-5" strokeWidth={1.5} />
-            : <Menu className="h-5 w-5" strokeWidth={1.5} />
-          }
+          {mobileMenuOpen ? (
+            <X className="h-5 w-5" strokeWidth={1.5} />
+          ) : (
+            <Menu className="h-5 w-5" strokeWidth={1.5} />
+          )}
         </button>
       </div>
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex flex-col transition-all duration-300 ${
+        className={`fixed inset-y-0 left-0 z-40 flex flex-col transition-[width,transform] duration-300 ${
           sidebarOpen ? "w-60" : "w-16"
         } ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          mobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
         }`}
-        style={{ background: "var(--color-ink)", borderRight: "1px solid rgba(255,255,255,0.08)" }}
+        style={{
+          background: "var(--color-ink)",
+          borderRight: "1px solid rgba(255,255,255,0.08)",
+        }}
       >
         {/* Logo */}
         <div
-          className={`flex items-center gap-3 transition-all duration-300 ${
+          className={`flex items-center gap-3 transition-[padding] duration-300 ${
             sidebarOpen ? "px-5 py-5" : "flex-col justify-center px-3 py-5"
           }`}
           style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
         >
           <Link href="/" className="flex shrink-0 items-center gap-3">
-            <Image src="/logo/logo-2.png" alt="Ylang" width={32} height={32} className="shrink-0" />
+            <Image
+              src="/logo/logo-2.png"
+              alt="Ylang"
+              width={32}
+              height={32}
+              className="shrink-0"
+            />
             {sidebarOpen && (
               <span
                 style={{
@@ -105,11 +123,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
           {sidebarOpen && (
             <div className="ml-auto">
-              <SidebarToggle isOpen={sidebarOpen} onClick={() => setSidebarOpen(!sidebarOpen)} />
+              <SidebarToggle
+                isOpen={sidebarOpen}
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+              />
             </div>
           )}
           {!sidebarOpen && (
-            <SidebarToggle isOpen={sidebarOpen} onClick={() => setSidebarOpen(!sidebarOpen)} />
+            <SidebarToggle
+              isOpen={sidebarOpen}
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            />
           )}
         </div>
 
@@ -125,17 +149,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.name}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 font-body text-sm transition-all duration-150 ${
+                className={`font-body flex items-center gap-3 px-3 py-2.5 text-sm transition-opacity duration-150 ${
                   sidebarOpen ? "justify-start" : "justify-center"
                 }`}
                 style={{
-                  color: isActive ? "var(--color-accent)" : "var(--color-paper)",
+                  color: isActive
+                    ? "var(--color-accent)"
+                    : "var(--color-paper)",
                   opacity: isActive ? 1 : 0.5,
-                  borderLeft: isActive ? "2px solid var(--color-accent)" : "2px solid transparent",
-                  background: isActive ? "rgba(255,255,255,0.05)" : "transparent",
+                  borderLeft: isActive
+                    ? "2px solid var(--color-accent)"
+                    : "2px solid transparent",
+                  background: isActive
+                    ? "rgba(255,255,255,0.05)"
+                    : "transparent",
                 }}
-                onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.opacity = "1"; }}
-                onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.opacity = "0.5"; }}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.opacity = "1";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) e.currentTarget.style.opacity = "0.5";
+                }}
               >
                 <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
                 {sidebarOpen && <span>{item.name}</span>}
@@ -152,17 +186,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link
             href="/admin/settings"
             onClick={() => setMobileMenuOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 font-body text-sm transition-all duration-150 ${
+            className={`font-body flex items-center gap-3 px-3 py-2.5 text-sm transition-opacity duration-150 ${
               sidebarOpen ? "justify-start" : "justify-center"
             }`}
             style={{
-              color: pathname === "/admin/settings" ? "var(--color-accent)" : "var(--color-paper)",
+              color:
+                pathname === "/admin/settings"
+                  ? "var(--color-accent)"
+                  : "var(--color-paper)",
               opacity: pathname === "/admin/settings" ? 1 : 0.5,
-              borderLeft: pathname === "/admin/settings" ? "2px solid var(--color-accent)" : "2px solid transparent",
-              background: pathname === "/admin/settings" ? "rgba(255,255,255,0.05)" : "transparent",
+              borderLeft:
+                pathname === "/admin/settings"
+                  ? "2px solid var(--color-accent)"
+                  : "2px solid transparent",
+              background:
+                pathname === "/admin/settings"
+                  ? "rgba(255,255,255,0.05)"
+                  : "transparent",
             }}
-            onMouseEnter={(e) => { if (pathname !== "/admin/settings") e.currentTarget.style.opacity = "1"; }}
-            onMouseLeave={(e) => { if (pathname !== "/admin/settings") e.currentTarget.style.opacity = "0.5"; }}
+            onMouseEnter={(e) => {
+              if (pathname !== "/admin/settings")
+                e.currentTarget.style.opacity = "1";
+            }}
+            onMouseLeave={(e) => {
+              if (pathname !== "/admin/settings")
+                e.currentTarget.style.opacity = "0.5";
+            }}
           >
             <Settings className="h-4 w-4 shrink-0" strokeWidth={1.5} />
             {sidebarOpen && <span>Paramètres</span>}
@@ -170,7 +219,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <button
             onClick={handleLogout}
-            className={`flex w-full items-center gap-3 px-3 py-2.5 font-body text-sm transition-opacity hover:opacity-100 ${
+            className={`font-body flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-opacity hover:opacity-100 ${
               sidebarOpen ? "justify-start" : "justify-center"
             }`}
             style={{ color: "var(--color-paper)", opacity: 0.35 }}
@@ -192,7 +241,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main content */}
       <main
-        className={`transition-all duration-300 ${sidebarOpen ? "lg:ml-60" : "lg:ml-16"}`}
+        className={`transition-[margin-left] duration-300 ${sidebarOpen ? "lg:ml-60" : "lg:ml-16"}`}
       >
         <div className="px-4 pt-16 pb-12 sm:px-6 lg:px-8 lg:pt-8">
           {children}

@@ -37,7 +37,10 @@ function CollectionsContent() {
   // Mémorise cette page (avec filtres) comme point de retour pour "Continuer mes achats" / états vides
   useEffect(() => {
     const query = searchParams.toString();
-    setLastBrowse(query ? `${pathname}?${query}` : pathname, "Découvrir nos créations");
+    setLastBrowse(
+      query ? `${pathname}?${query}` : pathname,
+      "Découvrir nos créations",
+    );
   }, [pathname, searchParams, setLastBrowse]);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -289,7 +292,12 @@ function CollectionsContent() {
       // Mots significatifs du terme de recherche (ex: "Gigoteuse légère 0/3" → ["gigoteuse", "legere"])
       const searchWords = searchLower
         .split(/[\s/\-]+/)
-        .map((w) => w.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
+        .map((w) =>
+          w
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase(),
+        )
         .filter((w) => w.length > 2 && !/^\d+$/.test(w));
 
       const productNameNorm = product.name
@@ -335,12 +343,16 @@ function CollectionsContent() {
             "lit",
             "lange",
           ].some(
-            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+            (sub) =>
+              productCatSlug.includes(sub) ||
+              slugify(product.name).includes(sub),
           )) ||
         // La Toilette
         (categorySlug.includes("toilette") &&
           ["bavoir", "cape", "gant", "serviette", "bain", "toilette"].some(
-            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+            (sub) =>
+              productCatSlug.includes(sub) ||
+              slugify(product.name).includes(sub),
           )) ||
         // Linge de naissance
         (categorySlug.includes("naissance") &&
@@ -355,7 +367,9 @@ function CollectionsContent() {
             "linge",
             "vetement",
           ].some(
-            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+            (sub) =>
+              productCatSlug.includes(sub) ||
+              slugify(product.name).includes(sub),
           )) ||
         // Bagageries/promenade
         (categorySlug.includes("bagagerie") &&
@@ -369,17 +383,30 @@ function CollectionsContent() {
             "bagagerie",
             "promenade",
           ].some(
-            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+            (sub) =>
+              productCatSlug.includes(sub) ||
+              slugify(product.name).includes(sub),
           )) ||
         // Accessoires
         (categorySlug.includes("accessoire") &&
-          ["anneau", "dentition", "attache", "tetine", "brosse", "accessoire"].some(
-            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+          [
+            "anneau",
+            "dentition",
+            "attache",
+            "tetine",
+            "brosse",
+            "accessoire",
+          ].some(
+            (sub) =>
+              productCatSlug.includes(sub) ||
+              slugify(product.name).includes(sub),
           )) ||
         // Les jeux
         ((categorySlug.includes("jeux") || categorySlug.includes("jeu")) &&
           ["poupee", "bebe", "jeu", "jouet"].some(
-            (sub) => productCatSlug.includes(sub) || slugify(product.name).includes(sub),
+            (sub) =>
+              productCatSlug.includes(sub) ||
+              slugify(product.name).includes(sub),
           ));
 
       const matchesPrice =
@@ -425,7 +452,10 @@ function CollectionsContent() {
   ]);
 
   return (
-    <div className="min-h-screen py-12 sm:py-16 lg:py-24" style={{ background: "var(--color-paper)" }}>
+    <div
+      className="min-h-screen py-12 sm:py-16 lg:py-24"
+      style={{ background: "var(--color-paper)" }}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -434,14 +464,20 @@ function CollectionsContent() {
           className="mb-8 text-center lg:mb-12"
         >
           <p
-            className="mb-3 text-xs tracking-[0.2em] uppercase font-semibold"
-            style={{ fontFamily: "var(--font-brand)", color: "var(--color-accent)" }}
+            className="mb-3 text-xs font-semibold tracking-[0.2em] uppercase"
+            style={{
+              fontFamily: "var(--font-brand)",
+              color: "var(--color-accent)",
+            }}
           >
             Nos Collections
           </p>
           <h1
             className="mb-4 text-4xl font-semibold tracking-tight lg:text-6xl"
-            style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "var(--color-ink)",
+            }}
           >
             {searchTerm
               ? searchTerm.charAt(0).toUpperCase() + searchTerm.slice(1)
@@ -468,7 +504,7 @@ function CollectionsContent() {
                 placeholder="Rechercher une création..."
                 value={searchTerm}
                 onChange={(e) => updateSearchUrl(e.target.value)}
-                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal border-ylang-rose w-full rounded-none border bg-white py-3.5 pr-12 pl-12 transition-all outline-none placeholder:text-gray-400 focus:ring-4"
+                className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal border-ylang-rose w-full rounded-none border bg-white py-3.5 pr-12 pl-12 transition-[border-color,box-shadow] outline-none placeholder:text-gray-400 focus:ring-4"
               />
               {searchTerm && (
                 <button
@@ -484,7 +520,7 @@ function CollectionsContent() {
               {/* Bouton filtres Desktop/Mobile */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`font-body border-ylang-rose flex items-center justify-center gap-2.5 rounded-none border bg-white px-6 py-3.5 text-sm font-medium transition-all ${
+                className={`font-body border-ylang-rose flex items-center justify-center gap-2.5 rounded-none border bg-white px-6 py-3.5 text-sm font-medium transition-colors ${
                   showFilters
                     ? "border-ylang-rose bg-ylang-rose/60 text-ylang-white"
                     : "text-ylang-charcoal"
@@ -511,7 +547,7 @@ function CollectionsContent() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal border-ylang-rose cursor-pointer appearance-none rounded-2xl border bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-all outline-none focus:ring-4"
+                  className="focus:border-ylang-rose focus:ring-ylang-rose/10 font-body text-ylang-charcoal border-ylang-rose cursor-pointer appearance-none rounded-2xl border bg-white py-3.5 pr-10 pl-6 text-sm font-medium transition-[border-color,box-shadow] outline-none focus:ring-4"
                 >
                   <option value="featured">Mis en avant</option>
                   <option value="price-asc">Prix croissant</option>
@@ -554,7 +590,7 @@ function CollectionsContent() {
                         <button
                           key={cat}
                           onClick={() => updateCategory(cat)}
-                          className={`font-body relative rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
+                          className={`font-body relative rounded-full px-5 py-2 text-sm font-medium transition-[background-color,color,box-shadow] duration-300 ${
                             selectedCategory === cat
                               ? "bg-ylang-rose shadow-ylang-rose/20 text-white shadow-md"
                               : "bg-ylang-cream text-ylang-charcoal/70 hover:bg-ylang-rose/10 hover:text-ylang-charcoal"
@@ -604,7 +640,7 @@ function CollectionsContent() {
                         <button
                           key={range.label}
                           onClick={() => setPriceRange([range.min, range.max])}
-                          className={`font-body rounded-lg border px-3 py-1.5 text-xs transition-all ${
+                          className={`font-body rounded-lg border px-3 py-1.5 text-xs transition-colors ${
                             priceRange[0] === range.min &&
                             priceRange[1] === range.max
                               ? "border-ylang-rose bg-ylang-rose/5 text-ylang-rose font-semibold"
@@ -630,7 +666,7 @@ function CollectionsContent() {
                           onChange={(e) =>
                             updateFlag("filter", e.target.checked)
                           }
-                          className="accent-ylang-rose focus:ring-ylang-rose h-5 w-5 rounded border-gray-300 transition-all"
+                          className="accent-ylang-rose focus:ring-ylang-rose h-5 w-5 rounded border-gray-300 transition-shadow"
                         />
                         <span className="font-body text-ylang-charcoal text-sm font-medium">
                           Nouveautés uniquement
@@ -643,7 +679,7 @@ function CollectionsContent() {
                           onChange={(e) =>
                             updateFlag("customizable", e.target.checked)
                           }
-                          className="accent-ylang-rose focus:ring-ylang-rose h-5 w-5 rounded border-gray-300 transition-all"
+                          className="accent-ylang-rose focus:ring-ylang-rose h-5 w-5 rounded border-gray-300 transition-shadow"
                         />
                         <span className="font-body text-ylang-charcoal text-sm font-medium">
                           Produits personnalisables
