@@ -62,12 +62,12 @@ export function WishlistDrawer() {
         {isOpen && (
           <motion.div
             initial={{
-              x: shouldReduce ? 0 : "100%",
+              transform: shouldReduce ? "translateX(0%)" : "translateX(100%)",
               opacity: shouldReduce ? 0 : 1,
             }}
-            animate={{ x: 0, opacity: 1 }}
+            animate={{ transform: "translateX(0%)", opacity: 1 }}
             exit={{
-              x: shouldReduce ? 0 : "100%",
+              transform: shouldReduce ? "translateX(0%)" : "translateX(100%)",
               opacity: shouldReduce ? 0 : 1,
             }}
             transition={{
@@ -159,7 +159,7 @@ export function WishlistDrawer() {
                       key={item.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      exit={{ opacity: 0, x: -40 }}
+                      exit={{ opacity: 0, transform: "translateX(-40px)" }}
                       transition={{ duration: 0.2 }}
                       className="py-5"
                       style={{ borderBottom: "var(--rule-soft)" }}

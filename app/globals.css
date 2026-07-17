@@ -323,16 +323,13 @@ body {
   0% {
     background-position: 0% 50%;
   }
-  50% {
-    background-position: 100% 50%;
-  }
   100% {
-    background-position: 0% 50%;
+    background-position: 100% 50%;
   }
 }
 
 .animate-gradient {
-  animation: gradient-x 3s ease infinite;
+  animation: gradient-x 1.2s ease-out 1 both;
 }
 
 /* global.css */

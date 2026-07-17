@@ -409,7 +409,7 @@ export function Header() {
     <>
       <header
         className={cn(
-          "bg-ylang-rose fixed top-0 right-0 left-0 z-50 transition-shadow duration-500",
+          "bg-ylang-rose fixed top-0 right-0 left-0 z-50 transition-shadow duration-200",
           isScrolled && "shadow-[0_2px_20px_rgba(0,0,0,0.08)]",
         )}
       >

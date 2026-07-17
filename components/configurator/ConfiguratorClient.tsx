@@ -359,7 +359,7 @@ const ConfiguratorClient = ({
                 style={{ background: "var(--color-paper-2)" }}
               >
                 <div
-                  className="h-px transition-all duration-700 ease-out"
+                  className="h-px transition-all duration-200 ease-out"
                   style={{
                     width: `${((currentTabIndex + 1) / tabs.length) * 100}%`,
                     background: "var(--color-accent)",
@@ -484,7 +484,7 @@ const ConfiguratorClient = ({
               <button
                 onClick={goPrevious}
                 disabled={!canGoPrevious}
-                className="font-body flex items-center gap-2 text-sm transition-opacity hover:opacity-60 disabled:opacity-20"
+                className="font-body flex items-center gap-2 text-sm transition-[opacity,transform] duration-150 hover:opacity-60 active:scale-[0.97] disabled:opacity-20"
                 style={{ color: "var(--color-ink)" }}
               >
                 <ChevronLeft className="h-4 w-4" strokeWidth={1.5} />
@@ -514,7 +514,7 @@ const ConfiguratorClient = ({
                 <button
                   onClick={handleAddToCart}
                   disabled={!configuration.product || !configuration.fabric}
-                  className="font-body flex items-center gap-2 px-6 py-3.5 text-sm tracking-widest uppercase transition-opacity hover:opacity-80 disabled:opacity-20"
+                  className="font-body flex items-center gap-2 px-6 py-3.5 text-sm tracking-widest uppercase transition-[opacity,transform] duration-150 hover:opacity-80 active:scale-[0.97] disabled:opacity-20"
                   style={{
                     background: "var(--color-ink)",
                     color: "var(--color-paper)",
@@ -528,7 +528,7 @@ const ConfiguratorClient = ({
                 <button
                   onClick={goNext}
                   disabled={!canGoNext}
-                  className="font-body flex items-center gap-2 px-6 py-3.5 text-sm tracking-widest uppercase transition-opacity hover:opacity-80 disabled:opacity-20"
+                  className="font-body flex items-center gap-2 px-6 py-3.5 text-sm tracking-widest uppercase transition-[opacity,transform] duration-150 hover:opacity-80 active:scale-[0.97] disabled:opacity-20"
                   style={{
                     background: "var(--color-ink)",
                     color: "var(--color-paper)",

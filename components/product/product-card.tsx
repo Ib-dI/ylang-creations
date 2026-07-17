@@ -59,12 +59,12 @@ export function ProductCard({
       className={cn("group", className)}
       style={{
         // Animation CSS pure au lieu de framer-motion
-        animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`,
+        animation: `fadeInUp 0.3s ease-out both`,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card className="relative overflow-hidden border-0 bg-white transition-[transform,box-shadow] duration-500">
+      <Card className="relative overflow-hidden border-0 bg-white transition-[transform,box-shadow] duration-200">
         {/* Image Container */}
         <Link href={`/produits/${product.id}`}>
           <div className="bg-ylang-beige/30 relative aspect-4/5 overflow-hidden">

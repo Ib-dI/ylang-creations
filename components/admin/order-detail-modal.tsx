@@ -257,7 +257,7 @@ export default function OrderDetailModal({
                           key={index}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
+                          transition={{ duration: 0.25, delay: index * 0.03 }}
                           className="group bg-ylang-cream/30 hover:bg-ylang-cream/50 relative flex gap-6 overflow-hidden rounded-2xl p-4 transition-colors"
                         >
                           {/* Item Thumbnail */}

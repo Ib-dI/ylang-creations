@@ -152,7 +152,7 @@ export default function ProductDetails({
                     alt={`Vue ${idx + 1}`}
                     fill
                     sizes="(max-width: 1024px) 64px, 76px"
-                    className={`object-cover transition-transform duration-500 ${
+                    className={`object-cover transition-transform duration-200 ${
                       selectedImage === idx ? "scale-110" : "scale-100"
                     }`}
                   />
@@ -201,7 +201,7 @@ export default function ProductDetails({
               {/* Boutons navigation */}
               <motion.button
                 whileHover={{ scale: 1.1, backgroundColor: "white" }}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={prevImage}
                 aria-label="Image précédente"
                 className="focus-visible:ring-ylang-rose/50 absolute top-1/2 left-4 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 select-none focus:outline-none focus-visible:ring-2"
@@ -210,7 +210,7 @@ export default function ProductDetails({
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.1, backgroundColor: "white" }}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={nextImage}
                 aria-label="Image suivante"
                 className="focus-visible:ring-ylang-rose/50 absolute top-1/2 right-4 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 select-none focus:outline-none focus-visible:ring-2"
@@ -221,7 +221,7 @@ export default function ProductDetails({
               {/* Bouton zoom */}
               <motion.button
                 whileHover={{ scale: 1.1, backgroundColor: "white" }}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={() => setShowZoom(true)}
                 aria-label="Agrandir l'image"
                 className="focus-visible:ring-ylang-rose/50 absolute right-4 bottom-4 z-10 rounded-full bg-white/90 p-2 shadow-lg ring-1 ring-black/5 select-none focus:outline-none focus-visible:ring-2"

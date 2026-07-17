@@ -176,9 +176,19 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, y: shouldReduce ? 0 : -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: shouldReduce ? 0 : -12 }}
+            initial={{
+              opacity: 0,
+              transform: shouldReduce
+                ? "translateY(0px)"
+                : "translateY(-12px)",
+            }}
+            animate={{ opacity: 1, transform: "translateY(0px)" }}
+            exit={{
+              opacity: 0,
+              transform: shouldReduce
+                ? "translateY(0px)"
+                : "translateY(-12px)",
+            }}
             transition={{
               type: "tween",
               duration: shouldReduce ? 0.15 : 0.25,
