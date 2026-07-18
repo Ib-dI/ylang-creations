@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { deleteAdminImage, uploadAdminImage } from "@/lib/admin/image-storage";
 import { createClient } from "@/utils/supabase/client";
 import {
   AlertCircle,
@@ -173,29 +174,6 @@ export function SettingsClient({
 
   const initialImages = useRef<Set<string>>(new Set());
 
-  const uploadFile = async (file: File, path: string) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("path", path);
-    const res = await fetch("/api/admin/storage/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
-    return data.url;
-  };
-
-  const deleteFile = async (url: string) => {
-    try {
-      await fetch(`/api/admin/storage/upload?path=${encodeURIComponent(url)}`, {
-        method: "DELETE",
-      });
-    } catch (error) {
-      console.error("Error deleting file:", error);
-    }
-  };
-
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -217,17 +195,20 @@ export function SettingsClient({
       const imagesToDelete = Array.from(initialImages.current).filter(
         (url) => !currentImages.has(url),
       );
-      await Promise.all(imagesToDelete.map((url) => deleteFile(url)));
+      await Promise.all(imagesToDelete.map((url) => deleteAdminImage(url)));
 
       const processImage = async (
         imageUrl: string | null,
-        pathPrefix: string,
+        area: "hero" | "testimonials" | "craftsmanship" | "about",
       ) => {
         if (imageUrl && imageUrl.startsWith("blob:")) {
           const file = pendingUploads.current.get(imageUrl);
           if (file) {
-            const path = `${pathPrefix}/${Date.now()}-${file.name}`;
-            return await uploadFile(file, path);
+            const { url } = await uploadAdminImage(file, {
+              scope: "settings",
+              area,
+            });
+            return url;
           }
         }
         return imageUrl;
@@ -237,22 +218,22 @@ export function SettingsClient({
       updatedSettings.heroSlides = await Promise.all(
         settings.heroSlides.map(async (slide) => ({
           ...slide,
-          image: await processImage(slide.image, "settings/hero"),
+          image: await processImage(slide.image, "hero"),
         })),
       );
       updatedSettings.testimonials = await Promise.all(
         settings.testimonials.map(async (t) => ({
           ...t,
-          image: await processImage(t.image, "settings/testimonials"),
+          image: await processImage(t.image, "testimonials"),
         })),
       );
       updatedSettings.craftsmanshipImage = await processImage(
         settings.craftsmanshipImage,
-        "settings/craftsmanship",
+        "craftsmanship",
       );
       updatedSettings.aboutImage = await processImage(
         settings.aboutImage,
-        "settings/about",
+        "about",
       );
 
       const response = await fetch("/api/admin/settings", {

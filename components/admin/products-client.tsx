@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { ImageUpload } from "@/components/ui/image-upload";
 import type { AdminProduct } from "@/lib/admin/get-products-data";
+import { replaceAdminImageList } from "@/lib/admin/image-storage";
 import { EASE_OUT } from "@/lib/motion-tokens";
 import { TrashBin } from "@gravity-ui/icons";
 import { AnimatePresence, motion } from "framer-motion";
@@ -40,6 +41,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 const categories = [
   "La Chambre",
@@ -209,33 +211,17 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const uploadedUrls: string[] = [];
-      const existingUrls: string[] = [];
       const folderId =
         globalThis.crypto?.randomUUID?.() ||
         `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
-      for (const item of formData.images) {
-        if (typeof item === "string") {
-          existingUrls.push(item);
-        } else {
-          const safeName = item.name.replace(/\s/g, "-").toLowerCase();
-          const filePath = `products/${folderId}/${Date.now()}-${safeName}`;
-          const fd = new FormData();
-          fd.append("file", item);
-          fd.append("path", filePath);
-          const response = await fetch("/api/admin/storage/upload", {
-            method: "POST",
-            body: fd,
-          });
-          if (!response.ok) {
-            console.error("Failed to upload image");
-            continue;
-          }
-          const data = await response.json();
-          uploadedUrls.push(data.url);
-        }
-      }
+      const images = (
+        await replaceAdminImageList(
+          editingProduct?.images ?? [],
+          formData.images,
+          { scope: "product", folderId },
+        )
+      ).filter((url): url is string => url !== null);
 
       const payload = {
         name: formData.name,
@@ -251,7 +237,7 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
         isActive: formData.isActive,
         isFeatured: formData.isFeatured,
         weight: parseInt(formData.weight) || 0,
-        images: [...existingUrls, ...uploadedUrls],
+        images,
         tags: formData.tags
           .split(",")
           .map((t) => t.trim())
@@ -277,9 +263,16 @@ export function ProductsClient({ initialProducts }: ProductsClientProps) {
       if (response.ok) {
         setShowModal(false);
         startTransition(() => router.refresh());
+      } else {
+        const err = await response.json();
+        toast.error(err.error || "Erreur lors de la sauvegarde du produit");
       }
     } catch (error) {
-      console.error("Error saving product:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la sauvegarde du produit",
+      );
     } finally {
       setIsSaving(false);
     }

@@ -1,17 +1,15 @@
 // app/api/admin/storage/upload/route.ts
+import {
+  ADMIN_IMAGE_ALLOWED_MIME_TYPES,
+  ADMIN_IMAGE_MAX_SIZE,
+  toStoragePath,
+} from "@/lib/admin/image-storage";
 import { withAdminAuth } from "@/lib/auth/with-admin-auth";
 import { supabaseAdmin } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
-// Types de fichiers autorisés
-const ALLOWED_MIME_TYPES = [
-  "image/png",
-  "image/jpeg",
-  "image/jpg",
-  "image/gif",
-  "image/webp",
-];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_MIME_TYPES: readonly string[] = ADMIN_IMAGE_ALLOWED_MIME_TYPES;
+const MAX_FILE_SIZE = ADMIN_IMAGE_MAX_SIZE;
 
 async function handlePOST(request: Request): Promise<Response> {
   try {
@@ -129,10 +127,8 @@ async function handleDELETE(request: Request): Promise<Response> {
       );
     }
 
-    // Extraire le chemin relatif
-    const relativePath = path.includes("/products/")
-      ? path.split("/products/")[1]
-      : path;
+    // Accepte une URL publique complète ou un chemin déjà relatif
+    const relativePath = toStoragePath(path);
 
     console.log("🗑️ Deleting file:", relativePath);
 

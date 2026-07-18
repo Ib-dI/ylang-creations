@@ -19,6 +19,7 @@ import type { ConfiguratorFabricCategoryAdmin } from "@/lib/admin/get-configurat
 import type { ConfiguratorColorAdmin } from "@/lib/admin/get-configurator-colors-data";
 import type { ConfiguratorProductAdmin } from "@/lib/admin/get-configurator-products-data";
 import type { ConfiguratorEmbroideryFontAdmin } from "@/lib/admin/get-configurator-embroidery-fonts-data";
+import { replaceAdminImage } from "@/lib/admin/image-storage";
 import type { EmbroideryZone } from "@/types/configurateur-page";
 import {
   Loader2,
@@ -432,36 +433,33 @@ export function ConfiguratorClient({
     }
 
     setIsSavingFabric(true);
+
+    const isExisting = fabrics.some((f) => f.id === editingFabric.id);
     let finalImageUrl = editingFabric.image as string;
 
     if (editingFabric.image instanceof File) {
       try {
-        const file = editingFabric.image;
-        const safeName = file.name.replace(/\s/g, "-").toLowerCase();
+        const previousImage = isExisting
+          ? (fabrics.find((f) => f.id === editingFabric.id)?.image ?? null)
+          : null;
         const folderId =
           globalThis.crypto?.randomUUID?.() || Date.now().toString();
-        const uploadPath = `configurator/fabrics/${folderId}/${safeName}`;
-
-        const uploadFormData = new FormData();
-        uploadFormData.append("file", file);
-        uploadFormData.append("path", uploadPath);
-
-        const uploadRes = await fetch("/api/admin/storage/upload", {
-          method: "POST",
-          body: uploadFormData,
-        });
-
-        if (!uploadRes.ok) throw new Error("Erreur d'upload");
-        const uploadData = await uploadRes.json();
-        finalImageUrl = uploadData.url;
-      } catch {
-        toast.error("Erreur lors de l'upload de l'image");
+        finalImageUrl =
+          (await replaceAdminImage(previousImage, editingFabric.image, {
+            scope: "configurator-fabric",
+            folderId,
+          })) ?? "";
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Erreur lors de l'upload de l'image",
+        );
         setIsSavingFabric(false);
         return;
       }
     }
 
-    const isExisting = fabrics.some((f) => f.id === editingFabric.id);
     const method = isExisting ? "PUT" : "POST";
     const url = isExisting
       ? `/api/admin/configurator/fabrics?id=${editingFabric.id}`
@@ -566,33 +564,26 @@ export function ConfiguratorClient({
 
     setIsSavingProduct(true);
 
-    // Upload des images si nécessaire (même pattern que handleFabricSubmit)
-    const uploadImage = async (
-      file: string | File | null,
-      layerName: string,
-    ): Promise<string | null> => {
-      if (!file) return null;
-      if (typeof file === "string") return file;
-      const safeName = file.name.replace(/\s/g, "-").toLowerCase();
-      const uploadPath = `configurator/products/${editingProduct.id}/${layerName}-${safeName}`;
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("path", uploadPath);
-      const res = await fetch("/api/admin/storage/upload", {
-        method: "POST",
-        body: formData,
-      });
-      if (!res.ok) throw new Error(`Erreur upload ${layerName}`);
-      const data = await res.json();
-      return data.url;
-    };
-
     try {
-      const baseImageUrl = await uploadImage(productImages.baseImage, "base");
-      const maskImageUrl = await uploadImage(productImages.maskImage, "mask");
-      const colorMaskUrl = await uploadImage(
+      const productId = editingProduct.id as string;
+      const previousProduct = isExisting
+        ? products.find((p) => p.id === productId)
+        : undefined;
+
+      const baseImageUrl = await replaceAdminImage(
+        previousProduct?.baseImage ?? null,
+        productImages.baseImage,
+        { scope: "configurator-product", productId, layer: "base" },
+      );
+      const maskImageUrl = await replaceAdminImage(
+        previousProduct?.maskImage ?? null,
+        productImages.maskImage,
+        { scope: "configurator-product", productId, layer: "mask" },
+      );
+      const colorMaskUrl = await replaceAdminImage(
+        previousProduct?.colorMaskImage ?? null,
         productImages.colorMaskImage,
-        "color-mask",
+        { scope: "configurator-product", productId, layer: "color-mask" },
       );
 
       if (!baseImageUrl || !maskImageUrl) {
