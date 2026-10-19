@@ -1,13 +1,9 @@
 import { NewsletterCampaignEmail } from "@/emails/newsletter-campaign";
-import { Resend } from "resend";
+import { sendEmailBatch } from "./brevo";
+import { getEmailEnv } from "./env";
+import { renderEmail } from "./render";
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
-
-// 🧪 Mode Sandbox
-const FROM_EMAIL = "Ylang Créations <onboarding@resend.dev>";
-// 🚀 Production : "Ylang Créations <newsletter@ylang-creations.fr>"
-
-const BATCH_SIZE = 100; // Limite Resend batch
+const BATCH_SIZE = 100;
 
 export async function sendNewsletterCampaign(params: {
   subject: string;
@@ -15,37 +11,35 @@ export async function sendNewsletterCampaign(params: {
   subscribers: Array<{ email: string; unsubscribeToken: string }>;
 }): Promise<{ sent: number; failed: number }> {
   const { subject, htmlContent, subscribers } = params;
+  const { NEXT_PUBLIC_APP_URL } = getEmailEnv();
   let sent = 0;
   let failed = 0;
 
   // Découper en lots de 100
   for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
     const batch = subscribers.slice(i, i + BATCH_SIZE);
+    const batchNumber = i / BATCH_SIZE + 1;
 
-    const emails = batch.map((subscriber) => {
-      const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/newsletter/unsubscribe?token=${subscriber.unsubscribeToken}`;
-      return {
-        from: FROM_EMAIL,
-        to: [subscriber.email],
-        subject,
-        react: NewsletterCampaignEmail({ htmlContent, unsubscribeUrl }),
-      };
-    });
+    const versions = await Promise.all(
+      batch.map(async (subscriber) => {
+        const unsubscribeUrl = `${NEXT_PUBLIC_APP_URL}/api/newsletter/unsubscribe?token=${subscriber.unsubscribeToken}`;
+        return {
+          to: { email: subscriber.email },
+          html: await renderEmail(
+            NewsletterCampaignEmail({ htmlContent, unsubscribeUrl }),
+          ),
+        };
+      }),
+    );
 
-    try {
-      const { data, error } = await resend.batch.send(emails);
+    const result = await sendEmailBatch({ subject, versions, tags: ["newsletter"] });
 
-      if (error) {
-        console.error(`❌ Erreur batch newsletter (lot ${i / BATCH_SIZE + 1}):`, error);
-        failed += batch.length;
-      } else {
-        const batchSent = data?.data?.length ?? batch.length;
-        sent += batchSent;
-        console.log(`✅ Lot ${i / BATCH_SIZE + 1} envoyé : ${batchSent} emails`);
-      }
-    } catch (err) {
-      console.error(`❌ Exception batch newsletter (lot ${i / BATCH_SIZE + 1}):`, err);
+    if (result.success) {
+      sent += batch.length;
+      console.log(`✅ Lot ${batchNumber} envoyé : ${batch.length} emails`);
+    } else {
       failed += batch.length;
+      console.error(`❌ Erreur batch newsletter (lot ${batchNumber}):`, result.error);
     }
   }
 

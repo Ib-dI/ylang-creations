@@ -9,7 +9,7 @@ Plateforme e-commerce pour la vente de créations artisanales sur mesure (vêtem
 - **State management** : Zustand (panier, configurateur, persistance locale)
 - **UI** : Tailwind CSS v4, HeroUI (beta), Radix UI, Framer Motion, Three.js / React Three Fiber
 - **Paiement** : SumUp SDK
-- **Email** : Resend
+- **Email** : Brevo
 - **Validation** : Zod v4
 
 ## Prérequis
@@ -24,7 +24,7 @@ Plateforme e-commerce pour la vente de créations artisanales sur mesure (vêtem
 pnpm install
 ```
 
-Configurez vos variables d'environnement dans un fichier `.env.local` (accès Supabase, clés SumUp, Resend, etc.).
+Configurez vos variables d'environnement dans un fichier `.env.local` (accès Supabase, clés SumUp, Brevo, etc.).
 
 ## Commandes
 
