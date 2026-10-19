@@ -16,7 +16,7 @@ export const emailTheme = {
   fontBody: "Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif",
 };
 
-const APP_URL =
+export const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "https://ylang-creations.vercel.app";
 
 const SOCIAL_LINKS = [
@@ -157,6 +157,61 @@ export function EmailLayout({ children, footerNote }: EmailLayoutProps) {
         </table>
       </body>
     </html>
+  );
+}
+
+// Surtitre en petites capitales + titre serif, comme les pages du site
+export function EmailHeading({
+  overline,
+  children,
+}: {
+  overline: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <p
+        style={{
+          color: emailTheme.accent,
+          fontSize: "11px",
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+          margin: "0 0 12px 0",
+        }}
+      >
+        {overline}
+      </p>
+      <h1
+        style={{
+          fontFamily: emailTheme.fontDisplay,
+          color: emailTheme.ink,
+          fontSize: "32px",
+          fontWeight: 400,
+          lineHeight: "1.15",
+          letterSpacing: "-0.01em",
+          margin: "0 0 20px 0",
+        }}
+      >
+        {children}
+      </h1>
+    </>
+  );
+}
+
+// Titre de section secondaire (ex : « Détail de votre commande »)
+export function EmailSectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      style={{
+        color: emailTheme.ink3,
+        fontSize: "11px",
+        letterSpacing: "0.2em",
+        textTransform: "uppercase",
+        margin: "0 0 16px 0",
+      }}
+    >
+      {children}
+    </p>
   );
 }
 

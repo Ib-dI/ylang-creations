@@ -1,5 +1,12 @@
 import * as React from "react";
-import { EmailLayout } from "./layout";
+import {
+  APP_URL,
+  EmailButton,
+  EmailHeading,
+  EmailLayout,
+  EmailSectionTitle,
+  emailTheme as t,
+} from "./layout";
 
 interface OrderConfirmationEmailProps {
   orderNumber: string;
@@ -27,6 +34,31 @@ interface OrderConfirmationEmailProps {
   };
 }
 
+const NEXT_STEPS = [
+  { title: "Confirmation", text: "Votre commande est confirmée" },
+  {
+    title: "Confection (10 à 15 jours ouvrés)",
+    text: "Notre atelier prépare votre création à la main",
+  },
+  { title: "Expédition", text: "Vous recevrez un email avec le numéro de suivi" },
+  { title: "Livraison", text: "Réception à votre domicile" },
+];
+
+const formatPrice = (value: number) =>
+  new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(value);
+
+const detailStyle = {
+  color: t.ink3,
+  fontSize: "13px",
+  lineHeight: "1.5",
+  margin: "0 0 2px 0",
+};
+
+const sectionStyle = {
+  padding: "24px 0",
+  borderTop: `1px solid ${t.rule}`,
+};
+
 export function OrderConfirmationEmail({
   orderNumber,
   customerName,
@@ -39,661 +71,228 @@ export function OrderConfirmationEmail({
 
   return (
     <EmailLayout>
-      {/* Content */}
       <tr>
-        <td style={{ padding: "40px 30px", backgroundColor: "#faf9f6" }}>
-          {/* Greeting */}
-          <h2
-            style={{
-              color: "#1a1a1a",
-              fontSize: "24px",
-              fontWeight: "bold",
-              margin: "0 0 10px 0",
-            }}
-          >
-            Bonjour {customerName},
-          </h2>
+        <td style={{ padding: "24px 40px 8px", textAlign: "center" }}>
+          <EmailHeading overline="Commande confirmée">
+            Merci {customerName}
+          </EmailHeading>
           <p
             style={{
-              color: "#1a1a1a",
-              fontSize: "16px",
-              lineHeight: "1.6",
-              margin: "0 0 30px 0",
-              opacity: 0.8,
+              color: t.ink,
+              fontSize: "15px",
+              lineHeight: "1.7",
+              margin: "0 0 24px 0",
             }}
           >
-            Nous sommes ravis de confirmer votre commande ! Notre atelier
-            parisien va confectionner avec soin votre création unique.
+            Nous avons bien reçu votre commande. Notre atelier va confectionner
+            avec soin votre création unique.
           </p>
-
-          {/* Order Number Card */}
-          <table
-            cellPadding="0"
-            cellSpacing="0"
-            border={0}
+          <p
             style={{
-              width: "100%",
-              backgroundColor: "#ffffff",
-              borderRadius: "12px",
-              marginBottom: "30px",
-              border: "1px solid #e8dcc8",
+              display: "inline-block",
+              margin: "0 0 32px 0",
+              padding: "10px 20px",
+              backgroundColor: t.paper2,
+              color: t.ink,
+              fontSize: "13px",
+              letterSpacing: "0.08em",
             }}
           >
-            <tr>
-              <td style={{ padding: "20px" }}>
-                <table
-                  cellPadding="0"
-                  cellSpacing="0"
-                  border={0}
-                  style={{ width: "100%" }}
-                >
+            Commande <strong style={{ fontWeight: 500 }}>{orderNumber}</strong>
+          </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: "0 40px" }}>
+          {/* Articles */}
+          <div style={sectionStyle}>
+            <EmailSectionTitle>Détail de votre commande</EmailSectionTitle>
+            {items.map((item, index) => (
+              <table
+                key={index}
+                cellPadding="0"
+                cellSpacing="0"
+                border={0}
+                role="presentation"
+                style={{
+                  width: "100%",
+                  marginBottom: index < items.length - 1 ? "18px" : 0,
+                }}
+              >
+                <tbody>
                   <tr>
-                    <td>
+                    <td style={{ verticalAlign: "top" }}>
                       <p
                         style={{
-                          color: "#1a1a1a",
-                          opacity: 0.6,
-                          fontSize: "12px",
-                          margin: "0 0 5px 0",
-                          textTransform: "uppercase",
-                          letterSpacing: "1px",
+                          fontFamily: t.fontDisplay,
+                          color: t.ink,
+                          fontSize: "19px",
+                          margin: "0 0 4px 0",
                         }}
                       >
-                        Numéro de commande
+                        {item.productName}
                       </p>
-                      <p
-                        style={{
-                          color: "#b76e79",
-                          fontSize: "28px",
-                          fontWeight: "bold",
-                          margin: 0,
-                          letterSpacing: "-0.5px",
-                        }}
-                      >
-                        {orderNumber}
+                      <p style={detailStyle}>
+                        Tissu : {item.configuration.fabricName}
                       </p>
+                      {item.configuration.embroidery && (
+                        <p style={detailStyle}>
+                          Broderie : « {item.configuration.embroidery} »
+                          {item.configuration.embroideryFont &&
+                            ` · ${item.configuration.embroideryFont}`}
+                          {item.configuration.embroideryColor &&
+                            ` · fil ${item.configuration.embroideryColorName ?? item.configuration.embroideryColor}`}
+                        </p>
+                      )}
+                      <p style={detailStyle}>Quantité : {item.quantity}</p>
                     </td>
                     <td
                       style={{
+                        verticalAlign: "top",
                         textAlign: "right",
-                        verticalAlign: "middle",
+                        whiteSpace: "nowrap",
+                        color: t.ink,
+                        fontSize: "14px",
+                        paddingLeft: "16px",
                       }}
                     >
-                      <div
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          backgroundColor: "#f5f1e8",
-                          borderRadius: "50%",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <span style={{ fontSize: "30px" }}>✓</span>
-                      </div>
+                      {formatPrice(item.price * item.quantity)}
                     </td>
                   </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+                </tbody>
+              </table>
+            ))}
+          </div>
 
-          {/* Order Items */}
-          <table
-            cellPadding="0"
-            cellSpacing="0"
-            border={0}
-            style={{
-              width: "100%",
-              backgroundColor: "#ffffff",
-              borderRadius: "12px",
-              marginBottom: "20px",
-              border: "1px solid #e8dcc8",
-            }}
-          >
-            <tr>
-              <td style={{ padding: "20px" }}>
-                <h3
-                  style={{
-                    color: "#1a1a1a",
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    margin: "0 0 20px 0",
-                  }}
-                >
-                  Détail de votre commande
-                </h3>
-
-                {items.map((item, index) => (
-                  <React.Fragment key={index}>
-                    <table
-                      cellPadding="0"
-                      cellSpacing="0"
-                      border={0}
-                      style={{
-                        width: "100%",
-                        marginBottom: index < items.length - 1 ? "20px" : "0",
-                        paddingBottom: index < items.length - 1 ? "20px" : "0",
-                        borderBottom:
-                          index < items.length - 1
-                            ? "1px solid #f5f1e8"
-                            : "none",
-                      }}
-                    >
-                      <tr>
-                        <td style={{ verticalAlign: "top", width: "70%" }}>
-                          <p
-                            style={{
-                              color: "#1a1a1a",
-                              fontSize: "16px",
-                              fontWeight: "bold",
-                              margin: "0 0 8px 0",
-                            }}
-                          >
-                            {item.productName}
-                          </p>
-                          <p
-                            style={{
-                              color: "#1a1a1a",
-                              opacity: 0.6,
-                              fontSize: "14px",
-                              margin: "0 0 4px 0",
-                            }}
-                          >
-                            Tissu: {item.configuration.fabricName}
-                          </p>
-                          {item.configuration.embroidery && (
-                            <p
-                              style={{
-                                color: "#1a1a1a",
-                                opacity: 0.6,
-                                fontSize: "14px",
-                                margin: "0 0 4px 0",
-                              }}
-                            >
-                              Broderie: "{item.configuration.embroidery}"
-                            </p>
-                          )}
-                          {item.configuration.embroidery &&
-                            item.configuration.embroideryFont && (
-                              <p
-                                style={{
-                                  color: "#1a1a1a",
-                                  opacity: 0.6,
-                                  fontSize: "14px",
-                                  margin: "0 0 4px 0",
-                                }}
-                              >
-                                Police: {item.configuration.embroideryFont}
-                              </p>
-                            )}
-                          {item.configuration.embroidery &&
-                            item.configuration.embroideryColor && (
-                              <p
-                                style={{
-                                  color: "#1a1a1a",
-                                  opacity: 0.6,
-                                  fontSize: "14px",
-                                  margin: "0 0 4px 0",
-                                }}
-                              >
-                                Fil:{" "}
-                                {item.configuration.embroideryColorName ??
-                                  item.configuration.embroideryColor}
-                              </p>
-                            )}
-
-                          <p
-                            style={{
-                              color: "#1a1a1a",
-                              opacity: 0.6,
-                              fontSize: "14px",
-                              margin: "4px 0 0 0",
-                            }}
-                          >
-                            Quantité: {item.quantity}
-                          </p>
-                        </td>
-                        <td
-                          style={{
-                            textAlign: "right",
-                            verticalAlign: "top",
-                          }}
-                        >
-                          <p
-                            style={{
-                              color: "#b76e79",
-                              fontSize: "18px",
-                              fontWeight: "bold",
-                              margin: 0,
-                            }}
-                          >
-                            {(item.price * item.quantity).toFixed(2)}€
-                          </p>
-                        </td>
-                      </tr>
-                    </table>
-                  </React.Fragment>
-                ))}
-
-                {/* Totals */}
-                <table
-                  cellPadding="0"
-                  cellSpacing="0"
-                  border={0}
-                  style={{
-                    width: "100%",
-                    marginTop: "20px",
-                    paddingTop: "20px",
-                    borderTop: "2px solid #e8dcc8",
-                  }}
-                >
-                  <tr>
-                    <td style={{ padding: "5px 0" }}>
-                      <p
-                        style={{
-                          color: "#1a1a1a",
-                          opacity: 0.7,
-                          fontSize: "14px",
-                          margin: 0,
-                        }}
-                      >
-                        Sous-total
-                      </p>
-                    </td>
-                    <td style={{ textAlign: "right", padding: "5px 0" }}>
-                      <p
-                        style={{
-                          color: "#1a1a1a",
-                          fontSize: "14px",
-                          fontWeight: "600",
-                          margin: 0,
-                        }}
-                      >
-                        {total.toFixed(2)}€
-                      </p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: "5px 0" }}>
-                      <p
-                        style={{
-                          color: "#1a1a1a",
-                          opacity: 0.7,
-                          fontSize: "14px",
-                          margin: 0,
-                        }}
-                      >
-                        Livraison
-                      </p>
-                    </td>
-                    <td style={{ textAlign: "right", padding: "5px 0" }}>
-                      <p
-                        style={{
-                          color: shipping === 0 ? "#16a34a" : "#1a1a1a",
-                          fontSize: "14px",
-                          fontWeight: "600",
-                          margin: 0,
-                        }}
-                      >
-                        {shipping === 0 ? "Offerte" : `${shipping.toFixed(2)}€`}
-                      </p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: "15px 0 0 0" }}>
-                      <p
-                        style={{
-                          color: "#1a1a1a",
-                          fontSize: "18px",
-                          fontWeight: "bold",
-                          margin: 0,
-                        }}
-                      >
-                        Total
-                      </p>
-                    </td>
-                    <td style={{ textAlign: "right", padding: "15px 0 0 0" }}>
-                      <p
-                        style={{
-                          color: "#b76e79",
-                          fontSize: "28px",
-                          fontWeight: "bold",
-                          margin: 0,
-                        }}
-                      >
-                        {finalTotal.toFixed(2)}€
-                      </p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-
-          {/* Shipping Address */}
-          {shippingAddress && (
+          {/* Totaux */}
+          <div style={sectionStyle}>
             <table
               cellPadding="0"
               cellSpacing="0"
               border={0}
-              style={{
-                width: "100%",
-                backgroundColor: "#ffffff",
-                borderRadius: "12px",
-                marginBottom: "20px",
-                border: "1px solid #e8dcc8",
-              }}
+              role="presentation"
+              style={{ width: "100%", fontSize: "14px" }}
             >
-              <tr>
-                <td style={{ padding: "20px" }}>
-                  <h3
+              <tbody>
+                <tr>
+                  <td style={{ color: t.ink3, padding: "3px 0" }}>Sous-total</td>
+                  <td style={{ color: t.ink, textAlign: "right" }}>
+                    {formatPrice(total)}
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ color: t.ink3, padding: "3px 0" }}>Livraison</td>
+                  <td style={{ color: t.ink, textAlign: "right" }}>
+                    {shipping === 0 ? "Offerte" : formatPrice(shipping)}
+                  </td>
+                </tr>
+                <tr>
+                  <td
                     style={{
-                      color: "#1a1a1a",
-                      fontSize: "18px",
-                      fontWeight: "bold",
-                      margin: "0 0 15px 0",
+                      color: t.ink,
+                      fontSize: "11px",
+                      letterSpacing: "0.2em",
+                      textTransform: "uppercase",
+                      paddingTop: "14px",
                     }}
                   >
-                    Adresse de livraison
-                  </h3>
-                  <p
+                    Total
+                  </td>
+                  <td
                     style={{
-                      color: "#1a1a1a",
-                      fontSize: "14px",
-                      lineHeight: "1.6",
-                      margin: 0,
+                      fontFamily: t.fontDisplay,
+                      color: t.ink,
+                      fontSize: "26px",
+                      textAlign: "right",
+                      paddingTop: "14px",
                     }}
                   >
-                    {shippingAddress.address}
-                    <br />
-                    {shippingAddress.addressComplement ? (
-                      <>
-                        {shippingAddress.addressComplement}
-                        <br />
-                      </>
-                    ) : null}
-                    {shippingAddress.postalCode} {shippingAddress.city}
-                    <br />
-                    {shippingAddress.country}
-                  </p>
-                </td>
-              </tr>
+                    {formatPrice(finalTotal)}
+                  </td>
+                </tr>
+              </tbody>
             </table>
+          </div>
+
+          {/* Adresse */}
+          {shippingAddress && (
+            <div style={sectionStyle}>
+              <EmailSectionTitle>Adresse de livraison</EmailSectionTitle>
+              <p
+                style={{
+                  color: t.ink,
+                  fontSize: "14px",
+                  lineHeight: "1.6",
+                  margin: 0,
+                }}
+              >
+                {shippingAddress.address}
+                <br />
+                {shippingAddress.addressComplement && (
+                  <>
+                    {shippingAddress.addressComplement}
+                    <br />
+                  </>
+                )}
+                {shippingAddress.postalCode} {shippingAddress.city}
+                <br />
+                {shippingAddress.country}
+              </p>
+            </div>
           )}
 
-          {/* Next Steps */}
-          <table
-            cellPadding="0"
-            cellSpacing="0"
-            border={0}
-            style={{
-              width: "100%",
-              backgroundColor: "#ffffff",
-              borderRadius: "12px",
-              marginBottom: "30px",
-              border: "1px solid #e8dcc8",
-            }}
-          >
-            <tr>
-              <td style={{ padding: "20px" }}>
-                <h3
-                  style={{
-                    color: "#1a1a1a",
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    margin: "0 0 20px 0",
-                  }}
-                >
-                  Prochaines étapes
-                </h3>
-
-                <table
-                  cellPadding="0"
-                  cellSpacing="0"
-                  border={0}
-                  style={{ width: "100%" }}
-                >
-                  <tr>
+          {/* Prochaines étapes */}
+          <div style={sectionStyle}>
+            <EmailSectionTitle>Prochaines étapes</EmailSectionTitle>
+            <table
+              cellPadding="0"
+              cellSpacing="0"
+              border={0}
+              role="presentation"
+              style={{ width: "100%" }}
+            >
+              <tbody>
+                {NEXT_STEPS.map((step, index) => (
+                  <tr key={step.title}>
                     <td
                       style={{
-                        width: "40px",
+                        width: "32px",
                         verticalAlign: "top",
-                        paddingBottom: "15px",
+                        fontFamily: t.fontDisplay,
+                        color: t.accent,
+                        fontSize: "20px",
+                        lineHeight: "1.1",
+                        paddingBottom: "14px",
                       }}
                     >
-                      <div
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          backgroundColor: "#b76e79",
-                          borderRadius: "50%",
-                          color: "#ffffff",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        1
-                      </div>
+                      {index + 1}
                     </td>
-                    <td style={{ paddingBottom: "15px" }}>
-                      <p
-                        style={{
-                          color: "#1a1a1a",
-                          fontSize: "14px",
-                          margin: 0,
-                        }}
-                      >
-                        <strong>Confirmation</strong>
-                        <br />
-                        <span style={{ opacity: 0.7 }}>
-                          Votre commande est confirmée
-                        </span>
+                    <td style={{ paddingBottom: "14px" }}>
+                      <p style={{ color: t.ink, fontSize: "14px", margin: 0 }}>
+                        {step.title}
                       </p>
+                      <p style={{ ...detailStyle, margin: 0 }}>{step.text}</p>
                     </td>
                   </tr>
-                  <tr>
-                    <td
-                      style={{
-                        width: "40px",
-                        verticalAlign: "top",
-                        paddingBottom: "15px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          backgroundColor: "#d4a89a",
-                          borderRadius: "50%",
-                          color: "#ffffff",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        2
-                      </div>
-                    </td>
-                    <td style={{ paddingBottom: "15px" }}>
-                      <p
-                        style={{
-                          color: "#1a1a1a",
-                          fontSize: "14px",
-                          margin: 0,
-                        }}
-                      >
-                        <strong>Confection (7-10 jours)</strong>
-                        <br />
-                        <span style={{ opacity: 0.7 }}>
-                          Notre atelier prépare votre création avec soin
-                        </span>
-                      </p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{
-                        width: "40px",
-                        verticalAlign: "top",
-                        paddingBottom: "15px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          backgroundColor: "#e8dcc8",
-                          borderRadius: "50%",
-                          color: "#1a1a1a",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        3
-                      </div>
-                    </td>
-                    <td style={{ paddingBottom: "15px" }}>
-                      <p
-                        style={{
-                          color: "#1a1a1a",
-                          fontSize: "14px",
-                          margin: 0,
-                        }}
-                      >
-                        <strong>Expédition</strong>
-                        <br />
-                        <span style={{ opacity: 0.7 }}>
-                          Vous recevrez un email avec le numéro de suivi
-                        </span>
-                      </p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ width: "40px", verticalAlign: "top" }}>
-                      <div
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          backgroundColor: "#f5f1e8",
-                          borderRadius: "50%",
-                          color: "#1a1a1a",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        4
-                      </div>
-                    </td>
-                    <td>
-                      <p
-                        style={{
-                          color: "#1a1a1a",
-                          fontSize: "14px",
-                          margin: 0,
-                        }}
-                      >
-                        <strong>Livraison</strong>
-                        <br />
-                        <span style={{ opacity: 0.7 }}>
-                          Réception à votre domicile
-                        </span>
-                      </p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </td>
+      </tr>
 
-          {/* CTA Button */}
-          <table
-            cellPadding="0"
-            cellSpacing="0"
-            border={0}
-            style={{ width: "100%", marginBottom: "30px" }}
-          >
-            <tr>
-              <td style={{ textAlign: "center" }}>
-                <a
-                  href={`${process.env.NEXT_PUBLIC_APP_URL}/orders/${orderNumber}`}
-                  style={{
-                    display: "inline-block",
-                    padding: "16px 40px",
-                    background:
-                      "linear-gradient(135deg, #b76e79 0%, #d4a89a 100%)",
-                    color: "#ffffff",
-                    textDecoration: "none",
-                    borderRadius: "12px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    boxShadow: "0 4px 12px rgba(183, 110, 121, 0.3)",
-                  }}
-                >
-                  Suivre ma commande
-                </a>
-              </td>
-            </tr>
-          </table>
-
-          {/* Help Section */}
-          <table
-            cellPadding="0"
-            cellSpacing="0"
-            border={0}
-            style={{
-              width: "100%",
-              backgroundColor: "#f5f1e8",
-              borderRadius: "12px",
-              padding: "20px",
-            }}
-          >
-            <tr>
-              <td style={{ textAlign: "center" }}>
-                <p
-                  style={{
-                    color: "#1a1a1a",
-                    fontSize: "14px",
-                    margin: "0 0 10px 0",
-                  }}
-                >
-                  <strong>Une question sur votre commande ?</strong>
-                </p>
-                <p
-                  style={{
-                    color: "#1a1a1a",
-                    opacity: 0.7,
-                    fontSize: "14px",
-                    margin: 0,
-                  }}
-                >
-                  Notre équipe est là pour vous aider
-                  <br />
-                  📧{" "}
-                  <a
-                    href="mailto:contact@ylang-creations.fr"
-                    style={{ color: "#b76e79", textDecoration: "none" }}
-                  >
-                    contact@ylang-creations.fr
-                  </a>
-                  <br />
-                  📞 +33 6 12 34 56 78
-                </p>
-              </td>
-            </tr>
-          </table>
+      <tr>
+        <td style={{ padding: "8px 40px 36px", textAlign: "center" }}>
+          <EmailButton href={`${APP_URL}/orders`}>Suivre ma commande</EmailButton>
+          <p style={{ color: t.ink3, fontSize: "12px", lineHeight: "1.6", margin: 0 }}>
+            Une question sur votre commande ? Répondez simplement à cet email ou
+            passez par notre{" "}
+            <a href={`${APP_URL}/contact`} style={{ color: t.accent }}>
+              page contact
+            </a>
+            .
+          </p>
         </td>
       </tr>
     </EmailLayout>

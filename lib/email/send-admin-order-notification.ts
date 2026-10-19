@@ -49,11 +49,11 @@ export async function sendAdminOrderNotification(params: {
     to: [{ email: env.ADMIN_EMAIL }],
     subject: `Nouvelle commande ! (${params.orderNumber})`,
     html: `
-      <div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2 style="color: #b76e79;">Nouvelle commande reçue !</h2>
+      <div style="font-family: Inter, Helvetica, Arial, sans-serif; padding: 24px; color: #1f1718; background-color: #fdf4f1;">
+        <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 400; font-size: 26px; margin: 0 0 12px;">Nouvelle commande reçue</h2>
         <p>Commande <strong>${params.orderNumber}</strong> reçue via SumUp. Montant : ${params.amount} EUR.</p>
         <ul>${itemsHtml}</ul>
-        <p><a href="${env.NEXT_PUBLIC_APP_URL}/admin/orders/${params.orderId}" style="display: inline-block; padding: 12px 24px; background-color: #b76e79; color: white; text-decoration: none; border-radius: 8px;">Voir la commande</a></p>
+        <p><a href="${env.NEXT_PUBLIC_APP_URL}/admin/orders/${params.orderId}" style="display: inline-block; padding: 14px 28px; background-color: #1f1718; color: #fdf4f1; text-decoration: none; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;">Voir la commande</a></p>
       </div>
     `,
     tags: ["admin"],

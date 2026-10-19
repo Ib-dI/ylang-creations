@@ -1,5 +1,5 @@
 import * as React from "react";
-import { EmailButton, EmailLayout, emailTheme as t } from "./layout";
+import { EmailButton, EmailHeading, EmailLayout, emailTheme as t } from "./layout";
 
 interface PasswordChangedEmailProps {
   forgotPasswordUrl: string;
@@ -28,30 +28,9 @@ export function PasswordChangedEmail({
     <EmailLayout>
       <tr>
         <td style={{ padding: "24px 40px 36px", textAlign: "center" }}>
-          <p
-            style={{
-              color: t.accent,
-              fontSize: "11px",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              margin: "0 0 12px 0",
-            }}
-          >
-            Sécurité du compte
-          </p>
-          <h1
-            style={{
-              fontFamily: t.fontDisplay,
-              color: t.ink,
-              fontSize: "32px",
-              fontWeight: 400,
-              lineHeight: "1.15",
-              letterSpacing: "-0.01em",
-              margin: "0 0 20px 0",
-            }}
-          >
+          <EmailHeading overline="Sécurité du compte">
             Votre mot de passe a été modifié
-          </h1>
+          </EmailHeading>
           <p style={textStyle}>
             Le mot de passe de votre compte Ylang Créations a été modifié le{" "}
             {changedAt}.
