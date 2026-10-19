@@ -40,6 +40,40 @@ pnpm db:migrate   # Exécute les migrations
 pnpm db:studio    # Ouvre Drizzle Studio pour inspecter la base de données
 ```
 
+## Emails (Brevo)
+
+Tous les emails partent par l'API transactionnelle Brevo (`lib/email/brevo.ts`) : commandes, newsletter, et emails de compte Supabase (via le Send Email Hook).
+
+### Variables d'environnement
+
+```bash
+BREVO_API_KEY=xkeysib-...                # Brevo > SMTP & API > Clés API
+EMAIL_FROM=adresse@exemple.com           # expéditeur vérifié dans Brevo (Expéditeurs, domaines & IP)
+EMAIL_FROM_NAME="Ylang Créations"
+EMAIL_REPLY_TO=                          # optionnel
+ADMIN_EMAIL=adresse@exemple.com          # reçoit les notifications de commande
+EMAIL_SANDBOX=true                       # true : Brevo valide sans délivrer (défaut hors production)
+SEND_EMAIL_HOOK_SECRET=v1,whsec_...      # secret du Send Email Hook Supabase
+BREVO_WEBHOOK_SECRET=...                 # chaîne aléatoire, protège /api/webhooks/brevo
+```
+
+Le jour où un nom de domaine est acheté : l'authentifier dans Brevo (SPF, DKIM, DMARC), puis changer `EMAIL_FROM`. Aucun changement de code n'est nécessaire.
+
+### Configuration Supabase
+
+1. **Authentication > Hooks > Send Email** : type HTTPS, URL `https://<site>/api/auth/send-email`, puis copier le secret généré dans `SEND_EMAIL_HOOK_SECRET`.
+2. **Authentication > Emails > Security notifications** : activer « Password changed ».
+3. **Authentication > Providers > Email** : longueur minimale du mot de passe = 8.
+4. **Authentication > URL Configuration** : ajouter `https://<site>/reset-password` aux Redirect URLs.
+
+Supabase (cloud) ne peut pas joindre `localhost` : les emails de compte se testent sur un déploiement (preview ou prod), ou en local avec un tunnel (`cloudflared tunnel --url localhost:3000`) dont l'URL est temporairement mise dans le hook.
+
+### Désinscriptions newsletter
+
+Brevo ajoute automatiquement un en-tête `List-Unsubscribe` à chaque email. Pour que la base reste synchronisée, créer dans **Brevo > Transactionnel > Paramètres > Webhooks** un webhook sur les événements « Désinscrit » et « Spam », vers `https://<site>/api/webhooks/brevo?token=<BREVO_WEBHOOK_SECRET>`.
+
+Si un client clique sur « Se désabonner » depuis un email de commande ou de compte, Brevo le bloque pour tous les emails transactionnels. Pour le débloquer : **Brevo > Transactionnel > Liste noire**, puis supprimer l'adresse.
+
 ## Structure du projet
 
 - `app/` — Pages et routes API (App Router)
@@ -49,7 +83,7 @@ pnpm db:studio    # Ouvre Drizzle Studio pour inspecter la base de données
 - `lib/validations/` — Schémas Zod pour la validation des API
 - `utils/supabase/` — Clients Supabase (navigateur / serveur)
 - `types/` — Types TypeScript partagés
-- `emails/` — Templates d'emails transactionnels (React Email)
+- `emails/` — Templates d'emails (composants React rendus en HTML, gabarit commun `emails/layout.tsx`)
 
 ## Fonctionnalités principales
 
