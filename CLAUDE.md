@@ -27,7 +27,7 @@ pnpm db:studio    # Open Drizzle Studio for DB inspection
 - **Styling**: Tailwind CSS v4, Framer Motion
 - **UI Components**: HeroUI (beta), Radix UI primitives
 - **Payments**: SumUp SDK (migrated from Stripe)
-- **Email**: Resend
+- **Email**: Brevo (API transactionnelle, client maison `lib/email/brevo.ts`)
 - **Validation**: Zod v4
 
 ### Key Directories

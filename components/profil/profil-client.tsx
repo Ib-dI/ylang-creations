@@ -1,6 +1,8 @@
 "use client";
 
 import { AvatarUpload } from "@/components/ui/avatar-upload";
+import { changePassword, hasPasswordLogin } from "@/lib/auth/password";
+import { PASSWORD_MIN_LENGTH } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import {
@@ -28,8 +30,10 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
   const [fullName, setFullName] = useState(
     user.user_metadata?.full_name || user.user_metadata?.name || "",
   );
+  const [currentPassword, setCurrentPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const canChangePassword = hasPasswordLogin(user);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -46,31 +50,33 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
     setMessage(null);
 
     try {
-      const updates: { data?: { full_name: string }; password?: string } = {};
+      const nameChanged = fullName !== user?.user_metadata?.full_name;
+      const passwordChanged = canChangePassword && password !== "";
 
-      if (fullName !== user?.user_metadata?.full_name) {
-        updates.data = { full_name: fullName };
+      if (!nameChanged && !passwordChanged) return;
+
+      if (passwordChanged && password !== confirmPassword) {
+        throw new Error("Les mots de passe ne correspondent pas");
       }
 
-      if (password) {
-        if (password.length < 6) {
-          throw new Error("Le mot de passe doit faire au moins 6 caractères");
-        }
-        if (password !== confirmPassword) {
-          throw new Error("Les mots de passe ne correspondent pas");
-        }
-        updates.password = password;
+      if (nameChanged) {
+        const { error } = await supabase.auth.updateUser({
+          data: { full_name: fullName },
+        });
+        if (error) throw error;
       }
 
-      if (Object.keys(updates).length === 0) {
-        setUpdating(false);
-        return;
+      if (passwordChanged) {
+        const { error } = await changePassword(supabase, {
+          email: user.email ?? "",
+          currentPassword,
+          newPassword: password,
+        });
+        if (error) throw new Error(error);
       }
-
-      const { error } = await supabase.auth.updateUser(updates);
-      if (error) throw error;
 
       showMessage("success", "Profil mis à jour avec succès");
+      setCurrentPassword("");
       setPassword("");
       setConfirmPassword("");
     } catch (error: unknown) {
@@ -288,12 +294,34 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
                     Sécurité
                   </h3>
                   <p className="font-body text-xs" style={{ color: "var(--color-ink-3)" }}>
-                    Modifiez votre mot de passe
+                    {canChangePassword ? "Modifiez votre mot de passe" : "Connecté avec Google"}
                   </p>
                 </div>
               </div>
 
+              {canChangePassword ? (
               <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="currentPassword"
+                    className="font-body text-xs uppercase tracking-wide"
+                    style={{ color: "var(--color-ink-3)" }}
+                  >
+                    Mot de passe actuel
+                  </label>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    autoComplete="current-password"
+                    value={currentPassword}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setCurrentPassword(e.target.value)
+                    }
+                    placeholder="••••••••"
+                    className="font-body flex h-11 w-full border border-gray-200 bg-white px-4 text-sm text-gray-800 placeholder:text-gray-300 transition-[border-color] duration-200 hover:border-gray-300 focus:border-gray-400 focus:outline-none"
+                  />
+                </div>
+
                 <div className="space-y-1.5">
                   <label
                     htmlFor="password"
@@ -305,6 +333,8 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
                   <input
                     id="password"
                     type="password"
+                    autoComplete="new-password"
+                    minLength={PASSWORD_MIN_LENGTH}
                     value={password}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setPassword(e.target.value)
@@ -325,6 +355,7 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
                   <input
                     id="confirmPassword"
                     type="password"
+                    autoComplete="new-password"
                     value={confirmPassword}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setConfirmPassword(e.target.value)
@@ -334,6 +365,11 @@ export default function ProfilClient({ initialUser }: ProfilClientProps) {
                   />
                 </div>
               </div>
+              ) : (
+                <p className="font-body text-sm" style={{ color: "var(--color-ink-3)" }}>
+                  Votre compte utilise la connexion Google : il n&apos;a pas de mot de passe à gérer ici.
+                </p>
+              )}
 
               {message && (
                 <div

@@ -1,22 +1,11 @@
 import { customer, order, product } from "@/db/schema";
 import { db } from "@/lib/db";
 import { getSumupHeaders, SUMUP_API_URL } from "@/lib/sumup";
+import { sendAdminOrderNotification } from "@/lib/email/send-admin-order-notification";
 import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation";
 import type { CartItem } from "@/types/cart";
 import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY!);
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 
 function orderNumberFromId(orderId: string): string {
   return `YC${orderId.slice(0, 8).toUpperCase()}`;
@@ -65,44 +54,6 @@ async function decrementStock(items: CartItem[]): Promise<void> {
       })
       .where(eq(product.id, item.productId));
   }
-}
-
-async function sendAdminOrderEmail(
-  orderId: string,
-  amount: number,
-  items: CartItem[],
-): Promise<void> {
-  const orderNumber = orderNumberFromId(orderId);
-  const adminEmail = process.env.ADMIN_EMAIL || "contact@ylang-creations.fr";
-
-  const itemsHtml = items
-    .map((item) => {
-      const details = [
-        `Tissu : ${escapeHtml(item.configuration.fabricName)}`,
-        item.configuration.size && `Taille : ${escapeHtml(item.configuration.size)}`,
-        item.configuration.selectedColorName &&
-          `Couleur : ${escapeHtml(item.configuration.selectedColorName)}`,
-        item.configuration.embroidery && `Broderie : "${escapeHtml(item.configuration.embroidery)}"`,
-        item.configuration.embroideryFont &&
-          `Police : ${escapeHtml(item.configuration.embroideryFont)}`,
-        item.configuration.embroideryColor &&
-          `Fil : ${escapeHtml(item.configuration.embroideryColorName ?? item.configuration.embroideryColor)}`,
-      ]
-        .filter(Boolean)
-        .join(" — ");
-      return `<li><strong>${escapeHtml(item.productName)}</strong> (x${item.quantity})<br/>${details}</li>`;
-    })
-    .join("");
-
-  await resend.emails.send({
-    from: "Ylang Créations <contact@ylang-creations.fr>",
-    to: adminEmail,
-    subject: `Nouvelle commande ! (${orderNumber})`,
-    html: `
-      <p>Nouvelle commande <strong>${orderNumber}</strong> reçue via SumUp. Montant : ${amount} EUR.</p>
-      <ul>${itemsHtml}</ul>
-    `,
-  });
 }
 
 async function sendCustomerConfirmationEmail(
@@ -199,7 +150,12 @@ export async function POST(req: Request) {
       }
 
       try {
-        await sendAdminOrderEmail(orderId, verified.amount, items);
+        await sendAdminOrderNotification({
+          orderId,
+          orderNumber: orderNumberFromId(orderId),
+          amount: verified.amount,
+          items,
+        });
       } catch (emailError) {
         console.error("[SumUp Webhook] Error sending admin email:", emailError);
       }
