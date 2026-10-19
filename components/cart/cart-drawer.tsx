@@ -17,7 +17,6 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
 
 export function CartDrawer() {
   const {
@@ -31,17 +30,12 @@ export function CartDrawer() {
     getShipping,
     getFinalPrice,
     freeShippingThreshold,
-    refreshWeights,
     isOverWeightLimit,
     getTotalWeight,
   } = useCartStore();
   const lastBrowse =
     useNavigationStore((state) => state.lastBrowse) ?? DEFAULT_BROWSE;
   const shouldReduce = useReducedMotion();
-
-  useEffect(() => {
-    refreshWeights();
-  }, []);
 
   return (
     <>

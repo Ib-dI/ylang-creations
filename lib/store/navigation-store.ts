@@ -19,6 +19,9 @@ export const useNavigationStore = create<NavigationStore>()(
     }),
     {
       name: "ylang-navigation-storage",
+      // Réhydraté après le montage (ClientLayoutWrapper) : le premier rendu
+      // client doit correspondre au HTML serveur, sinon erreur d'hydratation
+      skipHydration: true,
     },
   ),
 );

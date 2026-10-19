@@ -73,6 +73,11 @@ export const useWishlistStore = create<WishlistStore>()(
     }),
     {
       name: "ylang-wishlist-storage",
+      // Réhydraté après le montage (ClientLayoutWrapper) : le premier rendu
+      // client doit correspondre au HTML serveur, sinon erreur d'hydratation
+      skipHydration: true,
+      // isOpen non persisté : le tiroir ne doit pas se rouvrir au chargement
+      partialize: (state) => ({ items: state.items }),
     },
   ),
 );
