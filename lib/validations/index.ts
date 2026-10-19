@@ -225,6 +225,21 @@ export const checkoutSchema = z.object({
     .max(50, "Maximum 50 articles par commande"),
 });
 
+// --- Schéma Mot de passe ---
+// Même règle que dans Supabase (Authentication > Providers > Email > Minimum password length)
+export const PASSWORD_MIN_LENGTH = 8;
+
+export const passwordSchema = z
+  .string()
+  .min(PASSWORD_MIN_LENGTH, `Le mot de passe doit contenir au moins ${PASSWORD_MIN_LENGTH} caractères`)
+  .max(72, "Le mot de passe ne doit pas dépasser 72 caractères");
+
+// Renvoie le premier message d'erreur, ou null si le mot de passe est valide
+export function getPasswordError(password: string): string | null {
+  const result = passwordSchema.safeParse(password);
+  return result.success ? null : result.error.issues[0].message;
+}
+
 // --- Schéma Newsletter ---
 export const newsletterCampaignSchema = z.object({
   subject: z

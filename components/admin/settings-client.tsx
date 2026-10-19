@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { deleteAdminImage, uploadAdminImage } from "@/lib/admin/image-storage";
+import { changePassword } from "@/lib/auth/password";
+import { getPasswordError } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/client";
 import {
   AlertCircle,
@@ -269,18 +271,16 @@ export function SettingsClient({
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordErrors({ current: "", new: "", confirm: "", general: "" });
-    if (!passwords.new) {
+    if (!passwords.current) {
       setPasswordErrors((prev) => ({
         ...prev,
-        new: "Le nouveau mot de passe est requis",
+        current: "Le mot de passe actuel est requis",
       }));
       return;
     }
-    if (passwords.new.length < 6) {
-      setPasswordErrors((prev) => ({
-        ...prev,
-        new: "Le mot de passe doit contenir au moins 6 caractères",
-      }));
+    const newPasswordError = getPasswordError(passwords.new);
+    if (newPasswordError) {
+      setPasswordErrors((prev) => ({ ...prev, new: newPasswordError }));
       return;
     }
     if (passwords.new !== passwords.confirm) {
@@ -292,10 +292,15 @@ export function SettingsClient({
     }
     setIsSaving(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: passwords.new,
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { error } = await changePassword(supabase, {
+        email: user?.email ?? "",
+        currentPassword: passwords.current,
+        newPassword: passwords.new,
       });
-      if (error) throw error;
+      if (error) throw new Error(error);
       showToast("Mot de passe mis à jour avec succès", "success");
       setPasswords({ current: "", new: "", confirm: "" });
     } catch (error: any) {
@@ -1499,6 +1504,17 @@ export function SettingsClient({
                     )}
                     <div className="space-y-6">
                       {[
+                        {
+                          key: "current",
+                          label: "Mot de passe actuel",
+                          show: showPasswords.current,
+                          toggle: () =>
+                            setShowPasswords((s) => ({
+                              ...s,
+                              current: !s.current,
+                            })),
+                          error: passwordErrors.current,
+                        },
                         {
                           key: "new",
                           label: "Nouveau mot de passe",

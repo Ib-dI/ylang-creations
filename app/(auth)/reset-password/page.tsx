@@ -1,5 +1,6 @@
 "use client";
 
+import { getPasswordError, PASSWORD_MIN_LENGTH } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/client";
 import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
@@ -17,6 +18,12 @@ export default function ResetPasswordPage() {
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const passwordError = getPasswordError(password);
+    if (passwordError) {
+      setMessage({ type: "error", text: passwordError });
+      return;
+    }
 
     if (password !== confirmPassword) {
       setMessage({ type: "error", text: "Les mots de passe ne correspondent pas." });
@@ -94,6 +101,8 @@ export default function ResetPasswordPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 required
+                minLength={PASSWORD_MIN_LENGTH}
+                autoComplete="new-password"
                 placeholder="Nouveau mot de passe"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

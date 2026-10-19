@@ -1,5 +1,6 @@
 "use client";
 
+import { getPasswordError, PASSWORD_MIN_LENGTH } from "@/lib/validations";
 import { createClient } from "@/utils/supabase/client";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
@@ -19,6 +20,13 @@ export default function SignUpPage() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const passwordError = getPasswordError(password);
+    if (passwordError) {
+      setMessage({ type: "error", text: passwordError });
+      return;
+    }
+
     setLoading(true);
     setMessage(null);
 
@@ -137,7 +145,9 @@ export default function SignUpPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                placeholder="Mot de passe"
+                minLength={PASSWORD_MIN_LENGTH}
+                autoComplete="new-password"
+                placeholder={`Mot de passe (${PASSWORD_MIN_LENGTH} caractères min.)`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
